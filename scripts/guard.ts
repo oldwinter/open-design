@@ -476,6 +476,7 @@ const tailwindDefaultPaletteClassPrefixes = [
   "ring(?:-offset)?",
   "outline",
   "decoration",
+  "(?:inset-|text-|drop-)?shadow",
   "accent",
   "caret",
   "fill",
