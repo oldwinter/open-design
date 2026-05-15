@@ -48,6 +48,7 @@ interface Props {
 }
 
 const STORAGE_KEY = 'open-design:workspace-tabs:v1';
+const PINNED_HOME_TAB_ID = 'entry:home';
 const MAX_STORED_TABS = 60;
 const MAX_VISIBLE_CHROME_TABS = 16;
 const MAX_SEARCH_RESULTS = 80;
@@ -57,6 +58,9 @@ function nowId(): string {
 }
 
 function createEntryTab(view: EntryHomeView, timestamp = Date.now()): WorkspaceChromeTab {
+  if (view === 'home') {
+    return createPinnedHomeTab(timestamp);
+  }
   return {
     id: `entry:${view}:${nowId()}`,
     kind: 'entry',
@@ -64,6 +68,24 @@ function createEntryTab(view: EntryHomeView, timestamp = Date.now()): WorkspaceC
     createdAt: timestamp,
     lastActiveAt: timestamp,
   };
+}
+
+function createPinnedHomeTab(timestamp = Date.now()): WorkspaceChromeTab {
+  return {
+    id: PINNED_HOME_TAB_ID,
+    kind: 'entry',
+    view: 'home',
+    createdAt: timestamp,
+    lastActiveAt: timestamp,
+  };
+}
+
+function isPinnedHomeTab(tab: WorkspaceChromeTab): boolean {
+  return tab.kind === 'entry' && tab.view === 'home';
+}
+
+function isHomeRoute(route: Route): boolean {
+  return route.kind === 'home' && route.view === 'home';
 }
 
 function tabFromRoute(route: Route, timestamp = Date.now()): WorkspaceChromeTab {
@@ -164,56 +186,107 @@ function reviveTab(value: unknown): WorkspaceChromeTab | null {
   return null;
 }
 
+function withPinnedHome(state: WorkspaceTabsState): WorkspaceTabsState {
+  const timestamp = Date.now();
+  const homeTabs = state.tabs.filter(isPinnedHomeTab);
+  const homeTab =
+    homeTabs.length > 0
+      ? {
+          ...createPinnedHomeTab(
+            Math.min(...homeTabs.map((tab) => tab.createdAt)),
+          ),
+          lastActiveAt: Math.max(...homeTabs.map((tab) => tab.lastActiveAt)),
+        }
+      : createPinnedHomeTab(timestamp);
+  const tabs = [
+    homeTab,
+    ...state.tabs.filter((tab) => !isPinnedHomeTab(tab)),
+  ];
+  const activeTabId = homeTabs.some((tab) => tab.id === state.activeTabId)
+    ? PINNED_HOME_TAB_ID
+    : tabs.some((tab) => tab.id === state.activeTabId)
+      ? state.activeTabId
+      : PINNED_HOME_TAB_ID;
+  return { tabs, activeTabId };
+}
+
 function capTabs(tabs: WorkspaceChromeTab[], activeTabId: string): WorkspaceChromeTab[] {
-  if (tabs.length <= MAX_STORED_TABS) return tabs;
-  const active = tabs.find((tab) => tab.id === activeTabId) ?? null;
-  const kept = [...tabs]
-    .filter((tab) => tab.id !== activeTabId)
+  const normalized = withPinnedHome({ tabs, activeTabId });
+  if (normalized.tabs.length <= MAX_STORED_TABS) return normalized.tabs;
+  const homeTab = normalized.tabs[0]!;
+  const nonHomeTabs = normalized.tabs.filter((tab) => !isPinnedHomeTab(tab));
+  const active = nonHomeTabs.find((tab) => tab.id === normalized.activeTabId) ?? null;
+  const kept = [...nonHomeTabs]
+    .filter((tab) => tab.id !== normalized.activeTabId)
     .sort((a, b) => b.lastActiveAt - a.lastActiveAt)
-    .slice(0, MAX_STORED_TABS - (active ? 1 : 0))
+    .slice(0, MAX_STORED_TABS - 1 - (active ? 1 : 0))
     .sort((a, b) => a.createdAt - b.createdAt);
-  return active ? [...kept, active] : kept;
+  return active ? [homeTab, ...kept, active] : [homeTab, ...kept];
 }
 
 function initialTabsState(route: Route): WorkspaceTabsState {
   const fallback = tabFromRoute(route);
   if (typeof window === 'undefined') {
-    return { tabs: [fallback], activeTabId: fallback.id };
+    return syncStateToRoute({ tabs: [fallback], activeTabId: fallback.id }, route);
   }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { tabs: [fallback], activeTabId: fallback.id };
+    if (!raw) return syncStateToRoute({ tabs: [fallback], activeTabId: fallback.id }, route);
     const parsed = JSON.parse(raw) as unknown;
     if (parsed === null || typeof parsed !== 'object') {
-      return { tabs: [fallback], activeTabId: fallback.id };
+      return syncStateToRoute({ tabs: [fallback], activeTabId: fallback.id }, route);
     }
     const record = parsed as Record<string, unknown>;
     const tabs = Array.isArray(record.tabs)
       ? record.tabs.map(reviveTab).filter((tab): tab is WorkspaceChromeTab => tab !== null)
       : [];
     const activeTabId = typeof record.activeTabId === 'string' ? record.activeTabId : '';
-    if (tabs.length === 0) return { tabs: [fallback], activeTabId: fallback.id };
+    if (tabs.length === 0) {
+      return syncStateToRoute({ tabs: [fallback], activeTabId: fallback.id }, route);
+    }
     return syncStateToRoute({ tabs, activeTabId: activeTabId || tabs[0]!.id }, route);
   } catch {
-    return { tabs: [fallback], activeTabId: fallback.id };
+    return syncStateToRoute({ tabs: [fallback], activeTabId: fallback.id }, route);
   }
 }
 
 function syncStateToRoute(state: WorkspaceTabsState, route: Route): WorkspaceTabsState {
   const timestamp = Date.now();
-  const currentActive = state.tabs.find((tab) => tab.id === state.activeTabId) ?? null;
-  if (!currentActive) {
-    const existing = state.tabs.find((tab) => tabMatchesRoute(tab, route)) ?? null;
+  const current = withPinnedHome(state);
+  if (isHomeRoute(route)) {
+    const nextTabs = current.tabs.map((tab) =>
+      isPinnedHomeTab(tab) ? { ...tab, lastActiveAt: timestamp } : tab,
+    );
+    return { tabs: capTabs(nextTabs, PINNED_HOME_TAB_ID), activeTabId: PINNED_HOME_TAB_ID };
+  }
+
+  const currentActive = current.tabs.find((tab) => tab.id === current.activeTabId) ?? null;
+  if (currentActive && isPinnedHomeTab(currentActive)) {
+    const existing = current.tabs.find((tab) => tabMatchesRoute(tab, route)) ?? null;
     const nextTab = existing
       ? { ...tabFromRoute(route, existing.createdAt), lastActiveAt: timestamp, id: existing.id }
       : tabFromRoute(route, timestamp);
     const nextTabs = existing
-      ? state.tabs.map((tab) => (tab.id === existing.id ? nextTab : tab))
-      : [...state.tabs, nextTab];
+      ? current.tabs.map((tab) => (tab.id === existing.id ? nextTab : tab))
+      : [...current.tabs, nextTab];
     const capped = capTabs(nextTabs, nextTab.id);
     return {
       tabs: capped,
-      activeTabId: capped.some((tab) => tab.id === nextTab.id) ? nextTab.id : capped[0]?.id ?? '',
+      activeTabId: capped.some((tab) => tab.id === nextTab.id) ? nextTab.id : PINNED_HOME_TAB_ID,
+    };
+  }
+  if (!currentActive) {
+    const existing = current.tabs.find((tab) => tabMatchesRoute(tab, route)) ?? null;
+    const nextTab = existing
+      ? { ...tabFromRoute(route, existing.createdAt), lastActiveAt: timestamp, id: existing.id }
+      : tabFromRoute(route, timestamp);
+    const nextTabs = existing
+      ? current.tabs.map((tab) => (tab.id === existing.id ? nextTab : tab))
+      : [...current.tabs, nextTab];
+    const capped = capTabs(nextTabs, nextTab.id);
+    return {
+      tabs: capped,
+      activeTabId: capped.some((tab) => tab.id === nextTab.id) ? nextTab.id : PINNED_HOME_TAB_ID,
     };
   }
 
@@ -222,7 +295,7 @@ function syncStateToRoute(state: WorkspaceTabsState, route: Route): WorkspaceTab
     id: currentActive.id,
     lastActiveAt: timestamp,
   };
-  const nextTabs = state.tabs
+  const nextTabs = current.tabs
     .filter((tab) => tab.id === currentActive.id || !tabMatchesRoute(tab, route))
     .map((tab) => (tab.id === currentActive.id ? replacement : tab));
   const activeTabId = replacement.id;
@@ -235,10 +308,14 @@ function syncStateToRoute(state: WorkspaceTabsState, route: Route): WorkspaceTab
 
 function visibleChromeTabs(tabs: WorkspaceChromeTab[], activeTabId: string): WorkspaceChromeTab[] {
   if (tabs.length <= MAX_VISIBLE_CHROME_TABS) return tabs;
-  const activeIndex = Math.max(0, tabs.findIndex((tab) => tab.id === activeTabId));
-  const half = Math.floor(MAX_VISIBLE_CHROME_TABS / 2);
-  const start = Math.max(0, Math.min(activeIndex - half, tabs.length - MAX_VISIBLE_CHROME_TABS));
-  return tabs.slice(start, start + MAX_VISIBLE_CHROME_TABS);
+  const homeTab = tabs.find(isPinnedHomeTab) ?? null;
+  const source = homeTab ? tabs.filter((tab) => !isPinnedHomeTab(tab)) : tabs;
+  const visibleSlots = homeTab ? MAX_VISIBLE_CHROME_TABS - 1 : MAX_VISIBLE_CHROME_TABS;
+  const activeIndex = Math.max(0, source.findIndex((tab) => tab.id === activeTabId));
+  const half = Math.floor(visibleSlots / 2);
+  const start = Math.max(0, Math.min(activeIndex - half, source.length - visibleSlots));
+  const visible = source.slice(start, start + visibleSlots);
+  return homeTab ? [homeTab, ...visible] : visible;
 }
 
 function normalizeSearch(value: string): string {
@@ -326,50 +403,39 @@ export function WorkspaceTabsBar({ route, projects }: Props) {
   }, [tabsMenuOpen]);
 
   function openTab(tab: WorkspaceChromeTab) {
+    const tabId = isPinnedHomeTab(tab) ? PINNED_HOME_TAB_ID : tab.id;
     setState((current) => ({
-      tabs: current.tabs.map((item) =>
-        item.id === tab.id ? { ...item, lastActiveAt: Date.now() } : item,
+      tabs: withPinnedHome(current).tabs.map((item) =>
+        item.id === tabId ? { ...item, lastActiveAt: Date.now() } : item,
       ),
-      activeTabId: tab.id,
+      activeTabId: tabId,
     }));
     setTabsMenuOpen(false);
     navigate(routeForTab(tab));
   }
 
   function createNewTab() {
-    const tab = createEntryTab('home');
     setState((current) => ({
-      tabs: capTabs([...current.tabs, tab], tab.id),
-      activeTabId: tab.id,
+      tabs: withPinnedHome(current).tabs.map((item) =>
+        isPinnedHomeTab(item) ? { ...item, lastActiveAt: Date.now() } : item,
+      ),
+      activeTabId: PINNED_HOME_TAB_ID,
     }));
     setTabsMenuOpen(false);
     navigate({ kind: 'home', view: 'home' });
   }
 
-  function openHomeTab() {
-    const existingHome = state.tabs.find(
-      (tab) => tab.kind === 'entry' && tab.view === 'home',
-    );
-    if (existingHome) {
-      openTab(existingHome);
-      return;
-    }
-    createNewTab();
-  }
-
   function closeTab(tabId: string) {
     let nextRoute: Route | null = null;
     setState((current) => {
-      const closingIndex = current.tabs.findIndex((tab) => tab.id === tabId);
+      const normalized = withPinnedHome(current);
+      const closingIndex = normalized.tabs.findIndex((tab) => tab.id === tabId);
       if (closingIndex < 0) return current;
-      const nextTabs = current.tabs.filter((tab) => tab.id !== tabId);
-      if (nextTabs.length === 0) {
-        const homeTab = createEntryTab('home');
-        nextRoute = routeForTab(homeTab);
-        return { tabs: [homeTab], activeTabId: homeTab.id };
-      }
-      if (current.activeTabId !== tabId) {
-        return { ...current, tabs: nextTabs };
+      const closingTab = normalized.tabs[closingIndex]!;
+      if (isPinnedHomeTab(closingTab)) return normalized;
+      const nextTabs = normalized.tabs.filter((tab) => tab.id !== tabId);
+      if (normalized.activeTabId !== tabId) {
+        return { ...normalized, tabs: nextTabs };
       }
       const replacement = nextTabs[Math.min(closingIndex, nextTabs.length - 1)] ?? nextTabs[0]!;
       nextRoute = routeForTab(replacement);
@@ -381,25 +447,17 @@ export function WorkspaceTabsBar({ route, projects }: Props) {
   return (
     <header className="app-chrome-header workspace-tabs-chrome" aria-label="Workspace tabs">
       <div className="app-chrome-traffic-space workspace-tabs-traffic" aria-hidden />
-      <button
-        type="button"
-        className="workspace-tabs-identity"
-        onClick={openHomeTab}
-        title={t('entry.navHome')}
-        aria-label={t('entry.navHome')}
-      >
-        <span className="workspace-tabs-identity__mark" aria-hidden>
-          <img src="/app-icon.svg" alt="" draggable={false} />
-        </span>
-      </button>
       <div className="workspace-tabs-strip" role="tablist" aria-label="Open workspaces">
         {visibleTabs.map((tab) => {
           const display = displayTabById.get(tab.id) ?? displayTabFor(tab, projectById, t);
           const active = tab.id === state.activeTabId;
+          const closable = !isPinnedHomeTab(tab);
           return (
             <div
               key={tab.id}
-              className={`workspace-tab${active ? ' is-active' : ''}`}
+              className={`workspace-tab${active ? ' is-active' : ''}${
+                closable ? '' : ' workspace-tab--pinned'
+              }`}
               role="tab"
               aria-selected={active}
               title={display.title}
@@ -415,15 +473,17 @@ export function WorkspaceTabsBar({ route, projects }: Props) {
                 </span>
                 <span className="workspace-tab__label">{display.title}</span>
               </button>
-              <button
-                type="button"
-                className="workspace-tab__close"
-                aria-label={t('common.close')}
-                title={t('common.close')}
-                onClick={() => closeTab(tab.id)}
-              >
-                <Icon name="close" size={11} />
-              </button>
+              {closable ? (
+                <button
+                  type="button"
+                  className="workspace-tab__close"
+                  aria-label={t('common.close')}
+                  title={t('common.close')}
+                  onClick={() => closeTab(tab.id)}
+                >
+                  <Icon name="close" size={11} />
+                </button>
+              ) : null}
             </div>
           );
         })}
@@ -480,10 +540,13 @@ export function WorkspaceTabsBar({ route, projects }: Props) {
               {filteredTabs.length > 0 ? (
                 filteredTabs.map((display) => {
                   const active = display.id === state.activeTabId;
+                  const closable = !isPinnedHomeTab(display.tab);
                   return (
                     <div
                       key={display.id}
-                      className={`workspace-tabs-list__item${active ? ' is-active' : ''}`}
+                      className={`workspace-tabs-list__item${active ? ' is-active' : ''}${
+                        closable ? '' : ' workspace-tabs-list__item--pinned'
+                      }`}
                       role="option"
                       aria-selected={active}
                     >
@@ -500,15 +563,17 @@ export function WorkspaceTabsBar({ route, projects }: Props) {
                           <span className="workspace-tabs-list__meta">{display.meta}</span>
                         </span>
                       </button>
-                      <button
-                        type="button"
-                        className="workspace-tabs-list__close"
-                        onClick={() => closeTab(display.id)}
-                        title={t('common.close')}
-                        aria-label={t('common.close')}
-                      >
-                        <Icon name="close" size={11} />
-                      </button>
+                      {closable ? (
+                        <button
+                          type="button"
+                          className="workspace-tabs-list__close"
+                          onClick={() => closeTab(display.id)}
+                          title={t('common.close')}
+                          aria-label={t('common.close')}
+                        >
+                          <Icon name="close" size={11} />
+                        </button>
+                      ) : null}
                     </div>
                   );
                 })

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { WorkspaceTabsBar } from '../../src/components/WorkspaceTabsBar';
@@ -58,17 +58,22 @@ describe('WorkspaceTabsBar navigation semantics', () => {
     cleanup();
   });
 
-  it('replaces the active new tab when in-tab navigation opens a project', async () => {
+  it('keeps Home pinned when in-tab navigation opens a project', async () => {
     const { rerender } = render(
       <WorkspaceTabsBar route={homeRoute} projects={[project]} />,
     );
 
     expect(screen.getAllByRole('tab')).toHaveLength(1);
+    expect(
+      within(screen.getByRole('tab', { name: /Home/ })).queryByRole('button', {
+        name: 'Close',
+      }),
+    ).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: 'New tab' }));
 
     await waitFor(() => {
-      expect(screen.getAllByRole('tab')).toHaveLength(2);
+      expect(screen.getAllByRole('tab')).toHaveLength(1);
     });
     expect(navigate).toHaveBeenCalledWith(homeRoute);
 
@@ -80,6 +85,49 @@ describe('WorkspaceTabsBar navigation semantics', () => {
       expect(tabs).toHaveLength(2);
       expect(labels.filter((label) => label.includes('Home'))).toHaveLength(1);
       expect(labels.some((label) => label.includes('Project Alpha'))).toBe(true);
+    });
+
+    expect(
+      within(screen.getByRole('tab', { name: /Home/ })).queryByRole('button', {
+        name: 'Close',
+      }),
+    ).toBeNull();
+    expect(
+      within(screen.getByRole('tab', { name: /Project Alpha/ })).queryByRole('button', {
+        name: 'Close',
+      }),
+    ).not.toBeNull();
+  });
+
+  it('collapses restored Home duplicates into one pinned tab', async () => {
+    window.localStorage.setItem(
+      'open-design:workspace-tabs:v1',
+      JSON.stringify({
+        activeTabId: 'entry:home:old-two',
+        tabs: [
+          {
+            id: 'entry:home:old-one',
+            kind: 'entry',
+            view: 'home',
+            createdAt: 1,
+            lastActiveAt: 1,
+          },
+          {
+            id: 'entry:home:old-two',
+            kind: 'entry',
+            view: 'home',
+            createdAt: 2,
+            lastActiveAt: 2,
+          },
+        ],
+      }),
+    );
+
+    render(<WorkspaceTabsBar route={homeRoute} projects={[project]} />);
+
+    await waitFor(() => {
+      const labels = screen.getAllByRole('tab').map((tab) => tab.textContent ?? '');
+      expect(labels.filter((label) => label.includes('Home'))).toHaveLength(1);
     });
   });
 });
