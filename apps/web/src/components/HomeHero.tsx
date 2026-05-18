@@ -356,12 +356,6 @@ export const HomeHero = forwardRef<HTMLTextAreaElement, Props>(function HomeHero
 
   return (
     <section className="home-hero" data-testid="home-hero">
-      <div className="home-hero__brand" aria-hidden>
-        <span className="home-hero__brand-mark">
-          <img src="/app-icon.svg" alt="" draggable={false} />
-        </span>
-        <span className="home-hero__brand-name">Open Design</span>
-      </div>
       <h1 className="home-hero__title">What do you want to design?</h1>
       <p className="home-hero__subtitle">
         Pick a type to load an example query, or just type freely and press{' '}

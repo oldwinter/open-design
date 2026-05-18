@@ -23,38 +23,6 @@
   gap: 14px;
   padding: 32px 0 8px;
 }
-.home-hero__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-.home-hero__brand-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 2px;
-}
-.home-hero__brand-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-.home-hero__brand-name {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--text-strong);
-}
 .home-hero__title {
   margin: 0;
   font-family: var(--serif);
@@ -65,7 +33,10 @@
   text-align: center;
 }
 .home-hero__subtitle {
-  margin: 0;
+  /* Pair tightly with the title above; the larger separation
+     belongs between this subtitle and the type tab bar / chat
+     box that follow. */
+  margin: -8px 0 0;
   color: var(--text-muted);
   font-size: 13.5px;
   text-align: center;
@@ -94,7 +65,11 @@
   align-items: flex-end;
   gap: 2px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: -14px;
+  /* Push the tab bar away from the title/subtitle pair so the
+     reader perceives "headline group" then "input group". The
+     bottom collapse keeps tabs visually attached to the chat
+     box border below. */
+  margin: 14px 0 -14px;
   padding: 0 4px;
 }
 .home-hero__type-tab {

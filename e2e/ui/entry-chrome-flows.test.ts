@@ -60,7 +60,11 @@ test('entry chrome settings menu opens with brand header and no pet rail', async
 
 test('entry top navigation matches the current home tab structure', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('entry-nav-home')).toHaveAttribute('aria-current', 'page');
+  // The brand logo doubles as the Home destination; there is no
+  // separate Home button in the primary nav group. The logo carries
+  // the active `aria-current="page"` treatment when home is showing.
+  await expect(page.getByTestId('entry-nav-logo')).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByTestId('entry-nav-home')).toHaveCount(0);
   await expect(page.getByTestId('entry-nav-new-project')).toBeVisible();
   await expect(page.getByTestId('entry-nav-projects')).toBeVisible();
   await expect(page.getByTestId('entry-nav-tasks')).toBeVisible();

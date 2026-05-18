@@ -1,8 +1,11 @@
 // Lovart-style left navigation rail for the entry view.
 //
 // Renders a narrow icon-only column. The first slot is the brand
-// logo (clicking navigates to home), followed by primary
-// actions (new project, home, projects, automations, design systems).
+// logo, which doubles as the Home destination: clicking it always
+// navigates to home, and it carries the active `aria-current="page"`
+// treatment when the home view is showing, so we do not need a
+// separate Home button in the primary nav group. Primary actions
+// (new project, projects, automations, design systems) follow.
 // Secondary platform items (plugins, integrations) live in the footer
 // section alongside the help launcher — they are accessible but visually
 // de-emphasised relative to the daily-use primary destinations.
@@ -56,16 +59,20 @@ function NavButton({ active, ariaLabel, tooltip, onClick, testId, children }: Na
 export function EntryNavRail({ view, onViewChange, onNewProject }: Props) {
   const t = useT();
   const brandLabel = t('app.brand');
+  const homeLabel = t('entry.navHome');
+  const isHome = view === 'home';
+  const logoTooltip = isHome ? brandLabel : `${brandLabel} · ${homeLabel}`;
 
   return (
     <nav className="entry-nav-rail" aria-label="Primary">
       <div className="entry-nav-rail__group">
         <button
           type="button"
-          className="entry-nav-rail__logo"
+          className={`entry-nav-rail__logo${isHome ? ' is-active' : ''}`}
           onClick={() => onViewChange('home')}
           aria-label={brandLabel}
-          data-tooltip={brandLabel}
+          aria-current={isHome ? 'page' : undefined}
+          data-tooltip={logoTooltip}
           data-testid="entry-nav-logo"
         >
           <img
@@ -82,15 +89,6 @@ export function EntryNavRail({ view, onViewChange, onNewProject }: Props) {
           testId="entry-nav-new-project"
         >
           <Icon name="plus" size={18} />
-        </NavButton>
-        <NavButton
-          active={view === 'home'}
-          ariaLabel={t('entry.navHome')}
-          tooltip={t('entry.navHome')}
-          onClick={() => onViewChange('home')}
-          testId="entry-nav-home"
-        >
-          <Icon name="home" size={18} />
         </NavButton>
         <NavButton
           active={view === 'projects'}
