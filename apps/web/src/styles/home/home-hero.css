@@ -302,8 +302,24 @@
   box-sizing: border-box;
   cursor: text;
 }
+/* Text-only slots are read-only highlights of context values
+   spliced into the prompt — they can't be edited inline. Drop the
+   pill ring and most of the background tint so they read as
+   "highlighted text" rather than as an interactive pill that the
+   user expects to be able to click into. The active orange foreground
+   keeps the semantic link to the surrounding editable pills. */
 .home-hero__prompt-slot-text {
   pointer-events: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 0;
+}
+.home-hero__prompt-slot-text[data-filled='false'] {
+  background: transparent;
+  box-shadow: none;
+  border-bottom-color: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .home-hero__prompt-slot-control:focus,
 .home-hero__prompt-slot-control:focus-visible {
