@@ -299,6 +299,12 @@ describe('DesignSystemCreationFlow', () => {
     expect(mocks.patchProject).toHaveBeenCalledWith(
       project.id,
       expect.objectContaining({
+        pendingPrompt: expect.stringContaining('Do not replace captured source examples with tiny filename-only stubs'),
+      }),
+    );
+    expect(mocks.patchProject).toHaveBeenCalledWith(
+      project.id,
+      expect.objectContaining({
         pendingPrompt: expect.stringContaining('source_examples/SelectModelButton.tsx'),
       }),
     );
@@ -400,6 +406,11 @@ describe('DesignSystemCreationFlow', () => {
       project.id,
       'context/source-context.md',
       expect.stringContaining('source_examples/ or equivalent root/nested source files'),
+    );
+    expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
+      project.id,
+      'context/source-context.md',
+      expect.stringContaining('not tiny stubs that only share the component name'),
     );
     expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
       project.id,

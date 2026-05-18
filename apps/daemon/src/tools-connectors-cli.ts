@@ -1740,6 +1740,17 @@ async function auditDesignSystemPackage(
       'source_examples/',
     );
   }
+  if (hasComponentEvidence && evidenceComponentNames.length >= 6 && sourceExampleAnchors.length >= 3) {
+    const sourceExampleBytes = await totalAuditBytes(projectPath, sourceExampleAnchors);
+    if (sourceExampleBytes < 2400) {
+      addIssue(
+        'warning',
+        'thin_source_component_examples',
+        `Source examples should preserve substantive component code, not filename-only stubs. Found ${sourceExampleAnchors.length} source-backed example file(s) totaling ${sourceExampleBytes} bytes; preserve larger high-signal examples from the original evidence, similar to Claude Design exports.`,
+        'source_examples/',
+      );
+    }
+  }
   if (hasAssetEvidence) {
     if (preservedAssetFiles.length === 0) {
       addIssue('error', 'missing_preserved_assets', 'Source evidence includes brand assets; preserve selected logos/icons/avatars under assets/.', 'assets/');
