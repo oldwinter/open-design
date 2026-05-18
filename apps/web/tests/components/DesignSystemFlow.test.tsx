@@ -281,6 +281,12 @@ describe('DesignSystemCreationFlow', () => {
     expect(mocks.patchProject).toHaveBeenCalledWith(
       project.id,
       expect.objectContaining({
+        pendingPrompt: expect.stringContaining('preview/brand-assets.html` must visibly load the preserved files'),
+      }),
+    );
+    expect(mocks.patchProject).toHaveBeenCalledWith(
+      project.id,
+      expect.objectContaining({
         pendingPrompt: expect.stringContaining('bind them in `colors_and_type.css` with `@font-face`'),
       }),
     );
@@ -1187,6 +1193,11 @@ describe('DesignSystemCreationFlow', () => {
       project.id,
       'context/source-context.md',
       expect.stringContaining('assets/, build/, fonts/, and context/ should preserve logos'),
+    );
+    expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
+      project.id,
+      'context/source-context.md',
+      expect.stringContaining('preview/brand-assets.html should visibly reference preserved files'),
     );
   });
 });

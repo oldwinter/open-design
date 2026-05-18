@@ -1211,6 +1211,7 @@ function renderGithubDesignEvidenceMarkdown(evidence: GithubDesignEvidence): str
     '',
     '- Use these source paths and snapshots as evidence before writing `DESIGN.md`.',
     '- Convert the inventory above into a Claude Design-style package: `README.md`, `SKILL.md`, `colors_and_type.css`, `preview/colors-*`, `preview/typography-specimens.html`, `preview/spacing-*`, `preview/components-*`, `preview/brand-assets.html`, `ui_kits/app/`, and preserved `assets/`, `build/`, or `fonts/` when evidence exists.',
+    '- Make `preview/brand-assets.html` visibly load preserved asset files from `assets/` or `build/`; do not redraw captured logos/icons as inline placeholders.',
     '- Extract concrete colors, typography, spacing, radius, component behavior, assets, and product tone only when supported by inspected files.',
     '- If evidence is missing or ambiguous, mark that uncertainty instead of inventing tokens.',
     '',
@@ -1276,6 +1277,7 @@ function renderLocalDesignEvidenceMarkdown(evidence: LocalDesignEvidence): strin
     '',
     '- Use these local source paths and snapshots as evidence before writing `DESIGN.md`.',
     '- Convert the inventory above into a Claude Design-style package: `README.md`, `SKILL.md`, `colors_and_type.css`, `preview/colors-*`, `preview/typography-specimens.html`, `preview/spacing-*`, `preview/components-*`, `preview/brand-assets.html`, `ui_kits/app/`, and preserved `assets/`, `build/`, or `fonts/` when evidence exists.',
+    '- Make `preview/brand-assets.html` visibly load preserved asset files from `assets/` or `build/`; do not redraw captured logos/icons as inline placeholders.',
     '- Extract concrete colors, typography, spacing, radius, component behavior, assets, and product tone only when supported by inspected files.',
     '- If evidence is missing or ambiguous, mark that uncertainty instead of inventing tokens.',
     '',
@@ -1754,6 +1756,20 @@ async function auditDesignSystemPackage(
       addIssue('error', 'missing_brand_assets_preview', 'Source evidence includes brand assets; add preview/brand-assets.html.', 'preview/brand-assets.html');
     }
   }
+  const preservedBrandAssetFiles = [...preservedAssetFiles, ...preservedBuildAssetFiles];
+  if (preservedBrandAssetFiles.length > 0 && fileSet.has('preview/brand-assets.html')) {
+    const brandAssetPreview = await readAuditText(projectPath, 'preview/brand-assets.html');
+    const referencedAssets = brandAssetPreview === undefined ? [] : preservedAssetsReferencedInPreview(brandAssetPreview, preservedBrandAssetFiles);
+    const requiredAssetReferences = Math.min(2, preservedBrandAssetFiles.length);
+    if (referencedAssets.length < requiredAssetReferences) {
+      addIssue(
+        'warning',
+        'brand_assets_preview_not_using_preserved_assets',
+        `preview/brand-assets.html should visibly reference at least ${requiredAssetReferences} preserved asset file(s) from assets/ or build/ so the review card shows real logos/icons instead of generated placeholders. Found ${referencedAssets.length}.`,
+        'preview/brand-assets.html',
+      );
+    }
+  }
   if (evidenceBuildAssetFiles.length > 0 && preservedBuildAssetFiles.length === 0) {
     addIssue(
       'warning',
@@ -1901,6 +1917,16 @@ function tokenCssBindsPreservedFonts(text: string, preservedFontFiles: string[])
     return new RegExp(`url\\([^)]*(?:fonts\\/[^)]*)?${baseName}`, 'iu').test(text)
       || new RegExp(`@import\\s+[^;]*(?:fonts\\/[^;]*)?${baseName}`, 'iu').test(text);
   }) || /url\([^)]*fonts\/[^)]*\.(ttf|otf|woff2?)/iu.test(text);
+}
+
+function preservedAssetsReferencedInPreview(text: string, preservedAssetFiles: string[]): string[] {
+  return preservedAssetFiles.filter((filePath) => {
+    const escapedPath = escapeRegExp(filePath);
+    const escapedParentPath = escapeRegExp(`../${filePath}`);
+    const escapedBaseName = escapeRegExp(path.basename(filePath));
+    return new RegExp(`(?:src|href)=["'][^"']*(?:${escapedPath}|${escapedParentPath}|${escapedBaseName})["']`, 'iu').test(text)
+      || new RegExp(`url\\([^)]*(?:${escapedPath}|${escapedParentPath}|${escapedBaseName})`, 'iu').test(text);
+  });
 }
 
 function evidenceSnapshotFiles(files: string[], evidenceText: string, pattern: RegExp): string[] {

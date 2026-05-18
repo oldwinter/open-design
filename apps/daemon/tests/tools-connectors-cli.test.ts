@@ -152,6 +152,13 @@ const AUDIT_COMPONENT_FILES = [
 
 function auditHtml(title: string): string {
   const cards = Array.from({ length: 8 }, (_, index) => `<article><h2>${title} ${index + 1}</h2><p>Source-backed review content for compact desktop app surfaces, component states, spacing, typography, and reusable product modules.</p><button>Review state</button></article>`).join('');
+  const brandAssets = title === 'brand-assets.html'
+    ? `
+    <section class="brand-assets">
+      <img src="../assets/logo.png" alt="Cherry Studio logo" />
+      <img src="../build/icon.png" alt="Cherry Studio app icon" />
+    </section>`
+    : '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -161,6 +168,8 @@ function auditHtml(title: string): string {
     body { margin: 0; font-family: Ubuntu, Inter, sans-serif; background: #f7f8fa; color: #202124; }
     main { width: min(960px, calc(100vw - 48px)); margin: 40px auto; display: grid; gap: 16px; }
     article { border: 1px solid #dfe3e8; border-radius: 10px; background: #fff; padding: 16px; }
+    .brand-assets { display: flex; gap: 16px; align-items: center; padding: 18px; background: #fff; border: 1px solid #dfe3e8; border-radius: 10px; }
+    .brand-assets img { width: 72px; height: 72px; object-fit: contain; }
     button { border: 1px solid #00b96b; background: #00b96b; color: #fff; border-radius: 8px; padding: 8px 12px; }
   </style>
 </head>
@@ -168,6 +177,7 @@ function auditHtml(title: string): string {
   <main>
     <h1>${title}</h1>
     <p>A focused review card that preserves product density, component rhythm, and real source-backed design evidence.</p>
+    ${brandAssets}
     ${cards}
   </main>
 </body>
@@ -825,6 +835,52 @@ describe('connectors tool CLI', () => {
         code: 'missing_build_assets',
         path: 'build/',
         message: expect.stringContaining('build/runtime icon asset'),
+      }),
+    ]));
+
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('warns when the brand-assets preview redraws instead of referencing preserved assets', async () => {
+    const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'od-package-audit-brand-preview-assets-'));
+    process.chdir(tmpDir);
+    await mkdir(path.join(tmpDir, 'preview'), { recursive: true });
+    await mkdir(path.join(tmpDir, 'ui_kits/app/components'), { recursive: true });
+    await mkdir(path.join(tmpDir, 'assets'), { recursive: true });
+    await mkdir(path.join(tmpDir, 'build'), { recursive: true });
+    await writeFile(path.join(tmpDir, 'DESIGN.md'), AUDIT_DESIGN_MD);
+    await writeFile(path.join(tmpDir, 'README.md'), AUDIT_README);
+    await writeFile(path.join(tmpDir, 'SKILL.md'), AUDIT_SKILL);
+    await writeFile(path.join(tmpDir, 'colors_and_type.css'), AUDIT_TOKENS_CSS);
+    for (const fileName of [
+      'colors-primary.html',
+      'colors-theme-light.html',
+      'typography-specimens.html',
+      'spacing-tokens.html',
+      'components-buttons.html',
+    ]) {
+      await writeFile(path.join(tmpDir, 'preview', fileName), auditHtml(fileName));
+    }
+    await writeFile(path.join(tmpDir, 'preview/brand-assets.html'), auditHtml('redrawn-brand-assets'));
+    await writeFile(path.join(tmpDir, 'ui_kits/app/index.html'), auditUiKitIndex());
+    await writeFile(path.join(tmpDir, 'ui_kits/app/README.md'), '# UI kit\n');
+    for (const componentName of AUDIT_COMPONENT_FILES) {
+      await writeFile(
+        path.join(tmpDir, 'ui_kits/app/components', componentName),
+        auditUiKitComponent(componentName),
+      );
+    }
+    await writeFile(path.join(tmpDir, 'assets/logo.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+    await writeFile(path.join(tmpDir, 'build/icon.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+
+    const result = await runConnectorsToolCli(['design-system-package-audit', '--path', tmpDir]);
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(stdoutOutput.join('')).warnings).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        code: 'brand_assets_preview_not_using_preserved_assets',
+        path: 'preview/brand-assets.html',
+        message: expect.stringContaining('real logos/icons'),
       }),
     ]));
 
