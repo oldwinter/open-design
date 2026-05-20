@@ -19,7 +19,27 @@ const origin = Astro.site?.toString() ?? 'https://open-design.ai/';
 const logoUrl = new URL('/android-chrome-512x512.png', Astro.site).toString();
 
 const REPO_URL = 'https://github.com/nexu-io/open-design';
+const RELEASES_URL = `${REPO_URL}/releases`;
+const ISSUES_URL = `${REPO_URL}/issues`;
+const DOCS_URL = `${REPO_URL}#readme`;
+const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 const DISCORD_URL = 'https://discord.gg/9ptkbbqRu';
+const OFFICIAL_URL = `${origin}official/`;
+
+// Five canonical "official source" pillars surfaced both as a visible
+// strip on the homepage AND inside Organization.sameAs / SoftwareApplication
+// signals. This is the brand-defense surface from §2 of
+// growth/seo-opendesigner-analysis.md — keep these five and only these five
+// here so the official site, GitHub, releases, docs, and Discord all
+// reinforce each other instead of competing for the brand interpretation.
+const officialPillars = [
+  { label: 'Official site',  name: 'open-design.ai',        href: origin, internal: true },
+  { label: 'Source',         name: 'nexu-io/open-design',   href: REPO_URL },
+  { label: 'Releases',       name: github.versionLabel,     href: RELEASES_URL },
+  { label: 'Download',       name: 'Desktop · macOS · Win', href: RELEASES_URL },
+  { label: 'Docs',           name: 'README + /quickstart/', href: DOCS_URL },
+  { label: 'Community',      name: 'Discord',               href: DISCORD_URL },
+];
 
 // FAQ pairs — kept in lockstep with the visible FAQ section in page.tsx.
 // FAQPage schema must reflect content that is actually rendered.
@@ -80,21 +100,32 @@ const organizationSchema = {
     width: 512,
     height: 512,
   },
-  sameAs: [REPO_URL, DISCORD_URL],
+  // Five canonical pillars — Google uses sameAs to merge entity claims
+  // across sources. Listing the official site, GitHub repo, release
+  // feed, README docs, and Discord here prevents capture sites from
+  // splitting the brand entity.
+  sameAs: [REPO_URL, RELEASES_URL, DOCS_URL, DISCORD_URL, OFFICIAL_URL],
 };
 
 const softwareSchema = {
   '@type': 'SoftwareApplication',
   '@id': `${origin}#software`,
   name: 'Open Design',
-  alternateName: ['OpenDesign', 'open-design', 'Open Design AI'],
+  alternateName: ['OpenDesign', 'open-design', 'opendesign', 'Open Design AI', 'OD'],
   description,
   url: origin,
   applicationCategory: 'DesignApplication',
   operatingSystem: 'macOS, Windows, Linux',
   license: 'https://www.apache.org/licenses/LICENSE-2.0',
   softwareVersion: github.versionLabel,
-  downloadUrl: `${REPO_URL}/releases`,
+  downloadUrl: RELEASES_URL,
+  installUrl: `${origin}quickstart/`,
+  softwareHelp: { '@type': 'CreativeWork', url: DOCS_URL },
+  releaseNotes: RELEASES_URL,
+  codeRepository: REPO_URL,
+  discussionUrl: DISCORD_URL,
+  issueTracker: ISSUES_URL,
+  sameAs: [REPO_URL, RELEASES_URL, DOCS_URL, DISCORD_URL, OFFICIAL_URL, LICENSE_URL],
   offers: {
     '@type': 'Offer',
     price: '0',
