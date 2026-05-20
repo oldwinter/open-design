@@ -1987,7 +1987,7 @@ export const en: Dict = {
   'settings.skillsNameRequired': 'Skill name is required.',
   'settings.skillsBodyRequired': 'Skill body is required.',
   'settings.designSystems': 'Design Systems',
-  'settings.designSystemsHint': 'Browse and toggle the design systems your agent can use',
+  'settings.designSystemsHint': 'Manage which design systems appear in the home gallery',
   'settings.librarySkills': 'Skills',
   'settings.libraryDesignSystems': 'Design Systems',
   'settings.librarySearch': 'Search...',

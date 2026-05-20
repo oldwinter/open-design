@@ -1511,7 +1511,7 @@ export const zhTW: Dict = {
   'settings.skillsNameRequired': '技能名稱為必填項。',
   'settings.skillsBodyRequired': '技能內容為必填項。',
   'settings.designSystems': '設計系統',
-  'settings.designSystemsHint': '瀏覽並啟用代理可使用的設計系統',
+  'settings.designSystemsHint': '管理首頁 Gallery 中顯示的設計系統',
   'settings.librarySkills': '技能',
   'settings.libraryDesignSystems': '設計系統',
   'settings.librarySearch': '搜尋...',

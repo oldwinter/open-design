@@ -2479,7 +2479,9 @@ describe('SettingsDialog design systems section', () => {
       expect(screen.getByText('Signal Green')).toBeTruthy();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /Experimental1/i }));
+    fireEvent.change(screen.getByLabelText('Category'), {
+      target: { value: 'Experimental' },
+    });
     expect(screen.queryByText('Neutral Modern')).toBeNull();
     expect(screen.getByText('Signal Green')).toBeTruthy();
 
@@ -2489,7 +2491,7 @@ describe('SettingsDialog design systems section', () => {
       expect(screen.getByText('design system body for signal-green')).toBeTruthy();
     });
 
-    fireEvent.click(screen.getAllByTitle('Toggle')[0] as HTMLElement);
+    fireEvent.click(screen.getAllByLabelText('Show in home gallery')[0] as HTMLElement);
 
     await waitForPersist(
       onPersist,

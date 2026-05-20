@@ -1953,7 +1953,7 @@ export const zhCN: Dict = {
   'settings.skillsNameRequired': '技能名称为必填项。',
   'settings.skillsBodyRequired': '技能内容为必填项。',
   'settings.designSystems': '设计系统',
-  'settings.designSystemsHint': '浏览并启用智能体可使用的设计系统',
+  'settings.designSystemsHint': '管理首页 Gallery 中显示的设计系统',
   'settings.librarySkills': '技能',
   'settings.libraryDesignSystems': '设计系统',
   'settings.librarySearch': '搜索...',
