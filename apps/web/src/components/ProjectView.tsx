@@ -2699,6 +2699,11 @@ export function ProjectView({
           next.delete(relativePath);
           return next;
         });
+        setHiddenAssistantPluginActionPaths((prev) => {
+          const next = new Set(prev);
+          next.delete(relativePath);
+          return next;
+        });
         throw error;
       }
       const startedAt = taskStart.startedAt;
