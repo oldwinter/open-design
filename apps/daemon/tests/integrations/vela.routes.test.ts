@@ -1,0 +1,275 @@
+// HTTP-level coverage for the AMR (vela) integration routes.
+//
+// Boots the real daemon Express app on a random port (same shape as
+// memory-config-route.test.ts) and exercises the three endpoints from the
+// outside — `/api/integrations/vela/{status,login,logout}` — so the Settings
+// AmrLoginPill provider helpers, the spawn lifecycle, and the
+// ~/.vela/config.json projection all stay in lockstep.
+//
+// HOME is redirected to a tmpdir per test so the suite never touches the
+// developer's real `~/.vela/config.json`. VELA_BIN points at the
+// `tests/fixtures/fake-vela.mjs` stub, which handles the `login` argv by
+// writing the config file with the active VELA_PROFILE and exiting 0 —
+// mirroring real vela's on-disk side-effect without the device-auth loop.
+
+import { mkdtempSync, existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import type http from 'node:http';
+import { fileURLToPath } from 'node:url';
+
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
+import { startServer } from '../../src/server.js';
+import { readAppConfig, writeAppConfig } from '../../src/app-config.js';
+
+interface StartedServer {
+  url: string;
+  server: http.Server;
+}
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const FAKE_VELA = path.resolve(HERE, '..', 'fixtures', 'fake-vela.mjs');
+
+let baseUrl: string;
+let server: http.Server;
+let originalHome: string | undefined;
+let tmpHome: string;
+
+async function getJson<T = unknown>(url: string): Promise<{ status: number; body: T }> {
+  const resp = await fetch(url);
+  const body = (await resp.json()) as T;
+  return { status: resp.status, body };
+}
+
+async function postJson<T = unknown>(url: string): Promise<{ status: number; body: T }> {
+  const resp = await fetch(url, { method: 'POST' });
+  const body = (await resp.json()) as T;
+  return { status: resp.status, body };
+}
+
+function configPath(): string {
+  return path.join(tmpHome, '.vela', 'config.json');
+}
+
+function seedLogin(profile: string, payload: Record<string, unknown> = {}): void {
+  const dir = path.dirname(configPath());
+  mkdirSync(dir, { recursive: true });
+  const full = {
+    profiles: {
+      [profile]: {
+        runtimeKey: 'rt-seeded-key',
+        controlKey: 'ck-seeded-key',
+        apiUrl: 'http://localhost:18080',
+        linkUrl: 'http://localhost:18081',
+        user: {
+          id: 'user-seed',
+          email: 'seed@example.com',
+          plan: 'free',
+          ...((payload.user as Record<string, unknown>) ?? {}),
+        },
+        ...payload,
+      },
+    },
+  };
+  writeFileSync(configPath(), JSON.stringify(full, null, 2), 'utf8');
+}
+
+beforeAll(async () => {
+  // The login route resolves the vela binary through the daemon's
+  // `agentCliEnvForAgent` projection of `app-config.json` (NOT process.env),
+  // so we have to persist the fake binary path through the app-config file
+  // before any test calls /login. Without this the route would fall through
+  // to `resolveOnPath('vela')` and spawn the developer's real vela.
+  const dataDir = process.env.OD_DATA_DIR as string;
+  const config = await readAppConfig(dataDir);
+  await writeAppConfig(dataDir, {
+    ...config,
+    agentCliEnv: {
+      ...(config.agentCliEnv ?? {}),
+      amr: {
+        ...((config.agentCliEnv?.amr as Record<string, string>) ?? {}),
+        VELA_BIN: FAKE_VELA,
+      },
+    },
+  });
+  const started = (await startServer({ port: 0, returnServer: true })) as StartedServer;
+  baseUrl = started.url;
+  server = started.server;
+});
+
+afterAll(() => new Promise<void>((resolve) => server.close(() => resolve())));
+
+beforeEach(() => {
+  originalHome = process.env.HOME;
+  tmpHome = mkdtempSync(path.join(tmpdir(), 'od-vela-routes-'));
+  process.env.HOME = tmpHome;
+  process.env.VELA_PROFILE = 'local';
+});
+
+afterEach(() => {
+  if (originalHome === undefined) delete process.env.HOME;
+  else process.env.HOME = originalHome;
+  rmSync(tmpHome, { recursive: true, force: true });
+});
+
+describe('GET /api/integrations/vela/status', () => {
+  it('reports loggedIn=false when ~/.vela/config.json is absent', async () => {
+    const { status, body } = await getJson<{
+      loggedIn: boolean;
+      profile: string;
+      user: { email?: string } | null;
+      configPath: string;
+    }>(`${baseUrl}/api/integrations/vela/status`);
+    expect(status).toBe(200);
+    expect(body.loggedIn).toBe(false);
+    expect(body.profile).toBe('local');
+    expect(body.user).toBeNull();
+    // configPath must point inside the temp HOME so the suite never leaks
+    // into the developer's real config file.
+    expect(body.configPath.startsWith(tmpHome)).toBe(true);
+  });
+
+  it('reports loggedIn=true with the surfaced user fields when the active profile has a runtimeKey', async () => {
+    seedLogin('local', {
+      user: {
+        id: 'u1',
+        email: 'leaf@example.com',
+        name: '杨瑾龙',
+        plan: 'free',
+      },
+    });
+    const { body } = await getJson<{
+      loggedIn: boolean;
+      user: { email?: string; plan?: string; name?: string } | null;
+    }>(`${baseUrl}/api/integrations/vela/status`);
+    expect(body.loggedIn).toBe(true);
+    expect(body.user?.email).toBe('leaf@example.com');
+    expect(body.user?.plan).toBe('free');
+    expect(body.user?.name).toBe('杨瑾龙');
+  });
+
+  it('never leaks the runtimeKey or controlKey in the status payload', async () => {
+    seedLogin('local', {
+      runtimeKey: 'rt-very-secret-do-not-leak',
+      controlKey: 'ck-also-secret',
+    });
+    const resp = await fetch(`${baseUrl}/api/integrations/vela/status`);
+    const text = await resp.text();
+    expect(text).not.toContain('rt-very-secret-do-not-leak');
+    expect(text).not.toContain('ck-also-secret');
+  });
+});
+
+describe('POST /api/integrations/vela/login', () => {
+  it('spawns the configured vela binary and surfaces a pid + startedAt + profile', async () => {
+    process.env.FAKE_VELA_LOGIN_USER_EMAIL = 'login-route@example.com';
+    const { status, body } = await postJson<{
+      pid: number;
+      startedAt: string;
+      profile: string;
+    }>(`${baseUrl}/api/integrations/vela/login`);
+    expect(status).toBe(202);
+    expect(typeof body.pid).toBe('number');
+    expect(body.pid).toBeGreaterThan(0);
+    expect(body.profile).toBe('local');
+    expect(body.startedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+
+    // The fake vela writes ~/.vela/config.json synchronously before exit.
+    // Wait briefly for the child to finish so the next status read sees
+    // the on-disk projection production produces.
+    for (let i = 0; i < 50; i += 1) {
+      if (existsSync(configPath())) break;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    expect(existsSync(configPath())).toBe(true);
+
+    const cfg = JSON.parse(readFileSync(configPath(), 'utf8'));
+    expect(cfg?.profiles?.local?.user?.email).toBe('login-route@example.com');
+  });
+
+  it('returns 409 when a login subprocess is already in flight', async () => {
+    // Use the stub's delay knob so the first login is still running when
+    // the second request arrives; without this the first exits before the
+    // route's `isVelaLoginInFlight` guard sees it.
+    process.env.FAKE_VELA_LOGIN_DELAY_MS = '500';
+
+    const first = await postJson(`${baseUrl}/api/integrations/vela/login`);
+    expect(first.status).toBe(202);
+
+    const second = await postJson<{ error?: string }>(
+      `${baseUrl}/api/integrations/vela/login`,
+    );
+    expect(second.status).toBe(409);
+    expect(String(second.body.error || '')).toMatch(/already running/i);
+
+    delete process.env.FAKE_VELA_LOGIN_DELAY_MS;
+    // Let the first login finish so the next test starts from a clean slate.
+    for (let i = 0; i < 50; i += 1) {
+      if (existsSync(configPath())) break;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  });
+});
+
+describe('POST /api/integrations/vela/logout', () => {
+  it('removes ~/.vela/config.json so the next status read returns loggedIn=false', async () => {
+    seedLogin('local');
+    expect(existsSync(configPath())).toBe(true);
+
+    const { status, body } = await postJson<{ ok?: boolean }>(
+      `${baseUrl}/api/integrations/vela/logout`,
+    );
+    expect(status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(existsSync(configPath())).toBe(false);
+
+    const after = await getJson<{ loggedIn: boolean }>(
+      `${baseUrl}/api/integrations/vela/status`,
+    );
+    expect(after.body.loggedIn).toBe(false);
+  });
+
+  it('is a no-op when there is no config file (idempotent / safe to spam from UI)', async () => {
+    expect(existsSync(configPath())).toBe(false);
+    const { status, body } = await postJson<{ ok?: boolean }>(
+      `${baseUrl}/api/integrations/vela/logout`,
+    );
+    expect(status).toBe(200);
+    expect(body.ok).toBe(true);
+  });
+});
+
+describe('login → status round-trip (E2E across the three routes)', () => {
+  it('flips loggedIn=false → loggedIn=true after a successful login subprocess', async () => {
+    process.env.FAKE_VELA_LOGIN_USER_EMAIL = 'round-trip@example.com';
+    process.env.FAKE_VELA_LOGIN_USER_PLAN = 'pro';
+
+    const before = await getJson<{ loggedIn: boolean }>(
+      `${baseUrl}/api/integrations/vela/status`,
+    );
+    expect(before.body.loggedIn).toBe(false);
+
+    const login = await postJson(`${baseUrl}/api/integrations/vela/login`);
+    expect(login.status).toBe(202);
+
+    // Poll until the subprocess writes the config file (production AmrLoginPill
+    // polls /status every 2s; here we cap at 5s).
+    for (let i = 0; i < 50; i += 1) {
+      if (existsSync(configPath())) break;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    expect(existsSync(configPath())).toBe(true);
+
+    const after = await getJson<{
+      loggedIn: boolean;
+      user: { email?: string; plan?: string } | null;
+    }>(`${baseUrl}/api/integrations/vela/status`);
+    expect(after.body.loggedIn).toBe(true);
+    expect(after.body.user?.email).toBe('round-trip@example.com');
+    expect(after.body.user?.plan).toBe('pro');
+
+    delete process.env.FAKE_VELA_LOGIN_USER_EMAIL;
+    delete process.env.FAKE_VELA_LOGIN_USER_PLAN;
+  });
+});

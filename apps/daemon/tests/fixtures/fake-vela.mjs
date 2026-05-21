@@ -1,24 +1,46 @@
 #!/usr/bin/env node
 /**
- * Fake `vela agent run --runtime opencode` ACP stdio runtime.
+ * Fake vela CLI used by AMR integration tests. Routes by the first argv:
  *
- * Used by the AMR ACP integration test. Speaks just enough of the ACP
- * JSON-RPC protocol to drive Open Design's `detectAcpModels` and
- * `attachAcpSession` through a complete turn:
+ *   `vela login`                        → writes ~/.vela/config.json (the
+ *                                         active VELA_PROFILE only) and
+ *                                         exits 0. Mirrors the real
+ *                                         device-authorization flow's
+ *                                         on-disk side-effect without the
+ *                                         interactive browser approval —
+ *                                         tests for Open Design's daemon
+ *                                         login route only care that the
+ *                                         config file appears.
  *
- *   initialize           → { protocolVersion, agentCapabilities, models }
- *   session/new          → { sessionId, models: { currentModelId, availableModels } }
- *   session/set_model    → {}
- *   session/prompt       → emits session/update notifications, then
- *                          { stopReason: 'end_turn', usage }
+ *   `vela agent run --runtime opencode` → ACP stdio runtime. Speaks just
+ *                                         enough of the protocol to drive
+ *                                         Open Design's `detectAcpModels`
+ *                                         and `attachAcpSession` through a
+ *                                         complete turn:
+ *
+ *     initialize           → { protocolVersion, agentCapabilities, models }
+ *     session/new          → { sessionId, models: { currentModelId, availableModels } }
+ *     session/set_model    → {}
+ *     session/prompt       → emits session/update notifications, then
+ *                            { stopReason: 'end_turn', usage }
  *
  * Behaviour can be tweaked through env vars set by the test:
- *   FAKE_VELA_SESSION_ID    – session id returned by session/new
- *   FAKE_VELA_TEXT          – assistant text streamed back to the host
- *   FAKE_VELA_THOUGHT       – optional thought chunk streamed before text
+ *   FAKE_VELA_SESSION_ID         – session id returned by session/new
+ *   FAKE_VELA_TEXT               – assistant text streamed back to the host
+ *   FAKE_VELA_THOUGHT            – optional thought chunk streamed before text
+ *   FAKE_VELA_LOGIN_DELAY_MS     – delay before writing config.json on `login`
+ *                                   so tests can observe the in-flight state
+ *   FAKE_VELA_LOGIN_USER_EMAIL   – email written into the saved profile
+ *   FAKE_VELA_LOGIN_USER_PLAN    – plan written into the saved profile
+ *   FAKE_VELA_REQUIRE_SET_MODEL  – strict gate (default on); set to '0' to
+ *                                   accept session/prompt without prior
+ *                                   session/set_model (legacy behaviour)
  */
 
-import { stdin, stdout, stderr, env } from 'node:process';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { argv, stdin, stdout, stderr, env, exit } from 'node:process';
 
 const SESSION_ID = env.FAKE_VELA_SESSION_ID || 'fake-vela-session-1';
 const ASSISTANT_TEXT = env.FAKE_VELA_TEXT || 'Hello from fake vela.';
@@ -176,3 +198,54 @@ stdin.on('end', () => {
   // fires promptly and the chat run can finalize.
   process.exit(0);
 });
+
+// `vela login`: the daemon's /api/integrations/vela/login route spawns this
+// without expecting any ACP traffic. Real vela goes through a device-auth
+// loop and writes ~/.vela/config.json on success; the stub skips the loop
+// and just writes the file so Open Design's status reader and AmrLoginPill
+// poller see the same on-disk projection production produces. Note: this
+// branch is checked BEFORE the ACP setup above (the export at the top of
+// the file installs stdin handlers eagerly), so we always exit early here
+// instead of also opening the ACP stdio bridge.
+function loginAndExit() {
+  const profile = (env.VELA_PROFILE || 'prod').trim() || 'prod';
+  const allowed = new Set(['prod', 'test', 'local']);
+  if (!allowed.has(profile)) {
+    stderr.write(`[fake-vela] unknown profile ${profile}; defaulting to prod\n`);
+  }
+  const profileName = allowed.has(profile) ? profile : 'prod';
+  const delayMs = Number(env.FAKE_VELA_LOGIN_DELAY_MS) || 0;
+  const userEmail = env.FAKE_VELA_LOGIN_USER_EMAIL || 'fake-user@example.com';
+  const userPlan = env.FAKE_VELA_LOGIN_USER_PLAN || 'free';
+  const finish = () => {
+    const file = join(homedir(), '.vela', 'config.json');
+    mkdirSync(dirname(file), { recursive: true });
+    const payload = {
+      profiles: {
+        [profileName]: {
+          controlKey: 'fake-control-key-0000000000000000000000',
+          runtimeKey: 'fake-runtime-key-0000000000000000000000',
+          apiUrl:
+            profileName === 'local' ? 'http://localhost:18080' : '',
+          linkUrl:
+            profileName === 'local' ? 'http://localhost:18081' : '',
+          user: {
+            id: 'fake-user-id',
+            email: userEmail,
+            name: 'Fake User',
+            plan: userPlan,
+          },
+        },
+      },
+    };
+    writeFileSync(file, JSON.stringify(payload, null, 2), 'utf8');
+    stdout.write(`Login successful for ${userEmail}.\n`);
+    exit(0);
+  };
+  if (delayMs > 0) setTimeout(finish, delayMs);
+  else finish();
+}
+
+if (argv[2] === 'login') {
+  loginAndExit();
+}
