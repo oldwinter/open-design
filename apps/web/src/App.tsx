@@ -322,19 +322,18 @@ export function App() {
   // Gate the privacy banner on three things:
   //   1. Daemon config has hydrated (privacyDecisionAt is daemon-owned).
   //   2. The user has not yet made a privacy decision.
-  //   3. Onboarding is complete AND the user is on a home view.
-  // (3) covers both onboarding paths: Skip lands on home directly, finish
-  // routes through a project view first and the banner waits for the user
-  // to return to home. Existing users (onboardingCompleted=true from any
-  // prior session) get the banner the moment they land on home. Settings
-  // has no influence on visibility; the banner sits above the modal-backdrop
-  // layer in index.css so opening Settings does not hide it.
-  const onHomeRoute = route.kind === 'home';
+  //   3. Onboarding is complete (Skip and design-system creation both flip
+  //      onboardingCompleted to true; see handleCompleteOnboarding wiring).
+  // Once onboarding is done the banner is allowed on any route — including
+  // the project view the design-system finish path drops the user into, so
+  // they can read and acknowledge the disclosure while the first generation
+  // is running. Settings is irrelevant to visibility; the banner sits above
+  // the modal-backdrop layer in index.css so opening Settings does not hide
+  // it.
   const showPrivacyConsent =
     daemonConfigLoaded &&
     config.privacyDecisionAt == null &&
-    config.onboardingCompleted === true &&
-    onHomeRoute;
+    config.onboardingCompleted === true;
   useEffect(() => {
     const body = activeProjectId
       ? { projectId: activeProjectId, fileName: activeFileName }

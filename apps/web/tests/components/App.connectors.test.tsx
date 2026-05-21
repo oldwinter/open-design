@@ -316,11 +316,12 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('withholds the privacy banner outside the home route', async () => {
-    // After completing onboarding via the design-system step the user
-    // routes into a project view. The banner must wait until they return
-    // to a home view — otherwise the disclosure surfaces over an open
-    // project, which the product flow rejects.
+  it('shows the privacy banner on non-home routes once onboarding completes', async () => {
+    // The design-system finish path drops the user into a project view
+    // (the first generation runs there). Product wants the disclosure to
+    // appear in that view too — the user is already waiting for output,
+    // so there is no benefit to delaying the banner until they navigate
+    // back to home.
     useRouteMock.mockReturnValue({
       kind: 'project',
       projectId: 'proj-1',
@@ -332,10 +333,7 @@ describe('App connectors settings flows', () => {
       const { container } = render(<App />);
 
       await waitFor(() => {
-        expect(mockedFetchDaemonConfig).toHaveBeenCalled();
-      });
-      await waitFor(() => {
-        expect(container.querySelector('.privacy-consent-banner')).toBeNull();
+        expect(container.querySelector('.privacy-consent-banner')).toBeTruthy();
       });
     } finally {
       useRouteMock.mockReturnValue({
