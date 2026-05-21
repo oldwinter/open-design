@@ -1,10 +1,7 @@
 ---
 /*
- * /templates/<slug>/ — detail page for Live Artifact templates.
- *
- * Skill-mode templates are listed on `/templates/` but link straight
- * to `/skills/<slug>/`, so this page only generates routes for the
- * Live Artifact bundles under `templates/live-artifacts/`.
+ * /templates/<slug>/ — detail page for renderable design templates and
+ * legacy Live Artifact template bundles.
  */
 import Layout from '../../_components/sub-page-layout.astro';
 import LazyImg from '../../_components/lazy-img.astro';
@@ -13,12 +10,10 @@ import { getLandingUiCopy, localeFromPath, localizedHref } from '../../i18n';
 
 export async function getStaticPaths() {
   const records = await getTemplateRecords();
-  return records
-    .filter((t) => t.origin === 'live-artifact')
-    .map((template) => ({
-      params: { slug: template.slug },
-      props: { template },
-    }));
+  return records.map((template) => ({
+    params: { slug: template.slug },
+    props: { template },
+  }));
 }
 
 interface Props {
@@ -35,6 +30,23 @@ const template =
 
 const title = ui.catalog.templates.detailTitle(template.name);
 const description = template.summary;
+const originLabel =
+  template.origin === 'live-artifact'
+    ? ui.catalog.templates.liveArtifact
+    : ui.catalog.templates.skillTemplate;
+const files =
+  template.origin === 'live-artifact'
+    ? [
+        ['template.html', ui.catalog.templates.renderer],
+        ['data.json', ui.catalog.templates.seedData],
+        ['README.md', ui.catalog.templates.readme],
+      ]
+    : [
+        ['SKILL.md', ui.catalog.skills.detailLabel],
+        ['example.html', ui.catalog.templates.previewCaption],
+        ['assets/', ui.catalog.templates.detailLabel],
+        ['references/', ui.catalog.craft.detailLabel],
+      ];
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -60,10 +72,32 @@ const jsonLd = {
     <header class="detail-head">
       <span class="label">
         {ui.catalog.templates.detailLabel}
-        <span class="ix">· {ui.catalog.templates.liveArtifact}</span>
+        <span class="ix">· {originLabel}</span>
       </span>
       <h1 class="display">{template.name}<span class="dot">.</span></h1>
       <p class="lead">{template.summary}</p>
+      {(template.mode || template.platform || template.scenario) && (
+        <dl class="detail-meta">
+          {template.mode && (
+            <>
+              <dt>{ui.catalog.skills.mode}</dt>
+              <dd>{template.modeLabel ?? template.mode}</dd>
+            </>
+          )}
+          {template.platform && (
+            <>
+              <dt>{ui.catalog.skills.platform}</dt>
+              <dd>{template.platformLabel ?? template.platform}</dd>
+            </>
+          )}
+          {template.scenario && (
+            <>
+              <dt>{ui.catalog.skills.scenario}</dt>
+              <dd>{template.scenarioLabel ?? template.scenario}</dd>
+            </>
+          )}
+        </dl>
+      )}
       <div class="detail-actions">
         <a class="btn btn-primary" href={template.source} target="_blank" rel="noopener">
           {ui.catalog.templates.forkOnGithub}
@@ -88,9 +122,9 @@ const jsonLd = {
         {ui.catalog.templates.whatsInsideLead}
       </p>
       <ul class="trigger-list">
-        <li><code>template.html</code> — {ui.catalog.templates.renderer}</li>
-        <li><code>data.json</code> — {ui.catalog.templates.seedData}</li>
-        <li><code>README.md</code> — {ui.catalog.templates.readme}</li>
+        {files.map(([name, copy]) => (
+          <li><code>{name}</code> — {copy}</li>
+        ))}
       </ul>
     </section>
   </article>

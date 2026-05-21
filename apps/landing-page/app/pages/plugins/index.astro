@@ -145,9 +145,10 @@ const trustLabel = (plugin: (typeof plugins)[number]) =>
     </div>
 
     <div class='shell plugin-shell'>
-      <Topbar github={github} locale={locale} />
-
-      <Fragment set:html={headerHtml} />
+      <div class='site-chrome' data-chrome-headroom>
+        <Topbar github={github} locale={locale} />
+        <Fragment set:html={headerHtml} />
+      </div>
 
       <main id='top' class='plugin-directory'>
         <section class='plugin-hero'>

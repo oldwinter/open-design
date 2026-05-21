@@ -450,6 +450,148 @@ const compactId = (value: string) =>
     .replace(/^image-template-/, '')
     .replace(/^od-/, 'od-');
 
+const BLOG_TOPIC_TITLES: Record<string, Partial<Record<Exclude<LandingLocaleCode, 'en'>, string>>> = {
+  '31-skills-72-systems-how-the-library-works': {
+    zh: '31 个 Skill 与 72 个系统的资料库运作方式',
+    'zh-tw': '31 個 Skill 與 72 個系統的資料庫運作方式',
+    ja: '31個のSkillと72個のシステムのライブラリ構造',
+    ko: '31개 Skill과 72개 시스템 라이브러리의 작동 방식',
+    de: 'wie die Bibliothek mit 31 Skills und 72 Systemen funktioniert',
+    fr: 'le fonctionnement de la bibliothèque de 31 skills et 72 systèmes',
+    ru: 'как работает библиотека из 31 навыка и 72 систем',
+    es: 'cómo funciona la biblioteca de 31 skills y 72 sistemas',
+    'pt-br': 'como funciona a biblioteca de 31 skills e 72 sistemas',
+    it: 'come funziona la libreria con 31 skill e 72 sistemi',
+    vi: 'cách vận hành thư viện 31 skill và 72 hệ thống',
+    pl: 'jak działa biblioteka 31 skill i 72 systemów',
+    id: 'cara kerja pustaka 31 skill dan 72 sistem',
+    nl: 'hoe de bibliotheek met 31 skills en 72 systemen werkt',
+    ar: 'طريقة عمل مكتبة تضم 31 مهارة و72 نظاما',
+    tr: '31 skill ve 72 sistemden oluşan kitaplığın çalışma biçimi',
+    uk: 'як працює бібліотека з 31 навички та 72 систем',
+  },
+  'byok-design-workflow-claude-codex-qwen': {
+    zh: '面向 Claude、Codex 与 Qwen 的 BYOK 设计工作流',
+    'zh-tw': '面向 Claude、Codex 與 Qwen 的 BYOK 設計工作流',
+    ja: 'Claude、Codex、Qwen向けBYOKデザインワークフロー',
+    ko: 'Claude, Codex, Qwen을 위한 BYOK 디자인 워크플로',
+    de: 'BYOK-Designworkflow für Claude, Codex und Qwen',
+    fr: 'workflow de design BYOK pour Claude, Codex et Qwen',
+    ru: 'BYOK-дизайн-процесс для Claude, Codex и Qwen',
+    es: 'flujo de diseño BYOK para Claude, Codex y Qwen',
+    'pt-br': 'fluxo de design BYOK para Claude, Codex e Qwen',
+    it: 'workflow di design BYOK per Claude, Codex e Qwen',
+    vi: 'quy trình thiết kế BYOK cho Claude, Codex và Qwen',
+    pl: 'workflow projektowy BYOK dla Claude, Codex i Qwen',
+    id: 'alur desain BYOK untuk Claude, Codex, dan Qwen',
+    nl: 'BYOK-designworkflow voor Claude, Codex en Qwen',
+    ar: 'سير عمل تصميم BYOK مع Claude وCodex وQwen',
+    tr: 'Claude, Codex ve Qwen için BYOK tasarım akışı',
+    uk: 'BYOK дизайн-процес для Claude, Codex і Qwen',
+  },
+  'byok-reality-check-5-things-that-break': {
+    zh: 'BYOK 现实检查：5 个容易断裂的环节',
+    'zh-tw': 'BYOK 現實檢查：5 個容易斷裂的環節',
+    ja: 'BYOKの現実チェック: 壊れやすい5つの点',
+    ko: 'BYOK 현실 점검: 깨지기 쉬운 5가지 지점',
+    de: 'BYOK-Realitätscheck: fünf Dinge, die brechen',
+    fr: 'réalité BYOK : cinq points qui cassent',
+    ru: 'проверка BYOK на практике: пять слабых мест',
+    es: 'revisión realista de BYOK: cinco puntos que fallan',
+    'pt-br': 'checagem realista do BYOK: cinco pontos que quebram',
+    it: 'reality check BYOK: cinque punti che si rompono',
+    vi: 'kiểm tra thực tế BYOK: 5 điểm dễ hỏng',
+    pl: 'sprawdzenie BYOK w praktyce: pięć miejsc awarii',
+    id: 'cek realitas BYOK: lima hal yang mudah rusak',
+    nl: 'BYOK-realiteitscheck: vijf dingen die breken',
+    ar: 'اختبار واقعي ل BYOK: خمسة مواضع تتعطل',
+    tr: 'BYOK gerçeklik kontrolü: bozulan beş nokta',
+    uk: 'реалістична перевірка BYOK: пʼять місць, які ламаються',
+  },
+  'layout-layer-canvas-used-to-hide': {
+    zh: '过去被画布隐藏的布局层',
+    'zh-tw': '過去被畫布隱藏的版面層',
+    ja: 'キャンバスが隠していたレイアウト層',
+    ko: '캔버스가 숨겨 왔던 레이아웃 계층',
+    de: 'die Layoutschicht, die Canvas früher verborgen hat',
+    fr: 'la couche de mise en page que le canvas cachait',
+    ru: 'слой макета, который раньше скрывал canvas',
+    es: 'la capa de layout que antes ocultaba el canvas',
+    'pt-br': 'a camada de layout que o canvas escondia',
+    it: 'il livello di layout che il canvas nascondeva',
+    vi: 'lớp bố cục từng bị canvas che khuất',
+    pl: 'warstwa layoutu, którą dawniej ukrywał canvas',
+    id: 'lapisan layout yang dulu disembunyikan kanvas',
+    nl: 'de layoutlaag die canvas vroeger verborg',
+    ar: 'طبقة التخطيط التي كان canvas يخفيها',
+    tr: 'canvasın eskiden sakladığı yerleşim katmanı',
+    uk: 'шар макета, який раніше приховував canvas',
+  },
+  'open-source-alternative-to-claude-design': {
+    zh: 'Claude Design 的开源替代方案',
+    'zh-tw': 'Claude Design 的開源替代方案',
+    ja: 'Claude Designのオープンソース代替',
+    ko: 'Claude Design의 오픈소스 대안',
+    de: 'Open-Source-Alternative zu Claude Design',
+    fr: 'alternative open source à Claude Design',
+    ru: 'open-source альтернатива Claude Design',
+    es: 'alternativa open source a Claude Design',
+    'pt-br': 'alternativa open source ao Claude Design',
+    it: 'alternativa open source a Claude Design',
+    vi: 'giải pháp mã nguồn mở thay cho Claude Design',
+    pl: 'open source alternatywa dla Claude Design',
+    id: 'alternatif open source untuk Claude Design',
+    nl: 'open-source alternatief voor Claude Design',
+    ar: 'بديل مفتوح المصدر ل Claude Design',
+    tr: 'Claude Design için açık kaynak alternatif',
+    uk: 'open-source альтернатива Claude Design',
+  },
+  'port-figma-workflow-open-design-plugin': {
+    zh: '把 Figma 工作流迁移成 Open Design 插件',
+    'zh-tw': '把 Figma 工作流遷移成 Open Design 外掛',
+    ja: 'FigmaワークフローをOpen Designプラグインへ移植する',
+    ko: 'Figma 워크플로를 Open Design 플러그인으로 옮기기',
+    de: 'Figma-Workflows als Open-Design-Plugin portieren',
+    fr: 'porter un workflow Figma en plugin Open Design',
+    ru: 'перенос Figma-процесса в плагин Open Design',
+    es: 'llevar un flujo de Figma a un plugin de Open Design',
+    'pt-br': 'migrar um fluxo do Figma para um plugin Open Design',
+    it: 'portare un workflow Figma in un plugin Open Design',
+    vi: 'chuyển quy trình Figma thành plugin Open Design',
+    pl: 'przenoszenie workflow Figma do pluginu Open Design',
+    id: 'memindahkan alur Figma menjadi plugin Open Design',
+    nl: 'een Figma-workflow omzetten naar een Open Design-plugin',
+    ar: 'نقل سير عمل Figma إلى إضافة Open Design',
+    tr: 'Figma akışını Open Design eklentisine taşıma',
+    uk: 'перенесення Figma-процесу в плагін Open Design',
+  },
+  'why-we-built-open-design-as-a-skill-layer': {
+    zh: '为什么把 Open Design 做成 Skill 层',
+    'zh-tw': '為什麼把 Open Design 做成 Skill 層',
+    ja: 'Open DesignをSkillレイヤーとして作った理由',
+    ko: 'Open Design을 Skill 레이어로 만든 이유',
+    de: 'warum Open Design als Skill-Schicht gebaut wurde',
+    fr: 'pourquoi Open Design est une couche de skills',
+    ru: 'почему Open Design построен как слой навыков',
+    es: 'por qué Open Design se construyó como capa de skills',
+    'pt-br': 'por que o Open Design foi criado como camada de skills',
+    it: 'perché Open Design è stato costruito come livello di skill',
+    vi: 'vì sao Open Design được xây như một lớp skill',
+    pl: 'dlaczego Open Design powstał jako warstwa skill',
+    id: 'mengapa Open Design dibangun sebagai lapisan skill',
+    nl: 'waarom Open Design als skill-laag is gebouwd',
+    ar: 'لماذا بنينا Open Design كطبقة مهارات',
+    tr: 'Open Design neden bir skill katmanı olarak kuruldu',
+    uk: 'чому Open Design створено як шар навичок',
+  },
+};
+
+const localizedBlogTopic = (id: string, locale: LandingLocaleCode) => {
+  const compact = compactId(id);
+  if (locale === DEFAULT_LOCALE) return compact.replace(/-/g, ' ');
+  return BLOG_TOPIC_TITLES[compact]?.[locale] ?? compact.replace(/-/g, ' ');
+};
+
 export function explicitLocalizedString(
   value: LocalizedStringValue,
   locale: LandingLocaleCode,
@@ -618,7 +760,7 @@ export function localizeBlogPostText(args: {
       bodyHtml: undefined,
     };
   }
-  const topic = compactId(args.id).replace(/-/g, ' ');
+  const topic = localizedBlogTopic(args.id, args.locale);
   const title = copy.blogTitle(topic);
   const summary = copy.blogSummary(topic);
   return {
@@ -628,4 +770,3 @@ export function localizeBlogPostText(args: {
     bodyHtml: copy.blogBody(topic, summary),
   };
 }
-

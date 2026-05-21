@@ -34,9 +34,18 @@ import {
 // a `previewUrl` (or `null` when the underlying skill has no `example.html`).
 // ---------------------------------------------------------------------------
 
-const PREVIEWS_ROOT = path.resolve(
-  fileURLToPath(new URL('../../public/previews', import.meta.url)),
-);
+const PREVIEWS_ROOT_CANDIDATES = [
+  // `pnpm --filter @open-design/landing-page build` may keep cwd at the
+  // workspace root, while direct package scripts run from the app root.
+  path.resolve(process.cwd(), 'apps/landing-page/public/previews'),
+  path.resolve(process.cwd(), 'public/previews'),
+  // Keep the source-relative path as a final fallback for local dev.
+  path.resolve(fileURLToPath(new URL('../../public/previews', import.meta.url))),
+] as const;
+
+function previewRoot(): string | null {
+  return PREVIEWS_ROOT_CANDIDATES.find((dir) => existsSync(dir)) ?? null;
+}
 
 /**
  * Map of `slug → filename`, e.g. `'kami-deck' → 'kami-deck.webp'`.
@@ -49,7 +58,9 @@ const PREVIEWS_ROOT = path.resolve(
  * template asset).
  */
 function listPreviews(bucket: 'skills' | 'systems' | 'templates'): Map<string, string> {
-  const dir = path.join(PREVIEWS_ROOT, bucket);
+  const root = previewRoot();
+  if (!root) return new Map();
+  const dir = path.join(root, bucket);
   if (!existsSync(dir)) return new Map();
   const map = new Map<string, string>();
   for (const file of readdirSync(dir)) {
@@ -491,14 +502,21 @@ export async function getCraftRecords(
 }
 
 // ---------------------------------------------------------------------------
-// Templates — Live Artifacts + skills with `mode: template`
+// Templates — renderable design templates + legacy Live Artifacts
 // ---------------------------------------------------------------------------
 
 export interface TemplateRecord {
   slug: string;
   name: string;
   summary: string;
-  origin: 'live-artifact' | 'skill';
+  origin: 'design-template' | 'live-artifact';
+  mode?: string;
+  modeLabel?: string;
+  platform?: string;
+  platformLabel?: string;
+  scenario?: string;
+  scenarioLabel?: string;
+  featured?: number;
   source: string;
   detailHref: string;
   /** Skill body / template README body (Markdown). */
@@ -507,6 +525,61 @@ export interface TemplateRecord {
 }
 
 export type TemplateEntry = CollectionEntry<'templates'>;
+export type DesignTemplateEntry = CollectionEntry<'designTemplates'>;
+
+export function shapeDesignTemplate(
+  entry: DesignTemplateEntry,
+  previews: Map<string, string>,
+  locale: LandingLocaleCode = DEFAULT_LOCALE,
+): TemplateRecord {
+  const slug = deriveSkillSlug(entry.id);
+  const data = entry.data as {
+    name?: LocalizedStringValue;
+    description?: LocalizedStringValue;
+    i18n?: Record<string, {
+      name?: string;
+      description?: string;
+      summary?: string;
+    }>;
+    od?: {
+      mode?: string;
+      platform?: string;
+      scenario?: string;
+      featured?: number;
+    };
+  };
+  const body = entry.body ?? '';
+  const localized = data.i18n?.[locale];
+  const name =
+    explicitLocalizedString(localized?.name ?? data.name, locale) ?? titleizeSlug(slug);
+  const summary =
+    explicitLocalizedString(
+      localized?.summary ?? localized?.description ?? data.description,
+      locale,
+    ) ||
+    firstParagraph(explicitLocalizedString(data.description, DEFAULT_LOCALE)) ||
+    extractFirstProseParagraph(body) ||
+    'Open Design renderable design template.';
+  const localizedText = localizeTemplateText({ name, summary, locale });
+
+  return {
+    slug,
+    name: localizedText.name,
+    summary: localizedText.summary,
+    origin: 'design-template',
+    mode: data.od?.mode,
+    modeLabel: localizeTaxonomyValue(data.od?.mode, locale),
+    platform: data.od?.platform,
+    platformLabel: localizeTaxonomyValue(data.od?.platform, locale),
+    scenario: data.od?.scenario,
+    scenarioLabel: localizeTaxonomyValue(data.od?.scenario, locale),
+    featured: data.od?.featured,
+    source: `${REPO_TREE}/design-templates/${slug}`,
+    detailHref: `/templates/${slug}/`,
+    body,
+    previewUrl: previewUrlFor('templates', slug, previews),
+  };
+}
 
 export function shapeLiveArtifactTemplate(
   entry: TemplateEntry,
@@ -546,6 +619,10 @@ export function shapeLiveArtifactTemplate(
     name: localizedText.name,
     summary: localizedText.summary,
     origin: 'live-artifact',
+    mode: 'template',
+    modeLabel: localizeTaxonomyValue('template', locale),
+    scenario: 'live-artifacts',
+    scenarioLabel: localizeTaxonomyValue('live-artifacts', locale),
     source: `${REPO_TREE}/templates/live-artifacts/${slug}`,
     detailHref: `/templates/${liveSlug}/`,
     body,
@@ -557,30 +634,26 @@ export async function getTemplateRecords(
   locale: LandingLocaleCode = DEFAULT_LOCALE,
 ): Promise<ReadonlyArray<TemplateRecord>> {
   const previews = listPreviews('templates');
+  const designEntries = await getCollection('designTemplates');
+  const designRecords = designEntries.map((entry) =>
+    shapeDesignTemplate(entry, previews, locale),
+  );
+
   const liveEntries = await getCollection('templates');
   const liveRecords = liveEntries.map((entry) =>
     shapeLiveArtifactTemplate(entry, previews, locale),
   );
 
-  const skillRecords = await getSkillRecords(locale);
-  const skillTemplates: TemplateRecord[] = skillRecords
-    .filter((s) => s.mode === 'template')
-    .map((s) => ({
-      slug: `skill-${s.slug}`,
-      name: s.name,
-      summary: firstParagraph(s.description),
-      origin: 'skill' as const,
-      source: s.source,
-      detailHref: `/skills/${s.slug}/`,
-      body: s.body,
-      // Templates render skill-mode skill thumbnails reusing the
-      // /previews/skills/ tree (no separate render).
-      previewUrl: s.previewUrl,
-    }));
+  return [...designRecords, ...liveRecords].sort((a, b) => {
+    // Keep explicitly featured templates first, then group the canonical
+    // design-template catalogue ahead of legacy live-artifact shims.
+    const af = a.featured ?? Number.POSITIVE_INFINITY;
+    const bf = b.featured ?? Number.POSITIVE_INFINITY;
+    if (af !== bf) return af - bf;
+    if (a.origin !== b.origin) return a.origin === 'design-template' ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
 
-  return [...liveRecords, ...skillTemplates].sort((a, b) =>
-    a.name.localeCompare(b.name),
-  );
 }
 
 // ---------------------------------------------------------------------------

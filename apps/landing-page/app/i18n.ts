@@ -172,6 +172,17 @@ export interface HeaderCopy {
   starPrefix: string;
 }
 
+export interface HeaderProductMenuCopy {
+  toggleNavigationMenu: string;
+  product: string;
+  openDesignName: string;
+  openDesignBlurb: string;
+  htmlAnythingName: string;
+  htmlAnythingBlurb: string;
+  tutorialsName: string;
+  tutorialsBlurb: string;
+}
+
 export interface CommonCopy {
   topbar: {
     issue?: string;
@@ -184,6 +195,189 @@ export interface CommonCopy {
   };
   header: HeaderCopy;
 }
+
+const HEADER_PRODUCT_MENU_COPY: Record<LandingLocaleCode, HeaderProductMenuCopy> = {
+  en: {
+    toggleNavigationMenu: 'Toggle navigation menu',
+    product: 'Product',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'The agentic design surface: skills, systems, templates.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / data to ship-ready HTML, by your local agent.',
+    tutorialsName: 'Tutorials',
+    tutorialsBlurb: 'Video walkthroughs, demos, and community reviews.',
+  },
+  zh: {
+    toggleNavigationMenu: '切换导航菜单',
+    product: '产品',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent 原生设计工作台：Skill、设计系统、模板。',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / 数据变成可交付 HTML，由本地 Agent 完成。',
+    tutorialsName: '教程',
+    tutorialsBlurb: '视频上手、演示与社区评测。',
+  },
+  'zh-tw': {
+    toggleNavigationMenu: '切換導覽選單',
+    product: '產品',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent 原生設計工作台：Skill、設計系統、模板。',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / 資料變成可交付 HTML，由本地 Agent 完成。',
+    tutorialsName: '教學',
+    tutorialsBlurb: '影片上手、演示與社群評測。',
+  },
+  ja: {
+    toggleNavigationMenu: 'ナビゲーションメニューを切り替え',
+    product: 'プロダクト',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent ネイティブのデザイン面: Skill、システム、テンプレート。',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / データをローカル Agent で納品可能な HTML へ。',
+    tutorialsName: 'チュートリアル',
+    tutorialsBlurb: '動画ガイド、デモ、コミュニティレビュー。',
+  },
+  ko: {
+    toggleNavigationMenu: '내비게이션 메뉴 전환',
+    product: '제품',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent 네이티브 디자인 작업면: Skill, 시스템, 템플릿.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / 데이터를 로컬 Agent로 배포 가능한 HTML로 변환.',
+    tutorialsName: '튜토리얼',
+    tutorialsBlurb: '영상 가이드, 데모, 커뮤니티 리뷰.',
+  },
+  de: {
+    toggleNavigationMenu: 'Navigationsmenu umschalten',
+    product: 'Produkt',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agentische Designoberfläche: Skills, Systeme, Vorlagen.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / Daten werden durch deinen lokalen Agent zu fertigem HTML.',
+    tutorialsName: 'Tutorials',
+    tutorialsBlurb: 'Videoanleitungen, Demos und Community-Reviews.',
+  },
+  fr: {
+    toggleNavigationMenu: 'Basculer le menu de navigation',
+    product: 'Produit',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Surface de design agentique : skills, systèmes, modèles.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / données vers du HTML prêt à livrer via votre agent local.',
+    tutorialsName: 'Tutoriels',
+    tutorialsBlurb: 'Guides vidéo, démos et avis de la communauté.',
+  },
+  ru: {
+    toggleNavigationMenu: 'Переключить меню навигации',
+    product: 'Продукт',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent-native дизайн-среда: skills, системы, шаблоны.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / данные в готовый HTML через локального Agent.',
+    tutorialsName: 'Руководства',
+    tutorialsBlurb: 'Видеоразборы, демо и обзоры сообщества.',
+  },
+  es: {
+    toggleNavigationMenu: 'Alternar menú de navegación',
+    product: 'Producto',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Superficie de diseño agentic: skills, sistemas, plantillas.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / datos a HTML listo para entregar con tu Agent local.',
+    tutorialsName: 'Tutoriales',
+    tutorialsBlurb: 'Guías en video, demos y reseñas de la comunidad.',
+  },
+  'pt-br': {
+    toggleNavigationMenu: 'Alternar menu de navegação',
+    product: 'Produto',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Superfície de design agentic: skills, sistemas, templates.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / dados viram HTML pronto com seu Agent local.',
+    tutorialsName: 'Tutoriais',
+    tutorialsBlurb: 'Guias em vídeo, demos e avaliações da comunidade.',
+  },
+  it: {
+    toggleNavigationMenu: 'Apri o chiudi il menu di navigazione',
+    product: 'Prodotto',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Superficie di design agentic: skill, sistemi, template.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / dati in HTML pronto alla consegna con il tuo Agent locale.',
+    tutorialsName: 'Tutorial',
+    tutorialsBlurb: 'Guide video, demo e recensioni della community.',
+  },
+  vi: {
+    toggleNavigationMenu: 'Chuyển menu điều hướng',
+    product: 'Sản phẩm',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Bề mặt thiết kế agentic: skill, hệ thống, mẫu.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / dữ liệu thành HTML sẵn sàng giao bằng Agent cục bộ.',
+    tutorialsName: 'Hướng dẫn',
+    tutorialsBlurb: 'Video hướng dẫn, demo và đánh giá cộng đồng.',
+  },
+  pl: {
+    toggleNavigationMenu: 'Przełącz menu nawigacji',
+    product: 'Produkt',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agentic powierzchnia projektowa: skills, systemy, szablony.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / dane do gotowego HTML przez lokalnego Agent.',
+    tutorialsName: 'Poradniki',
+    tutorialsBlurb: 'Wideo, dema i recenzje społeczności.',
+  },
+  id: {
+    toggleNavigationMenu: 'Alihkan menu navigasi',
+    product: 'Produk',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Ruang desain agentic: skill, sistem, template.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / data menjadi HTML siap kirim lewat Agent lokal.',
+    tutorialsName: 'Tutorial',
+    tutorialsBlurb: 'Panduan video, demo, dan ulasan komunitas.',
+  },
+  nl: {
+    toggleNavigationMenu: 'Navigatiemenu wisselen',
+    product: 'Product',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agentic designoppervlak: skills, systemen, templates.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / data naar opleverklare HTML via je lokale Agent.',
+    tutorialsName: 'Tutorials',
+    tutorialsBlurb: 'Videogidsen, demo’s en communityreviews.',
+  },
+  ar: {
+    toggleNavigationMenu: 'تبديل قائمة التنقل',
+    product: 'المنتج',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'مساحة تصميم وكيلة: المهارات والأنظمة والقوالب.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / البيانات إلى HTML جاهز عبر Agent المحلي.',
+    tutorialsName: 'الدروس',
+    tutorialsBlurb: 'شروحات فيديو وعروض وتجارب من المجتمع.',
+  },
+  tr: {
+    toggleNavigationMenu: 'Gezinme menüsünü aç/kapat',
+    product: 'Ürün',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agentic tasarım yüzeyi: skill, sistemler, şablonlar.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / veriler yerel Agent ile teslim edilebilir HTML olur.',
+    tutorialsName: 'Eğitimler',
+    tutorialsBlurb: 'Video anlatımlar, demolar ve topluluk incelemeleri.',
+  },
+  uk: {
+    toggleNavigationMenu: 'Перемкнути меню навігації',
+    product: 'Продукт',
+    openDesignName: 'Open Design',
+    openDesignBlurb: 'Agent-native дизайн-поверхня: skills, системи, шаблони.',
+    htmlAnythingName: 'HTML Anything',
+    htmlAnythingBlurb: 'Markdown / дані у готовий HTML через локального Agent.',
+    tutorialsName: 'Навчальні матеріали',
+    tutorialsBlurb: 'Відеоінструкції, демо та огляди спільноти.',
+  },
+};
 
 export interface HomeSeoCopy {
   title: string;
@@ -538,6 +732,35 @@ export interface LandingUiCopy {
       repoBody: string;
       repoLabel: string;
     };
+  };
+  tutorials: {
+    title: string;
+    seoTitle: string;
+    description: string;
+    categoriesLabel: string;
+    categories: {
+      all: string;
+      gettingStarted: string;
+      tutorial: string;
+      demo: string;
+      review: string;
+      community: string;
+    };
+    official: string;
+    watch: string;
+    watchCta: string;
+    watchOnYouTube: string;
+    openOnYouTube: string;
+    backToTutorials: string;
+    viewSource: string;
+    noEntries: string;
+    suggestVideo: string;
+    noCategory: string;
+    thumbnailAlt: (title: string) => string;
+    detailTitle: (title: string) => string;
+    localizedTitle: (title: string, author: string) => string;
+    localizedSummary: (title: string, author: string, category: string) => string;
+    localizedBodyHtml: (title: string, author: string, summary: string) => string;
   };
   catalog: {
     breadcrumbLabel: string;
@@ -2737,6 +2960,36 @@ const LANDING_UI_COPY: LandingUiCopy = {
       repoLabel: 'Open repository ↗',
     },
   },
+  tutorials: {
+    title: 'Tutorials',
+    seoTitle: 'Tutorials — Open Design',
+    description:
+      'Watch Open Design from the inside — getting-started walkthroughs, plugin tutorials, demos, and community deep-dives, curated from YouTube and embedded for in-page playback.',
+    categoriesLabel: 'Tutorial categories',
+    categories: {
+      all: 'All',
+      gettingStarted: 'Getting started',
+      tutorial: 'Tutorials',
+      demo: 'Demos',
+      review: 'Reviews',
+      community: 'Community',
+    },
+    official: 'Official',
+    watch: 'Watch',
+    watchCta: 'Watch →',
+    watchOnYouTube: 'Watch on YouTube ↗',
+    openOnYouTube: 'Open on YouTube ↗',
+    backToTutorials: '← Back to Tutorials',
+    viewSource: 'View source on GitHub ↗',
+    noEntries: "No tutorials yet. We're curating the first batch — check back soon, or",
+    suggestVideo: 'suggest a video',
+    noCategory: 'No tutorials in this category yet. More are on the way.',
+    thumbnailAlt: (title) => `Thumbnail for ${title}`,
+    detailTitle: (title) => `${title} — Open Design Tutorials`,
+    localizedTitle: (title) => title,
+    localizedSummary: (_title, _author, summary) => summary,
+    localizedBodyHtml: (_title, _author, summary) => `<p>${summary}</p>`,
+  },
   catalog: {
     breadcrumbLabel: 'Breadcrumb',
     skills: {
@@ -2825,7 +3078,7 @@ const LANDING_UI_COPY: LandingUiCopy = {
       previewCaption: "Rendered from the template's seed data.",
       whatsInside: "What's in this template",
       whatsInsideLead:
-        'Live Artifact templates ship as a folder you can copy verbatim into your workspace. They include a template.html renderer, a data.json with the seed values, and a README describing the connector wiring.',
+        'Templates ship as forkable folders. Depending on origin, they include SKILL.md instructions, a preview example, or a template.html/data.json renderer with README notes.',
       renderer: 'the artifact renderer',
       seedData: 'seed values for offline / preview rendering',
       readme: 'connector wiring, refresh cadence, customization notes',
@@ -2986,6 +3239,38 @@ const LANDING_UI_COPY_OVERRIDES: Partial<
         repoLabel: '打开仓库 ↗',
       },
     },
+    tutorials: {
+      title: '教程',
+      seoTitle: '教程 — Open Design',
+      description:
+        '观看 Open Design 的上手 walkthrough、插件教程、演示、评测与社区视频。所有视频都在页面内播放，并保留原始 YouTube 来源。',
+      categoriesLabel: '教程分类',
+      categories: {
+        all: '全部',
+        gettingStarted: '入门',
+        tutorial: '教程',
+        demo: '演示',
+        review: '评测',
+        community: '社区',
+      },
+      official: '官方',
+      watch: '观看',
+      watchCta: '观看 →',
+      watchOnYouTube: '在 YouTube 观看 ↗',
+      openOnYouTube: '在 YouTube 打开 ↗',
+      backToTutorials: '← 返回教程',
+      viewSource: '在 GitHub 查看源码 ↗',
+      noEntries: '暂时还没有教程。我们正在整理第一批视频，请稍后再来，或者',
+      suggestVideo: '推荐一个视频',
+      noCategory: '这个分类还没有教程，更多内容正在整理。',
+      thumbnailAlt: (title) => `${title} 的视频封面`,
+      detailTitle: (title) => `${title} — Open Design 教程`,
+      localizedTitle: (_title, author) => `Open Design 教程：${author}`,
+      localizedSummary: (_title, author, category) =>
+        `${author} 通过一段 ${category} 视频讲解 Open Design 的本地优先设计工作流、Skill、设计系统与可复用模板。`,
+      localizedBodyHtml: (_title, author, summary) =>
+        `<p>${summary}</p><h2>本地化摘要</h2><p>这段视频来自 ${author}，围绕 Open Design 的安装、能力演示、设计系统、Skill 和本地 Agent 工作流展开。页面保留原始视频来源，非英文页面使用站内 i18n 摘要，让正文不会回退成英文。</p>`,
+    },
     catalog: {
       skills: {
         title: (count) => `Skill — ${count} 个可组合设计能力 | Open Design`,
@@ -3072,7 +3357,7 @@ const LANDING_UI_COPY_OVERRIDES: Partial<
         previewCaption: '由模板种子数据渲染。',
         whatsInside: '模板包含什么',
         whatsInsideLead:
-          'Live Artifact 模板是一个可以原样复制进工作区的文件夹，包含 template.html 渲染器、带种子值的 data.json，以及描述 connector 接线方式的 README。',
+          '模板是可以 fork 的文件夹，按来源包含 SKILL.md 指令、预览 example，或 template.html / data.json 渲染器与 README 连接说明。',
         renderer: 'Artifact 渲染器',
         seedData: '离线 / 预览渲染的种子值',
         readme: 'connector 接线、刷新节奏和自定义说明',
@@ -3214,6 +3499,38 @@ const LANDING_UI_COPY_OVERRIDES: Partial<
       nextStep: '下一步',
       joinDiscord: '加入 Discord',
       viewSource: '在 GitHub 查看原始碼 ↗',
+    },
+    tutorials: {
+      title: '教學',
+      seoTitle: '教學 — Open Design',
+      description:
+        '觀看 Open Design 的上手 walkthrough、外掛教學、演示、評測與社群影片。所有影片都在頁面內播放，並保留原始 YouTube 來源。',
+      categoriesLabel: '教學分類',
+      categories: {
+        all: '全部',
+        gettingStarted: '入門',
+        tutorial: '教學',
+        demo: '演示',
+        review: '評測',
+        community: '社群',
+      },
+      official: '官方',
+      watch: '觀看',
+      watchCta: '觀看 →',
+      watchOnYouTube: '在 YouTube 觀看 ↗',
+      openOnYouTube: '在 YouTube 開啟 ↗',
+      backToTutorials: '← 返回教學',
+      viewSource: '在 GitHub 查看原始碼 ↗',
+      noEntries: '暫時還沒有教學。我們正在整理第一批影片，請稍後再來，或者',
+      suggestVideo: '推薦一支影片',
+      noCategory: '這個分類還沒有教學，更多內容正在整理。',
+      thumbnailAlt: (title) => `${title} 的影片封面`,
+      detailTitle: (title) => `${title} — Open Design 教學`,
+      localizedTitle: (_title, author) => `Open Design 教學：${author}`,
+      localizedSummary: (_title, author, category) =>
+        `${author} 透過一支 ${category} 影片講解 Open Design 的本地優先設計工作流、Skill、設計系統與可複用模板。`,
+      localizedBodyHtml: (_title, author, summary) =>
+        `<p>${summary}</p><h2>本地化摘要</h2><p>這支影片來自 ${author}，圍繞 Open Design 的安裝、能力演示、設計系統、Skill 與本地 Agent 工作流展開。頁面保留原始影片來源，非英文頁面使用站內 i18n 摘要，避免正文回退成英文。</p>`,
     },
   },
 };
@@ -4887,6 +5204,12 @@ export function getLocaleDefinition(code: LandingLocaleCode): LandingLocale {
 
 export function getCommonCopy(locale: LandingLocaleCode): CommonCopy {
   return COMMON_COPY[locale] ?? COMMON_COPY[DEFAULT_LOCALE];
+}
+
+export function getHeaderProductMenuCopy(
+  locale: LandingLocaleCode,
+): HeaderProductMenuCopy {
+  return HEADER_PRODUCT_MENU_COPY[locale] ?? HEADER_PRODUCT_MENU_COPY[DEFAULT_LOCALE];
 }
 
 export function getLandingUiCopy(locale: LandingLocaleCode): LandingUiCopy {

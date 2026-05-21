@@ -13,6 +13,7 @@
 import {
   DEFAULT_LOCALE,
   getCommonCopy,
+  getHeaderProductMenuCopy,
   localizedHref,
   type HeaderCopy,
   type LandingLocaleCode,
@@ -28,7 +29,16 @@ const ext = {
 
 export interface HeaderProps {
   /** Nav highlight target. `'home'` is the default for `/`. */
-  active?: 'home' | 'skills' | 'systems' | 'templates' | 'craft' | 'blog';
+  active?:
+    | 'home'
+    | 'product'
+    | 'html-anything'
+    | 'skills'
+    | 'systems'
+    | 'templates'
+    | 'craft'
+    | 'blog'
+    | 'tutorials';
   /**
    * Live counts from the Markdown catalogs. Required so we can never
    * silently render stale fallback numbers when a caller forgets to
@@ -67,9 +77,10 @@ export function Header({
   const href = (path: string) => localizedHref(path, locale);
   const homeBrandHref = brandHref === '/' ? href('/') : brandHref;
   const contactHref = brandHref === '#top' ? '#contact' : href('/#contact');
+  const productMenuCopy = getHeaderProductMenuCopy(locale);
 
   return (
-    <header className='nav' data-od-id='nav' data-nav-headroom>
+    <header className='nav' data-od-id='nav'>
       <div className='container nav-inner'>
         <a href={homeBrandHref} className='brand'>
           <span className='brand-mark'>
@@ -81,8 +92,93 @@ export function Header({
             {headerCopy.brandMetaBody}
           </span>
         </a>
-        <nav>
+        {/*
+          Mobile / tablet hamburger. Hidden by CSS at ≥1100px (the desktop
+          breakpoint where the full nav fits). At narrower widths it toggles
+          `.is-open` on the parent <header> via a small handler in
+          `header-enhancer.astro` — when open, the `<nav>` element below
+          drops down underneath the header bar as a vertical list.
+        */}
+        <button
+          type='button'
+          className='nav-toggle'
+          aria-label={productMenuCopy.toggleNavigationMenu}
+          aria-controls='primary-nav'
+          aria-expanded='false'
+          data-nav-toggle
+        >
+          <span className='nav-toggle-icon' aria-hidden='true' />
+        </button>
+        <nav id='primary-nav' data-nav-primary>
           <ul className='nav-links'>
+            <li className='has-dropdown'>
+              {/*
+                Product menu — top-level group exposing the Open Design family.
+                CSS-only dropdown via :hover / :focus-within (no JS), so this
+                still renders correctly under static export with no React
+                runtime on the client. The trigger is a focusable <a> rather
+                than a button so it remains a keyboard tab stop, with
+                aria-haspopup signaling the submenu to assistive tech.
+              */}
+              <a
+                href={href('/')}
+                className={
+                  active === 'product' ||
+                  active === 'home' ||
+                  active === 'html-anything' ||
+                  active === 'tutorials'
+                    ? 'is-active'
+                    : undefined
+                }
+                aria-haspopup='true'
+                aria-expanded='false'
+              >
+                {productMenuCopy.product}
+                <span className='dropdown-caret' aria-hidden='true'>▾</span>
+              </a>
+              <ul className='nav-dropdown' role='menu'>
+                <li role='none'>
+                  <a
+                    role='menuitem'
+                    href={href('/')}
+                    className={
+                      active === 'home' || active === 'product'
+                        ? 'is-active'
+                        : undefined
+                    }
+                  >
+                    <span className='dropdown-name'>{productMenuCopy.openDesignName}</span>
+                    <span className='dropdown-blurb'>
+                      {productMenuCopy.openDesignBlurb}
+                    </span>
+                  </a>
+                </li>
+                <li role='none'>
+                  <a
+                    role='menuitem'
+                    href={href('/html-anything/')}
+                    className={linkClass('html-anything')}
+                  >
+                    <span className='dropdown-name'>{productMenuCopy.htmlAnythingName}</span>
+                    <span className='dropdown-blurb'>
+                      {productMenuCopy.htmlAnythingBlurb}
+                    </span>
+                  </a>
+                </li>
+                <li role='none'>
+                  <a
+                    role='menuitem'
+                    href={href('/tutorials/')}
+                    className={linkClass('tutorials')}
+                  >
+                    <span className='dropdown-name'>{productMenuCopy.tutorialsName}</span>
+                    <span className='dropdown-blurb'>
+                      {productMenuCopy.tutorialsBlurb}
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </li>
             <li>
               <a href={href('/skills/')} className={linkClass('skills')}>
                 {headerCopy.nav.skills}

@@ -46,10 +46,15 @@ const jsonLd = {
               <span class="template-thumb template-thumb-empty" aria-hidden="true" />
             )}
             <span class={`meta-tag ${t.origin === 'live-artifact' ? 'coral' : ''}`}>
-              {t.origin === 'live-artifact' ? ui.catalog.templates.liveArtifact : ui.catalog.templates.skillTemplate}
+              {t.origin === 'live-artifact' ? ui.catalog.templates.liveArtifact : (t.modeLabel ?? ui.catalog.templates.skillTemplate)}
             </span>
             <span class="template-name">{t.name}</span>
             <p class="template-summary">{t.summary}</p>
+            {(t.platform || t.scenario) && (
+              <span class="template-meta-line">
+                {[t.platformLabel ?? t.platform, t.scenarioLabel ?? t.scenario].filter(Boolean).join(' · ')}
+              </span>
+            )}
           </a>
         </li>
       ))}

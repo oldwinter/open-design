@@ -566,7 +566,10 @@ const officialEntryFromManifest = (
   });
   const title = localized.title;
   const description = localized.description;
-  const exampleQuery = useCaseQuery(od?.useCase, locale) ?? localized.exampleQuery;
+  const exampleQuery =
+    locale === DEFAULT_LOCALE
+      ? useCaseQuery(od?.useCase, locale) ?? localized.exampleQuery
+      : localized.exampleQuery ?? useCaseQuery(od?.useCase, locale);
 
   return {
     id,

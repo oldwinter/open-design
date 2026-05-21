@@ -63,6 +63,11 @@ const previewLabel = plugin.preview?.frameHref
   : plugin.preview?.poster
     ? plugin.preview.label
     : ui.plugins.preview;
+const previewFrameHref = plugin.preview?.frameHref
+  ? plugin.preview.frameHref.startsWith('/')
+    ? href(plugin.preview.frameHref)
+    : plugin.preview.frameHref
+  : undefined;
 const trustLabel = (entry: PublicPluginEntry) =>
   ui.plugins.trustLabels[entry.trust] ?? entry.trust;
 const detailLinks = [
@@ -185,9 +190,10 @@ const breadcrumbJsonLd = {
     </div>
 
     <div class='shell plugin-shell'>
-      <Topbar github={github} locale={locale} />
-
-      <Fragment set:html={headerHtml} />
+      <div class='site-chrome' data-chrome-headroom>
+        <Topbar github={github} locale={locale} />
+        <Fragment set:html={headerHtml} />
+      </div>
 
       <main id='top' class='plugin-detail'>
         <section class='plugin-detail-hero'>
@@ -227,9 +233,9 @@ const breadcrumbJsonLd = {
                   <small>{plugin.preview?.type ?? plugin.visualKind}</small>
                 </div>
                 <div class='plugin-detail-preview__frame'>
-                  {plugin.preview?.frameHref ? (
+                  {previewFrameHref ? (
                     <iframe
-                      src={plugin.preview.frameHref}
+                      src={previewFrameHref}
                       title={`${plugin.title} preview`}
                       loading='lazy'
                       sandbox='allow-scripts allow-same-origin'

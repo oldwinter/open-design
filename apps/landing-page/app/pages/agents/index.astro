@@ -10,7 +10,7 @@
  */
 import Layout from '../../_components/sub-page-layout.astro';
 import { getInfoPageCopy } from '../../info-page-i18n';
-import { localeFromPath, localizedHref } from '../../i18n';
+import { DEFAULT_LOCALE, localeFromPath, localizedHref, type LandingLocaleCode } from '../../i18n';
 
 // Derive SITE from Astro.site so preview/staging JSON-LD matches the
 // layout's canonical link. Falls back to the production origin.
@@ -69,6 +69,71 @@ const tiers = [
 
 const allAgents = tiers.flatMap((t) => t.agents);
 
+const localizedCredentialLabels: Partial<Record<LandingLocaleCode, Record<string, string>>> = {
+  zh: {
+    'claude-code': 'Anthropic API key（BYOK）或 Claude 订阅',
+    codex: 'OpenAI API key（BYOK）或 ChatGPT 订阅',
+    cursor: 'Cursor 账号，使用你自己的模型凭据',
+    gemini: 'Google AI Studio key（BYOK）',
+    copilot: 'GitHub Copilot 订阅',
+    opencode: '通过 OpenCode 配置接入模型凭据（BYOK）',
+    qwen: 'DashScope / Qwen API key（BYOK）',
+    grok: 'xAI SuperGrok OAuth',
+    hermes: '通过 Hermes 添加 xAI / OpenAI / Anthropic 凭据',
+    kimi: 'Moonshot API key（BYOK）',
+    devin: 'Devin 账号',
+    deepseek: 'DeepSeek API key（BYOK）',
+    pi: 'Pi 账号（交互式登录）',
+    vibe: 'Mistral API key（BYOK）',
+    kiro: 'AWS 凭据（BYOK）',
+    kilo: '通过 Kilo 配置接入模型凭据（BYOK）',
+    qoder: '通过 Qoder 配置接入模型凭据（BYOK）',
+  },
+  'zh-tw': {
+    'claude-code': 'Anthropic API key（BYOK）或 Claude 訂閱',
+    codex: 'OpenAI API key（BYOK）或 ChatGPT 訂閱',
+    cursor: 'Cursor 帳號，使用你自己的模型憑據',
+    gemini: 'Google AI Studio key（BYOK）',
+    copilot: 'GitHub Copilot 訂閱',
+    opencode: '透過 OpenCode 設定接入模型憑據（BYOK）',
+    qwen: 'DashScope / Qwen API key（BYOK）',
+    grok: 'xAI SuperGrok OAuth',
+    hermes: '透過 Hermes 加入 xAI / OpenAI / Anthropic 憑據',
+    kimi: 'Moonshot API key（BYOK）',
+    devin: 'Devin 帳號',
+    deepseek: 'DeepSeek API key（BYOK）',
+    pi: 'Pi 帳號（互動式登入）',
+    vibe: 'Mistral API key（BYOK）',
+    kiro: 'AWS 憑據（BYOK）',
+    kilo: '透過 Kilo 設定接入模型憑據（BYOK）',
+    qoder: '透過 Qoder 設定接入模型憑據（BYOK）',
+  },
+  uk: {
+    'claude-code': 'Anthropic API key (BYOK) або передплата Claude',
+    codex: 'OpenAI API key (BYOK) або передплата ChatGPT',
+    cursor: 'Обліковий запис Cursor із вашими ключами моделей',
+    gemini: 'Google AI Studio key (BYOK)',
+    copilot: 'Передплата GitHub Copilot',
+    opencode: 'Ключі моделей через конфігурацію OpenCode (BYOK)',
+    qwen: 'DashScope / Qwen API key (BYOK)',
+    grok: 'xAI SuperGrok OAuth',
+    hermes: 'Ключі xAI / OpenAI / Anthropic через Hermes',
+    kimi: 'Moonshot API key (BYOK)',
+    devin: 'Обліковий запис Devin',
+    deepseek: 'DeepSeek API key (BYOK)',
+    pi: 'Обліковий запис Pi з інтерактивною авторизацією',
+    vibe: 'Mistral API key (BYOK)',
+    kiro: 'AWS credentials (BYOK)',
+    kilo: 'Ключі моделей через конфігурацію Kilo (BYOK)',
+    qoder: 'Ключі моделей через конфігурацію Qoder (BYOK)',
+  },
+};
+
+const credentialLabel = (agent: (typeof allAgents)[number]) => {
+  if (locale === DEFAULT_LOCALE) return agent.key;
+  return localizedCredentialLabels[locale]?.[agent.slug] ?? `${common.byok} · ${agent.vendor}`;
+};
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -121,7 +186,7 @@ const jsonLd = [
             <li class="agent-card" id={a.slug}>
               <h3>{a.name}</h3>
               <p><strong>{page.vendor}:</strong> {a.vendor}</p>
-              <p><strong>{page.credential}:</strong> {a.key}</p>
+              <p><strong>{page.credential}:</strong> {credentialLabel(a)}</p>
             </li>
           ))}
         </ul>

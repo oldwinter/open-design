@@ -5,7 +5,7 @@
  *
  * The homepage (`/`) intentionally does NOT use this layout — its
  * chrome (rails, topbar, full hero, mega-word footer) stays in
- * lockstep with `skills/open-design-landing/example.html`. This
+ * lockstep with `design-templates/open-design-landing/example.html`. This
  * layout is the lighter sibling: same Atelier Zero tokens, same
  * sticky nav, but no editorial side rails or hero, and a compact
  * footer focused on the site map.
@@ -102,10 +102,12 @@ const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   </head>
   <body class="sub-page">
     <div class="shell">
-      <Topbar github={github} locale={locale} />
-      {/* Same React-rendered Header used by the homepage. SSR'd here
-       * so we have one nav implementation that handles active state. */}
-      <Fragment set:html={headerHtml} />
+      <div class="site-chrome" data-chrome-headroom>
+        <Topbar github={github} locale={locale} />
+        {/* Same React-rendered Header used by the homepage. SSR'd here
+         * so we have one nav implementation that handles active state. */}
+        <Fragment set:html={headerHtml} />
+      </div>
 
       <main class="sub-main container">
         <slot />

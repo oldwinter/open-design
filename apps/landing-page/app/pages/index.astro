@@ -225,8 +225,8 @@ const pageHtml = renderToStaticMarkup(
         };
 
         const enhanceHeader = () => {
-          const nav = document.querySelector('[data-nav-headroom]');
-          if (nav) {
+          const chrome = document.querySelector('[data-chrome-headroom]');
+          if (chrome) {
             let lastY = window.scrollY;
             const showTopThreshold = 100;
             const scrollDelta = 6;
@@ -235,9 +235,9 @@ const pageHtml = renderToStaticMarkup(
               () => {
                 const y = window.scrollY;
                 const delta = y - lastY;
-                if (y <= showTopThreshold) nav.classList.remove('is-hidden');
-                else if (delta > scrollDelta) nav.classList.add('is-hidden');
-                else if (delta < -scrollDelta) nav.classList.remove('is-hidden');
+                if (y <= showTopThreshold) chrome.classList.remove('is-hidden');
+                else if (delta > scrollDelta) chrome.classList.add('is-hidden');
+                else if (delta < -scrollDelta) chrome.classList.remove('is-hidden');
                 lastY = y;
               },
               { passive: true },

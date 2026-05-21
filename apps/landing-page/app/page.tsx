@@ -1,7 +1,7 @@
 /*
  * Open Design — Atelier Zero landing page.
  *
- * Mirrors `skills/open-design-landing/example.html` 1:1. When the canonical
+ * Mirrors `design-templates/open-design-landing/example.html` 1:1. When the canonical
  * example.html changes, mirror the diff here and into `app/globals.css`.
  *
  * Static React component rendered by Astro. The Header and Wire components
@@ -77,7 +77,7 @@ const arrowPlus = (
 
 const NBSP = '\u00A0';
 
-// Canonical project URLs. Keep in sync with skills/open-design-landing/example.html.
+// Canonical project URLs. Keep in sync with design-templates/open-design-landing/example.html.
 //
 // `data-github-version` invariant: every wrapper must contain ONLY the version
 // string (e.g. `v0.3.0`), never any surrounding label or punctuation. The
@@ -224,6 +224,8 @@ export default function Page({
       </div>
 
       <div className='shell'>
+        {/* ====== STICKY CHROME (topbar + nav as one unit) ====== */}
+        <div className='site-chrome' data-chrome-headroom>
         {/* ====== TOP METADATA STRIP ====== */}
         <div className='topbar' data-od-id='topbar'>
           <div className='container topbar-inner'>
@@ -301,8 +303,9 @@ export default function Page({
         </div>
 
         {/* ====== NAV ====== */}
-        {/* Headroom-style sticky header with live GitHub star count. */}
+        {/* Headroom slide handled by `.site-chrome` wrapper above. */}
         <Header counts={counts} github={github} locale={locale} />
+        </div>{/* /site-chrome */}
 
         {/* ====== HERO ====== */}
         <section className='hero' id='top' data-od-id='hero'>
@@ -1415,7 +1418,17 @@ export default function Page({
             </div>
             <div className='foot-mega'>
               <div className='word' data-reveal='rise-lg'>
-                {home.footer.mega}
+                {(() => {
+                  const parts = home.footer.mega.split('Design');
+                  if (parts.length !== 2) return home.footer.mega;
+                  return (
+                    <>
+                      {parts[0]}
+                      <span style={{ color: 'var(--coral)' }}>Design</span>
+                      {parts[1]}
+                    </>
+                  );
+                })()}
               </div>
             </div>
           </div>
