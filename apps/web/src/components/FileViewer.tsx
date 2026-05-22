@@ -942,14 +942,15 @@ export function LiveArtifactViewer({
       ))(
         <div className="present-wrap chrome-present-wrap" ref={presentWrapRef}>
           <button
-            className="chrome-action chrome-action-secondary present-trigger"
+            className="chrome-action chrome-action-secondary chrome-action-icon present-trigger"
             aria-haspopup="menu"
             aria-expanded={presentMenuOpen}
+            aria-label={t('fileViewer.present')}
+            data-tooltip={t('fileViewer.present')}
+            title={t('fileViewer.present')}
             onClick={() => setPresentMenuOpen((v) => !v)}
           >
             <Icon name="present" size={13} />
-            <span>{t('fileViewer.present')}</span>
-            <Icon name="chevron-down" size={11} />
           </button>
           {presentMenuOpen ? (
             <div className="present-menu" role="menu">
@@ -5905,17 +5906,18 @@ function HtmlViewer({
           {showPresent ? (
             <div className="present-wrap chrome-present-wrap">
               <button
-                className="chrome-action chrome-action-secondary present-trigger"
+                className="chrome-action chrome-action-secondary chrome-action-icon present-trigger"
                 aria-haspopup="menu"
                 aria-expanded={presentMenuOpen}
+                aria-label={t('fileViewer.present')}
+                data-tooltip={t('fileViewer.present')}
+                title={t('fileViewer.present')}
                 onClick={() => {
                   fireArtifactHeaderClick('present_dropdown');
                   setPresentMenuOpen((v) => !v);
                 }}
               >
                 <Icon name="present" size={13} />
-                <span>{t('fileViewer.present')}</span>
-                <Icon name="chevron-down" size={11} />
               </button>
               {presentMenuOpen ? (
                 <div className="present-menu" role="menu">
