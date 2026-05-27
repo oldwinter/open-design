@@ -2109,6 +2109,7 @@ describe('FileViewer tweaks toolbar', () => {
     expect(summary.textContent).toContain('#1A1916');
     expect(summary.textContent).toContain('13.5px');
     expect(screen.queryByTestId('inspect-panel')).toBeNull();
+    expect(screen.queryByTestId('comment-target-overlay')).toBeNull();
     expect(screen.queryByTestId('comment-popover-input')).toBeNull();
 
     window.dispatchEvent(new MessageEvent('message', {
@@ -2117,17 +2118,14 @@ describe('FileViewer tweaks toolbar', () => {
     }));
 
     expect(await screen.findByTestId('comment-popover-style-summary')).toBeTruthy();
-    expect(screen.queryByTestId('comment-popover-input')).toBeNull();
+    expect(await screen.findByTestId('comment-popover-input')).toBeTruthy();
+    expect(screen.getByTestId('comment-target-overlay')).toBeTruthy();
     expect(screen.getByTestId('comment-panel-toggle').getAttribute('aria-pressed')).toBe('false');
     expect(screen.getByTestId('board-mode-toggle').getAttribute('aria-pressed')).toBe('true');
     expect(screen.queryByTestId('inspect-panel')).toBeNull();
     await waitFor(() => {
       expect(screen.queryByTestId('annotation-hover-popover')).toBeNull();
     });
-
-    fireEvent.click(screen.getByTestId('comment-panel-toggle'));
-    expect(await screen.findByTestId('comment-popover-input')).toBeTruthy();
-    expect(screen.getByTestId('comment-panel-toggle').getAttribute('aria-pressed')).toBe('true');
   });
 
   it('closes an open saved-comment composer when that comment leaves the open state', async () => {

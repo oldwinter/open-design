@@ -2987,7 +2987,7 @@ function CommentPreviewOverlays({
     .filter((item): item is { comment: PreviewComment; index: number; snapshot: PreviewCommentSnapshot } =>
       Boolean(item.snapshot),
     );
-  const targetOverlay = activeTarget ?? hoveredTarget;
+  const targetOverlay = activeTarget;
   return (
     <div className="comment-overlay-layer" aria-hidden={false}>
       {visibleComments.map(({ comment, index, snapshot }) => {
@@ -6391,7 +6391,7 @@ const [manualEditTargets, setManualEditTargets] = useState<ManualEditTarget[]>([
       bounds={previewBodySize}
       docked={false}
       targetVisible={activeCommentTargetVisible}
-      commenting={commentCreateMode}
+      commenting
     />
   ) : null;
   const commentSidePanel = commentPanelOpen ? (
