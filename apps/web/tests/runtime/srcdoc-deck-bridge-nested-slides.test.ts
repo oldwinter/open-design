@@ -128,4 +128,40 @@ describe('deck bridge — nested slide markup (#1530)', () => {
     const state = lastSlideState(parentPostMessage);
     expect(state).toMatchObject({ active: 1, count: 3 });
   });
+
+  it('scrolls documentElement when body looks horizontally scrollable in a sandboxed Simple Deck', async () => {
+    const { win, parentPostMessage } = setupDeckBridge(`
+      <style>
+        html, body { margin: 0; height: 100%; }
+        body { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; }
+        .slide { flex: 0 0 100vw; width: 100vw; height: 100vh; scroll-snap-align: start; }
+      </style>
+      <section class="slide">One</section>
+      <section class="slide">Two</section>
+      <section class="slide">Three</section>
+    `);
+    Object.defineProperty(win, 'innerWidth', { configurable: true, value: 1000 });
+    Object.defineProperties(win.document.body, {
+      scrollWidth: { configurable: true, value: 3000 },
+      clientWidth: { configurable: true, value: 1000 },
+    });
+    Object.defineProperties(win.document.documentElement, {
+      scrollWidth: { configurable: true, value: 3000 },
+      clientWidth: { configurable: true, value: 1000 },
+    });
+    const bodyScrollTo = vi.fn();
+    const htmlScrollTo = vi.fn((options?: ScrollToOptions | number) => {
+      const left = typeof options === 'number' ? options : Number(options?.left || 0);
+      win.document.documentElement.scrollLeft = left;
+    });
+    win.document.body.scrollTo = bodyScrollTo;
+    win.document.documentElement.scrollTo = htmlScrollTo;
+
+    postSlide(win, 'next');
+    await new Promise<void>((resolve) => win.setTimeout(resolve, 450));
+
+    expect(bodyScrollTo).toHaveBeenCalledWith({ left: 1000, behavior: 'smooth' });
+    expect(htmlScrollTo).toHaveBeenCalledWith({ left: 1000, behavior: 'smooth' });
+    expect(lastSlideState(parentPostMessage)).toMatchObject({ active: 1, count: 3 });
+  });
 });

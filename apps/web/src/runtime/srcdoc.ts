@@ -1473,9 +1473,35 @@ function injectDeckBridge(doc: string, initialSlideIndex = 0): string {
     if (document.body && document.body.scrollWidth > document.body.clientWidth + 1) return document.body;
     return document.scrollingElement || document.documentElement;
   }
+  function scrollTargets(){
+    var targets = [];
+    function add(node){
+      if (!node) return;
+      for (var i=0; i<targets.length; i++) if (targets[i] === node) return;
+      targets.push(node);
+    }
+    add(document.scrollingElement);
+    add(document.documentElement);
+    add(document.body);
+    return targets;
+  }
+  function maxScrollLeft(){
+    var targets = scrollTargets();
+    var value = 0;
+    for (var i=0; i<targets.length; i++) {
+      value = Math.max(value, Number(targets[i].scrollLeft || 0));
+    }
+    return value;
+  }
+  function hasHorizontalScroll(){
+    var targets = scrollTargets();
+    for (var i=0; i<targets.length; i++) {
+      if (targets[i].scrollWidth > targets[i].clientWidth + 1) return true;
+    }
+    return false;
+  }
   function isScrollDeck(){
-    var sc = scroller();
-    return !!(sc && sc.scrollWidth > sc.clientWidth + 1);
+    return hasHorizontalScroll();
   }
   function findActiveByClass(list){
     for (var i=0; i<list.length; i++) {
@@ -1497,7 +1523,7 @@ function injectDeckBridge(doc: string, initialSlideIndex = 0): string {
     if (!list || !list.length) return 0;
     if (isScrollDeck()) {
       var w = Math.max(1, window.innerWidth);
-      return Math.max(0, Math.min(list.length - 1, Math.round(scroller().scrollLeft / w)));
+      return Math.max(0, Math.min(list.length - 1, Math.round(maxScrollLeft() / w)));
     }
     var byTransform = activeIndexFromTransform(list);
     if (byTransform >= 0) return byTransform;
@@ -1629,7 +1655,15 @@ function injectDeckBridge(doc: string, initialSlideIndex = 0): string {
   function scrollGo(i){
     var list = slides();
     var next = Math.max(0, Math.min(list.length - 1, i));
-    scroller().scrollTo({ left: next * window.innerWidth, behavior: 'smooth' });
+    var left = next * window.innerWidth;
+    var targets = scrollTargets();
+    for (var t=0; t<targets.length; t++) {
+      try {
+        targets[t].scrollTo({ left: left, behavior: 'smooth' });
+      } catch (_) {
+        try { targets[t].scrollLeft = left; } catch (__) {}
+      }
+    }
     setTimeout(report, 380);
   }
   function targetFor(action, list){
