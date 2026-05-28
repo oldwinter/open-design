@@ -383,10 +383,89 @@ class NoProxyAwareEnvProxyAgent {
   }
 }
 
+class NoProxyAwareMixedProxyAgent {
+  private readonly directAgent: Agent;
+
+  private readonly proxyAgent: EnvHttpProxyAgent;
+
+  private readonly socksAgent: Socks5ProxyAgent;
+
+  private readonly socksDispatchTimeouts: Pick<Dispatcher.DispatchOptions, 'bodyTimeout' | 'headersTimeout'>;
+
+  constructor(
+    private readonly noProxy: string | null,
+    private readonly hasHttpProxy: boolean,
+    private readonly hasHttpsProxy: boolean,
+    proxyOptions: ConstructorParameters<typeof EnvHttpProxyAgent>[0],
+    socksProxy: string,
+    options: Pool.Options,
+  ) {
+    this.directAgent = new Agent(options as ConstructorParameters<typeof Agent>[0]);
+    this.proxyAgent = new EnvHttpProxyAgent(proxyOptions);
+    this.socksAgent = new Socks5ProxyAgent(socksProxy, socksProxyAgentOptions(options));
+    this.socksDispatchTimeouts = {
+      ...(options.bodyTimeout === undefined ? {} : { bodyTimeout: options.bodyTimeout }),
+      ...(options.headersTimeout === undefined
+        ? {}
+        : { headersTimeout: options.headersTimeout }),
+    };
+  }
+
+  dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandler): boolean {
+    const origin = options.origin;
+    const targetUrl =
+      typeof origin === 'string' || origin instanceof URL
+        ? new URL(options.path, origin)
+        : null;
+    if (targetUrl && shouldBypassProxyForUrl(targetUrl, this.noProxy)) {
+      return this.directAgent.dispatch(options, handler);
+    }
+    if (
+      targetUrl && ((targetUrl.protocol === 'http:' && this.hasHttpProxy) ||
+        (targetUrl.protocol === 'https:' && this.hasHttpsProxy))
+    ) {
+      return this.proxyAgent.dispatch(options, handler);
+    }
+    return this.socksAgent.dispatch({ ...this.socksDispatchTimeouts, ...options }, handler);
+  }
+
+  async close(): Promise<void> {
+    await Promise.all([this.directAgent.close(), this.proxyAgent.close(), this.socksAgent.close()]);
+  }
+
+  async destroy(error?: Error | null): Promise<void> {
+    await Promise.all([
+      this.directAgent.destroy(error ?? null),
+      this.proxyAgent.destroy(error ?? null),
+      this.socksAgent.destroy(error ?? null),
+    ]);
+  }
+}
+
+type ConnectionTestProxyDispatcher =
+  | EnvHttpProxyAgent
+  | NoProxyAwareEnvProxyAgent
+  | NoProxyAwareMixedProxyAgent
+  | NoProxyAwareSocksProxyAgent;
+
+function envProxyAgentOptions(
+  options: Pool.Options,
+  httpProxy: string | undefined,
+  httpsProxy: string | undefined,
+  noProxy: string | null,
+): ConstructorParameters<typeof EnvHttpProxyAgent>[0] {
+  return {
+    ...options,
+    ...(httpProxy ? { httpProxy } : {}),
+    ...(httpsProxy ? { httpsProxy } : {}),
+    ...(noProxy ? { noProxy } : {}),
+  };
+}
+
 function buildConnectionTestProxyDispatcher(
   env: NodeJS.ProcessEnv = process.env,
   options: Pool.Options = {},
-): EnvHttpProxyAgent | NoProxyAwareEnvProxyAgent | NoProxyAwareSocksProxyAgent | null {
+): ConnectionTestProxyDispatcher | null {
   const proxyEnv = mergeProxyAwareEnv(
     process.platform,
     resolveSystemProxyEnv(),
@@ -398,16 +477,22 @@ function buildConnectionTestProxyDispatcher(
   const httpProxy = proxyEnv.HTTP_PROXY ?? proxyEnv.http_proxy ?? httpProxyFromAll;
   const httpsProxy = proxyEnv.HTTPS_PROXY ?? proxyEnv.https_proxy ?? httpProxyFromAll;
   const noProxy = mergeNoProxyWithLoopbackDefaults(proxyEnv.NO_PROXY ?? proxyEnv.no_proxy);
+  const proxyOptions = envProxyAgentOptions(options, httpProxy, httpsProxy, noProxy);
+  if (socksProxy && (httpProxy || httpsProxy) && (!httpProxy || !httpsProxy)) {
+    return new NoProxyAwareMixedProxyAgent(
+      noProxy,
+      Boolean(httpProxy),
+      Boolean(httpsProxy),
+      proxyOptions,
+      socksProxy,
+      options,
+    );
+  }
   if (!httpProxy && !httpsProxy && socksProxy) {
     return new NoProxyAwareSocksProxyAgent(noProxy, socksProxy, options);
   }
   if (!httpProxy && !httpsProxy) return null;
-  const proxyAgent = new EnvHttpProxyAgent({
-    ...options,
-    ...(httpProxy ? { httpProxy } : {}),
-    ...(httpsProxy ? { httpsProxy } : {}),
-    ...(noProxy ? { noProxy } : {}),
-  });
+  const proxyAgent = new EnvHttpProxyAgent(proxyOptions);
   return noProxy?.split(/[\s,]+/).some((token) => token.trim() === '<local>')
     ? new NoProxyAwareEnvProxyAgent(noProxy, proxyAgent, options)
     : proxyAgent;

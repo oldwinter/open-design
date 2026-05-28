@@ -152,6 +152,85 @@ describe('proxyDispatcherRequestInit', () => {
     }
   });
 
+  it.each([
+    {
+      label: 'HTTP_PROXY only',
+      systemProxyEnv: {
+        ALL_PROXY: 'socks5://system-socks.example.test:1080',
+        HTTP_PROXY: 'http://system-http.example.test:8080',
+      },
+      specificOrigin: 'http://api.example.test',
+      socksOrigin: 'https://api.example.test',
+      expectedProxyOptions: {
+        httpProxy: 'http://system-http.example.test:8080',
+      },
+    },
+    {
+      label: 'HTTPS_PROXY only',
+      systemProxyEnv: {
+        ALL_PROXY: 'socks5://system-socks.example.test:1080',
+        HTTPS_PROXY: 'http://system-https.example.test:8443',
+      },
+      specificOrigin: 'https://api.example.test',
+      socksOrigin: 'http://api.example.test',
+      expectedProxyOptions: {
+        httpsProxy: 'http://system-https.example.test:8443',
+      },
+    },
+  ])('uses SOCKS ALL_PROXY for the missing scheme when system proxy has $label', async ({
+    systemProxyEnv,
+    specificOrigin,
+    socksOrigin,
+    expectedProxyOptions,
+  }) => {
+    const proxySpy = vi.spyOn(platform, 'resolveSystemProxyEnv').mockReturnValue({});
+    const { proxyDispatcherRequestInit } = await import('../src/connectionTest.js');
+
+    try {
+      const { close, requestInit } = proxyDispatcherRequestInit(systemProxyEnv);
+
+      expect(requestInit.dispatcher).toBeTruthy();
+      expect(envHttpProxyAgentConstructor).toHaveBeenCalledWith(expect.objectContaining({
+        ...expectedProxyOptions,
+        noProxy: 'localhost,127.0.0.1,[::1]',
+      }));
+      expect(socks5ProxyAgentConstructor).toHaveBeenCalledWith(
+        'socks5://system-socks.example.test:1080',
+        {},
+      );
+
+      const dispatcher = requestInit.dispatcher as {
+        dispatch(options: { origin: string; path: string }, handler: unknown): boolean;
+      };
+
+      dispatcher.dispatch(
+        {
+          origin: socksOrigin,
+          path: '/v1/models',
+        },
+        {},
+      );
+      expect(socks5ProxyAgentDispatch).toHaveBeenCalled();
+      expect(envHttpProxyAgentDispatch).not.toHaveBeenCalled();
+
+      socks5ProxyAgentDispatch.mockClear();
+      envHttpProxyAgentDispatch.mockClear();
+
+      dispatcher.dispatch(
+        {
+          origin: specificOrigin,
+          path: '/v1/models',
+        },
+        {},
+      );
+      expect(envHttpProxyAgentDispatch).toHaveBeenCalled();
+      expect(socks5ProxyAgentDispatch).not.toHaveBeenCalled();
+      await expect(close()).resolves.toBeUndefined();
+    } finally {
+      proxySpy.mockRestore();
+    }
+  });
+
   it('bypasses SOCKS proxy dispatch for loopback targets from NO_PROXY defaults', async () => {
     const proxySpy = vi.spyOn(platform, 'resolveSystemProxyEnv').mockReturnValue({});
     const { proxyDispatcherRequestInit } = await import('../src/connectionTest.js');
