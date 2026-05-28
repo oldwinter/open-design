@@ -271,18 +271,24 @@ export function registerMediaRoutes(app: Express, ctx: RegisterMediaRoutesDeps) 
     }
 
     try {
-      const result = await searchResearch({
-        projectRoot: PROJECT_ROOT,
-        query: req.body?.query,
-        maxSources:
-          typeof req.body?.maxSources === 'number'
-            ? req.body.maxSources
+      const proxyDispatcher = proxyDispatcherRequestInit(process.env);
+      try {
+        const result = await searchResearch({
+          projectRoot: PROJECT_ROOT,
+          query: req.body?.query,
+          maxSources:
+            typeof req.body?.maxSources === 'number'
+              ? req.body.maxSources
+              : undefined,
+          providers: Array.isArray(req.body?.providers)
+            ? req.body.providers
             : undefined,
-        providers: Array.isArray(req.body?.providers)
-          ? req.body.providers
-          : undefined,
-      });
-      res.json(result);
+          requestInit: proxyDispatcher.requestInit,
+        });
+        res.json(result);
+      } finally {
+        await proxyDispatcher.close();
+      }
     } catch (err: any) {
       if (err instanceof ResearchError) {
         return res.status(err.status).json({

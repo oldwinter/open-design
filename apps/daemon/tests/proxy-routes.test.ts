@@ -219,6 +219,73 @@ describe('API proxy routes', () => {
     }
   });
 
+  it('uses the live proxy dispatcher for Tavily research search', async () => {
+    const configDir = await mkdtemp(path.join(tmpdir(), 'od-tavily-proxy-route-'));
+    process.env.OD_MEDIA_CONFIG_DIR = configDir;
+    await mkdir(configDir, { recursive: true });
+    await writeFile(path.join(configDir, 'media-config.json'), JSON.stringify({
+      providers: {
+        tavily: {
+          apiKey: 'tavily-test-key',
+          baseUrl: 'https://tavily-gateway.example.test',
+        },
+      },
+    }), 'utf8');
+
+    const proxySpy = vi.spyOn(platform, 'resolveSystemProxyEnv').mockReturnValue({
+      HTTPS_PROXY: 'http://system-proxy.internal:8443',
+      NODE_USE_ENV_PROXY: '1',
+    });
+    const fetchMock = vi.fn((input: FetchInput, init?: FetchInit) => {
+      const url = String(input);
+      if (url.startsWith(baseUrl)) return realFetch(input, init);
+      expect(url).toBe('https://tavily-gateway.example.test/search');
+      expect(init?.dispatcher).toBeDefined();
+      return Promise.resolve(Response.json({
+        answer: 'Proxy-safe summary',
+        results: [
+          {
+            title: 'Proxy-safe source',
+            url: 'https://example.test/source',
+            content: 'Snippet',
+          },
+        ],
+      }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    try {
+      const res = await realFetch(`${baseUrl}/api/research/search`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          query: 'proxy-aware research',
+          providers: ['tavily'],
+        }),
+      });
+      expect(res.status).toBe(200);
+      await expect(res.json()).resolves.toEqual(expect.objectContaining({
+        query: 'proxy-aware research',
+        provider: 'tavily',
+        summary: 'Proxy-safe summary',
+        sources: [
+          expect.objectContaining({
+            title: 'Proxy-safe source',
+            url: 'https://example.test/source',
+          }),
+        ],
+      }));
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) => input === 'https://tavily-gateway.example.test/search' && init?.dispatcher,
+        ),
+      ).toBe(true);
+    } finally {
+      proxySpy.mockRestore();
+      await rm(configDir, { recursive: true, force: true });
+    }
+  });
+
   it('reports malformed proxy env before sending the start event on Anthropic streams', async () => {
     const originalHttpProxy = process.env.HTTP_PROXY;
     const originalHttpsProxy = process.env.HTTPS_PROXY;
