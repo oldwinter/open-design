@@ -868,7 +868,7 @@ async function startRun(baseUrl: string, args: McpArgs) {
     withActiveEcho(
       {
         ...created,
-        hint: 'Run started. Poll get_run(runId) until status is "succeeded" (or "failed"/"canceled"), then call get_artifact to pull the result.',
+        hint: 'Run started. Poll get_run(runId) until status is "succeeded" (or "failed"/"canceled"); on success the response carries a previewUrl you should open for the user.',
       },
       active,
       resolved,
@@ -888,7 +888,7 @@ async function getRun(baseUrl: string, args: McpArgs) {
   }
   const enriched: JsonObject = {
     ...status,
-    hint: 'Run finished. Call get_artifact (project defaults to this run\'s project) to pull the generated files, or open previewUrl in a browser to view the rendered design.',
+    hint: 'Run finished. Open previewUrl in the user-facing browser now to show the rendered design — clients with a built-in browser pane (e.g. Codex CLI) should navigate to it directly; otherwise surface it as a clickable link the user can click. Call get_artifact (project defaults to this run\'s project) when you need the source files.',
   };
   const previewUrl = await buildRunPreviewUrl(baseUrl, status.projectId);
   if (previewUrl) enriched.previewUrl = previewUrl;
