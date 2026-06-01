@@ -7127,15 +7127,17 @@ function HtmlViewer({
         );
         if (selected.length === 0) return;
         fireCommentPopoverClick('send_to_chat');
+        const sentIds = new Set(selected.map((comment) => comment.id));
         setSendingBoardBatch(true);
         try {
           await onSendBoardCommentAttachments(commentsToAttachments(selected));
           setSelectedSideCommentIds(new Set());
+          setCommentOrderIds((current) => current.filter((id) => !sentIds.has(id)));
+          setActivePreviewCommentId((current) => current && sentIds.has(current) ? null : current);
         } finally {
           setSendingBoardBatch(false);
         }
       }}
-      onCreateComment={savePanelComment}
       sending={sendingBoardBatch}
       t={t}
       composer={null}

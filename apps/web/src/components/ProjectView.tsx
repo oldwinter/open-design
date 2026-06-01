@@ -2411,12 +2411,30 @@ export function ProjectView({
       createdAt: Date.now(),
     });
     if (input.commentAttachments.length > 0) {
-      const reservedCommentIds = new Set(input.commentAttachments.map((attachment) => attachment.id));
+      const reservedCommentIds = new Set(
+        input.commentAttachments
+          .filter((attachment) => attachment.source !== 'board-batch')
+          .map((attachment) => attachment.id),
+      );
       setAttachedComments((current) =>
         current.filter((comment) => !reservedCommentIds.has(comment.id)),
       );
+      if (reservedCommentIds.size > 0) {
+        setPreviewComments((current) =>
+          current.map((comment) =>
+            reservedCommentIds.has(comment.id)
+              ? { ...comment, status: 'applying' }
+              : comment,
+          ),
+        );
+        void Promise.all(
+          Array.from(reservedCommentIds, (commentId) =>
+            patchPreviewCommentStatus(project.id, input.conversationId, commentId, 'applying'),
+          ),
+        ).catch(() => {});
+      }
     }
-  }, [enqueueChatSend]);
+  }, [enqueueChatSend, project.id]);
 
   const handleSend = useCallback(
     async (
