@@ -1009,8 +1009,13 @@ body::before {
   margin-left: auto;
   margin-right: auto;
 }
-.hero-copy .lead span {
-  white-space: nowrap;
+/* Keep each BreakText line on a single row only on wider screens. On phones
+   the longer second line would otherwise overflow horizontally and clip
+   instead of wrapping at spaces, so let it reflow below the breakpoint. */
+@media (min-width: 768px) {
+  .hero-copy .lead span {
+    white-space: nowrap;
+  }
 }
 .hero h1 {
   font-size: clamp(44px, 5vw, 78px);

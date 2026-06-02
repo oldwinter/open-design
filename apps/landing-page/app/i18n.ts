@@ -2512,8 +2512,8 @@ const HOME_PAGE_COPY: Partial<Record<LandingLocaleCode, HomePageCopy>> = {
       titleMiddle: '开源、本地、Agent 驱动的设计平台',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma 和 Claude Design 的 Agent-native 替代。\n桌面客户端优先，接入 16 个 Coding Agent，129 个 Design System，Apache-2.0。',
+      lead: (_skills, systems) =>
+        `Figma 和 Claude Design 的 Agent-native 替代。\n桌面客户端优先，接入 16 个 Coding Agent，${systems} 个 Design System，Apache-2.0。`,
       star: '在 GitHub 点 Star',
       download: '下载桌面端',
       plate: '图版 Nº 08',
@@ -3733,8 +3733,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'Open-source, local, agent-driven design platform',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'An agent-native alternative to Figma and Claude Design.\nDesktop-first, connected to 16 coding agents, 129 design systems, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `An agent-native alternative to Figma and Claude Design.\nDesktop-first, connected to 16 coding agents, ${systems} design systems, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'shippable' },
         { strong: 'Systems', text: 'portable' },
@@ -3749,8 +3749,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: '开源、本地、Agent 驱动的设计平台',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma 和 Claude Design 的 Agent 原生替代。\n桌面客户端优先，接入 16 个编码 Agent，129 个设计系统，Apache-2.0。',
+      lead: (_skills, systems) =>
+        `Figma 和 Claude Design 的 Agent 原生替代。\n桌面客户端优先，接入 16 个编码 Agent，${systems} 个设计系统，Apache-2.0。`,
       star: '在 GitHub 点 Star',
       stats: [
         { strong: '技能', text: '可交付' },
@@ -3766,8 +3766,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: '開源、本地、Agent 驅動的設計平台',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma 和 Claude Design 的 Agent 原生替代。\n桌面客戶端優先，接入 16 個編碼 Agent，129 個設計系統，Apache-2.0。',
+      lead: (_skills, systems) =>
+        `Figma 和 Claude Design 的 Agent 原生替代。\n桌面客戶端優先，接入 16 個編碼 Agent，${systems} 個設計系統，Apache-2.0。`,
       star: '在 GitHub 點星',
       stats: [
         { strong: '技能', text: '可交付' },
@@ -3783,8 +3783,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'オープンソース、ローカル、Agent 駆動のデザインプラットフォーム',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma と Claude Design に代わる Agent ネイティブな選択肢。\nデスクトップ優先で、16 個のコーディング Agent、129 個のデザインシステム、Apache-2.0 に対応。',
+      lead: (_skills, systems) =>
+        `Figma と Claude Design に代わる Agent ネイティブな選択肢。\nデスクトップ優先で、16 個のコーディング Agent、${systems} 個のデザインシステム、Apache-2.0 に対応。`,
       stats: [
         { strong: 'Skill', text: '納品可能' },
         { strong: 'System', text: '移植可能' },
@@ -3799,8 +3799,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: '오픈소스, 로컬, Agent 구동 디자인 플랫폼',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma와 Claude Design을 대체하는 Agent 네이티브 선택지.\n데스크톱 우선, 16개 코딩 Agent와 129개 디자인 시스템, Apache-2.0 지원.',
+      lead: (_skills, systems) =>
+        `Figma와 Claude Design을 대체하는 Agent 네이티브 선택지.\n데스크톱 우선, 16개 코딩 Agent와 ${systems}개 디자인 시스템, Apache-2.0 지원.`,
       stats: [
         { strong: '스킬', text: '출하 가능' },
         { strong: '시스템', text: '이식 가능' },
@@ -3815,8 +3815,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'Open-Source, lokal, Agent-getriebene Designplattform',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Die Agent-native Alternative zu Figma und Claude Design.\nDesktop-first, mit 16 Coding-Agents, 129 Designsystemen und Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Die Agent-native Alternative zu Figma und Claude Design.\nDesktop-first, mit 16 Coding-Agents, ${systems} Designsystemen und Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'lieferbar' },
         { strong: 'Systeme', text: 'portabel' },
@@ -3831,8 +3831,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'plateforme de design open source, locale et pilotée par Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'L’alternative Agent-native à Figma et Claude Design.\nPriorité au desktop, connectée à 16 agents de code, 129 systèmes de design, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `L’alternative Agent-native à Figma et Claude Design.\nPriorité au desktop, connectée à 16 agents de code, ${systems} systèmes de design, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'livrables' },
         { strong: 'Systèmes', text: 'portables' },
@@ -3847,8 +3847,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'открытая, локальная дизайн-платформа на базе Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Agent-native альтернатива Figma и Claude Design.\nСтавка на десктоп: 16 coding agents, 129 дизайн-систем, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Agent-native альтернатива Figma и Claude Design.\nСтавка на десктоп: 16 coding agents, ${systems} дизайн-систем, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'к поставке' },
         { strong: 'Системы', text: 'портативны' },
@@ -3863,8 +3863,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'plataforma de diseño abierta, local e impulsada por Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'La alternativa Agent-native a Figma y Claude Design.\nPrimero desktop, conectada a 16 agentes de código, 129 sistemas de diseño, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `La alternativa Agent-native a Figma y Claude Design.\nPrimero desktop, conectada a 16 agentes de código, ${systems} sistemas de diseño, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'entregables' },
         { strong: 'Sistemas', text: 'portátiles' },
@@ -3879,8 +3879,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'plataforma de design aberta, local e movida por Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'A alternativa Agent-native ao Figma e ao Claude Design.\nDesktop em primeiro lugar, conectada a 16 agentes de código, 129 sistemas de design, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `A alternativa Agent-native ao Figma e ao Claude Design.\nDesktop em primeiro lugar, conectada a 16 agentes de código, ${systems} sistemas de design, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'entregáveis' },
         { strong: 'Sistemas', text: 'portáteis' },
@@ -3895,8 +3895,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'piattaforma di design open source, locale e guidata da Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'L’alternativa Agent-native a Figma e Claude Design.\nPrima desktop, connessa a 16 agenti di codice, 129 sistemi di design, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `L’alternativa Agent-native a Figma e Claude Design.\nPrima desktop, connessa a 16 agenti di codice, ${systems} sistemi di design, Apache-2.0.`,
       stats: [
         { strong: 'Skill', text: 'consegnabili' },
         { strong: 'Sistemi', text: 'portabili' },
@@ -3911,8 +3911,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'nền tảng thiết kế mã nguồn mở, cục bộ, do Agent điều khiển',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Lựa chọn thay thế Agent-native cho Figma và Claude Design.\nƯu tiên desktop, kết nối 16 coding agent, 129 hệ thống thiết kế, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Lựa chọn thay thế Agent-native cho Figma và Claude Design.\nƯu tiên desktop, kết nối 16 coding agent, ${systems} hệ thống thiết kế, Apache-2.0.`,
       stats: [
         { strong: 'Skill', text: 'có thể giao' },
         { strong: 'Hệ thống', text: 'di động' },
@@ -3927,8 +3927,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'otwarta, lokalna platforma designu napędzana przez Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Agent-native alternatywa dla Figmy i Claude Design.\nDesktop-first, połączona z 16 agentami kodu, 129 systemami designu, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Agent-native alternatywa dla Figmy i Claude Design.\nDesktop-first, połączona z 16 agentami kodu, ${systems} systemami designu, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'do wysyłki' },
         { strong: 'Systemy', text: 'przenośne' },
@@ -3943,8 +3943,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'platform desain open source, lokal, digerakkan Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Alternatif Agent-native untuk Figma dan Claude Design.\nMengutamakan desktop, terhubung ke 16 agent coding, 129 sistem desain, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Alternatif Agent-native untuk Figma dan Claude Design.\nMengutamakan desktop, terhubung ke 16 agent coding, ${systems} sistem desain, Apache-2.0.`,
       stats: [
         { strong: 'Skill', text: 'siap kirim' },
         { strong: 'Sistem', text: 'portabel' },
@@ -3959,8 +3959,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'open-source, lokaal, Agent-gedreven designplatform',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Het Agent-native alternatief voor Figma en Claude Design.\nDesktop-first, verbonden met 16 coding agents, 129 designsystemen, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Het Agent-native alternatief voor Figma en Claude Design.\nDesktop-first, verbonden met 16 coding agents, ${systems} designsystemen, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'leverbaar' },
         { strong: 'Systemen', text: 'draagbaar' },
@@ -3975,8 +3975,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'منصة تصميم مفتوحة ومحلية تعمل عبر Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'بديل Agent-native لـ Figma وClaude Design.\nيركز على سطح المكتب، ويتصل بـ 16 Agent برمجة و129 نظام تصميم، Apache-2.0.',
+      lead: (_skills, systems) =>
+        `بديل Agent-native لـ Figma وClaude Design.\nيركز على سطح المكتب، ويتصل بـ 16 Agent برمجة و${systems} نظام تصميم، Apache-2.0.`,
       stats: [
         { strong: 'مهارات', text: 'جاهزة للتسليم' },
         { strong: 'أنظمة', text: 'قابلة للنقل' },
@@ -3991,8 +3991,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'açık kaynak, yerel, Agent destekli tasarım platformu',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Figma ve Claude Design için Agent-native alternatif.\nÖncelik desktop; 16 coding agent, 129 tasarım sistemi, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Figma ve Claude Design için Agent-native alternatif.\nÖncelik desktop; 16 coding agent, ${systems} tasarım sistemi, Apache-2.0.`,
       stats: [
         { strong: 'Skill', text: 'teslim edilebilir' },
         { strong: 'Sistem', text: 'taşınabilir' },
@@ -4007,8 +4007,8 @@ const FIRST_SCREEN_COPY_OVERRIDES: Partial<Record<LandingLocaleCode, DeepPartial
       titleMiddle: 'відкрита, локальна дизайн-платформа на базі Agent',
       titleSecondEmphasis: '',
       titleBreakAfterEmphasis: true,
-      lead: () =>
-        'Agent-native альтернатива Figma та Claude Design.\nDesktop-first, підключено 16 coding agents, 129 дизайн-систем, Apache-2.0.',
+      lead: (_skills, systems) =>
+        `Agent-native альтернатива Figma та Claude Design.\nDesktop-first, підключено 16 coding agents, ${systems} дизайн-систем, Apache-2.0.`,
       stats: [
         { strong: 'Skills', text: 'до доставки' },
         { strong: 'Системи', text: 'портативні' },
