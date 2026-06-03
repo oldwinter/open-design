@@ -444,7 +444,7 @@ export function MemoryModelInline({
         popoverClassName="settings-byok-select-popover"
         popoverTestId="memory-model-inline-popover"
         searchInputTestId="memory-model-inline-search"
-        minSearchableOptions={Number.POSITIVE_INFINITY}
+        minSearchableOptions={5}
         models={selectOptions}
         value={selectValue}
         disabled={busy}
