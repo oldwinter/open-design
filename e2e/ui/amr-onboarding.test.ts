@@ -275,6 +275,7 @@ async function wireOnboardingMocks(
     initialLoggedIn: boolean;
     failFirstStatusPollAfterLogin?: boolean;
     amrModels?: Array<{ id: string; label: string }>;
+    codexModels?: Array<{ id: string; label: string }>;
   },
 ): Promise<OnboardingConfig> {
   const config: OnboardingConfig = {
@@ -340,7 +341,7 @@ async function wireOnboardingMocks(
             bin: 'codex',
             available: true,
             version: 'test',
-            models: [{ id: 'default', label: 'Default' }],
+            models: options.codexModels ?? [{ id: 'default', label: 'Default' }],
           },
         ],
       },
