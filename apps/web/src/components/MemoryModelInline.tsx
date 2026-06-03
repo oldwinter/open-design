@@ -442,6 +442,8 @@ export function MemoryModelInline({
         className="inline-switcher__select settings-model-select settings-model-select--byok"
         searchPlaceholder={t('designs.searchPlaceholder')}
         popoverClassName="settings-byok-select-popover"
+        popoverTestId="memory-model-inline-popover"
+        searchInputTestId="memory-model-inline-search"
         minSearchableOptions={Number.POSITIVE_INFINITY}
         models={selectOptions}
         value={selectValue}
