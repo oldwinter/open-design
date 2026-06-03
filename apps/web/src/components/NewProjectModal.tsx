@@ -9,7 +9,7 @@
 // clicks the backdrop / Esc.
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import type { ConnectorDetail } from '@open-design/contracts';
 import type { OpenDesignHostProjectImportSuccess } from '@open-design/host';
 import { modalOverlay, modalContent } from '../motion';
@@ -51,8 +51,22 @@ interface Props {
   initialTab?: CreateTab;
 }
 
-export function NewProjectModal({
-  open,
+// The `open` flag stays the public API, but the close animation has to play
+// before the modal leaves the DOM. So the outer component never early-returns
+// null: it renders the body inside `AnimatePresence` and gates the body on
+// `open`. When `open` flips to false the body unmounts through
+// `AnimatePresence`, which runs the `exit` variants on the overlay + content
+// first. The body lives in its own component so its mount effects (focus the
+// close button, lock body scroll, bind Esc) fire exactly when it appears.
+export function NewProjectModal({ open, ...rest }: Props) {
+  return (
+    <AnimatePresence>
+      {open ? <NewProjectModalBody {...rest} /> : null}
+    </AnimatePresence>
+  );
+}
+
+function NewProjectModalBody({
   skills,
   designSystems,
   defaultDesignSystemId,
@@ -70,37 +84,30 @@ export function NewProjectModal({
   onOpenConnectorsTab,
   onClose,
   initialTab,
-}: Props) {
+}: Omit<Props, 'open'>) {
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !creating) onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [creating, open, onClose]);
+  }, [creating, onClose]);
 
   useEffect(() => {
-    if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, []);
 
   useEffect(() => {
-    if (!open) return;
-    setCreating(false);
-    setCreateError(null);
     closeRef.current?.focus();
-  }, [open]);
-
-  if (!open) return null;
+  }, []);
 
   async function handleCreate(input: CreateInput & { requestId?: string }) {
     if (creating) return;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import { useAnalytics } from './analytics/provider';
 import {
   trackFileUploadResult,
@@ -214,10 +214,18 @@ function mergeAmrModelsIntoAgents(
 }
 
 export function App() {
+  // `reducedMotion="user"` makes every motion/react component honor the OS
+  // `prefers-reduced-motion` setting: transform/layout animations are zeroed
+  // out while opacity-only changes are kept. The CSS `@media (prefers-reduced-
+  // motion: reduce)` block covers the CSS-keyframe surfaces, but the dialogs,
+  // toasts and popovers that moved to motion/react need this gate too — without
+  // it they keep springing/sliding for users who asked us not to animate.
   return (
-    <IframeKeepAliveProvider>
-      <AppInner />
-    </IframeKeepAliveProvider>
+    <MotionConfig reducedMotion="user">
+      <IframeKeepAliveProvider>
+        <AppInner />
+      </IframeKeepAliveProvider>
+    </MotionConfig>
   );
 }
 

@@ -4,6 +4,19 @@ function AnimatePresence({ children }: { children?: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Surfaces the reduced-motion preference to tests. Real motion/react uses this
+// to gate transform animations on the OS `prefers-reduced-motion` setting; the
+// mock just exposes the configured value so wiring can be asserted.
+function MotionConfig({
+  reducedMotion,
+  children,
+}: {
+  reducedMotion?: 'always' | 'never' | 'user';
+  children?: React.ReactNode;
+}) {
+  return <div data-testid="motion-config" data-reduced-motion={reducedMotion}>{children}</div>;
+}
+
 const motionHandler: ProxyHandler<object> = {
   get(_target, prop: string) {
     const Component = forwardRef<unknown, ComponentProps<ElementType>>((props, ref) => {
@@ -29,4 +42,4 @@ const motionHandler: ProxyHandler<object> = {
 
 const motion = new Proxy({}, motionHandler);
 
-export { AnimatePresence, motion };
+export { AnimatePresence, MotionConfig, motion };

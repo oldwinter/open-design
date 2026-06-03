@@ -353,6 +353,22 @@ function navElementForView(
   }
 }
 
+// Tab views stay mounted (so previews/thumbnails survive a tab switch) but the
+// inactive ones must leave the accessibility tree and tab order — otherwise
+// keyboard users tab into off-screen controls and screen readers announce
+// several pages at once. `content-visibility: hidden` only skips paint, so the
+// inactive wrapper also gets `inert` (drops it from focus + a11y) and
+// `aria-hidden`. React renders `inert={false}` as no attribute and
+// `inert={true}` as the real boolean attribute, so toggling on `!active` is
+// enough — the active view stays fully interactive.
+function inactiveViewProps(active: boolean) {
+  return {
+    style: active ? undefined : ({ contentVisibility: 'hidden' } as const),
+    inert: !active,
+    'aria-hidden': !active,
+  };
+}
+
 export function EntryShell({
   skills,
   designTemplates,
@@ -654,7 +670,7 @@ export function EntryShell({
               view === 'home' ? '' : ' entry-main__inner--wide'
             }`}
           >
-            <div data-testid="entry-view-home" data-active={view === 'home' ? 'true' : 'false'} style={view === 'home' ? undefined : { contentVisibility: 'hidden' }}>
+            <div data-testid="entry-view-home" data-active={view === 'home' ? 'true' : 'false'} {...inactiveViewProps(view === 'home')}>
               <HomeView
                 projects={projects}
                 projectsLoading={projectsLoading}
@@ -674,7 +690,7 @@ export function EntryShell({
                 promptTemplates={promptTemplates}
               />
             </div>
-            <div data-testid="entry-view-projects" data-active={view === 'projects' ? 'true' : 'false'} style={view === 'projects' ? undefined : { contentVisibility: 'hidden' }}>
+            <div data-testid="entry-view-projects" data-active={view === 'projects' ? 'true' : 'false'} {...inactiveViewProps(view === 'projects')}>
               {projectsLoading || skillsLoading || designSystemsLoading ? (
                 <CenteredLoader label={t('common.loading')} />
               ) : (
@@ -695,7 +711,7 @@ export function EntryShell({
                 </div>
               )}
             </div>
-            <div data-testid="entry-view-tasks" data-active={view === 'tasks' ? 'true' : 'false'} style={view === 'tasks' ? undefined : { contentVisibility: 'hidden' }}>
+            <div data-testid="entry-view-tasks" data-active={view === 'tasks' ? 'true' : 'false'} {...inactiveViewProps(view === 'tasks')}>
               <TasksView
                 skills={skills}
                 designTemplates={designTemplates}
@@ -703,14 +719,14 @@ export function EntryShell({
                 connectorsLoading={connectorsLoading}
               />
             </div>
-            <div data-testid="entry-view-plugins" data-active={view === 'plugins' ? 'true' : 'false'} style={view === 'plugins' ? undefined : { contentVisibility: 'hidden' }}>
+            <div data-testid="entry-view-plugins" data-active={view === 'plugins' ? 'true' : 'false'} {...inactiveViewProps(view === 'plugins')}>
               <PluginsView
                 onCreatePlugin={startPluginAuthoring}
                 onUsePlugin={usePluginFromLibrary}
                 onCreatePluginShareProject={onCreatePluginShareProject}
               />
             </div>
-            <div data-testid="entry-view-design-systems" data-active={view === 'design-systems' ? 'true' : 'false'} style={view === 'design-systems' ? undefined : { contentVisibility: 'hidden' }}>
+            <div data-testid="entry-view-design-systems" data-active={view === 'design-systems' ? 'true' : 'false'} {...inactiveViewProps(view === 'design-systems')}>
               {designSystemsLoading ? (
                 <CenteredLoader label={t('common.loading')} />
               ) : (
