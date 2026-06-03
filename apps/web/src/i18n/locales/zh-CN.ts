@@ -278,6 +278,8 @@ export const zhCN: Dict = {
   'settings.apiKeyInvalid': 'API key 无效。',
   'settings.apiKeyCleaned': '已移除 API key 中多余的空白字符。',
   'settings.modelsLoadedFromAccount': '✓ 已从你的账号加载 {count} 个模型。',
+  'settings.modelSourceAccount': '来自你的账号',
+  'settings.modelSourceSuggested': '建议',
   'settings.fetchModels': '拉取模型',
   'settings.fetchModelsTitle': '从当前提供方拉取可用模型',
   'settings.fetchModelsRunning': '正在拉取模型…',
