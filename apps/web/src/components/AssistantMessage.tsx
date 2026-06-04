@@ -1,5 +1,5 @@
 import { Fragment, memo, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ToolCard } from "./ToolCard";
+import { ToolCard, StreamingAskUserQuestionCard, isAskUserQuestionName } from "./ToolCard";
 import { FileOpsSummary } from "./FileOpsSummary";
 import {
   renderMarkdown,
@@ -441,7 +441,10 @@ function AssistantMessageImpl({
     const out: Block[] = [];
     for (const [id, entry] of Object.entries(liveToolInput)) {
       if (settledUseIds.has(id)) continue;
-      if (!isLiveCodeToolName(entry.name)) continue;
+      // Code-writing tools get the live code box; AskUserQuestion gets a live,
+      // read-only question card that grows token-by-token. Other tools
+      // (Bash/Grep/…) don't spawn a live block.
+      if (!isLiveCodeToolName(entry.name) && !isAskUserQuestionName(entry.name)) continue;
       out.push({ kind: "live-tool", id, name: entry.name, raw: entry.text });
     }
     return out;
@@ -679,6 +682,9 @@ function AssistantMessageImpl({
             );
           }
           if (b.kind === "live-tool") {
+            if (isAskUserQuestionName(b.name)) {
+              return <StreamingAskUserQuestionCard key={b.id} raw={b.raw} />;
+            }
             return <LiveCodeBox key={b.id} name={b.name} raw={b.raw} />;
           }
           if (b.kind === "plugin-candidate") {
