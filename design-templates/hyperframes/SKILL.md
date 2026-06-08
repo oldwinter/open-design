@@ -100,9 +100,13 @@ done
 - `npx hyperframes transcribe <audio>` - 生成 captions
 - `npx hyperframes tts <text>` - 生成 narration
 
-将 daemon dispatch 留给 `render`/`inspect`/`preview`（任何 Chrome-bound 的操作）。
+将 daemon dispatch 留给 `render`/`inspect`/`preview`（任何 Chrome-bound 的操作）。在 `.hyperframes-cache/` 下编写 composition 后，通过以下命令 render：
 
-**不要**调用 `"$OD_NODE_BIN" "$OD_BIN" media generate --model hyperframes-html` - 该 dispatcher path 会按设计返回 400（`AGENT_RENDERED`）。HyperFrames 应由你通过 npx 直接 render。
+```bash
+"$OD_NODE_BIN" "$OD_BIN" media generate --surface video --model hyperframes-html --composition-dir <rel>
+```
+
+daemon 会在你的 shell sandbox 之外运行 Chrome-bound HyperFrames render，并把进度 stream 回来。不要自己运行 `npx hyperframes render`。
 
 **不要**把 `hyperframes.json` / `meta.json` / `index.html` 放在 project root；OD 的 file listing 会递归扫描，用户会在 chat 中看到三个无关文件出现。
 
