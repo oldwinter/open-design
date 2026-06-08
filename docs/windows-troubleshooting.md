@@ -1,8 +1,8 @@
 # Windows Troubleshooting Guide
 
-Open Design runs on Windows natively, but the path is less travelled than macOS, Linux, or WSL2. This guide covers the most common errors you will hit on a fresh Windows machine and the exact fix for each.
+Open Design 可在 Windows 原生运行，但这条路径不像 macOS、Linux 或 WSL2 那样常走。本指南覆盖新 Windows 机器上最常见的错误，以及每个错误的精确修复方式。
 
-> **Tip:** If you already have WSL2 set up, that is the smoothest path on Windows. This guide is for native Windows (PowerShell).
+> **Tip:** 如果你已经配置好 WSL2，那是 Windows 上最顺滑的路径。本指南面向原生 Windows（PowerShell）。
 
 ---
 
@@ -16,37 +16,37 @@ Open Design runs on Windows natively, but the path is less travelled than macOS,
 
 ---
 
-## 1. Node 24 installation
+## 1. 安装 Node 24
 
 ### Symptom
-`node -v` returns something older than `v24.x.x`, or you do not have Node installed at all.
+`node -v` 返回的版本早于 `v24.x.x`，或者完全没有安装 Node。
 
 ### Fix
 
-**Option A — nvm-windows (recommended)**
+**Option A — nvm-windows（推荐）**
 
-1. Install [nvm-windows](https://github.com/coreybutler/nvm-windows/releases).
-2. In a fresh PowerShell window:
+1. 安装 [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)。
+2. 打开新的 PowerShell 窗口：
 
    ```powershell
    nvm install 24
    nvm use 24
-   node -v   # should print v24.x.x
+   node -v   # 应输出 v24.x.x
    ```
 
-**Option B — Official installer**
+**Option B — 官方 installer**
 
-Download and run the Node 24 `.msi` from [nodejs.org](https://nodejs.org/).
+从 [nodejs.org](https://nodejs.org/) 下载并运行 Node 24 `.msi`。
 
-### Common nvm-windows gotcha
+### 常见 nvm-windows 坑
 
-If running `nvm version` or `node -v` pops up a Windows dialog that asks *"How do you want to open this file?"*, a fake `nvm` file (no extension) has been created in `C:\Windows\System32`.
+如果运行 `nvm version` 或 `node -v` 时弹出 Windows 对话框询问 *"How do you want to open this file?"*，说明 `C:\Windows\System32` 中创建了一个假的 `nvm` 文件（无扩展名）。
 
-**Fix:** Delete that file, then restart PowerShell.
+**Fix:** 删除该文件，然后重启 PowerShell。
 
 ---
 
-## 2. pnpm not found
+## 2. 找不到 pnpm
 
 ### Symptom
 
@@ -54,57 +54,55 @@ If running `nvm version` or `node -v` pops up a Windows dialog that asks *"How d
 pnpm : The term 'pnpm' is not recognized as the name of a cmdlet...
 ```
 
-### Fix (Corepack — recommended)
+### Fix（Corepack — 推荐）
 
-The repo pins `pnpm@10.33.2` in `packageManager`. Corepack selects that exact version automatically:
+Repo 在 `packageManager` 中 pin 了 `pnpm@10.33.2`。Corepack 会自动选择这个精确版本：
 
 ```powershell
 corepack enable
-corepack pnpm --version   # should print 10.33.2
+corepack pnpm --version   # 应输出 10.33.2
 ```
 
-> **Note:** If `corepack enable` fails with `EPERM` or `EACCES` (common when Node is installed under `C:\Program Files\nodejs`), use the npm-global fallback in the next section instead.
+> **Note:** 如果 `corepack enable` 因 `EPERM` 或 `EACCES` 失败（Node 安装在 `C:\Program Files\nodejs` 时很常见），请改用下一节的 npm-global fallback。
 
+### Fix（npm global — 替代方案）
 
-
-### Fix (npm global — alternative)
-
-If Corepack is not available:
+如果 Corepack 不可用：
 
 ```powershell
 npm install -g pnpm@10.33.2
-pnpm -v   # should print 10.33.2
+pnpm -v   # 应输出 10.33.2
 ```
 
 ---
 
-## 3. Build scripts blocked
+## 3. Build scripts 被阻止
 
 ### Symptom
 
-During `pnpm install` you see:
+执行 `pnpm install` 时看到：
 
 ```text
 Ignored build scripts: better-sqlite3, ...
 ```
 
-Later, `pnpm tools-dev run web` fails with native-module errors.
+随后 `pnpm tools-dev run web` 因 native-module errors 失败。
 
 ### Fix
 
-pnpm 10 blocks lifecycle scripts by default. Allow the packages that need native compilation:
+pnpm 10 默认阻止 lifecycle scripts。允许需要 native compilation 的 packages：
 
 ```powershell
 pnpm approve-builds
 ```
 
-Approve any packages that appear in the list (commonly `better-sqlite3`, `electron`, and `esbuild`). Then re-run:
+批准列表中出现的 packages（通常是 `better-sqlite3`、`electron` 和 `esbuild`）。然后重新运行：
 
 ```powershell
 pnpm install
 ```
 
-> **Note:** `better-sqlite3` may fall back to compiling from source on Windows. If `pnpm install` hangs or fails on this package, make sure the Visual Studio Build Tools (step 4) are installed *before* running `pnpm install`.
+> **Note:** `better-sqlite3` 在 Windows 上可能 fallback 到从源码编译。如果 `pnpm install` 在这个 package 上卡住或失败，请确保在运行 `pnpm install` **之前**已安装 Visual Studio Build Tools（步骤 4）。
 
 ---
 
@@ -116,7 +114,7 @@ pnpm install
 gyp ERR! find VS could not find Visual Studio
 ```
 
-or
+或：
 
 ```text
 error MSB8036: The Windows SDK version was not found
@@ -124,23 +122,23 @@ error MSB8036: The Windows SDK version was not found
 
 ### Fix
 
-Install **Build Tools for Visual Studio 2022** with the following workloads:
+安装 **Build Tools for Visual Studio 2022**，并选择以下 workloads：
 
 - **Desktop development with C++**
 - **MSVC v143 - VS 2022 C++ x64/x86 build tools**
-- **Windows 11 SDK** (or Windows 10 SDK if you are on Windows 10)
+- **Windows 11 SDK**（如果你使用 Windows 10，也可选择 Windows 10 SDK）
 
-Download: [https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+下载：[https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
 
-If you see `gyp ERR! find Python`, verify Python is installed:
+如果看到 `gyp ERR! find Python`，请确认 Python 已安装：
 
 ```powershell
-python --version   # or py --version
+python --version   # 或 py --version
 ```
 
-If missing, install Python 3.x from [python.org](https://www.python.org/downloads/) and ensure it's on PATH.
+如果缺失，从 [python.org](https://www.python.org/downloads/) 安装 Python 3.x，并确保它在 PATH 上。
 
-After installing all build tools, open a **fresh** PowerShell window and re-run `pnpm install`.
+安装所有 build tools 后，打开**新的** PowerShell 窗口并重新运行 `pnpm install`。
 
 ---
 
@@ -154,43 +152,43 @@ After installing all build tools, open a **fresh** PowerShell window and re-run 
 
 ### Fix
 
-On fresh Windows installs, PowerShell blocks script execution by default:
+全新 Windows 安装默认会阻止 PowerShell 执行 scripts：
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-Restart PowerShell after changing the policy.
+修改 policy 后重启 PowerShell。
 
 ---
 
-## 6. Start the dev server
+## 6. 启动 dev server
 
 ### Symptom
-You have completed the steps above but are not sure how to launch the app.
+你已经完成上述步骤，但不确定如何启动 app。
 
 ### Fix
 
-From the repository root:
+从 repository root 运行：
 
 ```powershell
 pnpm tools-dev run web
 ```
 
-Expected output ends with something like:
+期望输出末尾类似：
 
 ```text
 Open Design dev server ready
   - Local:   http://localhost:17573
 ```
 
-The exact port may change; always read the terminal output.
+精确端口可能变化；始终以 terminal output 为准。
 
 ---
 
 ## Quick diagnostic checklist
 
-Run these commands in PowerShell before opening an issue. Include the output in your report.
+打开 issue 前，先在 PowerShell 中运行这些命令。请把输出附到报告里。
 
 ```powershell
 node -v
@@ -199,13 +197,13 @@ where.exe pnpm
 where.exe node
 where.exe opencode
 corepack --version
-python --version   # or py --version
+python --version   # 或 py --version
 Get-ExecutionPolicy -List
 ```
 
-## 7. Optional: quick launcher
+## 7. Optional：quick launcher
 
-If you want a double-click entry point on Windows, create a `launch.bat` file in the repo root with:
+如果你想在 Windows 上有一个 double-click 入口，可以在 repo root 创建 `launch.bat`：
 
 ```bat
 @echo off
@@ -213,18 +211,18 @@ cd /d %~dp0
 corepack pnpm tools-dev run web
 ```
 
-That keeps the launcher on the supported `pnpm tools-dev run web` path while still giving you a one-click start.
+这样仍然走受支持的 `pnpm tools-dev run web` 路径，同时提供 one-click start。
 
 ---
 
-## Optional: OpenCode agent CLI on Windows
+## Optional：Windows 上的 OpenCode agent CLI
 
-OpenCode is one of the local agent CLIs Open Design can drive. If you want to use it:
+OpenCode 是 Open Design 可以驱动的 local agent CLIs 之一。如果你想使用它：
 
 ```powershell
 npm install -g opencode-ai
-where.exe opencode   # should show C:\Users\YOUR_USERNAME\AppData\Roaming\npm\opencode.cmd
+where.exe opencode   # 应显示 C:\Users\YOUR_USERNAME\AppData\Roaming\npm\opencode.cmd
 opencode --version
 ```
 
-If Open Design still shows OpenCode as *not installed* in **Settings → Execution mode**, click **Rescan** after confirming the `opencode.cmd` directory is on your user `PATH`.
+如果 Open Design 在 **Settings → Execution mode** 中仍显示 OpenCode *not installed*，请先确认 `opencode.cmd` 所在目录在你的 user `PATH` 中，然后点击 **Rescan**。

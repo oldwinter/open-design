@@ -1,62 +1,29 @@
 # design-templates
 
-This directory holds **design templates** — packaged "shapes" the agent
-renders into a project artifact (decks, prototypes, image/video/audio
-templates, …). Each entry is a folder with a `SKILL.md` (same shape as
-functional skills) plus rendering side files (`example.html`,
-`assets/`, `references/`, …).
+此目录存放 **design templates**：agent 会渲染成 project artifact 的 packaged "shapes"（decks、prototypes、image/video/audio templates 等）。每个 entry 是一个文件夹，包含 `SKILL.md`（与 functional skills 同形状）以及 rendering side files（`example.html`、`assets/`、`references/` 等）。
 
-If the entry primarily *does work* on user input — utilities, briefs,
-asset packagers, fidelity audits — it belongs under `../skills/`
-instead. See `specs/current/skills-and-design-templates.md` for the
-full split.
+如果 entry 主要是对用户输入*执行工作*（utilities、briefs、asset packagers、fidelity audits），它应放在 `../skills/` 下。完整拆分见 `specs/current/skills-and-design-templates.md`。
 
 ## Daemon plumbing
 
-- Listed under `/api/design-templates`. The shape mirrors `/api/skills`
-  (same `SkillSummary`/`SkillDetail` types) so the web client can
-  reuse a single `SkillSummary[]` consumer for both surfaces.
-- Asset and example routes (`/api/skills/:id/example`,
-  `/api/skills/:id/assets/*`) intentionally span both registries — the
-  example HTML rewrites to `/api/skills/<id>/...` regardless of which
-  root owns the folder, so URLs keep resolving after the split.
-- Surfaced in the EntryView Templates tab and in the New-project panel
-  as the rendering catalogue.
+- 列在 `/api/design-templates` 下。该 shape mirror `/api/skills`（相同的 `SkillSummary`/`SkillDetail` types），因此 web client 可以为两个 surfaces 复用同一个 `SkillSummary[]` consumer。
+- Asset 和 example routes（`/api/skills/:id/example`、`/api/skills/:id/assets/*`）有意跨两个 registries：无论哪个 root 拥有 folder，example HTML 都会 rewrite 到 `/api/skills/<id>/...`，因此拆分后 URLs 仍可解析。
+- 在 EntryView Templates tab 和 New-project panel 中作为 rendering catalogue 展示。
 
 ## Adding a design template
 
-1. Create `design-templates/<my-template>/SKILL.md` with `name`,
-   `description`, `triggers`, and an explicit `od.mode` (one of
-   `prototype`, `deck`, `template`, `image`, `video`, `audio`).
-2. Ship a baked `example.html` (and any side files) so the EntryView
-   gallery has something to preview.
-3. Optionally drop additional baked samples under `examples/<key>.html`
-   to surface them as derived `<parent>:<key>` cards.
+1. 创建 `design-templates/<my-template>/SKILL.md`，包含 `name`、`description`、`triggers`，以及显式 `od.mode`（`prototype`、`deck`、`template`、`image`、`video`、`audio` 之一）。
+2. 随附 baked `example.html`（以及任何 side files），让 EntryView gallery 有内容可 preview。
+3. 可选地把额外 baked samples 放到 `examples/<key>.html` 下，将它们展示为 derived `<parent>:<key>` cards。
 
 ## Deck preview navigation contract
 
-Any template with `od.mode: deck` must make its baked `example.html`
-usable inside the gallery iframe without relying on the host app to add
-navigation. Use a shared deck runtime where one is available; otherwise
-ship a tiny local runtime with the same minimum behavior.
+任何带 `od.mode: deck` 的 template 都必须让其 baked `example.html` 在 gallery iframe 内可用，而不能依赖 host app 添加 navigation。有 shared deck runtime 时使用它；否则随附一个具备相同最低行为的 tiny local runtime。
 
-- **Keyboard:** `ArrowRight` / `ArrowDown` / `PageDown` / `Space` move to
-  the next slide; `ArrowLeft` / `ArrowUp` / `PageUp` move to the previous
-  slide; `Home` and `End` jump to the first and last slide. Ignore events
-  from inputs, selects, textareas, and editable regions.
-- **Wheel / trackpad:** accumulated `deltaX + deltaY` past a small threshold
-  moves exactly one slide, then resets quickly so a single gesture does not
-  overshoot.
-- **Touch:** a horizontal swipe of roughly 50px or more, greater than the
-  vertical movement, moves previous / next.
-- **Dots:** render one clickable button per slide, update the active dot on
-  every navigation path, and mark it with `aria-current="true"`.
-- **Active slide state:** keep the visible slide marked with
-  `.slide.active`; adding `.is-active` as a compatibility alias is fine.
-  Open Design's preview bridge reads this state for the host slide counter,
-  so it must stay in sync with keyboard, wheel, touch, and dot navigation.
-- **Iframe safety:** focus the deck on load / pointer interaction so keyboard
-  navigation works after the gallery preview appears. Avoid
-  `scrollIntoView()` because it can move the parent page instead of the deck.
-- **Fallbacks:** no-script and print output should still expose every slide.
-  Hide non-active slides only after the runtime has booted.
+- **Keyboard:** `ArrowRight` / `ArrowDown` / `PageDown` / `Space` 移到下一页 slide；`ArrowLeft` / `ArrowUp` / `PageUp` 移到上一页 slide；`Home` 和 `End` 跳到第一页和最后一页。忽略来自 inputs、selects、textareas 和 editable regions 的 events。
+- **Wheel / trackpad:** 累积的 `deltaX + deltaY` 超过小阈值后，正好移动一页 slide，然后快速 reset，避免单次 gesture overshoot。
+- **Touch:** 约 50px 或以上、且大于 vertical movement 的 horizontal swipe 移动 previous / next。
+- **Dots:** 每页 slide 渲染一个 clickable button，在每条 navigation path 上更新 active dot，并用 `aria-current="true"` 标记它。
+- **Active slide state:** 保持 visible slide 带有 `.slide.active`；添加 `.is-active` 作为 compatibility alias 也可以。Open Design 的 preview bridge 会读取该 state 来显示 host slide counter，因此它必须与 keyboard、wheel、touch 和 dot navigation 保持同步。
+- **Iframe safety:** 在 load / pointer interaction 时 focus deck，让 gallery preview 出现后 keyboard navigation 可用。避免 `scrollIntoView()`，因为它可能移动 parent page 而不是 deck。
+- **Fallbacks:** no-script 和 print output 仍应暴露每一页 slide。只在 runtime boot 后隐藏 non-active slides。

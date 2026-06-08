@@ -1,71 +1,71 @@
 # AMR Vela CLI CI Integration Review Summary
 
-## Summary
+## 概要
 
-This PR wires Open Design's beta mac arm64 packaging path to Vela's npm-owned CLI distribution contract.
+该 PR 将 Open Design 的 beta mac arm64 packaging path 接入 Vela 由 npm 托管的 CLI distribution contract。
 
-The goal is to make packaged AMR builds use a lockfile-backed Vela CLI package instead of requiring CI to download, build, or manually locate a Vela binary. The rollout is intentionally narrow: beta mac arm64 release builds require Vela, while mac Intel, Windows, Linux, preview, and stable builds remain non-strict and continue to skip Vela bundling when unsupported.
+目标是让 packaged AMR builds 使用由 lockfile 固定的 Vela CLI package，而不是要求 CI 下载、构建或手工定位 Vela binary。Rollout 有意收窄：beta mac arm64 release builds 要求 Vela，而 mac Intel、Windows、Linux、preview 和 stable builds 保持 non-strict，并在不支持时继续跳过 Vela bundling。
 
 ## Design Contract
 
-Open Design depends only on the Vela meta package:
+Open Design 只依赖 Vela meta package：
 
 ```json
 "@powerformer/vela-cli": "0.0.1-test"
 ```
 
-Open Design does not depend directly on platform packages such as `@powerformer/vela-cli-darwin-arm64`. Vela owns that platform matrix through optional dependencies and its resolver API.
+Open Design 不直接依赖 `@powerformer/vela-cli-darwin-arm64` 这类 platform packages。Vela 通过 optional dependencies 和 resolver API 拥有该 platform matrix。
 
-The Vela CLI binary resolution order is:
+Vela CLI binary resolution 顺序是：
 
 1. `OPEN_DESIGN_VELA_CLI_BIN`
 2. Dynamic import of `@powerformer/vela-cli`
 3. `resolveVelaCliBin({ strict })`
 
-This preserves a developer/emergency override while making npm the normal CI contract.
+这保留了 developer/emergency override，同时让 npm 成为常规 CI contract。
 
-The CI/package timing is:
+CI/package timing 如下：
 
-1. Vela publishes `@powerformer/vela-cli` to npm before Open Design packaging starts.
-2. Open Design pins that package in `tools/pack/package.json` and `pnpm-lock.yaml`.
-3. CI runs `pnpm install --frozen-lockfile`, which installs the pinned meta package and its supported optional native binary package.
-4. `tools-pack` enters the `resource-tree` phase and resolves/copies the Vela binary into the Open Design resource tree.
-5. `electron-builder` embeds that resource tree through `extraResources`.
-6. The packaged daemon receives `OD_RESOURCE_ROOT` at launch and resolves AMR to `OD_RESOURCE_ROOT/bin/vela` unless `VELA_BIN` explicitly overrides it.
+1. Vela 在 Open Design packaging 开始前将 `@powerformer/vela-cli` 发布到 npm。
+2. Open Design 在 `tools/pack/package.json` 和 `pnpm-lock.yaml` 中 pin 该 package。
+3. CI 运行 `pnpm install --frozen-lockfile`，安装 pinned meta package 以及其受支持的 optional native binary package。
+4. `tools-pack` 进入 `resource-tree` phase，并将 Vela binary 解析/复制到 Open Design resource tree。
+5. `electron-builder` 通过 `extraResources` 嵌入该 resource tree。
+6. Packaged daemon 启动时收到 `OD_RESOURCE_ROOT`，并将 AMR 解析到 `OD_RESOURCE_ROOT/bin/vela`，除非 `VELA_BIN` 显式覆盖。
 
-## Implemented Behavior
+## 已实现行为
 
-`tools-pack` now supports `--require-vela-cli`. When this flag is absent, missing Vela packages, unsupported platforms, missing resolvers, or null resolver results are treated as "skip Vela bundling." When this flag is present, packaging fails with an actionable error that mentions both remediation paths: install/use `@powerformer/vela-cli` or set `OPEN_DESIGN_VELA_CLI_BIN`.
+`tools-pack` 现在支持 `--require-vela-cli`。缺少该 flag 时，缺失 Vela packages、不支持的平台、缺失 resolvers 或 null resolver results 都会被视为 "skip Vela bundling"。存在该 flag 时，packaging 会以可执行错误失败，并同时提到两条 remediation paths：安装/使用 `@powerformer/vela-cli`，或设置 `OPEN_DESIGN_VELA_CLI_BIN`。
 
-Vela resource copying now lives in `tools/pack/src/vela-cli.ts`, so the generic resource-tree helper only owns static Open Design resources. The Vela helper resolves the binary through the shared resolver path and copies it into:
+Vela resource copying 现在位于 `tools/pack/src/vela-cli.ts`，因此 generic resource-tree helper 只拥有 static Open Design resources。Vela helper 通过 shared resolver path 解析 binary，并将其复制到：
 
 ```text
 resources/open-design/bin/vela
 ```
 
-The copied file is marked executable on POSIX platforms.
+复制后的文件在 POSIX platforms 上会被标记为 executable。
 
-The beta release workflow passes `--require-vela-cli` only in the mac arm64 release build path. Other release-beta jobs remain non-strict.
+Beta release workflow 只在 mac arm64 release build path 中传递 `--require-vela-cli`。其他 release-beta jobs 保持 non-strict。
 
-Windows resource cache keys include the optional Vela binary when present, preserving cache correctness without making Windows strict in this rollout.
+Windows resource cache keys 会在 optional Vela binary 存在时包含它，从而保持 cache correctness，同时不在本轮 rollout 中让 Windows 变成 strict。
 
 ## Vela Package Status
 
-The current verification npm packages have been published:
+当前 verification npm packages 已发布：
 
 - `@powerformer/vela-cli@0.0.1-test`
 - `@powerformer/vela-cli-darwin-arm64@0.0.1-test`
 
-Open Design should install only `@powerformer/vela-cli`. The meta package pulls the macOS arm64 binary package as an optional dependency on supported machines.
+Open Design 应只安装 `@powerformer/vela-cli`。在受支持机器上，该 meta package 会以 optional dependency 拉取 macOS arm64 binary package。
 
-Local verification outside the Vela monorepo:
+Vela monorepo 外的本地验证：
 
 ```bash
 npm install @powerformer/vela-cli@0.0.1-test
 npx vela --version
 ```
 
-Expected output:
+预期输出：
 
 ```text
 0.0.1-test
@@ -73,17 +73,17 @@ Expected output:
 
 ## Validation
 
-Focused `tools-pack` tests cover:
+聚焦的 `tools-pack` tests 覆盖：
 
-- `--require-vela-cli` config parsing;
-- env-provided Vela binary copying and executable permissions;
-- npm-resolved Vela binary copying and executable permissions;
-- env override priority over npm resolver output;
-- strict missing-package and missing-binary failures;
-- non-strict unsupported-platform skip behavior;
-- release-beta workflow placement of `--require-vela-cli`.
+- `--require-vela-cli` config parsing；
+- env-provided Vela binary copying 和 executable permissions；
+- npm-resolved Vela binary copying 和 executable permissions；
+- env override 相对 npm resolver output 的优先级；
+- strict missing-package 和 missing-binary failures；
+- non-strict unsupported-platform skip behavior；
+- release-beta workflow 中 `--require-vela-cli` 的 placement。
 
-Local validation for the Vela module extraction and `0.0.1-test` bump passed under Node `v24.0.0` and pnpm `10.33.2`:
+Vela module extraction 和 `0.0.1-test` bump 的本地验证已在 Node `v24.0.0` 和 pnpm `10.33.2` 下通过：
 
 ```bash
 pnpm --filter @open-design/tools-pack typecheck
@@ -92,35 +92,35 @@ pnpm guard
 pnpm typecheck
 ```
 
-The focused tools-pack test run passed 27 tests across 4 files.
+聚焦的 tools-pack test run 通过了 4 个文件中的 27 个 tests。
 
-A previous local non-publishing beta mac arm64 dry run also succeeded with `--require-vela-cli`, producing a DMG and bundling a Vela binary at:
+此前一次本地 non-publishing beta mac arm64 dry run 也在带 `--require-vela-cli` 时成功，生成了 DMG，并在以下位置 bundling 了 Vela binary：
 
 ```text
 .tmp/release-beta-dry-run/out/mac/namespaces/release-beta/resources/open-design/bin/vela
 ```
 
-The bundled binary was verified as executable and `Mach-O 64-bit executable arm64`.
+Bundled binary 已验证为 executable，且为 `Mach-O 64-bit executable arm64`。
 
-## Review Focus
+## Review 重点
 
-Reviewers should focus on these boundaries:
+Reviewers 应关注这些边界：
 
-- Open Design depends only on `@powerformer/vela-cli`.
-- `OPEN_DESIGN_VELA_CLI_BIN` remains highest priority.
-- Strict mode is opt-in and used only by beta mac arm64 CI.
-- Non-strict platforms must not fail when Vela is unsupported or unavailable.
-- Strict-mode errors include both remediation paths.
-- Workflow tests prevent accidental strict-mode rollout to other platforms.
+- Open Design 只依赖 `@powerformer/vela-cli`。
+- `OPEN_DESIGN_VELA_CLI_BIN` 保持最高优先级。
+- Strict mode 是 opt-in，且只由 beta mac arm64 CI 使用。
+- Non-strict platforms 在 Vela 不受支持或不可用时不能失败。
+- Strict-mode errors 包含两条 remediation paths。
+- Workflow tests 防止 strict-mode 意外 rollout 到其他平台。
 
-## Known Limits
+## 已知限制
 
-The local dry run did not exercise Apple signing, notarization, R2 upload, GitHub artifact upload, or release metadata publishing because those require CI secrets and hosted runner context.
+本地 dry run 没有覆盖 Apple signing、notarization、R2 upload、GitHub artifact upload 或 release metadata publishing，因为这些需要 CI secrets 和 hosted runner context。
 
-The first local dry run using `/tmp` exposed an existing path-shape issue caused by macOS resolving `/tmp` through `/private/tmp` in prebundle entrypoints. The successful dry run used the repository `.tmp` path, which better matches normal project-local tools-pack usage.
+第一次使用 `/tmp` 的本地 dry run 暴露了一个现有 path-shape issue：macOS 会在 prebundle entrypoints 中通过 `/private/tmp` 解析 `/tmp`。成功的 dry run 使用了仓库 `.tmp` path，它更接近正常的 project-local tools-pack 用法。
 
-## Follow-Ups
+## 后续
 
-After Vela publishes the first stable package version, update `tools/pack/package.json` and `pnpm-lock.yaml` from `0.0.1-test` to the stable version.
+Vela 发布第一个 stable package version 后，将 `tools/pack/package.json` 和 `pnpm-lock.yaml` 从 `0.0.1-test` 更新到 stable version。
 
-When Vela supports additional platforms, selectively enable `--require-vela-cli` for those release jobs and add matching workflow smoke coverage.
+当 Vela 支持更多平台时，为相应 release jobs 选择性启用 `--require-vela-cli`，并添加匹配的 workflow smoke coverage。

@@ -1,7 +1,7 @@
 ---
 name: algorithmic-art
 description: |
-  Create generative art using p5.js with seeded randomness so every render is reproducible. Useful for procedural posters, motion-style stills, and artistic frame studies.
+  使用 p5.js 和 seeded randomness 创作 generative art，让每次 render 都可复现。适合 procedural posters、motion-style stills 和艺术化 frame studies。
 triggers:
   - "algorithmic art"
   - "generative art"
@@ -17,28 +17,24 @@ od:
 
 # algorithmic-art
 
-> Curated from Anthropic's official skills repository.
+> 从 Anthropic 官方 skills repository 精选整理。
 
-## What it does
+## 功能
 
-Create generative art using p5.js with seeded randomness so every render is reproducible. Useful for procedural posters, motion-style stills, and artistic frame studies.
+使用 p5.js 和 seeded randomness 创作 generative art，让每次 render 都可复现。适合 procedural posters、motion-style stills 和艺术化 frame studies。
 
-## Source
+## 来源
 
 - Upstream: https://github.com/anthropics/skills/tree/main/skills/algorithmic-art
 - Category: `image-generation`
 
-## How to use
+## 使用方式
 
-This catalogue entry advertises the skill in Open Design so the agent
-discovers it during planning. To run the full upstream workflow with
-its original assets, scripts, and references, install the upstream
-bundle into your active agent's skills directory:
+这个 catalogue entry 会在 Open Design 中发布该 skill，让 agent 在 planning 阶段发现它。要运行包含原始 assets、scripts 和 references 的完整 upstream workflow，请把 upstream bundle 安装到当前 active agent 的 skills directory：
 
 ```bash
-# Inspect the upstream README for exact paths
+# 查看 upstream README 以确认精确路径
 open https://github.com/anthropics/skills/tree/main/skills/algorithmic-art
 ```
 
-Then ask the agent to invoke this skill by name (`algorithmic-art`) or with
-one of the trigger phrases listed in this skill's frontmatter.
+然后要求 agent 按名称（`algorithmic-art`）调用此 skill，或使用本 skill frontmatter 中列出的任一 trigger phrase。

@@ -1,16 +1,16 @@
 # Design System Authoring Guide
 
-**Parent:** [`spec.md`](spec.md) · **Siblings:** [`architecture.md`](architecture.md) · [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md)
+**父文档：** [`spec.md`](spec.md) · **同级文档：** [`architecture.md`](architecture.md) · [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md)
 
-This guide covers everything a contributor needs to submit a design system that passes review the first time. If you are adding a design system to `design-systems/<slug>/DESIGN.md`, read this document before opening a PR.
+本指南覆盖 contributor 提交 design system 并首次 review 就通过所需的一切。如果你要向 `design-systems/<slug>/DESIGN.md` 添加 design system，请在打开 PR 前阅读本文。
 
 ---
 
-## 1. The 9-Section Schema
+## 1. 9-Section Schema
 
-Every `DESIGN.md` must have these nine section headings:
+每个 `DESIGN.md` 都必须包含以下九个 section headings：
 
-```
+```text
 ## 1. Visual Theme & Atmosphere
 ## 2. Color
 ## 3. Typography
@@ -22,11 +22,11 @@ Every `DESIGN.md` must have these nine section headings:
 ## 9. Anti-patterns
 ```
 
-The schema parser extracts headings with `## [0-9].*` — it matches the section number prefix, not the full text. You can add context after the number (e.g., `## 4. Spacing & Grid` or `## 4. Spacing and layout`). Only the `## [digit].` prefix is required. Empty section bodies are acceptable (for rarely-used tokens like motion), but the nine numbered headings must be present.
+Schema parser 使用 `## [0-9].*` 提取 headings —— 它匹配 section number prefix，而不是完整文本。你可以在数字后添加上下文（例如 `## 4. Spacing & Grid` 或 `## 4. Spacing and layout`）。只有 `## [digit].` prefix 是必需的。Empty section bodies 可以接受（例如很少使用的 motion tokens），但九个编号 headings 必须存在。
 
 ### Header format
 
-The first H1 becomes the label shown in the design-system picker dropdown. The `> Category:` line immediately after the H1 determines grouping:
+第一个 H1 会成为 design-system picker dropdown 中显示的 label。H1 后紧跟的 `> Category:` 行决定 grouping：
 
 ```markdown
 # Design System Inspired by YourBrand
@@ -35,46 +35,46 @@ The first H1 becomes the label shown in the design-system picker dropdown. The `
 > One-line summary for the picker preview.
 ```
 
-Available categories: AI & LLM, Developer Tools, Productivity & SaaS, Backend & Data, Design & Creative, Fintech & Crypto, E-Commerce & Retail, Media & Consumer, Automotive, Editorial & Print, Retro & Nostalgic, Bold & Expressive, Modern & Minimal, Professional & Corporate. If none fit, introduce a new one with a PR comment explaining why.
+可用 categories：AI & LLM、Developer Tools、Productivity & SaaS、Backend & Data、Design & Creative、Fintech & Crypto、E-Commerce & Retail、Media & Consumer、Automotive、Editorial & Print、Retro & Nostalgic、Bold & Expressive、Modern & Minimal、Professional & Corporate。如果都不合适，请在 PR comment 中解释原因并引入新 category。
 
 ---
 
-## 2. The Review Framework: Lens A and Lens B
+## 2. Review Framework：Lens A 和 Lens B
 
-All design system PRs are reviewed against two lenses. Understanding these before you submit eliminates most round-trips.
+所有 design system PR 都按两个 lens review。提交前理解它们，可以消除大多数来回沟通。
 
-### Lens A — Code Correctness (P1/P2)
+### Lens A — Code Correctness（P1/P2）
 
-Is the file structurally valid and machine-processable? Failing Lens A is blocking.
+文件是否结构有效、机器可处理？Lens A 失败会 block。
 
-**Checks:**
-- All 9 section headings present and in order
-- Color tokens are real hex codes (`#RRGGBB` or `#RGB`), not `#REPLACE_ME`, `currentColor`, or CSS variable names
-- No duplicate folder names in `design-systems/`
-- CSS variables wrapped in `:root {}` blocks (not bare in the document)
-- Font labels for catalog extraction present (see Section 3 below)
-- `prefers-reduced-motion` targets specific elements, not a global `*` selector
-- Dark mode tokens use `[data-theme="dark"]` override pattern, not duplicate token blocks
+**Checks：**
+- 9 个 section headings 全部存在且顺序正确
+- Color tokens 是真实 hex codes（`#RRGGBB` 或 `#RGB`），不是 `#REPLACE_ME`、`currentColor` 或 CSS variable names
+- `design-systems/` 中没有重复 folder names
+- CSS variables 包裹在 `:root {}` blocks 中（不要裸露在 document 中）
+- 存在用于 catalog extraction 的 font labels（见下方 Section 3）
+- `prefers-reduced-motion` 针对具体 elements，而不是全局 `*` selector
+- Dark mode tokens 使用 `[data-theme="dark"]` override pattern，而不是重复 token blocks
 
-### Lens B — Reasoning Completeness (P3)
+### Lens B — Reasoning Completeness（P3）
 
-Is the content substantive and useful, not just syntactically valid? Failing Lens B generates a P3 comment, not a hard block.
+内容是否扎实有用，而不只是 syntactically valid？Lens B 失败会生成 P3 comment，但不是 hard block。
 
-**Checks:**
-- Color palette lists all roles used in the design system, not just primary/secondary
-- Type scale includes Display, H1, Body, Caption (minimum 4 tiers)
-- Components section has real CSS, not Lorem Ipsum or placeholder `/* TODO */` blocks
-- Anti-patterns are specific (e.g., "Do not use rounded corners > 4px" rather than "Avoid bad design")
-- Dark mode is a genuine override with different token values, not a copy of the light block
-- Prior art section names real, specific products or design systems (not "inspired by good design")
+**Checks：**
+- Color palette 列出 design system 中使用的所有 roles，而不只是 primary/secondary
+- Type scale 至少包含 Display、H1、Body、Caption（最少 4 tiers）
+- Components section 有真实 CSS，而不是 Lorem Ipsum 或 placeholder `/* TODO */` blocks
+- Anti-patterns 足够具体（例如 “Do not use rounded corners > 4px”，而不是 “Avoid bad design”）
+- Dark mode 是真正的 override，token values 不同，而不是 light block 的 copy
+- Prior art section 命名真实、具体的 products 或 design systems（不要写 “inspired by good design”）
 
 ---
 
 ## 3. CSS Variable Structure
 
-### `:root` block (required)
+### `:root` block（必需）
 
-All CSS variables must be inside a `:root {}` block. Bare CSS variable declarations at the top level of a section are invalid.
+所有 CSS variables 必须位于 `:root {}` block 内。Section 顶层的裸 CSS variable declarations 无效。
 
 ```css
 /* Correct */
@@ -84,15 +84,15 @@ All CSS variables must be inside a `:root {}` block. Bare CSS variable declarati
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Incorrect — not valid standalone CSS outside :root */
+/* Incorrect — outside :root 时不是有效 standalone CSS */
 --color-primary: #625DF5;
 ```
 
-Every color, spacing, typography, and shadow token belongs in `:root`. The exception is component-scoped overrides (e.g., `.card { --card-padding: 16px; }`) which belong under Components.
+每个 color、spacing、typography 和 shadow token 都属于 `:root`。例外是 component-scoped overrides（例如 `.card { --card-padding: 16px; }`），它们属于 Components。
 
 ### Dark mode pattern
 
-Use `[data-theme="dark"]` to override tokens for dark mode:
+使用 `[data-theme="dark"]` 覆盖 dark mode tokens：
 
 ```css
 :root {
@@ -106,13 +106,13 @@ Use `[data-theme="dark"]` to override tokens for dark mode:
 }
 ```
 
-Do not create separate CSS blocks for light and dark without using the `[data-theme="dark"]` selector — it breaks the semantic token system.
+不要在不使用 `[data-theme="dark"]` selector 的情况下为 light 和 dark 创建独立 CSS blocks —— 这会破坏 semantic token system。
 
 ### Font labels for catalog extraction
 
-Include this block in the Typography section for the daemon's parser regexes:
+在 Typography section 中包含此 block，供 daemon parser regexes 使用：
 
-```
+```text
 Font labels for catalog extraction:
 
 Display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif
@@ -120,7 +120,7 @@ Body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, 
 Mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace
 ```
 
-Labels must be `Display:`, `Body:`, `Mono:` with a colon, followed by the full font stack. The daemon reads these to populate the design-system catalog.
+Labels 必须是带冒号的 `Display:`、`Body:`、`Mono:`，后面跟完整 font stack。Daemon 读取这些字段来填充 design-system catalog。
 
 ---
 
@@ -128,22 +128,22 @@ Labels must be `Display:`, `Body:`, `Mono:` with a colon, followed by the full f
 
 ### WCAG AA contrast ratios
 
-All text and data colors must pass **4.5:1 minimum** contrast ratio against their background (4.5:1 for normal text, 3:1 for large text at 18px+ or 14px+ bold).
+所有 text 和 data colors 相对其 background 必须通过 **4.5:1 minimum** contrast ratio（普通文本 4.5:1，18px+ 或 14px+ bold 的大文本 3:1）。
 
-**How to verify:**
-- Use a contrast checker tool (e.g., WebAIM Contrast Checker, or `#B37A00` on `#FFFFFF`)
-- Test each foreground token against its paired background token — not against white by default
+**如何验证：**
+- 使用 contrast checker tool（例如 WebAIM Contrast Checker，或测试 `#B37A00` on `#FFFFFF`）
+- 对每个 foreground token 测试其 paired background token —— 不要默认只测白底
 
-**Common mistakes:**
-- Claiming WCAG compliance without testing — the review will catch this
-- Using a color that "looks fine" on white but fails on the actual dark surface
-- Warning/caution colors like `#B37A00` (3.05:1 on white, 5.35:1 on `#FFF3CD`) — verify against the correct background context
+**常见错误：**
+- 没有测试就声称 WCAG compliance —— review 会抓出来
+- 使用在 white 上 “looks fine” 但在实际 dark surface 上失败的颜色
+- Warning/caution colors 如 `#B37A00`（白底 3.05:1，在 `#FFF3CD` 上 5.35:1）—— 请针对正确 background context 验证
 
-**Tertiary text tokens** (timestamps, metadata, grid labels) on dark surfaces must still pass 4.5:1. Do not use `#4A6080` on `#0A0A0A` — that is 2.1:1. Use `#808086` on `#0A0A0A` instead (4.54:1).
+Dark surfaces 上的 **tertiary text tokens**（timestamps、metadata、grid labels）仍必须通过 4.5:1。不要在 `#0A0A0A` 上使用 `#4A6080` —— 那是 2.1:1。改用 `#808086` on `#0A0A0A`（4.54:1）。
 
 ### Focus states
 
-Every interactive component (buttons, links, input fields, cards with click handlers) must have a `:focus-visible` style:
+每个 interactive component（buttons、links、input fields、带 click handlers 的 cards）必须有 `:focus-visible` style：
 
 ```css
 .button-primary:focus-visible {
@@ -152,15 +152,15 @@ Every interactive component (buttons, links, input fields, cards with click hand
 }
 ```
 
-This is a Lens A accessibility requirement. Keyboard-only users get no visual feedback without it.
+这是 Lens A accessibility requirement。没有它，keyboard-only users 得不到 visual feedback。
 
 ---
 
 ## 5. Component Section Best Practices
 
-The Components section is the most commonly rejected part of a design system. Common failures:
+Components section 是 design system 最常被拒绝的部分。常见 failure：
 
-**Do not use hardcoded colors in component CSS.** Every color must reference a semantic token:
+**不要在 component CSS 中使用 hardcoded colors。** 每个 color 都必须引用 semantic token：
 
 ```css
 /* Correct */
@@ -176,9 +176,9 @@ The Components section is the most commonly rejected part of a design system. Co
 }
 ```
 
-**Use semantic names for states.** Prefer `--color-state-success` over `#00D26A` directly in component CSS.
+**为 states 使用 semantic names。** 在 component CSS 中直接使用 `#00D26A` 之前，优先使用 `--color-state-success`。
 
-**Example component structure:**
+**Example component structure：**
 
 ```css
 /* Status Badge */
@@ -216,10 +216,10 @@ The Components section is the most commonly rejected part of a design system. Co
 
 ### `prefers-reduced-motion`
 
-Target specific properties, not all elements globally:
+针对具体 properties，而不是全局所有 elements：
 
 ```css
-/* Correct — targets only the elements that animate */
+/* Correct — 只针对会动的 elements */
 @keyframes pulse-glow {
   0%, 100% { text-shadow: 0 0 8px currentColor; }
   50% { text-shadow: 0 0 20px currentColor; }
@@ -244,39 +244,39 @@ Target specific properties, not all elements globally:
 --transition-slow:   300ms ease-out;
 ```
 
-Match easing to purpose: `ease-in` for entering, `ease-out` for leaving, `linear` for continuous motion (scrolling, data updates).
+让 easing 匹配用途：`ease-in` 用于 entering，`ease-out` 用于 leaving，`linear` 用于 continuous motion（scrolling、data updates）。
 
 ---
 
 ## 7. Locale Coverage Requirements
 
-When adding a new design system, include complete English catalog metadata in `design-systems/<id>/DESIGN.md`. Locales use translated summaries when present and otherwise derive the runtime fallback from the English source fields.
+新增 design system 时，在 `design-systems/<id>/DESIGN.md` 中包含完整 English catalog metadata。Locales 有 translated summaries 时使用翻译；否则从 English source fields 派生 runtime fallback。
 
-### Which localized dictionaries need updating?
+### 哪些 localized dictionaries 需要更新？
 
-Use this decision tree to decide whether to add dictionary copy:
+用这个 decision tree 判断是否添加 dictionary copy：
 
-**Does a localized summary already exist for this design system?**
-- **Yes** → Add it to the matching `*_DESIGN_SYSTEM_SUMMARIES` dictionary.
-- **No** (no translation yet) → Keep the English `summary` and `category` metadata complete in `DESIGN.md`; the localized runtime renders those fields through the default fallback path.
+**这个 design system 是否已经存在 localized summary？**
+- **Yes** → 添加到对应的 `*_DESIGN_SYSTEM_SUMMARIES` dictionary。
+- **No**（暂无翻译）→ 保持 `DESIGN.md` 中 English `summary` 和 `category` metadata 完整；localized runtime 通过 default fallback path 渲染这些字段。
 
 | Locale | File to update | Array |
 |--------|---------------|-------|
-| German | `apps/web/src/i18n/content.ts` | `DE_DESIGN_SYSTEM_SUMMARIES` when localized copy exists |
-| French | `apps/web/src/i18n/content.fr.ts` | `FR_DESIGN_SYSTEM_SUMMARIES` when localized copy exists |
-| Russian | `apps/web/src/i18n/content.ru.ts` | `RU_DESIGN_SYSTEM_SUMMARIES` when localized copy exists |
+| German | `apps/web/src/i18n/content.ts` | 存在 localized copy 时更新 `DE_DESIGN_SYSTEM_SUMMARIES` |
+| French | `apps/web/src/i18n/content.fr.ts` | 存在 localized copy 时更新 `FR_DESIGN_SYSTEM_SUMMARIES` |
+| Russian | `apps/web/src/i18n/content.ru.ts` | 存在 localized copy 时更新 `RU_DESIGN_SYSTEM_SUMMARIES` |
 
-The default English fallback path is automatic. Add localized summary dictionaries only when translated copy exists.
+Default English fallback path 是自动的。只有在已有 translated copy 时才添加 localized summary dictionaries。
 
 ### Test behavior
 
-The `e2e/tests/localized-content.test.ts` test verifies that every `design-systems/*/DESIGN.md` on disk is discoverable and renders a non-empty localized summary through either translated dictionary copy or the English fallback fields.
+`e2e/tests/localized-content.test.ts` 会验证磁盘上的每个 `design-systems/*/DESIGN.md` 都可 discover，并能通过 translated dictionary copy 或 English fallback fields 渲染非空 localized summary。
 
 ---
 
 ## 8. Anti-patterns Section
 
-The anti-patterns section is where reviewers check if you understand what your design system is **not**. Good anti-patterns are specific and bounded:
+Anti-patterns section 是 reviewers 检查你是否理解 design system **不是什么**的地方。好的 anti-patterns 具体且有边界：
 
 ```markdown
 ## 9. Anti-patterns
@@ -288,7 +288,7 @@ The anti-patterns section is where reviewers check if you understand what your d
 - Do not use light mode — low-light environments are the only context
 ```
 
-Bad anti-patterns are vague:
+坏的 anti-patterns 很模糊：
 - ❌ "Avoid bad design"
 - ❌ "Don't overcomplicate things"
 - ❌ "Use good colors"
@@ -297,32 +297,32 @@ Bad anti-patterns are vague:
 
 ## 9. Pre-submission Checklist
 
-Before opening a PR, verify:
+打开 PR 前，请验证：
 
-- [ ] All 9 section headings present in order
-- [ ] No `#REPLACE_ME` or placeholder hex codes
-- [ ] All CSS variables wrapped in `:root {}`
-- [ ] Font labels block present (Display / Body / Mono)
-- [ ] `[data-theme="dark"]` block overrides light tokens, not copies them
-- [ ] Interactive components have `:focus-visible` styles
-- [ ] All color tokens verified at 4.5:1+ contrast against their paired background
-- [ ] No hardcoded colors (like `#ffffff`) in component CSS — use semantic tokens
-- [ ] `prefers-reduced-motion` targets specific elements, not `*`
-- [ ] Anti-patterns are specific and bounded, not vague prose
-- [ ] Dark mode section explicitly states the design intent if dark-only
-- [ ] No duplicate CSS block definitions (check for `.panel` appearing twice)
-- [ ] Category choice confirmed against existing category list
+- [ ] 9 个 section headings 全部存在且顺序正确
+- [ ] 没有 `#REPLACE_ME` 或 placeholder hex codes
+- [ ] 所有 CSS variables 都包裹在 `:root {}`
+- [ ] Font labels block 存在（Display / Body / Mono）
+- [ ] `[data-theme="dark"]` block 覆盖 light tokens，而不是复制它们
+- [ ] Interactive components 有 `:focus-visible` styles
+- [ ] 所有 color tokens 相对 paired background 已验证 4.5:1+ contrast
+- [ ] Component CSS 中没有 hardcoded colors（例如 `#ffffff`）—— 使用 semantic tokens
+- [ ] `prefers-reduced-motion` 针对具体 elements，而不是 `*`
+- [ ] Anti-patterns 具体且有边界，不是模糊散文
+- [ ] 如果是 dark-only，Dark mode section 明确说明 design intent
+- [ ] 没有重复 CSS block definitions（检查 `.panel` 是否出现两次）
+- [ ] Category choice 已对照现有 category list 确认
 
 ---
 
 ## 10. Design System Size Guide
 
-A well-documented design system is typically 300–600 lines. Being too brief (under 100 lines) triggers a Lens B review asking for more substance. Being verbose does not help if the content is generic.
+文档完善的 design system 通常是 300–600 行。太短（低于 100 行）会触发 Lens B review，要求补充实质内容。内容泛泛时，写得长也没帮助。
 
-**Focus areas:**
-- Color: 30–50 lines (palette tables + CSS blocks)
-- Components: 100–200 lines (3–6 components, fully specified)
-- Visual Theme: 30–40 lines (atmosphere + use cases + prior art)
-- Anti-patterns: 8–15 lines (one per key mistake to avoid)
+**Focus areas：**
+- Color：30–50 行（palette tables + CSS blocks）
+- Components：100–200 行（3–6 个 components，完整 specified）
+- Visual Theme：30–40 行（atmosphere + use cases + prior art）
+- Anti-patterns：8–15 行（每个关键错误一条）
 
-The mission-control design system (`design-systems/mission-control/DESIGN.md`) is a good reference — tight scope (3 primary colors, dark only, 6 components).
+Mission-control design system（`design-systems/mission-control/DESIGN.md`）是很好的参考 —— scope 紧凑（3 个 primary colors、dark only、6 个 components）。

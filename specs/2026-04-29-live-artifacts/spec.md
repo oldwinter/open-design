@@ -1,40 +1,40 @@
-# Live Artifacts via Agent Skills
+# 通过 Agent Skills 实现 Live Artifacts
 
 **Status:** Draft · 2026-04-29  
 **Parent:** [`docs/spec.md`](../../docs/spec.md)  
 **Siblings:** [`docs/skills-protocol.md`](../../docs/skills-protocol.md) · [`docs/agent-adapters.md`](../../docs/agent-adapters.md) · [`docs/modes.md`](../../docs/modes.md)  
 **Reference implementation:** `~/Projects/monet` connectors + live artifacts
 
-This spec defines how to bring Monet's **connectors** and **live artifacts** ideas into Open Design, but implement the agent-facing surface as **file-based agent skills plus daemon-owned local tools**, not as an in-process tool registry or MCP-first integration.
+本 spec 定义如何把 Monet 的 **connectors** 和 **live artifacts** 思路带入 Open Design，但 agent-facing surface 采用 **file-based agent skills + daemon-owned local tools** 实现，而不是 in-process tool registry 或 MCP-first integration。
 
 ---
 
-## 1. Product goal
+## 1. 产品目标
 
-Open Design should let an agent create previewable artifacts that are not just one-off generated files, but **live, refreshable, auditable views** backed by external or local data sources.
+Open Design 应该让 agent 创建可 preview 的 artifacts，而且它们不只是一次性 generated files，而是由外部或本地 data sources 支撑的 **live、refreshable、auditable views**。
 
-Examples:
+示例：
 
 - “Create a live GitHub release dashboard.”
 - “Make a Notion project status page and let me refresh it tomorrow.”
 - “Turn this folder of JSON files into a polished stakeholder report.”
 - “Create a design-system coverage artifact that can be refreshed after code changes.”
 
-The user experience should feel like the existing OD artifact flow:
+用户体验应该像现有 OD artifact flow：
 
-1. User chats with the selected agent.
-2. Agent uses a skill to plan and create a live artifact.
-3. OD persists the artifact as project-scoped files and metadata.
-4. UI previews the artifact in the existing iframe/file viewer model.
-5. User can refresh the artifact later without asking the agent to redesign it from scratch.
+1. 用户与选定的 agent 对话。
+2. Agent 使用 skill 规划并创建 live artifact。
+3. OD 将 artifact 持久化为 project-scoped files 和 metadata。
+4. UI 在现有 iframe/file viewer model 中 preview 该 artifact。
+5. 用户之后可以 refresh 该 artifact，而不必要求 agent 从零重新设计。
 
-## 2. Key decision
+## 2. 关键决策
 
 ### 2.1 Use `skill + daemon tool endpoint`, not MCP-first
 
-Monet exposes connectors and live artifacts through a controller-owned tool registry. OD should not copy that exact runtime shape because OD's core architecture is different: OD delegates to external CLI agents such as Claude Code, Codex, Cursor Agent, Gemini CLI, OpenCode, and Qwen.
+Monet 通过 controller-owned tool registry 暴露 connectors 和 live artifacts。OD 不应该照搬这种 runtime shape，因为 OD 的核心架构不同：OD 委托给 Claude Code、Codex、Cursor Agent、Gemini CLI、OpenCode 和 Qwen 等 external CLI agents。
 
-The agent-facing interface should therefore be:
+因此，agent-facing interface 应该是：
 
 ```text
 skills/live-artifact/SKILL.md
@@ -46,35 +46,35 @@ daemon-owned connector + artifact services
 project workspace files + metadata
 ```
 
-MCP may be added later as a wrapper over the same daemon services, but it should not be the first or only interface.
+以后可以把 MCP 作为同一组 daemon services 上的 wrapper 加进来，但它不应该是第一个或唯一 interface。
 
-Reasons:
+原因：
 
-- **Multi-agent compatibility:** every supported agent can read a skill and execute shell commands; MCP support varies by agent and CLI version.
-- **Lower migration cost:** current daemon `/api/chat` does not support per-run MCP binding.
-- **Centralized safety:** daemon endpoints can enforce project, path, connector, and output-size policies consistently.
-- **Skill-native product model:** OD's extension point is already `skills/` + `SKILL.md`, so live artifacts should feel like another OD capability, not a separate agent protocol.
+- **Multi-agent compatibility:** 每个受支持 agent 都能读取 skill 并执行 shell commands；MCP support 会随 agent 和 CLI version 变化。
+- **Lower migration cost:** 当前 daemon `/api/chat` 不支持 per-run MCP binding。
+- **Centralized safety:** daemon endpoints 可以一致地执行 project、path、connector 和 output-size policies。
+- **Skill-native product model:** OD 的 extension point 已经是 `skills/` + `SKILL.md`，所以 live artifacts 应该像另一个 OD capability，而不是单独的 agent protocol。
 
 ### 2.2 Keep live artifacts distinct, but project-native
 
-Live artifacts are a distinct persisted model integrated into the existing project UI. They must not be represented as a new static `ArtifactKind` in the existing artifact model, because they require ID-based identity, directory-shaped runtime storage, refresh/provenance history, connector permissions, locking, and server-rendered preview behavior.
+Live artifacts 是集成到现有 project UI 中的独立 persisted model。它们不应该在现有 artifact model 中表示为新的 static `ArtifactKind`，因为它们需要 ID-based identity、directory-shaped runtime storage、refresh/provenance history、connector permissions、locking，以及 server-rendered preview behavior。
 
-Product terms:
+产品术语：
 
-- **Design / project:** the workspace container.
-- **Artifact:** a static generated file inside a design.
-- **Live artifact:** a refreshable, data-backed artifact inside a design.
-- **Connector:** an external or local data source available to live artifacts.
+- **Design / project:** workspace container。
+- **Artifact:** design 内的 static generated file。
+- **Live artifact:** design 内可 refresh、由 data-backed 的 artifact。
+- **Connector:** live artifacts 可用的 external 或 local data source。
 
-Implementation boundaries:
+实现边界：
 
-- Keep dedicated live-artifact storage under `.live-artifacts/`, dedicated `/api/live-artifacts/*` endpoints, and dedicated live-artifact DTOs in `packages/contracts`.
-- Reuse the existing project scope, workspace tabs, file tree, viewer primitives, chat SSE stream, and API error envelope so live artifacts feel native without polluting the simple static artifact path.
-- Do not expose `.live-artifacts/` through generic project file APIs; all mutation should go through live-artifact or tool endpoints.
+- 将专用 live-artifact storage 放在 `.live-artifacts/` 下，使用专用 `/api/live-artifacts/*` endpoints，并在 `packages/contracts` 中放置专用 live-artifact DTOs。
+- 复用现有 project scope、workspace tabs、file tree、viewer primitives、chat SSE stream 和 API error envelope，让 live artifacts 体验上保持 native，同时不污染简单 static artifact path。
+- 不要通过 generic project file APIs 暴露 `.live-artifacts/`；所有 mutation 都应通过 live-artifact 或 tool endpoints。
 
-## 3. What to migrate from Monet
+## 3. 从 Monet 迁移什么
 
-### 3.1 Concepts to preserve
+### 3.1 需要保留的概念
 
 From `~/Projects/monet`:
 
@@ -89,7 +89,7 @@ From `~/Projects/monet`:
 - Refresh audit trail with step-level status.
 - Failure fallback: invalid refresh output should not blank the artifact.
 
-### 3.2 Concepts to adapt
+### 3.2 需要适配的概念
 
 Monet concept | OD adaptation
 ---|---
@@ -99,7 +99,7 @@ Connector tools dynamically injected into tool registry | Connector catalog expo
 SQLite-first artifact storage | Project-scoped metadata files first; SQLite optional later if indexing becomes necessary
 Controller-owned agent loop | External CLI agent loop; OD only injects skills and receives output/events
 
-### 3.3 Monet files used as source material
+### 3.3 用作 source material 的 Monet files
 
 - `apps/controller/src/connectors/catalog.ts`
 - `apps/controller/src/connectors/service.ts`
@@ -113,7 +113,7 @@ Controller-owned agent loop | External CLI agent loop; OD only injects skills an
 - `apps/controller/src/chat-storage.ts`
 - `specs/2026-04-27-live-artifacts/spec.md`
 
-## 4. Target architecture
+## 4. 目标架构
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -144,9 +144,9 @@ Controller-owned agent loop | External CLI agent loop; OD only injects skills an
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## 5. User-facing skill shape
+## 5. User-facing skill 形态
 
-Add a built-in skill:
+新增一个 built-in skill：
 
 ```text
 skills/live-artifact/
@@ -158,7 +158,7 @@ skills/live-artifact/
 └── assets/
     └── templates/
         ├── dashboard.html
-        └── report.html
+    └── report.html
 ```
 
 ### 5.1 `SKILL.md` frontmatter
@@ -167,8 +167,8 @@ skills/live-artifact/
 ---
 name: live-artifact
 description: |
-  Create refreshable, auditable Open Design artifacts backed by connector or local data.
-  Trigger when the user asks for live dashboards, refreshable reports, synced views, or reusable data-backed artifacts.
+  创建由 connector 或 local data 支撑、可刷新且可审计的 Open Design artifacts。
+  当用户请求 live dashboards、refreshable reports、synced views 或 reusable data-backed artifacts 时触发。
 triggers:
   - live artifact
   - refreshable dashboard
@@ -199,20 +199,20 @@ od:
 
 ### 5.2 Skill body responsibilities
 
-The skill should instruct the agent to:
+该 skill 应指示 agent：
 
-1. Determine whether the user wants a live artifact or a normal static artifact.
-2. Query available connectors and allowed read-only operations.
-3. Fetch from the named connected connector/source when available; ask for a data source only when no matching connected source exists, multiple candidates are equally plausible, or the request lacks any searchable topic/page/database clue.
-4. Create a safe render model, not raw provider output.
-5. Write `template.html`, `data.json`, `artifact.json`, and `provenance.json` into the live artifact workspace directory; treat `index.html` as derived preview output.
-6. Register the artifact through daemon tooling.
-7. Include provenance and refresh source metadata.
-8. Never store credentials, raw OAuth responses, headers, cookies, or tokens.
+1. 判断用户想要 live artifact，还是普通 static artifact。
+2. 查询 available connectors 和 allowed read-only operations。
+3. 当存在命名且已连接的 connector/source 时，从它抓取；只有在没有匹配的 connected source、多个候选同样合理，或请求缺少任何可搜索 topic/page/database clue 时，才向用户询问 data source。
+4. 创建 safe render model，而不是 raw provider output。
+5. 将 `template.html`、`data.json`、`artifact.json` 和 `provenance.json` 写入 live artifact workspace directory；把 `index.html` 视为 derived preview output。
+6. 通过 daemon tooling 注册 artifact。
+7. 包含 provenance 和 refresh source metadata。
+8. 永远不要存储 credentials、raw OAuth responses、headers、cookies 或 tokens。
 
 ### 5.3 Agent-callable command surface
 
-Prefer a small `od` wrapper command over raw `curl` in the skill body:
+在 skill body 中，优先使用小型 `od` wrapper command，而不是 raw `curl`：
 
 ```bash
 od tools live-artifacts create --input artifact.json
@@ -223,14 +223,14 @@ od tools connectors list --format compact
 od tools connectors execute --connector github --tool list_releases --input input.json
 ```
 
-The wrapper should be implemented as TypeScript source under `apps/daemon/src` and call daemon endpoints using injected runtime values:
+Wrapper 应作为 `apps/daemon/src` 下的 TypeScript source 实现，并使用注入的 runtime values 调用 daemon endpoints：
 
 - `OD_DAEMON_URL`
 - `OD_TOOL_TOKEN`
 
-The daemon injects these into the system prompt or skill preamble at runtime. The agent should not choose or override `projectId`; `/api/tools/*` derives project/run scope from `OD_TOOL_TOKEN`. If standalone JavaScript wrappers are later exposed, they must be generated build output from TypeScript source, not project-owned `.js` source files.
+Daemon 会在 runtime 将这些值注入 system prompt 或 skill preamble。Agent 不应该选择或覆盖 `projectId`；`/api/tools/*` 从 `OD_TOOL_TOKEN` 派生 project/run scope。如果未来暴露 standalone JavaScript wrappers，它们必须是 TypeScript source 的 generated build output，而不是 project-owned `.js` source files。
 
-Raw HTTP is for developer debugging only and must include the run-scoped bearer token:
+Raw HTTP 仅用于 developer debugging，并且必须包含 run-scoped bearer token：
 
 ```bash
 curl -s -X POST "$OD_DAEMON_URL/api/tools/live-artifacts/create" \
@@ -239,7 +239,7 @@ curl -s -X POST "$OD_DAEMON_URL/api/tools/live-artifacts/create" \
   -d @artifact.json
 ```
 
-## 6. Daemon API design
+## 6. Daemon API 设计
 
 ### 6.1 Connector endpoints
 
@@ -250,7 +250,7 @@ POST   /api/connectors/:connectorId/connect
 DELETE /api/connectors/:connectorId/connection
 ```
 
-MVP may stub OAuth-backed connectors and start with local/read-only connectors, but the API should preserve Monet's split between catalog and connection status. OAuth callback routes are deferred until OAuth-backed connectors are implemented.
+MVP 可以 stub OAuth-backed connectors，并从 local/read-only connectors 开始，但 API 应保留 Monet 对 catalog 与 connection status 的拆分。OAuth callback routes 推迟到 OAuth-backed connectors 实现时再做。
 
 Connector response shape:
 
@@ -270,14 +270,14 @@ type ConnectorDetail = {
 
 ### 6.2 Connector tool endpoints
 
-Agent and refresh-runner connector execution must use the same daemon-owned execution path:
+Agent 和 refresh-runner 的 connector execution 必须使用同一个 daemon-owned execution path：
 
 ```http
 GET  /api/tools/connectors/list
 POST /api/tools/connectors/execute
 ```
 
-`/api/tools/connectors/list` returns a compact list of connected, allowed, read-only-first tools for the current run token.
+`/api/tools/connectors/list` 返回当前 run token 可用的 connected、allowed、read-only-first tools 的 compact list。
 
 `/api/tools/connectors/execute` request:
 
@@ -310,13 +310,13 @@ type ConnectorExecuteResponse =
 
 Execution rules:
 
-- Require a valid `OD_TOOL_TOKEN` bound to the active run/project.
-- Reject tools that are not in the connector catalog allowlist.
-- Re-classify tool safety at execution time; catalog metadata alone is not authorization.
-- Reject `write`, `destructive`, and `unknown` tools for `artifact_refresh`.
-- Bound output size before it is returned to the agent.
-- Redact credentials and raw provider envelope fields before returning or persisting anything.
-- Record `providerExecutionId`, connector/account labels, and safety policy for provenance.
+- 要求有效的 `OD_TOOL_TOKEN`，并绑定到 active run/project。
+- 拒绝不在 connector catalog allowlist 中的 tools。
+- 在 execution time 重新分类 tool safety；仅有 catalog metadata 不构成 authorization。
+- 对 `artifact_refresh` 拒绝 `write`、`destructive` 和 `unknown` tools。
+- 返回给 agent 前先限制 output size。
+- 返回或持久化任何内容前，redact credentials 和 raw provider envelope fields。
+- 为 provenance 记录 `providerExecutionId`、connector/account labels 和 safety policy。
 
 ### 6.3 Live artifact endpoints
 
@@ -340,23 +340,23 @@ POST  /api/live-artifacts/:artifactId/refresh
 GET   /api/live-artifacts/:artifactId/preview
 ```
 
-The `/api/tools/*` endpoints are optimized for agent consumption: compact JSON, concise errors, and explicit machine-readable validation failures. They never accept an arbitrary `projectId`; project/run scope comes from `OD_TOOL_TOKEN`. The `/api/live-artifacts/*` endpoints are optimized for UI state and use the web app's normal project context.
+`/api/tools/*` endpoints 面向 agent consumption 优化：compact JSON、concise errors，以及明确的 machine-readable validation failures。它们绝不接受任意 `projectId`；project/run scope 来自 `OD_TOOL_TOKEN`。`/api/live-artifacts/*` endpoints 面向 UI state 优化，并使用 web app 的 normal project context。
 
-Both endpoint families must call the same service-layer validation and storage code. Only authentication and response verbosity should differ; errors should share the `ApiErrorResponse` envelope from `packages/contracts`.
+两组 endpoint families 必须调用同一套 service-layer validation 和 storage code。只有 authentication 和 response verbosity 应该不同；errors 应共享来自 `packages/contracts` 的 `ApiErrorResponse` envelope。
 
-Agent-facing tool endpoints should reuse the shared API error envelope from `packages/contracts/src/errors.ts` instead of introducing a parallel error type:
+Agent-facing tool endpoints 应复用 `packages/contracts/src/errors.ts` 中的 shared API error envelope，而不是引入 parallel error type：
 
 ```ts
 type LiveArtifactToolResponse<TSuccess> = TSuccess | ApiErrorResponse;
 ```
 
-Add live-artifact and connector-specific `ApiErrorCode` values such as `TOOL_TOKEN_INVALID`, `TOOL_TOKEN_EXPIRED`, `CONNECTOR_NOT_CONNECTED`, `CONNECTOR_SAFETY_DENIED`, `REFRESH_LOCKED`, `REFRESH_TIMED_OUT`, `OUTPUT_TOO_LARGE`, `TEMPLATE_BINDING_INVALID`, and `REDACTION_REQUIRED`. Validation details should live in the existing error `details` field so web, daemon, and tests share one error model.
+新增 live-artifact 和 connector-specific 的 `ApiErrorCode` values，例如 `TOOL_TOKEN_INVALID`、`TOOL_TOKEN_EXPIRED`、`CONNECTOR_NOT_CONNECTED`、`CONNECTOR_SAFETY_DENIED`、`REFRESH_LOCKED`、`REFRESH_TIMED_OUT`、`OUTPUT_TOO_LARGE`、`TEMPLATE_BINDING_INVALID` 和 `REDACTION_REQUIRED`。Validation details 应放在现有 error `details` field 中，让 web、daemon 和 tests 共享同一个 error model。
 
 ## 7. Data model
 
 ### 7.1 Storage layout
 
-Use project-scoped files under the daemon runtime data directory first. `OD_DATA_DIR` may override the default; otherwise `<RUNTIME_DATA_DIR>` is `<repo>/.od`:
+优先使用 daemon runtime data directory 下的 project-scoped files。`OD_DATA_DIR` 可以覆盖默认值；否则 `<RUNTIME_DATA_DIR>` 为 `<repo>/.od`：
 
 ```text
 <RUNTIME_DATA_DIR>/projects/<projectId>/
@@ -374,15 +374,15 @@ Use project-scoped files under the daemon runtime data directory first. `OD_DATA
                 └── provenance.json
 ```
 
-The dot-prefixed `.live-artifacts/` directory keeps implementation files out of the generic project file tree while preserving OD's file-first, inspectable-on-disk artifact philosophy. Add SQLite later only for cross-project indexing or high-volume refresh history.
+带 dot 前缀的 `.live-artifacts/` directory 会把 implementation files 排除在 generic project file tree 之外，同时保留 OD file-first、inspectable-on-disk 的 artifact philosophy。只有在需要 cross-project indexing 或 high-volume refresh history 时，才稍后加入 SQLite。
 
-`index.html` is a generated preview artifact, not the source of truth for refreshable data. The UI should load live artifacts through:
+`index.html` 是 generated preview artifact，不是 refreshable data 的 source of truth。UI 应通过以下 route 加载 live artifacts：
 
 ```http
 GET /api/live-artifacts/:artifactId/preview
 ```
 
-The preview route may serve the stored `index.html` for static cases, but for refreshable HTML it should render `template.html + data.json` and apply iframe sandbox/CSP headers. `snapshots/` should be hidden from the normal artifact tree unless the user explicitly opens refresh history.
+Preview route 可以在 static cases 中服务已存储的 `index.html`；但对于 refreshable HTML，它应该 render `template.html + data.json`，并应用 iframe sandbox/CSP headers。除非用户明确打开 refresh history，否则 `snapshots/` 应从 normal artifact tree 中隐藏。
 
 ### 7.2 Core types
 
@@ -459,19 +459,19 @@ type LiveArtifactProvenance = {
 
 ### 7.3 Validation rules
 
-Port Monet's strict validation posture:
+迁移 Monet 的 strict validation posture：
 
-- Apply the shared bounded JSON constraints in `packages/contracts` to every persisted or agent-supplied `BoundedJsonValue` / `BoundedJsonObject`.
-- Reject keys such as `raw`, `rawResponse`, `payload`, `body`, `headers`, `cookie`, `authorization`, `token`, `secret`, `credential`, `password`.
-- Redact suspicious source inputs before persistence.
-- Reject source inputs that still contain credential-like values after redaction.
-- HTML preview files must be generated from the document contract; refresh updates `data.json`, not arbitrary script.
+- 对每个 persisted 或 agent-supplied 的 `BoundedJsonValue` / `BoundedJsonObject` 应用 `packages/contracts` 中的 shared bounded JSON constraints。
+- 拒绝 `raw`、`rawResponse`、`payload`、`body`、`headers`、`cookie`、`authorization`、`token`、`secret`、`credential`、`password` 等 keys。
+- 持久化前 redact 可疑 source inputs。
+- Redaction 后仍包含 credential-like values 的 source inputs 必须拒绝。
+- HTML preview files 必须从 document contract 生成；refresh 更新 `data.json`，而不是 arbitrary script。
 
 #### 7.3.1 Shared bounded JSON constraints
 
-The shared live-artifact JSON envelope is intentionally small enough to validate synchronously, store in project files, display in the UI, and include in agent-facing error details without leaking raw provider payloads.
+Shared live-artifact JSON envelope 被刻意限制得足够小，以便同步验证、存储到 project files、在 UI 中展示，并包含在 agent-facing error details 中，同时不泄露 raw provider payloads。
 
-Define and export these constants from `packages/contracts` as `LIVE_ARTIFACT_BOUNDED_JSON_CONSTRAINTS`:
+在 `packages/contracts` 中定义并导出这些 constants，命名为 `LIVE_ARTIFACT_BOUNDED_JSON_CONSTRAINTS`：
 
 | Constraint | Value | Applies to |
 | --- | ---: | --- |
@@ -481,58 +481,58 @@ Define and export these constants from `packages/contracts` as `LIVE_ARTIFACT_BO
 | Maximum string length | `16 KiB` | Any single string value, measured in UTF-16 code units before persistence. |
 | Maximum serialized payload size | `256 KiB` | Any complete bounded JSON document, measured as UTF-8 bytes of canonical `JSON.stringify` output. |
 
-Validation must fail closed when a value exceeds any limit. Persisted files and create/update inputs must use the same limits so valid agent input remains valid after storage round-trips. Future connector-specific limits may be stricter, but must not exceed this shared envelope for values persisted into live artifact files.
+当 value 超过任何 limit 时，validation 必须 fail closed。Persisted files 与 create/update inputs 必须使用同一组 limits，确保有效的 agent input 在 storage round-trips 后仍然有效。未来 connector-specific limits 可以更严格，但对持久化到 live artifact files 的 values，不得超过这个 shared envelope。
 
 ### 7.4 HTML document model
 
-MVP live HTML artifacts should use `html_template_v1`:
+MVP live HTML artifacts 应使用 `html_template_v1`：
 
 ```text
 template.html + data.json → daemon render step → index.html / preview response
 ```
 
-Rules:
+规则：
 
-- `template.html` is authored by the agent during create/update.
-- Refreshable values must come from `data.json`, not be hardcoded only in HTML.
-- `html_template_v1` supports **Mustache-style escaped interpolation plus a minimal `data-od-repeat` structural directive**. It does not support arbitrary JavaScript, expression evaluation, helper functions, filters, partials, or raw HTML injection.
-- Refresh updates `data.json` and snapshots. It does not let connector output rewrite arbitrary HTML.
-- If a presentation redesign is needed, the user should ask the agent to update the artifact; refresh is for data changes.
-- `index.html` may be regenerated after successful refresh, but it is derived output.
-- The preview route must serve the document in a sandboxed iframe context with a restrictive CSP. External scripts are disallowed in MVP unless vendored and allowlisted.
+- `template.html` 由 agent 在 create/update 期间 author。
+- Refreshable values 必须来自 `data.json`，不能只 hardcode 在 HTML 中。
+- `html_template_v1` 支持 **Mustache-style escaped interpolation + 最小 `data-od-repeat` structural directive**。它不支持 arbitrary JavaScript、expression evaluation、helper functions、filters、partials 或 raw HTML injection。
+- Refresh 会更新 `data.json` 和 snapshots。它不允许 connector output 重写 arbitrary HTML。
+- 如果需要 presentation redesign，用户应该要求 agent update artifact；refresh 只用于 data changes。
+- `index.html` 可以在 successful refresh 后 regenerate，但它是 derived output。
+- Preview route 必须在 sandboxed iframe context 中服务 document，并应用 restrictive CSP。MVP 中除非 vendored 且 allowlisted，否则禁止 external scripts。
 
 #### 7.4.1 `html_template_v1` binding contract
 
-MVP binding syntax is intentionally small and deterministic:
+MVP binding syntax 刻意保持小而 deterministic：
 
-- **Escaped interpolation:** `{{data.path.to.value}}` inserts a scalar value from `data.json`.
-  - Paths must start with `data` and use dot-separated object keys, e.g. `{{data.summary.title}}`.
-  - Numeric array indexes are allowed only as path segments, e.g. `{{data.metrics.0.value}}`.
-  - Keys must match `/^[A-Za-z_][A-Za-z0-9_-]*$/`; bracket notation, computed paths, wildcards, function calls, and expressions are invalid.
-  - Values render as strings. `null` and missing values render as an empty string. Objects and arrays are invalid interpolation targets except inside a supported repeat context.
-- **Repeat directive:** `data-od-repeat="item in data.items"` repeats the annotated element once for each object in an array.
-  - The left side is a local alias matching `/^[A-Za-z_][A-Za-z0-9_]*$/`.
-  - The right side must be a `data.*` path resolving to an array.
-  - Inside the repeated element, interpolation may reference the local alias, e.g. `{{item.name}}`, using the same path grammar.
-  - Nested `data-od-repeat` directives are disallowed in MVP.
-  - `data-od-repeat` is removed from the generated output.
-- **Conditional directives:** none in MVP. Optional sections should be represented by empty strings, zero-length arrays, or separate agent-authored template variants during update.
-- **Attribute bindings:** interpolation may appear in text nodes and ordinary HTML attribute values, but not in attribute names, tag names, comments, `<script>`, `<style>`, `<iframe srcdoc>`, event-handler attributes such as `onclick`, or URL-bearing attributes that fail URL validation.
+- **Escaped interpolation:** `{{data.path.to.value}}` 从 `data.json` 插入 scalar value。
+  - Paths 必须以 `data` 开头，并使用 dot-separated object keys，例如 `{{data.summary.title}}`。
+  - Numeric array indexes 只能作为 path segments，例如 `{{data.metrics.0.value}}`。
+  - Keys 必须匹配 `/^[A-Za-z_][A-Za-z0-9_-]*$/`；bracket notation、computed paths、wildcards、function calls 和 expressions 都无效。
+  - Values 以 strings 渲染。`null` 和 missing values 渲染为空字符串。除 supported repeat context 内部以外，objects 和 arrays 都是无效 interpolation targets。
+- **Repeat directive:** `data-od-repeat="item in data.items"` 会对 array 中每个 object 重复 annotated element 一次。
+  - Left side 是匹配 `/^[A-Za-z_][A-Za-z0-9_]*$/` 的 local alias。
+  - Right side 必须是解析为 array 的 `data.*` path。
+  - 在 repeated element 内，interpolation 可以引用 local alias，例如 `{{item.name}}`，并使用相同 path grammar。
+  - MVP 禁止 nested `data-od-repeat` directives。
+  - `data-od-repeat` 会从 generated output 中移除。
+- **Conditional directives:** MVP 中没有。Optional sections 应通过 empty strings、zero-length arrays，或 update 时独立的 agent-authored template variants 表示。
+- **Attribute bindings:** interpolation 可以出现在 text nodes 和普通 HTML attribute values 中，但不能出现在 attribute names、tag names、comments、`<script>`、`<style>`、`<iframe srcdoc>`、`onclick` 等 event-handler attributes，或 URL validation 失败的 URL-bearing attributes 中。
 
-All interpolation is HTML-escaped by default:
+所有 interpolation 默认进行 HTML-escaped：
 
-- Text-node interpolation escapes `&`, `<`, `>`, `"`, and `'`.
-- Attribute interpolation escapes the same characters and must not be allowed to break out of the containing attribute.
-- URL-bearing attributes such as `href` and `src` must resolve to allowed `http:` or `https:` URLs, root-relative paths, same-artifact relative asset paths, or fragments; `javascript:`, `data:`, `blob:`, and other unsupported schemes are rejected.
+- Text-node interpolation 会 escape `&`、`<`、`>`、`"` 和 `'`。
+- Attribute interpolation 会 escape 相同字符，并且不得允许其 break out of containing attribute。
+- `href` 和 `src` 等 URL-bearing attributes 必须解析为允许的 `http:` 或 `https:` URLs、root-relative paths、same-artifact relative asset paths 或 fragments；`javascript:`、`data:`、`blob:` 和其他 unsupported schemes 会被拒绝。
 
-Raw / unescaped interpolation is explicitly forbidden in MVP:
+MVP 明确禁止 raw / unescaped interpolation：
 
 - No triple braces such as `{{{data.html}}}`.
 - No ampersand form such as `{{& data.html}}`.
 - No `data-od-html`, `data-od-raw`, `data-od-bind-html`, or equivalent raw insertion attributes.
 - No opt-out flag in artifact metadata or tool input.
 
-The daemon must validate `template.html` before persistence and again before preview rendering. Validation failures must use the shared API error envelope with field/path details in `details`.
+Daemon 必须在 persistence 前验证 `template.html`，并在 preview rendering 前再次验证。Validation failures 必须使用 shared API error envelope，并在 `details` 中提供 field/path details。
 
 ## 8. Runtime flows
 
@@ -582,28 +582,28 @@ If the refreshable source succeeds, commit data.json, snapshot, and regenerated 
 If it fails, keep previous data/preview, write failed refresh record, and surface the error
 ```
 
-MVP refresh is **artifact-level all-or-nothing**.
+MVP refresh 是 **artifact-level all-or-nothing**。
 
-Refresh runner requirements:
+Refresh runner requirements：
 
-- Acquire a per-artifact refresh lock. Reject or queue concurrent refreshes.
-- Assign a monotonic `refreshId`; stale refreshes cannot overwrite newer committed data.
-- Enforce per-source and total refresh timeouts.
-- Persist every step to `refreshes.jsonl` with status, duration, connector metadata, and compact error.
-- On daemon restart, recover refreshes stuck in `running` past timeout as `failed` and keep the last valid preview.
-- Write snapshots only after validation succeeds, or write failed attempts under a separate `snapshots/<refreshId>/failed/` directory that is not used for preview.
+- 获取 per-artifact refresh lock。拒绝或排队 concurrent refreshes。
+- 分配 monotonic `refreshId`；stale refreshes 不能覆盖更新的 committed data。
+- 执行 per-source 和 total refresh timeouts。
+- 将每一步持久化到 `refreshes.jsonl`，包含 status、duration、connector metadata 和 compact error。
+- Daemon restart 后，将超过 timeout 仍卡在 `running` 的 refreshes 恢复为 `failed`，并保留最后一个 valid preview。
+- 仅在 validation 成功后写 snapshots；或者将 failed attempts 写入单独的 `snapshots/<refreshId>/failed/` directory，且不用于 preview。
 
 ### 8.3 Update flow
 
-Agent or UI can update title, pinned status, archive status, preview entry, or non-source presentation fields. Updating `sourceJson` requires the same validation as create.
+Agent 或 UI 可以 update title、pinned status、archive status、preview entry 或 non-source presentation fields。更新 `sourceJson` 需要与 create 相同的 validation。
 
 ## 9. Connector strategy
 
 ### 9.1 Read-only v1
 
-MVP should only expose read-only connector tools to automatic or refresh execution.
+MVP 只应把 read-only connector tools 暴露给 automatic 或 refresh execution。
 
-Write actions can exist later, but they must require explicit user confirmation and should not be refreshable.
+Write actions 可以稍后存在，但必须要求 explicit user confirmation，并且不应 refreshable。
 
 Safety classification:
 
@@ -615,45 +615,45 @@ type ConnectorToolSafety = {
 };
 ```
 
-Rules:
+规则：
 
-- OAuth scopes or names containing `write`, `create`, `update`, `delete`, `admin`, `send`, `post`, `manage` imply write/confirm.
-- Destructive hints imply destructive/disabled for refresh.
-- Explicit read-only hints can be read/auto.
-- Unknown defaults to write/confirm, not read/auto.
+- 包含 `write`、`create`、`update`、`delete`、`admin`、`send`、`post`、`manage` 的 OAuth scopes 或 names 暗示 write/confirm。
+- Destructive hints 对 refresh 暗示 destructive/disabled。
+- 明确 read-only hints 可以是 read/auto。
+- Unknown 默认是 write/confirm，而不是 read/auto。
 
 ### 9.2 Execute-time enforcement
 
-Connector policy must be enforced at execution and refresh time, not only when the catalog is built:
+Connector policy 必须在 execution 和 refresh time 执行，而不只是 catalog 构建时执行：
 
-- Catalog classification is metadata, not authorization.
-- `/api/tools/connectors/execute` re-checks allowlist, current scopes, tool safety, and connector status.
-- Saved artifact policy cannot grant new permission by itself.
-- `unknown`, `write`, and `destructive` tools are never refreshable.
-- If a previously read-only tool later appears write-capable because scopes or provider metadata changed, refresh must fail closed.
-- A write action may be supported in the future with explicit confirmation, but it must not be stored as a refreshable source.
-- Agent calls and refresh-runner calls must share the same connector execution service so audit and safety behavior cannot drift.
+- Catalog classification 是 metadata，不是 authorization。
+- `/api/tools/connectors/execute` 重新检查 allowlist、current scopes、tool safety 和 connector status。
+- Saved artifact policy 本身不能授予新 permission。
+- `unknown`、`write` 和 `destructive` tools 永远不可 refreshable。
+- 如果曾经 read-only 的 tool 因 scopes 或 provider metadata 改变而后来显示为 write-capable，refresh 必须 fail closed。
+- 未来可以通过 explicit confirmation 支持 write action，但它不得被存储为 refreshable source。
+- Agent calls 与 refresh-runner calls 必须共享同一个 connector execution service，确保 audit 和 safety behavior 不会 drift。
 
 ### 9.3 Credential storage
 
-Default decision:
+默认决策：
 
-- OAuth connection state and credentials live outside project artifacts, under a daemon-controlled global store such as `~/.open-design/connectors/` or an app database.
-- Project artifacts only store stable references: `connectorId`, `accountLabel`, provider tool id/name, minimized input, and provenance.
-- Access tokens, refresh tokens, headers, cookies, OAuth state, and raw provider responses are never written under `<RUNTIME_DATA_DIR>/projects/<projectId>/.live-artifacts` or any other project artifact directory.
-- Refresh resolves credentials through the daemon connector service at execution time.
-- UI must show the connector/account label so users understand which global connection backs a project artifact.
+- OAuth connection state 和 credentials 位于 project artifacts 之外，放在 daemon-controlled global store 中，例如 `~/.open-design/connectors/` 或 app database。
+- Project artifacts 只存储 stable references：`connectorId`、`accountLabel`、provider tool id/name、minimized input 和 provenance。
+- Access tokens、refresh tokens、headers、cookies、OAuth state 和 raw provider responses 永远不能写入 `<RUNTIME_DATA_DIR>/projects/<projectId>/.live-artifacts` 或任何其他 project artifact directory。
+- Refresh 在 execution time 通过 daemon connector service 解析 credentials。
+- UI 必须显示 connector/account label，让用户理解哪个 global connection 支撑 project artifact。
 
 ### 9.4 Initial connector candidates
 
-MVP can avoid OAuth complexity by shipping local daemon tools first:
+MVP 可以先交付 local daemon tools，避免 OAuth complexity：
 
 - `project_files.search`
 - `project_files.read_json`
 - `git.summary`
 - `github.public_repo_summary` using unauthenticated public API or user-provided token later
 
-OAuth-backed providers can follow the Monet pattern after the artifact pipeline is stable:
+Artifact pipeline 稳定后，OAuth-backed providers 可以遵循 Monet pattern：
 
 - GitHub
 - Notion
@@ -664,31 +664,31 @@ OAuth-backed providers can follow the Monet pattern after the artifact pipeline 
 
 ### 10.1 Entry header connector tab
 
-Add a `Connectors` tab to the entry-header navigation. When selected, it should show cards for available external and local connectors.
+在 entry-header navigation 中添加 `Connectors` tab。选中后，它应该显示 available external 和 local connectors 的 cards。
 
-Connector cards should include, as data becomes available:
+随着数据可用，connector cards 应包含：
 
-- connector name and provider/category
+- connector name 和 provider/category
 - connection status
-- connected account label, when connected
-- connect, disconnect, or configure action
-- available read-only tools/capabilities, when useful
+- connected account label（当已连接时）
+- connect、disconnect 或 configure action
+- available read-only tools/capabilities（有用时）
 
-This tab is a workspace-level connector management surface, not a separate project type. Phase 1B may show stubbed or local-only connector card data; full external connector status, connect/disconnect actions, and OAuth-backed flows belong to the connector phase.
+这个 tab 是 workspace-level connector management surface，不是单独的 project type。Phase 1B 可以显示 stubbed 或 local-only connector card data；完整 external connector status、connect/disconnect actions 和 OAuth-backed flows 属于 connector phase。
 
 ### 10.2 New project live artifact entry
 
-Add `New live artifact` to the new project tabs. Selecting it should start the normal project creation flow with live-artifact intent and the `live-artifact` skill path preselected or strongly hinted.
+在 new project tabs 中添加 `New live artifact`。选中后，应以 live-artifact intent 启动 normal project creation flow，并预选或强提示 `live-artifact` skill path。
 
-This creates a normal project/design whose first output is expected to be a live artifact. It should not create a separate top-level project type unless the product model changes later.
+这会创建一个 normal project/design，其第一个 output 预期是 live artifact。除非 product model 后续改变，否则不应创建单独的 top-level project type。
 
-Live artifacts should also be listed in the existing `Designs` tab. The `Designs` tab should continue to show normal designs/projects, and it should additionally surface live artifacts as first-class selectable entries associated with their parent project/design. Live artifact entries should be visually distinguishable with `Live` / `Refreshable` status and should open directly into the project workspace with the corresponding live artifact selected. Parent design cards may also show a small live-artifact count or status summary.
+Live artifacts 也应列在现有 `Designs` tab 中。`Designs` tab 应继续显示 normal designs/projects，同时额外把 live artifacts 作为与 parent project/design 关联的一等 selectable entries 暴露出来。Live artifact entries 应通过 `Live` / `Refreshable` status 在视觉上可区分，并直接打开到 project workspace，选中对应 live artifact。Parent design cards 也可以显示小型 live-artifact count 或 status summary。
 
 ### 10.3 Artifact tree
 
-Show live artifacts as a first-class virtual group in the existing artifact tree, not as raw nested files. The tree should show one node per live artifact and hide implementation files such as `snapshots/` by default.
+在现有 artifact tree 中将 live artifacts 显示为 first-class virtual group，而不是 raw nested files。Tree 应为每个 live artifact 显示一个 node，并默认隐藏 `snapshots/` 等 implementation files。
 
-`ProjectView.tsx` should fetch `GET /api/live-artifacts?projectId=...` alongside the existing project file fetch, then merge live artifacts into the workspace state as a discriminated item such as `kind: 'live-artifact'`. Use namespaced tab IDs such as `live:<artifactId>` so live artifacts cannot collide with file paths. `FileWorkspace.tsx` should render these items in a virtual group and route open/select actions to a live artifact viewer without treating artifact IDs as normal project file paths.
+`ProjectView.tsx` 应在现有 project file fetch 旁边获取 `GET /api/live-artifacts?projectId=...`，然后把 live artifacts 作为 discriminated item（例如 `kind: 'live-artifact'`）merge 到 workspace state 中。使用 `live:<artifactId>` 这样的 namespaced tab IDs，避免 live artifacts 与 file paths 冲突。`FileWorkspace.tsx` 应在 virtual group 中渲染这些 items，并把 open/select actions 路由到 live artifact viewer，而不是把 artifact IDs 当作 normal project file paths。
 
 Badges:
 
@@ -700,13 +700,13 @@ Badges:
 
 ### 10.4 Preview panel
 
-Reuse existing iframe/file viewer where possible:
+尽可能复用现有 iframe/file viewer：
 
-- Load `GET /api/live-artifacts/:artifactId/preview` in the iframe instead of opening nested files directly.
-- Add read-only viewer toolbar tabs using the existing `FileViewer.tsx` / `HtmlViewer` tab pattern: `Preview`, `Source`, `Data`, `Provenance`, `Refresh history`. Do not require a new split-pane side panel in Phase 1B.
-- Show refresh button only when at least one tile is refreshable. When `refreshStatus` is `running`, the button should be disabled and show a loading state to prevent duplicate refreshes.
+- 在 iframe 中加载 `GET /api/live-artifacts/:artifactId/preview`，而不是直接打开 nested files。
+- 使用现有 `FileViewer.tsx` / `HtmlViewer` tab pattern 添加 read-only viewer toolbar tabs：`Preview`、`Source`、`Data`、`Provenance`、`Refresh history`。Phase 1B 不要求新的 split-pane side panel。
+- 只有至少一个 tile 可 refresh 时才显示 refresh button。当 `refreshStatus` 为 `running` 时，button 应 disabled 并显示 loading state，防止 duplicate refreshes。
 
-Data sources for viewer tabs:
+Viewer tabs 的 data sources：
 
 - `Source`: `artifact.json` `sourceJson` fields with credentials redacted.
 - `Data`: current `data.json` and tile render summaries.
@@ -715,9 +715,9 @@ Data sources for viewer tabs:
 
 ### 10.5 Chat integration
 
-When an agent creates or updates a live artifact, the daemon should emit an agent/UI event similar to produced files so the UI can open it automatically. For MVP, extend the existing chat SSE stream in `packages/contracts/src/sse/chat.ts` rather than creating a second live-artifact SSE connection. `apps/web/src/providers/daemon.ts` should translate the SSE payload into a UI `AgentEvent` such as `kind: 'live_artifact_update'`, and `ProjectView.tsx` should use that event to refresh the live artifact list and auto-open the artifact using the same open-request flow used for produced files.
+当 agent 创建或更新 live artifact 时，daemon 应 emit 一个类似 produced files 的 agent/UI event，让 UI 可以自动打开它。MVP 中扩展 `packages/contracts/src/sse/chat.ts` 中现有 chat SSE stream，而不是创建第二条 live-artifact SSE connection。`apps/web/src/providers/daemon.ts` 应把 SSE payload 转换为 UI `AgentEvent`，例如 `kind: 'live_artifact_update'`；`ProjectView.tsx` 应使用该 event refresh live artifact list，并通过 produced files 使用的同一个 open-request flow 自动打开 artifact。
 
-Suggested event:
+建议 event：
 
 ```ts
 type LiveArtifactEvent = {
@@ -733,100 +733,100 @@ type LiveArtifactEvent = {
 
 ### Phase 0 — Contracts first
 
-- Add this spec.
-- Add shared TypeScript DTOs under `packages/contracts`, keeping the package pure TypeScript and free of Next.js, Express, filesystem/process APIs, browser APIs, SQLite, daemon internals, and sidecar control-plane dependencies.
-- Add shared contract DTOs for `LiveArtifact`, `LiveArtifactSource`, and connector catalog entries. Runtime validation schemas belong under daemon source, especially `apps/daemon/src/live-artifacts/schema.ts`, and should consume or mirror the shared contract types without adding daemon internals to `packages/contracts`.
-- Add or update contract files such as:
+- 添加本 spec。
+- 在 `packages/contracts` 下添加 shared TypeScript DTOs，并保持该 package 为 pure TypeScript，且不依赖 Next.js、Express、filesystem/process APIs、browser APIs、SQLite、daemon internals 或 sidecar control-plane dependencies。
+- 为 `LiveArtifact`、`LiveArtifactSource` 和 connector catalog entries 添加 shared contract DTOs。Runtime validation schemas 属于 daemon source，尤其是 `apps/daemon/src/live-artifacts/schema.ts`，并应 consume 或 mirror shared contract types，而不把 daemon internals 加入 `packages/contracts`。
+- 添加或更新 contract files，例如：
   - `packages/contracts/src/api/live-artifacts.ts`
   - `packages/contracts/src/api/connectors.ts`
   - `packages/contracts/src/sse/chat.ts`
   - `packages/contracts/src/examples.ts`
   - `packages/contracts/src/index.ts`
-- Add fixture artifacts under `specs/2026-04-29-live-artifacts/examples/`.
-- Extend `packages/contracts/src/errors.ts` with live artifact / connector error codes instead of defining a second error envelope.
-- Define `html_template_v1` binding grammar and example `template.html + data.json`.
+- 在 `specs/2026-04-29-live-artifacts/examples/` 下添加 fixture artifacts。
+- 扩展 `packages/contracts/src/errors.ts`，加入 live artifact / connector error codes，而不是定义第二套 error envelope。
+- 定义 `html_template_v1` binding grammar 和示例 `template.html + data.json`。
 
 Exit criteria:
 
-- Schemas reject raw provider response fields and credential-like values.
-- Example artifact can be rendered from `template.html + data.json` through the preview contract.
+- Schemas 拒绝 raw provider response fields 和 credential-like values。
+- Example artifact 可以通过 preview contract 从 `template.html + data.json` render。
 
 ### Phase 1A — Register static local live artifacts
 
-- Implement daemon live artifact service.
-- Implement project-scoped file storage under `<RUNTIME_DATA_DIR>/projects/<projectId>/.live-artifacts`.
-- Add `/api/tools/live-artifacts/create` and `list`.
-- Add `GET /api/live-artifacts?projectId=...` and `GET /api/live-artifacts/:artifactId`.
-- Add run-scoped `OD_TOOL_TOKEN` for tool endpoints.
+- 实现 daemon live artifact service。
+- 在 `<RUNTIME_DATA_DIR>/projects/<projectId>/.live-artifacts` 下实现 project-scoped file storage。
+- 添加 `/api/tools/live-artifacts/create` 和 `list`。
+- 添加 `GET /api/live-artifacts?projectId=...` 和 `GET /api/live-artifacts/:artifactId`。
+- 为 tool endpoints 添加 run-scoped `OD_TOOL_TOKEN`。
 
 Exit criteria:
 
-- A static `html_template_v1` artifact can be registered without connectors or refresh.
-- The daemon rejects invalid paths, raw provider fields, and credential-like values.
+- 一个 static `html_template_v1` artifact 可以在没有 connectors 或 refresh 的情况下注册。
+- Daemon 拒绝 invalid paths、raw provider fields 和 credential-like values。
 
 ### Phase 1B — UI preview integration
 
-- Add `GET /api/live-artifacts/:artifactId/preview`.
-- Render `template.html + data.json` into a sandboxed iframe response.
-- Fetch live artifacts alongside project files and show them as virtual nodes in the artifact tree.
-- Add a `LiveArtifactViewer` path in `FileViewer.tsx` that reuses the existing HTML viewer toolbar/iframe patterns.
-- Add read-only `Preview`, `Source`, `Data`, `Provenance`, and `Refresh history` viewer tabs.
+- 添加 `GET /api/live-artifacts/:artifactId/preview`。
+- 将 `template.html + data.json` render 成 sandboxed iframe response。
+- 与 project files 一起 fetch live artifacts，并在 artifact tree 中显示为 virtual nodes。
+- 在 `FileViewer.tsx` 中添加 `LiveArtifactViewer` path，复用现有 HTML viewer toolbar/iframe patterns。
+- 添加 read-only `Preview`、`Source`、`Data`、`Provenance` 和 `Refresh history` viewer tabs。
 
 Exit criteria:
 
-- UI can list and preview a registered live artifact.
-- Preview does not require exposing `snapshots/` or implementation files as normal project files.
+- UI 可以 list 和 preview 一个已注册 live artifact。
+- Preview 不要求把 `snapshots/` 或 implementation files 暴露为 normal project files。
 
 ### Phase 1C — Built-in skill and wrapper command
 
-- Add built-in `skills/live-artifact/SKILL.md`.
-- Add `od tools live-artifacts ...` and connector command handlers from TypeScript source under `apps/daemon/src`.
-- Inject daemon URL and short-lived tool token into skill preamble.
+- 添加 built-in `skills/live-artifact/SKILL.md`。
+- 从 `apps/daemon/src` 下的 TypeScript source 添加 `od tools live-artifacts ...` 和 connector command handlers。
+- 向 skill preamble 注入 daemon URL 和 short-lived tool token。
 
 Exit criteria:
 
-- Agent can create a live artifact using local data.
-- UI can list and preview it.
-- No MCP configuration is required.
+- Agent 可以用 local data 创建 live artifact。
+- UI 可以 list 并 preview 它。
+- 不需要 MCP configuration。
 
 ### Phase 2 — Refresh runner
 
-- Add `refreshes.jsonl` audit log.
-- Implement manual refresh for local daemon tools.
-- Implement per-artifact refresh lock, timeout, stale-write protection, and crash recovery.
-- Preserve previous render on validation failure.
-- Emit chat-stream UI refresh events and update viewer refresh loading/failure state.
+- 添加 `refreshes.jsonl` audit log。
+- 为 local daemon tools 实现 manual refresh。
+- 实现 per-artifact refresh lock、timeout、stale-write protection 和 crash recovery。
+- Validation failure 时保留 previous render。
+- Emit chat-stream UI refresh events，并更新 viewer refresh loading/failure state。
 
 Exit criteria:
 
-- User can click Refresh and see updated data.
-- Failed refresh leaves old preview intact and shows actionable error.
+- 用户可以点击 Refresh 并看到 updated data。
+- Failed refresh 会保留 old preview，并显示 actionable error。
 
 ### Phase 3 — Connector catalog and read-only connector tools
 
-- Port Monet connector catalog/service shape.
-- Add connector endpoints.
-- Add `/api/tools/connectors/list` and `/api/tools/connectors/execute`.
-- Add read-only tool classification.
-- Add first real read-only connector.
-- Extend `live-artifact` skill references with connector usage instructions.
+- 移植 Monet connector catalog/service shape。
+- 添加 connector endpoints。
+- 添加 `/api/tools/connectors/list` 和 `/api/tools/connectors/execute`。
+- 添加 read-only tool classification。
+- 添加第一个真实 read-only connector。
+- 用 connector usage instructions 扩展 `live-artifact` skill references。
 
 Exit criteria:
 
-- Agent can query available connectors.
-- Agent can create a refreshable artifact from a read-only connector.
-- Refresh revalidates connector, account, tool, and approval policy.
+- Agent 可以 query available connectors。
+- Agent 可以从 read-only connector 创建 refreshable artifact。
+- Refresh 会重新验证 connector、account、tool 和 approval policy。
 
 ### Phase 4 — Optional MCP wrapper
 
-- Confirmation after the skill + wrapper path: MCP is not needed for MVP correctness because all supported agents can use `SKILL.md` plus `od tools ...` wrappers, and Phase 1C/Phase 3 command surfaces cover live artifact creation, listing, update, refresh, connector listing, and read-only connector execution. MCP is only worth adding as an additive compatibility layer for agents with mature MCP support and must not replace, weaken, or fork the daemon-owned service/policy path.
-- Wrap the daemon's existing live artifact and connector services as an MCP server for agents that support MCP well.
-- Do not make MCP required.
-- Do not mutate global user MCP config automatically.
+- 在 skill + wrapper path 确认后：MCP 不是 MVP correctness 的必要条件，因为所有受支持 agents 都可以使用 `SKILL.md` 加 `od tools ...` wrappers，而 Phase 1C/Phase 3 command surfaces 已覆盖 live artifact create、list、update、refresh、connector list 和 read-only connector execution。MCP 只有作为成熟 MCP support agents 的 additive compatibility layer 才值得添加，并且不得替换、削弱或 fork daemon-owned service/policy path。
+- 将 daemon 现有 live artifact 和 connector services 包装为 MCP server，供 MCP 支持良好的 agents 使用。
+- 不要让 MCP 成为必需。
+- 不要自动 mutate global user MCP config。
 
 #### 11.5.1 Optional MCP server design
 
-The MCP integration, if added, should be a **thin stdio adapter over the existing daemon tool endpoints**, not a second tool implementation. The MCP process should be launched only for an agent run that explicitly supports MCP and receives the same injected runtime environment as the wrapper CLI:
+如果添加 MCP integration，它应该是 **existing daemon tool endpoints 上的 thin stdio adapter**，而不是第二套 tool implementation。MCP process 只应为明确支持 MCP 的 agent run 启动，并接收与 wrapper CLI 相同的 injected runtime environment：
 
 ```text
 MCP-capable agent
@@ -839,30 +839,30 @@ od mcp live-artifacts          # TypeScript source under apps/daemon/src, built 
 
 Design constraints:
 
-- **Single policy path:** the MCP server must call the existing `/api/tools/*` endpoints using `OD_DAEMON_URL` and `OD_TOOL_TOKEN`. It must not import store/service modules to bypass token scoping, connector policy, output redaction, rate limits, or route validation.
-- **Run scoped:** one MCP server instance is scoped to one agent run and one project through the bearer token. It exits when stdio closes; daemon token expiry/revocation remains authoritative.
-- **Equivalent tools only:** expose MCP tools that mirror the CLI/API surface, with the same schemas and compact results:
+- **Single policy path:** MCP server 必须使用 `OD_DAEMON_URL` 和 `OD_TOOL_TOKEN` 调用现有 `/api/tools/*` endpoints。它不得 import store/service modules 来绕过 token scoping、connector policy、output redaction、rate limits 或 route validation。
+- **Run scoped:** 一个 MCP server instance 通过 bearer token 绑定到一个 agent run 和一个 project。Stdio 关闭时它退出；daemon token expiry/revocation 仍然 authoritative。
+- **Equivalent tools only:** 只暴露 mirror CLI/API surface 的 MCP tools，使用相同 schemas 和 compact results：
   - `od_live_artifacts_create` → `POST /api/tools/live-artifacts/create`
   - `od_live_artifacts_list` → `GET /api/tools/live-artifacts/list`
   - `od_live_artifacts_update` → `POST /api/tools/live-artifacts/update`
   - `od_live_artifacts_refresh` → `POST /api/tools/live-artifacts/refresh`
   - `od_connectors_list` → `GET /api/tools/connectors/list`
   - `od_connectors_execute` → `POST /api/tools/connectors/execute`
-- **No project overrides:** tool input schemas must not accept `projectId`; project/run scope is always derived from `OD_TOOL_TOKEN` by daemon routes.
-- **No global config mutation:** OD may display or generate an ephemeral MCP launch descriptor for compatible agents, but must not edit user-level MCP config files automatically.
-- **No primary-path dependency:** `SKILL.md`, `od tools ...`, and raw-token debugging remain unchanged and continue to work when MCP is disabled or unsupported.
-- **Typed implementation:** project-owned MCP code should be TypeScript source under `apps/daemon/src` (for example `apps/daemon/src/mcp/live-artifacts-server.ts` plus small CLI dispatch in `apps/daemon/src/cli.ts`). Any JavaScript entrypoint must be generated build output or an explicitly documented compatibility artifact.
+- **No project overrides:** tool input schemas 不得接受 `projectId`；project/run scope 始终由 daemon routes 从 `OD_TOOL_TOKEN` 派生。
+- **No global config mutation:** OD 可以为兼容 agents 显示或生成 ephemeral MCP launch descriptor，但不得自动编辑 user-level MCP config files。
+- **No primary-path dependency:** 当 MCP disabled 或 unsupported 时，`SKILL.md`、`od tools ...` 和 raw-token debugging 保持不变并继续工作。
+- **Typed implementation:** project-owned MCP code 应该是 `apps/daemon/src` 下的 TypeScript source（例如 `apps/daemon/src/mcp/live-artifacts-server.ts` 加 `apps/daemon/src/cli.ts` 中的小型 CLI dispatch）。任何 JavaScript entrypoint 都必须是 generated build output 或明确记录的 compatibility artifact。
 
-MCP tool errors should translate daemon `ApiErrorResponse` values into MCP tool errors without expanding secret-bearing details. Validation field details may be included only when they are already safe to return from the corresponding `/api/tools/*` route.
+MCP tool errors 应将 daemon `ApiErrorResponse` values 转换为 MCP tool errors，且不得扩展 secret-bearing details。只有当 validation field details 已经可以安全地从对应 `/api/tools/*` route 返回时，才可包含它们。
 
 Exit criteria:
 
-- Claude Code or another MCP-capable agent can discover equivalent tools through MCP.
-- Skill + CLI path still works unchanged.
+- Claude Code 或另一个 MCP-capable agent 可以通过 MCP discover equivalent tools。
+- Skill + CLI path 仍保持不变。
 
 ## 12. File-level landing plan
 
-Likely new files:
+可能新增文件：
 
 ```text
 packages/contracts/src/api/live-artifacts.ts
@@ -884,7 +884,7 @@ skills/live-artifact/references/connector-policy.md
 skills/live-artifact/references/refresh-contract.md
 ```
 
-Likely touched files:
+可能触碰文件：
 
 ```text
 packages/contracts/src/errors.ts
@@ -906,42 +906,42 @@ apps/web/src/types.ts
 apps/daemon/src/prompts/system.ts
 ```
 
-Keep the first implementation small: current daemon route handlers live in `apps/daemon/src/server.ts`, so either mount live artifact routes there first or add small TypeScript route modules that are imported by `server.ts`. Do not add project-owned `.js` source files; JavaScript should only be generated build output or an explicitly documented compatibility artifact.
+保持第一版实现足够小：当前 daemon route handlers 位于 `apps/daemon/src/server.ts`，所以可以先在那里 mount live artifact routes，或者添加由 `server.ts` import 的小型 TypeScript route modules。不要添加 project-owned `.js` source files；JavaScript 只能是 generated build output 或明确记录的 compatibility artifact。
 
 ## 13. Security and trust model
 
 ### 13.1 Daemon must enforce
 
-- `/api/tools/*` requires a short-lived bearer `OD_TOOL_TOKEN`.
-- Tool tokens are minted per agent run and bind `runId`, `projectId`, allowed endpoints, allowed operations, and expiry.
-- `/api/tools/*` derives project/run scope from the token and rejects request-supplied project overrides.
-- CORS for local daemon tool endpoints is closed by default; UI endpoints use the web app's normal origin/session checks.
-- Defend against CSRF and DNS rebinding on localhost endpoints.
-- Project ID exists and maps to the active workspace.
-- All file paths stay inside the project workspace.
-- Tool output size is bounded.
-- Snapshot/history size and retention are bounded.
-- Refresh execution has timeout and cancellation.
-- Connector credentials never reach agent output or artifact files.
-- Source input is minimized and redacted.
-- Read-only refreshes cannot drift into write-capable tools.
-- Preview responses use iframe sandboxing and restrictive CSP.
+- `/api/tools/*` 要求 short-lived bearer `OD_TOOL_TOKEN`。
+- Tool tokens 按 agent run mint，并绑定 `runId`、`projectId`、allowed endpoints、allowed operations 和 expiry。
+- `/api/tools/*` 从 token 派生 project/run scope，并拒绝 request-supplied project overrides。
+- Local daemon tool endpoints 的 CORS 默认关闭；UI endpoints 使用 web app 的 normal origin/session checks。
+- 防御 localhost endpoints 上的 CSRF 和 DNS rebinding。
+- Project ID 存在并映射到 active workspace。
+- 所有 file paths 都留在 project workspace 内。
+- Tool output size 有界。
+- Snapshot/history size 和 retention 有界。
+- Refresh execution 具备 timeout 和 cancellation。
+- Connector credentials 永远不会进入 agent output 或 artifact files。
+- Source input 被 minimized 和 redacted。
+- Read-only refreshes 不能 drift 到 write-capable tools。
+- Preview responses 使用 iframe sandboxing 和 restrictive CSP。
 
 ### 13.2 Skill must instruct
 
-- Do not paste raw connector responses into `artifact.json`.
-- Do not store tokens, headers, cookies, or credentials.
-- Prefer summaries, normalized rows, and derived metrics.
-- Keep `data.json` compact and preview-oriented.
-- Use daemon tool endpoints for registration and refresh metadata.
-- Use wrapper commands rather than constructing raw HTTP unless debugging.
+- 不要把 raw connector responses 粘贴进 `artifact.json`。
+- 不要存储 tokens、headers、cookies 或 credentials。
+- 优先使用 summaries、normalized rows 和 derived metrics。
+- 保持 `data.json` compact 且 preview-oriented。
+- 使用 daemon tool endpoints 处理 registration 和 refresh metadata。
+- 除 debugging 外，使用 wrapper commands，而不是构造 raw HTTP。
 
 ### 13.3 UI must communicate
 
-- Which connector/account backs the artifact.
-- When it was last refreshed.
-- Whether refresh is manual only.
-- Why a refresh failed.
+- 哪个 connector/account 支撑 artifact。
+- 上次 refresh 时间。
+- Refresh 是否 manual only。
+- Refresh 失败原因。
 
 ## 14. Non-goals
 
@@ -954,26 +954,26 @@ Keep the first implementation small: current daemon route handlers live in `apps
 
 ## 15. Open questions
 
-1. Should `od tools ...` be the only wrapper surface, or should generated per-project wrappers also be provided for easier agent access?
+1. `od tools ...` 是否应该是唯一 wrapper surface，还是也应提供 generated per-project wrappers 以便 agent 更容易访问？
 2. How should agent adapters advertise `shell` availability for skill gating?
 3. How much refresh history should be retained before compaction?
-4. Should failed refresh attempt payloads be retained in a hidden failed snapshot directory, or only summarized in `refreshes.jsonl`?
+4. Failed refresh attempt payloads 是否应保留在 hidden failed snapshot directory 中，还是只汇总到 `refreshes.jsonl`？
 
 ## 16. Acceptance criteria
 
-- A built-in `live-artifact` skill can be discovered by the existing skill registry.
-- An agent can create a live artifact without MCP.
-- The daemon validates and persists live artifact metadata.
-- The UI can list and preview the artifact.
-- Manual refresh works for at least one local read-only source.
-- Refresh failures are audited and do not destroy the last valid preview.
-- Connector-backed refresh is read-only and revalidated before every run.
-- `/api/tools/*` calls require run-scoped auth and cannot override project scope.
-- No persisted artifact fixture contains raw credentials, headers, cookies, or full provider payloads.
+- Built-in `live-artifact` skill 可以被现有 skill registry discover。
+- Agent 可以在没有 MCP 的情况下创建 live artifact。
+- Daemon 会 validate 并 persist live artifact metadata。
+- UI 可以 list 和 preview artifact。
+- Manual refresh 至少可用于一个 local read-only source。
+- Refresh failures 会被 audited，且不会破坏 last valid preview。
+- Connector-backed refresh 是 read-only，并在每次 run 前重新验证。
+- `/api/tools/*` calls 要求 run-scoped auth，且不能覆盖 project scope。
+- 没有 persisted artifact fixture 包含 raw credentials、headers、cookies 或 full provider payloads。
 
 ## 17. Recommended first slice
 
-Implement the smallest useful vertical slice:
+实现最小但有用的 vertical slice：
 
 1. `skills/live-artifact/SKILL.md`
 2. `packages/contracts/src/api/live-artifacts.ts`
@@ -984,4 +984,4 @@ Implement the smallest useful vertical slice:
 7. `GET /api/live-artifacts/:artifactId/preview`
 8. UI list + virtual live-artifact node + sandboxed preview
 
-This proves the skill-based interface and storage model before adding connectors, OAuth, refresh runner complexity, or MCP wrappers.
+这会在添加 connectors、OAuth、refresh runner complexity 或 MCP wrappers 之前，先证明 skill-based interface 和 storage model。

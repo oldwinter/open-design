@@ -1,32 +1,32 @@
-# Cosmic Usage
+# Cosmic 使用指南
 
-Design System 2.0 package guide for Open Design agents and reviewers.
+面向 Open Design agents 和 reviewers 的 Design System 2.0 package 使用指南。
 
 ## Read Order
 
-1. Read this file first to understand the package contract.
-2. Read `DESIGN.md` for visual intent, constraints, and anti-patterns.
-3. Paste `tokens.css` into the first artifact `<style>` block before writing component CSS.
-4. Use `components.manifest.json` for the compact component inventory; open `components.html` when exact selectors or states matter.
-5. Inspect `preview/` pages when a visual sanity check is useful.
+1. 先读本文件，理解 package contract。
+2. 阅读 `DESIGN.md`，了解 visual intent、constraints 和 anti-patterns。
+3. 编写 component CSS 前，将 `tokens.css` 粘贴到第一个 artifact `<style>` block。
+4. 使用 `components.manifest.json` 获取 compact component inventory；需要精确 selectors 或 states 时再打开 `components.html`。
+5. 需要 visual sanity check 时，检查 `preview/` pages。
 
 ## Design Highlights
 
-- Visual style: playful, premium
-- Color stance: primary, neutral, success, warning, danger
-- Design intent: Keep outputs recognizable to this style family while preserving usability and readability.
-- Primary: `#3B82F6` — Token from style foundations.
+- 视觉风格： playful, premium
+- 色彩取向： primary, neutral, success, warning, danger
+- Design intent：保持 output 可识别为这一 style family，同时保留 usability 和 readability。
+- Primary：`#3B82F6` — 来自 style foundations 的 token。
 
 ## Do
 
-- Preserve the schema token names exactly so cross-brand switching stays reliable.
-- Use `--accent` for primary actions, links, focus states, and one clear focal element.
-- Reuse component groups from `components.manifest.json` before inventing new controls.
-- Treat `source/` files as audit evidence for the bundled fixture backfill.
+- 精确保留 schema token names，确保 cross-brand switching 可靠。
+- 将 `--accent` 用于 primary actions、links、focus states 和一个清晰 focal element。
+- 发明新 controls 前，先复用 `components.manifest.json` 中的 component groups。
+- 将 `source/` files 视为 bundled fixture backfill 的 audit evidence。
 
 ## Avoid
 
-- Avoid raw hex values outside the copied `:root` token block.
-- Avoid redefining Tailwind or design-token values independently of `tokens.css`.
-- Avoid claiming original upstream source evidence; this package is based on the curated bundled fixture.
-- Avoid adding new component recipes that are not represented in `components.html` or `DESIGN.md`.
+- 避免在复制的 `:root` token block 之外使用 raw hex values。
+- 避免脱离 `tokens.css` 独立重定义 Tailwind 或 design-token values。
+- 避免声称拥有 original upstream source evidence；这个 package 基于 curated bundled fixture。
+- 避免添加 `components.html` 或 `DESIGN.md` 中没有体现的新 component recipes。

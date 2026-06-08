@@ -1,201 +1,197 @@
 # Directory guide
 
-This file is the single source of truth for agents entering this repository. Read this file first; after entering `apps/`, `packages/`, `tools/`, or `e2e/`, read that layer's `AGENTS.md` for module-level details. Do not copy module details back into the root file; root stays focused on cross-repository boundaries, workflow, and commands.
+本文件是 agents 进入此仓库时的 single source of truth。先读本文件；进入 `apps/`、`packages/`、`tools/` 或 `e2e/` 后，再读取对应层级的 `AGENTS.md` 获取 module-level details。不要把 module details 复制回根文件；根文件只聚焦 cross-repository boundaries、workflow 和 commands。
 
 ## Core documentation index
 
-- Product and onboarding: `README.md`, `docs/i18n/README.zh-CN.md`, `QUICKSTART.md`.
-- Contribution and environment: `CONTRIBUTING.md`, `docs/i18n/CONTRIBUTING.zh-CN.md`.
-- Architecture and protocols: `docs/spec.md`, `docs/architecture.md`, `docs/skills-protocol.md`, `docs/agent-adapters.md`, `docs/modes.md`.
-- Roadmap and references: `docs/roadmap.md`, `docs/references.md`, `docs/code-review-guidelines.md`, `specs/current/maintainability-roadmap.md`.
-- Directory-level agent guidance: `apps/AGENTS.md`, `packages/AGENTS.md`, `tools/AGENTS.md`, `e2e/AGENTS.md`.
-- Packaged auto-update architecture and high-confidence local harness: read `tools/pack/AGENTS.md` section "Packaged auto-update architecture and harness" before touching packaged updater code, release-channel identity, installer behavior, or updater UI.
+- Product and onboarding：`README.md`、`docs/i18n/README.zh-CN.md`、`QUICKSTART.md`。
+- Contribution and environment：`CONTRIBUTING.md`、`docs/i18n/CONTRIBUTING.zh-CN.md`。
+- Architecture and protocols：`docs/spec.md`、`docs/architecture.md`、`docs/skills-protocol.md`、`docs/agent-adapters.md`、`docs/modes.md`。
+- Roadmap and references：`docs/roadmap.md`、`docs/references.md`、`docs/code-review-guidelines.md`、`specs/current/maintainability-roadmap.md`。
+- Directory-level agent guidance：`apps/AGENTS.md`、`packages/AGENTS.md`、`tools/AGENTS.md`、`e2e/AGENTS.md`。
+- Packaged auto-update architecture 和 high-confidence local harness：在触碰 packaged updater code、release-channel identity、installer behavior 或 updater UI 前，先阅读 `tools/pack/AGENTS.md` 中的 "Packaged auto-update architecture and harness" section。
 
 ## Workspace directories
 
-- Workspace packages come from `pnpm-workspace.yaml`: `apps/*`, `packages/*`, `tools/*`, and `e2e`.
-- Top-level content directories: `skills/` (functional skills the agent invokes mid-task — utilities, briefs, packagers; see `skills/AGENTS.md`), `design-templates/` (rendering catalogue: decks, prototypes, image/video/audio templates; see `design-templates/AGENTS.md` and `specs/current/skills-and-design-templates.md`), `design-systems/` (brand `DESIGN.md` files), `craft/` (universal brand-agnostic craft rules a skill can opt into via `od.craft.requires`), `mocks/` (replay-based mock CLIs for `opencode`/`claude`/`codex`/`gemini`/`cursor-agent`/`deepseek`/`qwen`/`grok`, the ACP family `devin`/`hermes`/`kilo`/`kimi`/`kiro`/`vibe`, and the AMR `vela` CLI (login + models + ACP), built from anonymized Langfuse traces — PATH-overlay drop-in for tests and self-validation; see `mocks/README.md`).
-- `apps/web` is the Next.js 16 App Router + React 18 web runtime; do not restore `apps/nextjs`.
-- `apps/daemon` is the local privileged daemon and `od` bin. It owns `/api/*`, agent spawning, skills, design systems, artifacts, and static serving.
-- `apps/desktop` is the Electron shell; it discovers the web URL through sidecar IPC.
-- `apps/packaged` is the thin packaged Electron runtime entry; it starts packaged sidecars and owns the `od://` entry glue only.
-- `packages/contracts` is the pure TypeScript web/daemon app contract layer.
-- `packages/sidecar-proto` owns the Open Design sidecar business protocol; `packages/sidecar` owns the generic sidecar runtime; `packages/platform` owns generic OS process primitives.
-- `tools/dev` is the local development lifecycle control plane.
-- `tools/pack` is the local packaged build/start/stop/logs control plane, packaged updater harness, installer identity/registry validation surface, and mac beta release artifact preparation surface.
-- `tools/serve` is the local fixture-service control plane; first service is `tools-serve start updater` for deterministic updater metadata and artifacts.
-- `e2e` owns user-level end-to-end smoke tests and Playwright UI automation; read `e2e/AGENTS.md` before editing its tests or commands.
+- Workspace packages 来自 `pnpm-workspace.yaml`：`apps/*`、`packages/*`、`tools/*` 和 `e2e`。
+- 顶层内容目录：`skills/`（agent 在任务中调用的 functional skills：utilities、briefs、packagers；见 `skills/AGENTS.md`）、`design-templates/`（rendering catalogue：decks、prototypes、image/video/audio templates；见 `design-templates/AGENTS.md` 和 `specs/current/skills-and-design-templates.md`）、`design-systems/`（brand `DESIGN.md` files）、`craft/`（skill 可通过 `od.craft.requires` 选择加入的 universal brand-agnostic craft rules）、`mocks/`（基于 replay 的 mock CLIs，覆盖 `opencode`/`claude`/`codex`/`gemini`/`cursor-agent`/`deepseek`/`qwen`/`grok`、ACP family `devin`/`hermes`/`kilo`/`kimi`/`kiro`/`vibe`，以及 AMR `vela` CLI（login + models + ACP）；由 anonymized Langfuse traces 构建，是 tests 和 self-validation 的 PATH-overlay drop-in；见 `mocks/README.md`）。
+- `apps/web` 是 Next.js 16 App Router + React 18 web runtime；不要恢复 `apps/nextjs`。
+- `apps/daemon` 是本地 privileged daemon 和 `od` bin。它拥有 `/api/*`、agent spawning、skills、design systems、artifacts 和 static serving。
+- `apps/desktop` 是 Electron shell；它通过 sidecar IPC 发现 web URL。
+- `apps/packaged` 是很薄的 packaged Electron runtime entry；只负责启动 packaged sidecars 和 `od://` entry glue。
+- `packages/contracts` 是纯 TypeScript 的 web/daemon app contract layer。
+- `packages/sidecar-proto` 拥有 Open Design sidecar business protocol；`packages/sidecar` 拥有 generic sidecar runtime；`packages/platform` 拥有 generic OS process primitives。
+- `tools/dev` 是 local development lifecycle control plane。
+- `tools/pack` 是 local packaged build/start/stop/logs control plane、packaged updater harness、installer identity/registry validation surface，以及 mac beta release artifact preparation surface。
+- `tools/serve` 是 local fixture-service control plane；第一个 service 是 `tools-serve start updater`，用于 deterministic updater metadata and artifacts。
+- `e2e` 拥有 user-level end-to-end smoke tests 和 Playwright UI automation；编辑其 tests 或 commands 前，先读 `e2e/AGENTS.md`。
 
 ## Inactive or placeholder directories
 
-- `apps/nextjs` and `packages/shared` have been removed; do not recreate or reference them.
-- `.od/`, `.tmp/`, Playwright reports, and agent scratch directories are local runtime data and must stay out of git.
+- `apps/nextjs` 和 `packages/shared` 已移除；不要重新创建或引用它们。
+- `.od/`、`.tmp/`、Playwright reports 和 agent scratch directories 是本地 runtime data，必须留在 git 之外。
 
 # Development workflow
 
 ## Environment baseline
 
-- Runtime target is Node `~24` and `pnpm@10.33.2`; use Corepack so the pnpm version pinned in `package.json` is selected.
-- New project-owned entrypoints, modules, scripts, tests, reporters, and configs should default to TypeScript.
-- Residual JavaScript is limited to generated output, vendored dependencies, explicitly documented compatibility build artifacts, and the allowlist in `scripts/guard.ts`.
+- Runtime target 是 Node `~24` 和 `pnpm@10.33.2`；使用 Corepack，以便选择 `package.json` 中 pin 的 pnpm 版本。
+- 新的 project-owned entrypoints、modules、scripts、tests、reporters 和 configs 默认应使用 TypeScript。
+- 残留 JavaScript 仅限 generated output、vendored dependencies、明确记录的 compatibility build artifacts，以及 `scripts/guard.ts` 中的 allowlist。
 
 ## Windows native
 
-- macOS, Linux, and WSL2 are the primary supported paths. Windows native is best-effort — file an issue if it doesn't work.
-- Historical Windows-specific friction is documented in closed issues #10, #96, #100, #203, and #315; check the issue tracker for the current state before filing new reports.
-- Install Node 24. Either `winget install OpenJS.NodeJS.LTS` (currently Node 24.x) or download from https://nodejs.org. After install, verify with `node --version` — the WinGet LTS pointer rolls to the next major in October 2026, so re-verify if you re-run the install command later. Do not use Node 22 — see FAQ.
-- `corepack enable` fails with EPERM on Windows (cannot write shims to `Program Files`). Use `npm install -g pnpm@10.33.2` instead.
-- `better-sqlite3` has no prebuilt binary for win32/Node 24; `pnpm install` will compile it from source via node-gyp (~2 min). Requires Visual Studio Build Tools 2022 or newer. This is expected — not a sign of version incompatibility.
-- For `tools-dev` start/stop/status usage, see "Local lifecycle" below.
+- macOS、Linux 和 WSL2 是主要支持路径。Windows native 是 best-effort；如果不可用，请 file an issue。
+- 历史 Windows-specific friction 记录在已关闭 issues #10、#96、#100、#203 和 #315 中；提交新报告前，先查看 issue tracker 的当前状态。
+- 安装 Node 24。可以使用 `winget install OpenJS.NodeJS.LTS`（当前是 Node 24.x），也可以从 https://nodejs.org 下载。安装后用 `node --version` 验证；WinGet LTS 指针会在 2026 年 10 月滚到下一个 major，因此后续重跑安装命令时要重新验证。不要使用 Node 22；见 FAQ。
+- `corepack enable` 在 Windows 上会因 EPERM 失败（无法向 `Program Files` 写入 shims）。改用 `npm install -g pnpm@10.33.2`。
+- `better-sqlite3` 没有 win32/Node 24 的 prebuilt binary；`pnpm install` 会通过 node-gyp 从源码编译它（约 2 分钟）。需要 Visual Studio Build Tools 2022 或更新版本。这是预期行为，不是版本不兼容的信号。
+- `tools-dev` start/stop/status 用法见下方 "Local lifecycle"。
 
 ## Local lifecycle
 
-- Use `pnpm tools-dev` as the only local development lifecycle entry point.
-- Do not add or restore root lifecycle aliases: `pnpm dev`, `pnpm dev:all`, `pnpm daemon`, `pnpm preview`, or `pnpm start`.
-- Ports are governed by `tools-dev` flags: `--daemon-port` and `--web-port`.
-- `tools-dev` exports `OD_PORT` for the web proxy target and `OD_WEB_PORT` for the web listener; do not use `NEXT_PORT`.
+- 使用 `pnpm tools-dev` 作为唯一的 local development lifecycle 入口。
+- 不要添加或恢复 root lifecycle aliases：`pnpm dev`、`pnpm dev:all`、`pnpm daemon`、`pnpm preview` 或 `pnpm start`。
+- Ports 由 `tools-dev` flags 管理：`--daemon-port` 和 `--web-port`。
+- `tools-dev` 会为 web proxy target 导出 `OD_PORT`，为 web listener 导出 `OD_WEB_PORT`；不要使用 `NEXT_PORT`。
 
 ## Root command boundary
 
-- Keep root scripts reserved for true repo-level checks and tools control-plane entrypoints: `pnpm guard`, `pnpm typecheck`, `pnpm tools-dev`, `pnpm tools-pack`, and `pnpm tools-serve`.
-- Do not add root aggregate `pnpm build` or `pnpm test` aliases. Build/test commands must stay package-scoped (`pnpm --filter <package> ...`) or tool-scoped (`pnpm tools-pack ...`).
-- Do not add root e2e aliases; e2e package commands and ownership rules live in `e2e/AGENTS.md`.
+- root scripts 只保留给真正的 repo-level checks 和 tools control-plane entrypoints：`pnpm guard`、`pnpm typecheck`、`pnpm tools-dev`、`pnpm tools-pack` 和 `pnpm tools-serve`。
+- 不要添加 root aggregate `pnpm build` 或 `pnpm test` aliases。Build/test commands 必须保持 package-scoped（`pnpm --filter <package> ...`）或 tool-scoped（`pnpm tools-pack ...`）。
+- 不要添加 root e2e aliases；e2e package commands 和 ownership rules 位于 `e2e/AGENTS.md`。
 
 ## Release channel model
 
-- `beta` is the daily R&D/development validation channel. It is optimized for fast development feedback and is not part of the stable promotion gate.
-- `nightly` is the internal validation channel for stable delivery. Stable releases remain gated by validated nightly artifacts.
-- `preview` is an independent early-access channel with stable-like release rigor. It should use preview versions such as `X.Y.Z-preview.N`, publish to the `preview` R2 channel, publish updater feeds under `preview/latest`, and follow stable's platform policy including the existing optional Linux enablement.
-- `stable` is the formal delivery channel. Do not make stable promotion depend on preview; stable continues to depend on nightly only.
-- Public packaged app identity must stay channel-distinct: stable uses `Open Design`, beta uses `Open Design Beta`, and preview uses `Open Design Preview`. Do not ship beta or preview mac DMGs whose drag-install app bundle is `Open Design.app`.
-- Windows beta updater validation must use the real beta namespace `release-beta-win`; otherwise a local beta-like namespace can create a separate uninstall registry key while looking like the same `Open Design Beta` app. See `tools/pack/AGENTS.md` for the architecture map and high-confidence acceptance harness.
+- `beta` 是日常 R&D/development validation channel。它为快速开发反馈优化，不属于 stable promotion gate。
+- `nightly` 是 stable delivery 的内部 validation channel。Stable releases 仍由已验证的 nightly artifacts gate。
+- `preview` 是独立的 early-access channel，具备 stable-like release rigor。它应使用 `X.Y.Z-preview.N` 这类 preview versions，发布到 `preview` R2 channel，在 `preview/latest` 下发布 updater feeds，并遵循 stable 的 platform policy，包括现有 optional Linux enablement。
+- `stable` 是正式 delivery channel。不要让 stable promotion 依赖 preview；stable 继续只依赖 nightly。
+- Public packaged app identity 必须保持 channel-distinct：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，preview 使用 `Open Design Preview`。不要发布 drag-install app bundle 是 `Open Design.app` 的 beta 或 preview mac DMGs。
+- Windows beta updater validation 必须使用真实 beta namespace `release-beta-win`；否则 local beta-like namespace 可能创建单独的 uninstall registry key，同时看起来仍像同一个 `Open Design Beta` app。Architecture map 和 high-confidence acceptance harness 见 `tools/pack/AGENTS.md`。
 
 ## Boundary constraints
 
-- Tests under `apps/`, `packages/`, and `tools/` live in a package/app/tool-level `tests/` directory sibling to `src/`; keep `src/` source-only and do not add new `*.test.ts` or `*.test.tsx` files under `src/`. Playwright UI automation belongs to `e2e/ui/`, not app packages.
-- App packages must not import another app's private `src/` or `tests/` implementation as a shared helper. In particular, `apps/web/**` must not import `apps/daemon/src/**`; web/daemon integration belongs behind HTTP APIs, `packages/contracts`, and app-local provider boundaries.
-- Cross-app, cross-runtime, or repository-resource consistency checks belong in `e2e/tests/` when they need to observe more than one app/package boundary; promote reusable logic to a pure package instead of borrowing another app's private source.
-- Keep shared API DTOs, SSE event unions, error shapes, task shapes, and example payloads in `packages/contracts`; update contracts before wiring divergent web/daemon request or response shapes.
-- Keep `packages/contracts` pure TypeScript and free of Next.js, Express, Node filesystem/process APIs, browser APIs, SQLite, daemon internals, and sidecar control-plane dependencies.
-- Keep project-owned entrypoints, modules, scripts, tests, reporters, and configs TypeScript-first; generated `dist/*.js` is runtime output, and source edits belong in `.ts` files.
-- New `.js`, `.mjs`, or `.cjs` files need an explicit generated/vendor/compatibility reason and must pass `pnpm guard`.
-- App business logic must not know about sidecar/control-plane concepts. Keep sidecar awareness in `apps/<app>/sidecar` or the desktop sidecar entry wrapper.
-- Shared web/daemon app contracts belong in `packages/contracts`; that package must not depend on Next.js, Express, Node filesystem/process APIs, browser APIs, SQLite, daemon internals, or the sidecar control-plane protocol.
-- Sidecar process stamps must have exactly five fields: `app`, `mode`, `namespace`, `ipc`, and `source`.
-- Orchestration layers (`tools-dev`, `tools-pack`, packaged launchers) must call package primitives; do not hand-build `--od-stamp-*` args or process-scan regexes.
-- Packaged runtime paths must be namespace-scoped and independent from daemon/web ports; ports are transient transport details only.
-- Default runtime files live under `<project-root>/.tmp/<source>/<namespace>/...`; POSIX IPC sockets are fixed at `/tmp/open-design/ipc/<namespace>/<app>.sock`.
+- `apps/`、`packages/` 和 `tools/` 下的 tests 位于与 `src/` 同级的 package/app/tool-level `tests/` 目录；保持 `src/` source-only，不要在 `src/` 下新增 `*.test.ts` 或 `*.test.tsx`。Playwright UI automation 属于 `e2e/ui/`，不属于 app packages。
+- App packages 不得把另一个 app 的 private `src/` 或 `tests/` implementation 当 shared helper import。尤其是 `apps/web/**` 不得 import `apps/daemon/src/**`；web/daemon integration 应位于 HTTP APIs、`packages/contracts` 和 app-local provider boundaries 之后。
+- 当 cross-app、cross-runtime 或 repository-resource consistency checks 需要观察多个 app/package boundary 时，它们属于 `e2e/tests/`；应把可复用逻辑提升到 pure package，而不是借用另一个 app 的 private source。
+- Shared API DTOs、SSE event unions、error shapes、task shapes 和 example payloads 放在 `packages/contracts`；在接入互相分叉的 web/daemon request 或 response shapes 前，先更新 contracts。
+- 保持 `packages/contracts` 为 pure TypeScript，不依赖 Next.js、Express、Node filesystem/process APIs、browser APIs、SQLite、daemon internals 和 sidecar control-plane dependencies。
+- 保持 project-owned entrypoints、modules、scripts、tests、reporters 和 configs TypeScript-first；generated `dist/*.js` 是 runtime output，source edits 属于 `.ts` 文件。
+- 新的 `.js`、`.mjs` 或 `.cjs` 文件需要明确的 generated/vendor/compatibility reason，并且必须通过 `pnpm guard`。
+- App business logic 不应知道 sidecar/control-plane concepts。把 sidecar awareness 保持在 `apps/<app>/sidecar` 或 desktop sidecar entry wrapper 中。
+- Shared web/daemon app contracts 属于 `packages/contracts`；该 package 不得依赖 Next.js、Express、Node filesystem/process APIs、browser APIs、SQLite、daemon internals 或 sidecar control-plane protocol。
+- Sidecar process stamps 必须正好有五个字段：`app`、`mode`、`namespace`、`ipc` 和 `source`。
+- Orchestration layers（`tools-dev`、`tools-pack`、packaged launchers）必须调用 package primitives；不要手写 `--od-stamp-*` args 或 process-scan regexes。
+- Packaged runtime paths 必须 namespace-scoped，并与 daemon/web ports 独立；ports 只是 transient transport details。
+- 默认 runtime files 位于 `<project-root>/.tmp/<source>/<namespace>/...`；POSIX IPC sockets 固定在 `/tmp/open-design/ipc/<namespace>/<app>.sock`。
 
 ## Capability exposure (UI/CLI dual-track)
 
-Every user-facing capability must be reachable through both the web UI **and** the `od` CLI (`apps/daemon/src/cli.ts`). Shipping a feature with only one of the two surfaces is a regression.
+每个 user-facing capability 都必须同时能通过 web UI **和** `od` CLI（`apps/daemon/src/cli.ts`）访问。只带其中一个 surface 发布 feature 属于 regression。
 
-- The CLI is the embeddability contract. External agents (hermes-agent, openclaw, custom Slack/Discord bots, packaged runtimes invoked from another shell) drive Open Design through `od` subcommands — they do not render the web UI. If a capability is UI-only, it cannot be composed into those external agents.
-- Both surfaces must call the same `/api/*` endpoints; do not let the CLI talk to one shape and the UI to another. The daemon HTTP layer is the single source of truth, with `packages/contracts` carrying the shared DTOs.
-- The CLI form must support `--json` for machine-readable output and accept long-form prompts via `--prompt-file <path|->`, so jobs that pipe through `xargs`, `jq`, and `<heredoc` stay clean.
-- Adding a new capability is a three-step closure: HTTP endpoint in `apps/daemon/src/*-routes.ts` (with a contract type in `packages/contracts/src/api/`), UI surface in `apps/web/src/`, and `od <capability>` subcommand in `apps/daemon/src/cli.ts` registered through `SUBCOMMAND_MAP`. Land all three in the same PR; do not stage them across PRs.
-- The PR template's Surface area checklist must reflect *both* surfaces. If you ticked UI, tick CLI too — and vice-versa — or explain in the PR body why the missing surface is genuinely not applicable (e.g. an internal-only daemon health probe). "I'll do the CLI later" is not a valid reason.
-- Existing reference points: `od automation …` mirrors the Automations tab against `/api/routines`; `od plugin …`, `od ui …`, `od project …`, `od media …`, `od mcp …`, `od research …` follow the same shape. Copy that pattern for new capabilities.
+- CLI 是 embeddability contract。External agents（hermes-agent、openclaw、自定义 Slack/Discord bots、从另一个 shell 调用的 packaged runtimes）通过 `od` subcommands 驱动 Open Design；它们不会渲染 web UI。如果 capability 只存在于 UI，就无法被这些 external agents compose。
+- 两个 surfaces 必须调用同一套 `/api/*` endpoints；不要让 CLI 使用一种 shape，而 UI 使用另一种。daemon HTTP layer 是 single source of truth，`packages/contracts` 承载 shared DTOs。
+- CLI 形式必须支持 `--json` 作为 machine-readable output，并通过 `--prompt-file <path|->` 接受 long-form prompts，这样通过 `xargs`、`jq` 和 `<heredoc` pipe 的 jobs 才能保持干净。
+- 添加新 capability 是一个三步 closure：`apps/daemon/src/*-routes.ts` 中的 HTTP endpoint（并在 `packages/contracts/src/api/` 中有 contract type）、`apps/web/src/` 中的 UI surface，以及 `apps/daemon/src/cli.ts` 中通过 `SUBCOMMAND_MAP` 注册的 `od <capability>` subcommand。三者要在同一个 PR 中落地；不要拆到多个 PR。
+- PR template 的 Surface area checklist 必须反映 *两个* surfaces。如果勾了 UI，也要勾 CLI，反之亦然；或者在 PR body 中说明为什么缺失 surface 真实不适用（例如 internal-only daemon health probe）。"I'll do the CLI later" 不是有效理由。
+- 现有参考点：`od automation …` 将 Automations tab 映射到 `/api/routines`；`od plugin …`、`od ui …`、`od project …`、`od media …`、`od mcp …`、`od research …` 遵循同一形状。新增 capabilities 时复制该 pattern。
 
 ## Git commit policy
 
-- Git commits must not include `Co-authored-by` trailers or any other co-author metadata.
+- Git commits 不得包含 `Co-authored-by` trailers 或任何其他 co-author metadata。
 
 ## Pull request expectations
 
-- Opening a PR uses `.github/pull_request_template.md`; fill every section, not just the title.
-- "Why" must answer both the author's use case (what made you write this PR) and the pain being addressed (user problem, technical debt, prod issue, or unblocker), not just a one-line restatement of the title.
-- "What users will see" describes the change from a user's perspective — what they click, what new thing appears, what default behavior changed — not from a code perspective.
-- The Surface area checklist must reflect actual surfaces touched; check every box that applies, including extension points (`skills/`, `design-systems/`, `design-templates/`, `craft/`), CLI flags, env vars, i18n keys, and new root `package.json` dependencies.
-- If any UI surface is checked, attach screenshots showing the entry point — where users discover the change — not just the feature in isolation; before/after is best for behavior changes.
-- For bug-fix PRs, link the red-spec test that reproduces the bug and confirm it went red on `main` and green on the branch, per the `Bug follow-up workflow` section above.
-- `CONTRIBUTING.md` covers PR scope, title format, dependency policy, and the issue-first rule for non-trivial features; `docs/code-review-guidelines.md` is the reviewer-facing complement.
+- Opening a PR 使用 `.github/pull_request_template.md`；填写每个 section，而不只是 title。
+- "Why" 必须回答作者的 use case（是什么让你写这个 PR）和正在解决的 pain（user problem、technical debt、prod issue 或 unblocker），而不只是用一行复述 title。
+- "What users will see" 从用户视角描述变化：他们点击什么、出现什么新东西、默认行为有什么变化；不要从代码视角描述。
+- Surface area checklist 必须反映实际 touched surfaces；勾选所有适用项，包括 extension points（`skills/`、`design-systems/`、`design-templates/`、`craft/`）、CLI flags、env vars、i18n keys，以及新的 root `package.json` dependencies。
+- 如果勾选了任何 UI surface，请附上展示 entry point 的 screenshots，也就是用户在哪里发现该变化；不要只展示孤立 feature。行为变化最好提供 before/after。
+- 对 bug-fix PRs，按上方 `Bug follow-up workflow` section，链接复现 bug 的 red-spec test，并确认它在 `main` 上 red、在 branch 上 green。
+- `CONTRIBUTING.md` 覆盖 PR scope、title format、dependency policy，以及 non-trivial features 的 issue-first rule；`docs/code-review-guidelines.md` 是 reviewer-facing complement。
 
 ## Code review guide
 
-- Use `docs/code-review-guidelines.md` as the repository-wide review standard. That document is the operational guide; this `AGENTS.md` is the source of truth when the two disagree.
-- Walk reviews top-down through `docs/code-review-guidelines.md`: Product relevance test → forbidden surfaces → ownership/scope → matching lane → checklist → comments → approval bar.
-- Pick the matching review lane: default code/tests, contract and protocol changes, design-system additions, skill additions, or craft additions.
-- Before reviewing changes under `apps/`, `packages/`, `tools/`, or `e2e/`, read that directory's `AGENTS.md` and apply its local boundaries.
-- Blocking review feedback should focus on correctness, security/secrets, data integrity, repository boundary violations, contract/migration breakage, missing required validation, or high-risk maintainability issues.
-- Only maintainers may close a PR instead of requesting changes, and only when the change is not salvageable on the existing branch (wrong target product, foreign test harness, DOM/API assumptions absent from this repo, or scripts that conflict with lifecycle rules).
+- 使用 `docs/code-review-guidelines.md` 作为 repository-wide review standard。该文档是 operational guide；两者冲突时，本 `AGENTS.md` 是 source of truth。
+- 按 `docs/code-review-guidelines.md` 自上而下走 review：Product relevance test → forbidden surfaces → ownership/scope → matching lane → checklist → comments → approval bar。
+- 选择匹配的 review lane：default code/tests、contract and protocol changes、design-system additions、skill additions 或 craft additions。
+- review `apps/`、`packages/`、`tools/` 或 `e2e/` 下的 changes 前，先读该目录的 `AGENTS.md`，并应用它的 local boundaries。
+- Blocking review feedback 应聚焦 correctness、security/secrets、data integrity、repository boundary violations、contract/migration breakage、missing required validation 或 high-risk maintainability issues。
+- 只有 maintainers 可以 close PR 而不是 request changes，且仅限现有 branch 上无法挽救的 change（target product 错误、foreign test harness、此 repo 不存在的 DOM/API assumptions，或与 lifecycle rules 冲突的 scripts）。
 
 ## PR-duty tooling
 
-This repository no longer ships a maintainer PR-duty control plane. The former
-`pnpm tools-pr` workflow has moved to the standalone `PerishCode/duty` project
-so personal review-lane automation does not become product workspace
-maintenance surface. Do not recreate `tools/pr`, `@open-design/tools-pr`, or a
-root `pnpm tools-pr` script without a new explicit maintainer decision.
+此仓库不再提供 maintainer PR-duty control plane。原先的 `pnpm tools-pr` workflow 已迁移到独立的 `PerishCode/duty` project，避免个人 review-lane automation 变成 product workspace maintenance surface。没有新的明确 maintainer decision 时，不要重建 `tools/pr`、`@open-design/tools-pr` 或 root `pnpm tools-pr` script。
 
 ## Agent runtime conventions
 
-- `RuntimeAgentDef.promptInputFormat` selects how the daemon writes the prompt to a child's stdin. The default `'text'` writes the composed prompt and ends stdin immediately. `'stream-json'` wraps the prompt as one JSONL `user` message and KEEPS stdin open so the daemon can stream further user messages back in mid-turn. Claude (`apps/daemon/src/runtimes/defs/claude.ts`) ships `'stream-json'` together with `--input-format stream-json` so the host can answer interactive tools like `AskUserQuestion` with a real `tool_result` block. Every other agent stays on `'text'`.
-- `apps/daemon/src/server.ts` tracks `run.pendingHostAnswers` (a Set of `tool_use_id` strings) and `run.stdinOpen` on the run object. The `claude-stream-json` event handler adds AskUserQuestion ids to the set and closes stdin only when both the set is empty AND a `turn_end` (or `usage`) event arrives with a non `tool_use` `stop_reason`. The `tool_use` stop reason means the model paused mid tool (waiting on claude-code's internal runner or on a host answer); closing stdin there would truncate the follow up response.
-- `claude-stream.ts` emits the `turn_end` event AFTER iterating the assistant message's content blocks, not before. When `--include-partial-messages` is unsupported, tool_use events surface only from the assistant wrapper, so emitting `turn_end` first would let the daemon close stdin before the host had registered any pending answers.
-- `POST /api/runs/:id/tool-result` is the daemon endpoint for feeding a `tool_result` block back into a still running stream-json child. Body shape: `{ toolUseId: string, content: string, isError?: boolean }`. Web callers use `submitChatRunToolResult` from `apps/web/src/providers/daemon.ts`. The daemon writes a JSONL `user` message containing one `tool_result` content block, removes the id from `pendingHostAnswers`, and lets the next `turn_end` decide when to close stdin.
-- AskUserQuestion specifically: Claude's system prompt section in `apps/daemon/src/prompts/system.ts` (Claude only block at the bottom of `composeSystemPrompt`) tells the model to use the tool for 2 to 4 finite choices, and to stop generating tokens after the tool call instead of also writing a markdown duplicate. `AssistantMessage.suppressAskUserQuestionFallbackText` is the belt and suspenders that hides any trailing markdown text in the same turn.
+- `RuntimeAgentDef.promptInputFormat` 选择 daemon 如何把 prompt 写入 child 的 stdin。默认 `'text'` 会写入 composed prompt 并立刻结束 stdin。`'stream-json'` 会把 prompt 包成一条 JSONL `user` message，并保持 stdin 打开，让 daemon 可以在 mid-turn 把后续 user messages stream 回去。Claude（`apps/daemon/src/runtimes/defs/claude.ts`）随 `'stream-json'` 一起使用 `--input-format stream-json`，这样 host 能用真实 `tool_result` block 回答 `AskUserQuestion` 等 interactive tools。其他所有 agent 保持 `'text'`。
+- `apps/daemon/src/server.ts` 在 run object 上跟踪 `run.pendingHostAnswers`（一个 `tool_use_id` strings 的 Set）和 `run.stdinOpen`。`claude-stream-json` event handler 会把 AskUserQuestion ids 加入该 set，并且只有当 set 为空、且带有非 `tool_use` `stop_reason` 的 `turn_end`（或 `usage`）event 到达时，才关闭 stdin。`tool_use` stop reason 表示 model 在 mid tool 暂停（等待 claude-code 的 internal runner 或 host answer）；此时关闭 stdin 会截断 follow up response。
+- `claude-stream.ts` 在遍历 assistant message 的 content blocks **之后** 才发出 `turn_end` event，而不是之前。当不支持 `--include-partial-messages` 时，tool_use events 只会从 assistant wrapper 暴露；如果先发 `turn_end`，daemon 会在 host 注册 pending answers 前关闭 stdin。
+- `POST /api/runs/:id/tool-result` 是 daemon endpoint，用于把 `tool_result` block 喂回仍在运行的 stream-json child。Body shape：`{ toolUseId: string, content: string, isError?: boolean }`。Web callers 使用 `apps/web/src/providers/daemon.ts` 中的 `submitChatRunToolResult`。daemon 会写入一条包含一个 `tool_result` content block 的 JSONL `user` message，从 `pendingHostAnswers` 中移除该 id，并让下一次 `turn_end` 决定何时关闭 stdin。
+- AskUserQuestion 特别说明：`apps/daemon/src/prompts/system.ts` 中 Claude 的 system prompt section（`composeSystemPrompt` 底部的 Claude only block）会告诉 model 使用该 tool 提供 2 到 4 个有限选项，并在 tool call 后停止生成 tokens，不要再写一份 markdown duplicate。`AssistantMessage.suppressAskUserQuestionFallbackText` 是 belt and suspenders，用来隐藏同一 turn 中任何 trailing markdown text。
 
 ## Chat UI conventions
 
-- `apps/web/src/components/file-viewer-render-mode.ts` decides URL-load vs srcDoc for HTML previews. Bridges (deck, comment/inspect selection, palette, edit, tweaks) can ONLY inject through the srcDoc path. Add a new disqualifier to `UrlLoadDecision` whenever a feature needs a srcDoc-only bridge; pass it from `FileViewer.tsx` based on a source-content heuristic where appropriate (e.g. `hasTweaksTemplate`). The host keeps both iframes mounted simultaneously and swaps CSS visibility so toggling render mode does not cause an iframe reload flash; `iframeRef.current` stays aligned with the active iframe via `useEffect`. Receive filters use `isOurIframe(ev.source)` to accept messages from either iframe but signals that should ONLY come from the active iframe (e.g. `od:tweaks-available`) re-check `ev.source === iframeRef.current?.contentWindow`.
-- TodoWrite UI pins one canonical task list above the chat composer via `PinnedTodoSlot` in `ChatPane.tsx`. The slot reads the latest TodoWrite snapshot across the conversation through `latestTodoWriteInputFromMessages` (`apps/web/src/runtime/todos.ts`). `AssistantMessage.stripTodoToolGroups` removes any TodoWrite tool groups from per message rendering so there is exactly one TodoCard on screen. The progress count includes both `completed` and `in_progress` items (1/4 reads "one underway" not "zero finished"). Dismissal via the Done button is keyed on the snapshot's JSON, so a fresh TodoWrite from the agent automatically re shows the card. `PinnedTodoSlot` sits OUTSIDE the `.chat-log` scroll container, so auto-scroll requires explicit coverage: `ChatPane`'s `ResizeObserver` accepts a `containerRef` from `PinnedTodoSlot` and observes that element directly, and a pane-level `MutationObserver` (`childList: true` on the chat pane ancestor) re-syncs that observation whenever the slot mounts or unmounts as new TodoWrite snapshots arrive.
-- `AskUserQuestionCard` (in `ToolCard.tsx`) prefers the live `onAnswerToolUse(toolUseId, content)` route (POSTs to `/api/runs/:id/tool-result`) and falls back to the legacy `onSubmitForm(text)` path when the run has already terminated. Selected chips persist across reloads by parsing the stored `tool_result.content` back into the selections shape.
-- Tool group rendering uses `dedupeSnapshotToolRetries` to collapse identical `AskUserQuestion` retries (one card per unique input, keeping the latest tool_use_id) and `TodoWrite` snapshots (only the most recent call, since each call is a state replace).
+- `apps/web/src/components/file-viewer-render-mode.ts` 决定 HTML previews 使用 URL-load 还是 srcDoc。Bridges（deck、comment/inspect selection、palette、edit、tweaks）**只能**通过 srcDoc path 注入。任何 feature 需要 srcDoc-only bridge 时，都要给 `UrlLoadDecision` 添加新的 disqualifier；适当时基于 source-content heuristic 从 `FileViewer.tsx` 传入（例如 `hasTweaksTemplate`）。host 会同时保持两个 iframes mounted，并交换 CSS visibility，因此切换 render mode 不会造成 iframe reload flash；`iframeRef.current` 通过 `useEffect` 与 active iframe 保持一致。Receive filters 用 `isOurIframe(ev.source)` 接受来自任一 iframe 的 messages，但那些**只能**来自 active iframe 的 signals（例如 `od:tweaks-available`）会再次检查 `ev.source === iframeRef.current?.contentWindow`。
+- TodoWrite UI 通过 `ChatPane.tsx` 中的 `PinnedTodoSlot` 把一个 canonical task list pin 在 chat composer 上方。该 slot 通过 `latestTodoWriteInputFromMessages`（`apps/web/src/runtime/todos.ts`）读取 conversation 中最新的 TodoWrite snapshot。`AssistantMessage.stripTodoToolGroups` 会从 per message rendering 中移除所有 TodoWrite tool groups，让屏幕上正好只有一个 TodoCard。Progress count 同时包含 `completed` 和 `in_progress` items（1/4 表示 "one underway"，不是 "zero finished"）。Done button dismissal 以 snapshot 的 JSON 为 key，因此 agent 发出的 fresh TodoWrite 会自动重新显示 card。`PinnedTodoSlot` 位于 `.chat-log` scroll container **外部**，所以 auto-scroll 需要显式覆盖：`ChatPane` 的 `ResizeObserver` 从 `PinnedTodoSlot` 接受 `containerRef` 并直接 observe 该元素，pane-level `MutationObserver`（chat pane ancestor 上的 `childList: true`）会在新 TodoWrite snapshots 使 slot mount/unmount 时重新同步该 observation。
+- `AskUserQuestionCard`（在 `ToolCard.tsx` 中）优先使用 live `onAnswerToolUse(toolUseId, content)` route（POST 到 `/api/runs/:id/tool-result`），并在 run 已终止时 fallback 到 legacy `onSubmitForm(text)` path。Selected chips 通过把已存储的 `tool_result.content` parse 回 selections shape，在 reloads 后持久化。
+- Tool group rendering 使用 `dedupeSnapshotToolRetries` 折叠相同的 `AskUserQuestion` retries（每个 unique input 一个 card，保留最新 tool_use_id）和 `TodoWrite` snapshots（只保留最近一次 call，因为每次 call 都是 state replace）。
 
 ## Web CSS ownership
 
-- `apps/web/src/index.css` is an import-only cascade entrypoint. Do not add selectors or declarations there; add imports only when a truly global stylesheet is needed, and keep import order intentional.
-- Shared global styles belong in `apps/web/src/styles/`: design tokens, base/reset rules, primitives, app-shell layout, and legacy cross-component selectors that cannot safely be scoped yet. Keep domain-level global files grouped by owner (for example `styles/viewer/` and `styles/workspace/`) instead of adding more large files directly under `styles/`.
-- New component-owned UI styles should default to CSS Modules next to the component (`Component.module.css`) instead of expanding global stylesheets. This is preferred for isolated components, panels, menus, drawers, toolbars, cards, and form sections.
-- When touching an existing component with nearby global styles, prefer migrating that component's local selectors to a CSS Module as part of the change if it is small and testable. Do not mix a large mechanical move with behavior/styling changes in the same patch.
-- Keep global class names only for deliberate shared contracts: reusable primitives, theme hooks, third-party/content styling, cross-component layout, or selectors that rely on global cascade/specificity. Document any new global selector group with its owning feature.
-- CSS refactors must preserve cascade semantics. For mechanical splits, verify expanded import content/order matches the previous stylesheet; for CSS Module migrations, validate the affected UI path with `pnpm --filter @open-design/web typecheck` and a focused build/test or visual check when practical.
+- `apps/web/src/index.css` 是 import-only cascade entrypoint。不要在那里添加 selectors 或 declarations；只有在确实需要 global stylesheet 时才添加 imports，并保持 import order 有意图。
+- Shared global styles 属于 `apps/web/src/styles/`：design tokens、base/reset rules、primitives、app-shell layout，以及暂时无法安全 scope 的 legacy cross-component selectors。把 domain-level global files 按 owner 分组（例如 `styles/viewer/` 和 `styles/workspace/`），不要直接在 `styles/` 下继续添加大型文件。
+- 新的 component-owned UI styles 默认应使用组件旁边的 CSS Modules（`Component.module.css`），而不是扩大全局 stylesheets。对 isolated components、panels、menus、drawers、toolbars、cards 和 form sections 来说，这是首选。
+- 触碰已有组件且附近有 global styles 时，如果迁移很小且可测试，优先把该组件的 local selectors 迁移到 CSS Module。不要在同一个 patch 中混合大规模机械迁移和 behavior/styling changes。
+- 只为有意的 shared contracts 保留 global class names：reusable primitives、theme hooks、third-party/content styling、cross-component layout，或依赖 global cascade/specificity 的 selectors。任何新的 global selector group 都要记录其 owning feature。
+- CSS refactors 必须保持 cascade semantics。机械拆分时，验证展开后的 import content/order 与之前 stylesheet 匹配；CSS Module migrations 时，用 `pnpm --filter @open-design/web typecheck` 和 focused build/test 或可行的 visual check 验证受影响 UI path。
 
 ## Web component reuse
 
-- New `apps/web` UI should reuse shared primitives from `@open-design/components` when one exists instead of styling plain HTML elements directly. For example, use `Button` for app buttons and `VisuallyHidden` for screen-reader-only text/status content.
-- Do not add new raw primitive classes such as `primary`, `primary-ghost`, `ghost`, `subtle`, `icon-btn`, or `sr-only` for new UI. Those classes are legacy compatibility surface for existing markup until it is migrated.
-- If a needed primitive is missing, prefer adding a small focused primitive to `packages/components` with colocated CSS Modules, then consume it from the app. Keep product-specific layout and workflow styling in the app, not in `packages/components`.
-- Keep semantic plain HTML when it is content markup or a specialized control that the shared package does not model yet; do not force a migration that would hide native behavior or make a custom widget harder to reason about.
-- `apps/web` transpiles `@open-design/components` from source during dev, so component and CSS Module edits should work through the normal web dev loop without rebuilding the package.
+- 新的 `apps/web` UI 在存在对应 shared primitives 时，应复用 `@open-design/components`，而不是直接 styling plain HTML elements。例如 app buttons 使用 `Button`，screen-reader-only text/status content 使用 `VisuallyHidden`。
+- 新 UI 不要添加新的 raw primitive classes，例如 `primary`、`primary-ghost`、`ghost`、`subtle`、`icon-btn` 或 `sr-only`。这些 classes 是既有 markup 迁移前的 legacy compatibility surface。
+- 如果缺少所需 primitive，优先在 `packages/components` 添加小而聚焦的 primitive，使用 colocated CSS Modules，然后在 app 中消费。Product-specific layout 和 workflow styling 留在 app，不要放进 `packages/components`。
+- 当内容 markup 或 specialized control 尚未被 shared package 建模时，保留 semantic plain HTML；不要强行迁移，以免隐藏 native behavior 或让 custom widget 更难推理。
+- `apps/web` 在 dev 期间会从 source transpile `@open-design/components`，因此 component 和 CSS Module edits 应能通过普通 web dev loop 生效，不需要 rebuild package。
 
 ## i18n keys
 
-- `apps/web/src/i18n/types.ts` is the typed `Dict`; every key must be defined in all 18 locale files under `apps/web/src/i18n/locales/*.ts` (`ar`, `de`, `en`, `es-ES`, `fa`, `fr`, `hu`, `id`, `ja`, `ko`, `pl`, `pt-BR`, `ru`, `th`, `tr`, `uk`, `zh-CN`, `zh-TW`). Add the key to `types.ts` first; missing translations produce a typecheck error.
+- `apps/web/src/i18n/types.ts` 是 typed `Dict`；每个 key 必须在 `apps/web/src/i18n/locales/*.ts` 下的全部 18 个 locale files 中定义（`ar`、`de`、`en`、`es-ES`、`fa`、`fr`、`hu`、`id`、`ja`、`ko`、`pl`、`pt-BR`、`ru`、`th`、`tr`、`uk`、`zh-CN`、`zh-TW`）。先把 key 加到 `types.ts`；缺失翻译会产生 typecheck error。
 
 ## UI animation philosophy
 
-- Default ease-out for UI transitions: `cubic-bezier(0.23, 1, 0.32, 1)`. Built-in `ease` is too weak; `ease-in` is forbidden for UI elements because it feels sluggish.
-- Asymmetric durations: enter around 200ms, exit around 140ms. Exit reads as decisive because the user has already chosen to dismiss.
-- Accordion expand and collapse uses `grid-template-rows: 0fr -> 1fr` (modern auto height pattern). Pair with opacity fade and the easing above. The shared `.accordion-collapsible` + `.accordion-collapsible-inner` class pair (defined in `apps/web/src/index.css`) is the canonical implementation; reuse it for new disclosure UI.
-- Never animate from `transform: scale(0)`. Start from `scale(0.9)` or higher with `opacity: 0`.
-- For elements that show conditionally, keep them mounted and toggle a CSS class (e.g. `.chat-jump-btn-active`). React unmounts skip the exit transition entirely.
+- UI transitions 的默认 ease-out：`cubic-bezier(0.23, 1, 0.32, 1)`。内建 `ease` 太弱；UI elements 禁用 `ease-in`，因为它感觉迟缓。
+- Asymmetric durations：enter 约 200ms，exit 约 140ms。Exit 会显得果断，因为用户已经选择 dismiss。
+- Accordion expand/collapse 使用 `grid-template-rows: 0fr -> 1fr`（modern auto height pattern）。配合 opacity fade 和上面的 easing。共享的 `.accordion-collapsible` + `.accordion-collapsible-inner` class pair（定义于 `apps/web/src/index.css`）是 canonical implementation；新的 disclosure UI 复用它。
+- 永远不要从 `transform: scale(0)` 开始动画。从 `scale(0.9)` 或更高、配合 `opacity: 0` 开始。
+- 对 conditionally show 的元素，保持 mounted 并切换 CSS class（例如 `.chat-jump-btn-active`）。React unmounts 会完全跳过 exit transition。
 
 ## Validation strategy
 
-- After package, workspace, or command-entry changes, run `pnpm install` so workspace links and generated dist entries stay fresh.
-- For agent-stream / parser changes (`apps/daemon/src/claude-stream.ts`, `json-event-stream.ts`, `qoder-stream.ts`, etc.), replay a recorded session through the mock CLIs in `mocks/` to verify event shapes round-trip without burning provider budget. PATH-overlay activation: `export PATH="$PWD/mocks/bin:$PATH" OD_MOCKS_TRACE=<8-char-id> OD_MOCKS_NO_DELAY=1`. See `mocks/README.md` for the trace catalog and selection knobs.
-- Treat every `pnpm-lock.yaml` change as requiring a Nix pnpm deps hash refresh check. `nix/pnpm-deps.nix` is a generated lock artifact; use `pnpm nix:update-hash` only when intentionally maintaining Nix packaging, then re-run `nix flake check --print-build-logs --keep-going`. Contributors without Nix can rely on the PR `Validate workspace` gate, which now uploads or auto-applies the generated hash-only fix when possible.
-- Before marking regular work ready, run at least `pnpm guard` and `pnpm typecheck`, plus the package-scoped tests/builds that match the files changed. Do not use or add root `pnpm test`/`pnpm build` aliases.
-- For local web runtime loops, prefer `pnpm tools-dev run web --daemon-port <port> --web-port <port>`.
-- On a GUI-capable machine, validate desktop by running `pnpm tools-dev`, then `pnpm tools-dev inspect desktop status`.
-- Stamp/namespace changes must validate two concurrent namespaces and run desktop `inspect eval` plus `inspect screenshot` for each namespace.
-- Path/log changes must run `pnpm tools-dev logs --namespace <name> --json` and confirm log paths are under `.tmp/tools-dev/<namespace>/...`.
+- package、workspace 或 command-entry changes 后，运行 `pnpm install`，让 workspace links 和 generated dist entries 保持新鲜。
+- 对 agent-stream / parser changes（`apps/daemon/src/claude-stream.ts`、`json-event-stream.ts`、`qoder-stream.ts` 等），通过 `mocks/` 中的 mock CLIs replay 一条 recorded session，以验证 event shapes round-trip，同时不消耗 provider budget。PATH-overlay activation：`export PATH="$PWD/mocks/bin:$PATH" OD_MOCKS_TRACE=<8-char-id> OD_MOCKS_NO_DELAY=1`。Trace catalog 和 selection knobs 见 `mocks/README.md`。
+- 每个 `pnpm-lock.yaml` change 都视为需要 Nix pnpm deps hash refresh check。`nix/pnpm-deps.nix` 是 generated lock artifact；仅在有意维护 Nix packaging 时使用 `pnpm nix:update-hash`，随后重新运行 `nix flake check --print-build-logs --keep-going`。没有 Nix 的 contributors 可依赖 PR `Validate workspace` gate；该 gate 现在会在可能时上传或自动应用 generated hash-only fix。
+- 标记常规工作 ready 前，至少运行 `pnpm guard` 和 `pnpm typecheck`，再加上匹配已改文件的 package-scoped tests/builds。不要使用或添加 root `pnpm test`/`pnpm build` aliases。
+- local web runtime loops 优先使用 `pnpm tools-dev run web --daemon-port <port> --web-port <port>`。
+- 在 GUI-capable machine 上，通过运行 `pnpm tools-dev`，再运行 `pnpm tools-dev inspect desktop status` 验证 desktop。
+- Stamp/namespace changes 必须验证两个 concurrent namespaces，并对每个 namespace 运行 desktop `inspect eval` 和 `inspect screenshot`。
+- Path/log changes 必须运行 `pnpm tools-dev logs --namespace <name> --json`，并确认 log paths 位于 `.tmp/tools-dev/<namespace>/...` 下。
 
 ## Bug follow-up workflow
 
-The following is a working playbook for routine bug follow-ups, distilled from recent practice. Treat it as a default action shape, not a contract — production reality always has edges these bullets can't anticipate, so use judgment when the situation doesn't fit cleanly.
+以下是 routine bug follow-ups 的工作 playbook，来自近期实践提炼。把它当作默认 action shape，而不是 contract；production reality 总有这些 bullets 无法预料的边角，所以当情况不完全匹配时要使用判断力。
 
-- **Lead with a red spec.** Default to encoding the bug as a falsifiable test that goes red before any source change, so the fix is anchored in observable behavior rather than source-code intuition. If a red spec can't be written cheaply, that's usually a signal to clarify scope rather than push forward on a guess.
-- **Try the cheapest layer first.** Reach for the lightest test layer that can still see the symptom (e2e Vitest at the daemon HTTP boundary → app-local Vitest → Playwright UI → platform-native harnesses), and drop down only when the cheaper layer can't.
-- **Hold the spec's scope.** Defects discovered outside the bug's described boundary belong in a follow-up — their own red spec, their own PR — not in this fix. List them in the PR body's "Adjacent issues" section with the rationale and move on.
-- **Let the fix read as an invariant.** Prefer a named helper whose docblock describes what must hold over a bolt-on `if` guard with apologetic history-comments. The call site should read as intent.
-- **Diff against the baseline.** When neighboring suites have pre-existing failures, stash or check out upstream before claiming "no new failures."
-- **Link the issue from the PR body.** Use `Fixes #N` / `Closes #N` / `Resolves #N` so the issue auto-closes on merge and the release-time reverse lookup (`gh issue view N --json closedByPullRequestsReferences` → `git tag --contains <merge sha>`) actually has a chain to follow. The repo's PR template prompts for this; deleting the prompt is fine when the PR genuinely closes nothing.
-- **Stage human verification for visible bugs.** When the symptom needs an eye to confirm — UI, platform-native behavior, animations, race conditions a unit test can't see — green specs alone aren't acceptance. Stand up a buggy-vs-fix comparison the reviewer can drive themselves (typical shape: two namespaced runtimes, one on `main`, one on the fix branch), and seed any required data only through production HTTP APIs; source-level test backdoors invalidate the verification because they prove a fake flow rather than the real one.
+- **Lead with a red spec.** 默认把 bug 编码成一个 falsifiable test：它在任何 source change 前变 red，这样 fix 锚定在可观察行为，而不是 source-code intuition 上。如果 red spec 无法低成本写出，通常说明需要先澄清 scope，而不是基于猜测继续推进。
+- **Try the cheapest layer first.** 优先使用仍能看见 symptom 的最轻 test layer（daemon HTTP boundary 上的 e2e Vitest → app-local Vitest → Playwright UI → platform-native harnesses）；只有当更轻层看不见时，才往下走。
+- **Hold the spec's scope.** 在 bug 描述边界之外发现的 defects 属于 follow-up：它们需要自己的 red spec、自己的 PR，而不是塞进本 fix。在 PR body 的 "Adjacent issues" section 中列出它们和 rationale，然后继续。
+- **Let the fix read as an invariant.** 相比带着道歉式历史 comments 的附加 `if` guard，更偏好一个具名 helper，并用 docblock 描述必须成立的条件。Call site 应该读起来像意图。
+- **Diff against the baseline.** 当相邻 suites 存在 pre-existing failures 时，在声称 "no new failures" 前先 stash 或 checkout upstream。
+- **Link the issue from the PR body.** 使用 `Fixes #N` / `Closes #N` / `Resolves #N`，让 issue 在 merge 时自动关闭，并让 release-time reverse lookup（`gh issue view N --json closedByPullRequestsReferences` → `git tag --contains <merge sha>`）真正有链路可循。Repo 的 PR template 会提示这一点；如果 PR 确实不关闭任何 issue，删除该提示也可以。
+- **Stage human verification for visible bugs.** 当 symptom 需要人眼确认时（UI、platform-native behavior、animations、unit test 看不见的 race conditions），只有 green specs 不足以作为 acceptance。搭起一个 reviewer 可以自行操作的 buggy-vs-fix comparison（典型形状：两个 namespaced runtimes，一个在 `main`，一个在 fix branch），并且只通过 production HTTP APIs seed 所需数据；source-level test backdoors 会让 verification 失效，因为它们证明的是 fake flow，而不是真实流程。
 
-For a worked example of one full loop (red e2e spec → fix → green), see `e2e/tests/dialog/stop-reconciles-message.test.ts` (issue #135).
+一个完整 loop（red e2e spec → fix → green）的 worked example 见 `e2e/tests/dialog/stop-reconciles-message.test.ts`（issue #135）。
 
 # Common commands
 
@@ -247,33 +243,33 @@ pnpm tools-pack linux build --containerized
 
 ## Why is there no root `pnpm dev` / `pnpm start`?
 
-To avoid starting daemon, web, and desktop through inconsistent env, port, namespace, or log paths. All local lifecycle flows must go through `pnpm tools-dev`.
+为了避免通过不一致的 env、port、namespace 或 log paths 启动 daemon、web 和 desktop。所有 local lifecycle flows 都必须通过 `pnpm tools-dev`。
 
 ## Why should `apps/nextjs` not be restored?
 
-The current web runtime is `apps/web`. The historical `apps/nextjs` layout has been removed from the active repo shape; restoring it would reintroduce duplicate app boundaries and stale scripts.
+当前 web runtime 是 `apps/web`。历史 `apps/nextjs` layout 已从 active repo shape 中移除；恢复它会重新引入重复 app boundaries 和 stale scripts。
 
 ## How does desktop discover the web URL?
 
-Desktop queries runtime status through sidecar IPC. The web URL comes from `tools-dev` launch status, not from desktop guessing ports or reading web internals.
+Desktop 通过 sidecar IPC 查询 runtime status。Web URL 来自 `tools-dev` launch status，而不是 desktop 猜测 ports 或读取 web internals。
 
 ## How are sidecar-proto, sidecar, and platform split?
 
-`@open-design/sidecar-proto` owns Open Design app/mode/source constants, namespace validation, stamp fields/flags, IPC message schema, status shapes, and error semantics. `@open-design/sidecar` provides only generic bootstrap, IPC transport, path/runtime resolution, launch env, and JSON runtime files. `@open-design/platform` provides only generic OS process stamp serialization, command parsing, and process matching/search primitives, consuming the proto descriptor.
+`@open-design/sidecar-proto` 拥有 Open Design app/mode/source constants、namespace validation、stamp fields/flags、IPC message schema、status shapes 和 error semantics。`@open-design/sidecar` 只提供 generic bootstrap、IPC transport、path/runtime resolution、launch env 和 JSON runtime files。`@open-design/platform` 只提供 generic OS process stamp serialization、command parsing 和 process matching/search primitives，并消费 proto descriptor。
 
 ## Where is data written?
 
-The daemon writes `.od/` by default: SQLite at `.od/app.sqlite`, agent CWDs under `.od/projects/<id>/`, saved renders under `.od/artifacts/`, and credentials at `.od/media-config.json`. Two env vars override the storage root, in order:
+daemon 默认写入 `.od/`：SQLite 位于 `.od/app.sqlite`，agent CWDs 位于 `.od/projects/<id>/`，saved renders 位于 `.od/artifacts/`，credentials 位于 `.od/media-config.json`。两个 env vars 会按顺序覆盖 storage root：
 
-1. `OD_DATA_DIR=<dir>` — relocates *all* daemon runtime data to `<dir>` (used by Playwright for test isolation, and by the packaged daemon and the Home Manager / NixOS modules to point the daemon at a writable directory when the install root is read-only). The path is resolved with `~/` expansion and relative paths anchored to `<projectRoot>`.
-2. `OD_MEDIA_CONFIG_DIR=<dir>` — narrower override that relocates *only* `media-config.json`. Same resolution semantics. Most installs do not need this; it exists for setups that want to keep API credentials in a different location from the rest of the runtime data.
+1. `OD_DATA_DIR=<dir>`：把*全部* daemon runtime data relocation 到 `<dir>`（Playwright 用于 test isolation；packaged daemon 和 Home Manager / NixOS modules 在 install root read-only 时，用它把 daemon 指向 writable directory）。Path 会解析 `~/` expansion，并把 relative paths 锚定到 `<projectRoot>`。
+2. `OD_MEDIA_CONFIG_DIR=<dir>`：更窄的 override，只 relocation `media-config.json`。解析语义相同。多数安装不需要它；它服务于那些希望 API credentials 与其余 runtime data 分开放置的 setups。
 
-Default precedence is OD_MEDIA_CONFIG_DIR > OD_DATA_DIR > `<projectRoot>/.od`.
+默认优先级是 OD_MEDIA_CONFIG_DIR > OD_DATA_DIR > `<projectRoot>/.od`。
 
 ## When is `pnpm install` required?
 
-Run `pnpm install` after changing package manifests, workspace layout, command entrypoints, bin/link-related content, or after adding/removing workspace packages.
+更改 package manifests、workspace layout、command entrypoints、bin/link-related content，或添加/移除 workspace packages 后，运行 `pnpm install`。
 
 ## Can I use Node 22 instead of Node 24?
 
-No. `package.json#engines` specifies `node: "~24"`, which is the only supported runtime. The current lockfile pins `better-sqlite3@11.10.0`; on Windows it has no prebuilt binary for Node 24 and is built from source via node-gyp (see the Windows native section). Older Node versions are not tested and may hit lockfile or dependency incompatibilities.
+不可以。`package.json#engines` 指定 `node: "~24"`，这是唯一支持的 runtime。当前 lockfile pin 了 `better-sqlite3@11.10.0`；在 Windows 上它没有 Node 24 的 prebuilt binary，会通过 node-gyp 从源码构建（见 Windows native section）。更旧的 Node versions 没有测试，可能遇到 lockfile 或 dependency incompatibilities。

@@ -1,12 +1,12 @@
 # One-Click Install Guide
 
-**Parent:** [`spec.md`](spec.md) · **Siblings:** [`self-hosting.md`](self-hosting.md) · [`network-security.md`](network-security.md)
+**父文档：** [`spec.md`](spec.md) · **同级文档：** [`self-hosting.md`](self-hosting.md) · [`network-security.md`](network-security.md)
 
-Deploy Open Design on Linux or macOS with a single command. The installer wraps the existing Docker Compose stack — no build step required.
+用一条命令在 Linux 或 macOS 上部署 Open Design。Installer 封装了现有 Docker Compose stack，不需要 build step。
 
 ## Quick reference
 
-Clone the repository and run the installer:
+Clone repository 并运行 installer：
 
 ```bash
 git clone https://github.com/nexu-io/open-design.git
@@ -16,23 +16,23 @@ bash deploy/scripts/install.sh
 
 ## Prerequisites
 
-The only requirement is Docker with the Compose plugin.
+唯一要求是安装带 Compose plugin 的 Docker。
 
 | Platform | Minimum version | Install |
 |----------|----------------|---------|
 | Docker Engine | 24.0 | [docs.docker.com/engine/install](https://docs.docker.com/engine/install/) |
-| Docker Compose plugin | 2.20 | Bundled with Docker Desktop; `apt install docker-compose-plugin` on Linux |
+| Docker Compose plugin | 2.20 | Docker Desktop 自带；Linux 上可 `apt install docker-compose-plugin` |
 | Docker Desktop (macOS/Windows) | 4.25 | [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) |
 
-The installer checks for Docker and offers to install it automatically on Ubuntu/Debian, Fedora, and macOS (via Homebrew). Use `--skip-docker-install` to skip this step.
+Installer 会检查 Docker，并可在 Ubuntu/Debian、Fedora 和 macOS（通过 Homebrew）上自动安装。使用 `--skip-docker-install` 可跳过此步骤。
 
-> **MCP note:** Docker/Compose installs run the daemon inside the container. The MCP client snippets shown in Settings are stdio/local-path based and require a local/source install for now. Container-friendly MCP transport will be added in a follow-up.
+> **MCP note:** Docker/Compose 安装会在 container 内运行 daemon。Settings 中显示的 MCP client snippets 目前基于 stdio/local-path，需要 local/source install。Container-friendly MCP transport 会在后续补上。
 
 ## Interactive install walkthrough
 
-Running the installer without flags launches an interactive wizard:
+不带 flags 运行 installer 会启动交互式 wizard：
 
-```
+```text
   ╔══════════════════════════════════════╗
   ║         O P E N   D E S I G N        ║
   ║          One-Click Installer         ║
@@ -53,32 +53,32 @@ Memory limit [384m]:
 [open-design] Daemon is healthy (200 OK)
 ```
 
-### What each prompt does
+### 每个 prompt 的含义
 
 | Prompt | Default | Notes |
 |--------|---------|-------|
-| **Docker image** | `docker.io/vanjayak/open-design:latest` | Pin a digest for reproducibility: `docker.io/vanjayak/open-design@sha256:<digest>` |
-| **Port** | `7456` | The port the daemon listens on. Must not be in use. |
-| **Allowed origins** | _(empty)_ | CORS origins for reverse-proxy setups. See [`network-security.md`](network-security.md). Leave empty for localhost-only use. |
-| **Memory limit** | `384m` | Container memory cap. Raise for large concurrent agent runs. |
+| **Docker image** | `docker.io/vanjayak/open-design:latest` | 可 pin digest 以保证可复现：`docker.io/vanjayak/open-design@sha256:<digest>` |
+| **Port** | `7456` | Daemon 监听的端口。必须未被占用。 |
+| **Allowed origins** | _(empty)_ | Reverse-proxy setups 的 CORS origins。见 [`network-security.md`](network-security.md)。Localhost-only 使用时留空。 |
+| **Memory limit** | `384m` | Container memory cap。大规模 concurrent agent runs 可调高。 |
 
-After you confirm, the installer:
+确认后，installer 会：
 
-1. Writes a `deploy/.env` file (backs up any existing one).
-2. Runs `docker compose pull` to fetch the image.
-3. Runs `docker compose up -d --no-build` to start the container.
-4. Polls `/api/health` for up to 60 seconds to confirm the daemon is ready.
-5. On Linux: installs a `systemd --user` unit so the service starts on login.
+1. 写入 `deploy/.env` 文件（若已有则备份）。
+2. 运行 `docker compose pull` 拉取 image。
+3. 运行 `docker compose up -d --no-build` 启动 container。
+4. 轮询 `/api/health` 最多 60 秒，确认 daemon ready。
+5. 在 Linux 上：安装 `systemd --user` unit，让 service 在 login 时启动。
 
 ## Non-interactive install
 
-For CI, headless servers, and automated provisioning:
+用于 CI、headless servers 和 automated provisioning：
 
 ```bash
 bash deploy/scripts/install.sh --non-interactive [--port 7456] [--image <ref>] [--no-systemd]
 ```
 
-All prompts are skipped and defaults are used. If Docker is not installed, the script exits with an error instead of offering to install it.
+所有 prompts 都会跳过并使用 defaults。如果未安装 Docker，script 会报错退出，而不是尝试安装。
 
 ### All flags
 
@@ -86,17 +86,17 @@ All prompts are skipped and defaults are used. If Docker is not installed, the s
 
 | Flag | Description |
 |------|-------------|
-| `--non-interactive` | Skip all prompts |
-| `--port <n>` | Host port (default: `7456`) |
+| `--non-interactive` | 跳过所有 prompts |
+| `--port <n>` | Host port（默认：`7456`） |
 | `--image <ref>` | Docker image reference |
-| `--skip-docker-install` | Never attempt to install Docker |
-| `--no-systemd` | Skip systemd unit creation |
+| `--skip-docker-install` | 永不尝试安装 Docker |
+| `--no-systemd` | 跳过 systemd unit creation |
 
 ## Service management
 
 ### Linux (systemd)
 
-The installer creates a `systemd --user` unit that wraps Docker Compose. No `sudo` required.
+Installer 会创建一个封装 Docker Compose 的 `systemd --user` unit。不需要 `sudo`。
 
 ```bash
 # Check status
@@ -117,11 +117,11 @@ systemctl --user disable open-design
 systemctl --user enable open-design
 ```
 
-To skip systemd unit creation, pass `--no-systemd` to the installer.
+如果要跳过 systemd unit creation，给 installer 传 `--no-systemd`。
 
 ### macOS (Docker Desktop)
 
-Docker Desktop manages the container lifecycle. Use Docker Desktop's dashboard to start, stop, or restart the `open-design` container, or use the CLI:
+Docker Desktop 管理 container lifecycle。使用 Docker Desktop dashboard 启动、停止或重启 `open-design` container，也可以使用 CLI：
 
 ```bash
 # Using docker compose directly
@@ -132,23 +132,23 @@ docker compose -f deploy/docker-compose.yml logs -f
 
 ## Update
 
-Pull the latest image and restart with a single command:
+用一条命令拉取最新 image 并重启：
 
 ```bash
 bash deploy/scripts/update.sh
 ```
 
-To update to a specific image:
+更新到指定 image：
 
 ```bash
 bash deploy/scripts/update.sh --image=docker.io/vanjayak/open-design@sha256:<digest>
 ```
 
-The update script:
-1. Pulls the new image.
-2. Restarts the container with `docker compose up -d --no-build`.
-3. Waits for `/api/health` to return 200.
-4. Prunes dangling old images.
+Update script 会：
+1. 拉取新 image。
+2. 用 `docker compose up -d --no-build` 重启 container。
+3. 等待 `/api/health` 返回 200。
+4. Prune dangling old images。
 
 ## Uninstall
 
@@ -160,44 +160,44 @@ bash deploy/scripts/uninstall.sh
 bash deploy/scripts/uninstall.sh --keep-data
 ```
 
-The uninstaller:
-1. Stops and removes containers (`docker compose down`), then removes the data volume separately.
-2. On Linux: disables and removes the systemd unit.
-3. Removes `deploy/.env`.
+Uninstaller 会：
+1. 停止并移除 containers（`docker compose down`），然后单独移除 data volume。
+2. 在 Linux 上：disable 并移除 systemd unit。
+3. 移除 `deploy/.env`。
 
-> **Data:** By default, the `open_design_data` volume (projects, artifacts, config) is also deleted. Pass `--keep-data` to preserve it. Remove the volume manually later: `docker volume rm open_design_data`.
+> **Data:** 默认也会删除 `open_design_data` volume（projects、artifacts、config）。传 `--keep-data` 可保留。之后可手动移除 volume：`docker volume rm open_design_data`。
 
 ## Configuration
 
-All settings live in `deploy/.env`. Edit it directly or re-run the installer to regenerate it.
+所有设置都在 `deploy/.env` 中。可以直接编辑，或重新运行 installer 生成。
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OPEN_DESIGN_IMAGE` | `docker.io/vanjayak/open-design:latest` | Full image reference |
-| `OPEN_DESIGN_PORT` | `7456` | Host-side port (bound to `127.0.0.1`) |
-| `OPEN_DESIGN_ALLOWED_ORIGINS` | _(empty)_ | CORS origins for reverse-proxy setups |
+| `OPEN_DESIGN_IMAGE` | `docker.io/vanjayak/open-design:latest` | 完整 image reference |
+| `OPEN_DESIGN_PORT` | `7456` | Host-side port（bound to `127.0.0.1`） |
+| `OPEN_DESIGN_ALLOWED_ORIGINS` | _(empty)_ | Reverse-proxy setups 的 CORS origins |
 | `OPEN_DESIGN_MEM_LIMIT` | `384m` | Container memory cap |
-| `NODE_OPTIONS` | `--max-old-space-size=192` | Node.js heap cap inside the container |
+| `NODE_OPTIONS` | `--max-old-space-size=192` | Container 内的 Node.js heap cap |
 
-The container always binds `127.0.0.1:<port>:7456` — the daemon is never directly exposed to the network. To allow remote access, put an authenticated reverse proxy in front. See [`network-security.md`](network-security.md).
+Container 始终绑定 `127.0.0.1:<port>:7456` —— daemon 永远不会直接暴露到网络。若要允许 remote access，请在前面放置经过认证的 reverse proxy。见 [`network-security.md`](network-security.md)。
 
 ## Troubleshooting
 
 | Problem | Likely cause | Fix |
 |---------|-------------|-----|
-| `Docker is not installed` | Docker not on PATH | Install Docker Desktop or Docker Engine |
-| `Docker daemon is not running` | Docker Desktop not started | Open Docker Desktop or run `sudo systemctl start docker` |
-| `Port 7456 is already in use` | Another service on that port | Re-run with `--port 8080` |
-| Health check times out | Image pull slow or daemon slow to start | Wait and check `docker compose -f deploy/docker-compose.yml logs` |
-| `Permission denied` on install.sh | Script not executable | Run `chmod +x deploy/scripts/install.sh` |
-| systemd unit not created | `systemd` not found | Omit `--no-systemd` if systemd is available, or manage via Docker CLI |
-| `.env` has wrong port after re-install | Old backup not restored | Edit `deploy/.env` directly or delete it and re-run |
-| Container exits immediately | Image incompatibility | Check `docker compose -f deploy/docker-compose.yml logs` for errors |
-| `Authorization: Bearer <OD_API_TOKEN> required` on macOS | Docker Desktop bridge networking | Enable host networking — see [Docker Desktop on macOS](../deploy/README.md#docker-desktop-on-macos) |
+| `Docker is not installed` | Docker 不在 PATH 上 | 安装 Docker Desktop 或 Docker Engine |
+| `Docker daemon is not running` | Docker Desktop 未启动 | 打开 Docker Desktop，或运行 `sudo systemctl start docker` |
+| `Port 7456 is already in use` | 该端口上已有其他 service | 用 `--port 8080` 重新运行 |
+| Health check times out | Image pull 慢或 daemon 启动慢 | 等待并查看 `docker compose -f deploy/docker-compose.yml logs` |
+| `Permission denied` on install.sh | Script 不可执行 | 运行 `chmod +x deploy/scripts/install.sh` |
+| systemd unit not created | 找不到 `systemd` | 如果 systemd 可用，不要传 `--no-systemd`；否则用 Docker CLI 管理 |
+| `.env` has wrong port after re-install | 旧 backup 未恢复 | 直接编辑 `deploy/.env`，或删除后重新运行 |
+| Container exits immediately | Image incompatibility | 查看 `docker compose -f deploy/docker-compose.yml logs` 中的 errors |
+| `Authorization: Bearer <OD_API_TOKEN> required` on macOS | Docker Desktop bridge networking | 启用 host networking — 见 [Docker Desktop on macOS](../deploy/README.md#docker-desktop-on-macos) |
 
 ## References
 
 - Docker Compose config: [`deploy/docker-compose.yml`](../deploy/docker-compose.yml)
 - Environment template: [`deploy/.env.example`](../deploy/.env.example)
-- Self-hosting topologies (PM2, systemd native): [`docs/self-hosting.md`](self-hosting.md)
+- Self-hosting topologies（PM2、systemd native）: [`docs/self-hosting.md`](self-hosting.md)
 - Network security and remote access: [`docs/network-security.md`](network-security.md)

@@ -139,8 +139,8 @@ The shape system is uniformly soft: 8px–12px radii, 9999px pills for tags and 
 - **Easing**: `cubic-bezier(0.16, 1, 0.3, 1)` (smooth out) for entrances.
 - **Restraint**: no parallax, no scroll-jacking. Subtle fade and translate only.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Preserve the neutral editorial restraint, soft radius, and sparse accent usage together; green accents alone do not create an OpenAI-like surface.
-- Use Signifier-style display moments only for editorial or announcement hierarchy, keeping product controls in the sans system.
-- Avoid ornamental motion, heavy shadows, and oversized decorative cards; the system should feel calm, readable, and deliberate.
+- 同时保留 neutral editorial restraint、soft radius 和 sparse accent usage；单独的 green accents 不足以形成 OpenAI-like surface。
+- Signifier-style display moments 只用于 editorial 或 announcement hierarchy，product controls 保持在 sans system 中。
+- 避免 ornamental motion、heavy shadows 和 oversized decorative cards；系统应显得 calm、readable 且 deliberate。

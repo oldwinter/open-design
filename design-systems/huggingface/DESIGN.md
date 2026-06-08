@@ -148,8 +148,8 @@ Shapes are crisp, not soft: 4–6px radii, 1px solid borders that announce thems
 - **Easing**: `ease-out`.
 - **Tag pop**: a 1.05× scale on hover at 120ms — the only exception to flat-on-hover.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Preserve the yellow accent, mono metadata, and dense model-card layout together; yellow alone does not create a Hugging Face-like surface.
-- Use tags, tables, and repository-style metadata for model browsing or evaluation contexts rather than decorative marketing cards.
-- Keep motion minimal and functional, reserving the small tag pop for interactive taxonomy chips.
+- 同时保留 yellow accent、mono metadata 和 dense model-card layout；单独的 yellow 不足以形成 Hugging Face-like surface。
+- 在 model browsing 或 evaluation contexts 中使用 tags、tables 和 repository-style metadata，而不是 decorative marketing cards。
+- Motion 保持 minimal 且 functional；small tag pop 只保留给 interactive taxonomy chips。

@@ -1,54 +1,25 @@
 # skills
 
-This directory holds **functional skills** — capabilities the agent
-invokes mid-task to do work on user input. Each skill is a folder with a
-`SKILL.md` (frontmatter + body) and any side files (`assets/`,
-`references/`, scripts, …) the workflow needs.
+此目录存放 **functional skills**：agent 在任务中调用、对用户输入执行工作的 capabilities。每个 skill 是一个包含 `SKILL.md`（frontmatter + body）和 workflow 所需 side files（`assets/`、`references/`、scripts 等）的文件夹。
 
-If the entry primarily *renders* a design artifact (deck, prototype,
-image/video/audio template) it belongs under `../design-templates/`
-instead. See `specs/current/skills-and-design-templates.md` for the
-full split.
+如果 entry 主要是*渲染* design artifact（deck、prototype、image/video/audio template），它应放在 `../design-templates/` 下。完整拆分见 `specs/current/skills-and-design-templates.md`。
 
 ## Daemon plumbing
 
-- Listed under `/api/skills` (functional only). User-imported skills
-  shadow built-in entries with the same frontmatter `name`.
-- Asset routes (`/api/skills/:id/example`, `/api/skills/:id/assets/*`)
-  span both functional skills and design templates so existing
-  `srcdoc`-rewritten URLs keep resolving after the split.
-- The Settings → Skills panel surfaces this directory only; the
-  EntryView Templates tab reads the design-templates registry instead.
+- 列在 `/api/skills` 下（仅 functional）。User-imported skills 会 shadow 具有相同 frontmatter `name` 的 built-in entries。
+- Asset routes（`/api/skills/:id/example`、`/api/skills/:id/assets/*`）同时覆盖 functional skills 和 design templates，因此既有 `srcdoc`-rewritten URLs 在拆分后仍能解析。
+- Settings → Skills panel 只展示此目录；EntryView Templates tab 改读 design-templates registry。
 
 ## Adding a skill
 
-1. Create `skills/<my-skill>/SKILL.md` with `name`, `description`,
-   `triggers`, and `od.mode: utility` (or `design-system`) frontmatter.
-2. Drop any side files alongside; reference them from the body using
-   the relative-from-skill-root paths the daemon advertises in the
-   skill preamble.
-3. The daemon's lazy scanner picks the entry up on the next
-   `/api/skills` request — no rebuild required during local dev.
+1. 创建 `skills/<my-skill>/SKILL.md`，包含 `name`、`description`、`triggers` 和 `od.mode: utility`（或 `design-system`）frontmatter。
+2. 把任何 side files 放在旁边；在 body 中使用 daemon 在 skill preamble 中公布的 relative-from-skill-root paths 引用它们。
+3. daemon 的 lazy scanner 会在下一次 `/api/skills` request 时拾取该 entry；local dev 期间不需要 rebuild。
 
 ## Curated design / creative catalogue
 
-This directory also ships a curated catalogue of design and creative
-skills hand-picked from `VoltAgent/awesome-agent-skills` and
-`ComposioHQ/awesome-claude-skills`. Each entry is a lightweight stub —
-frontmatter + a short body that points at the upstream repo — so the
-Settings → Skills tab surfaces a rich, filterable list out of the box
-without vendoring every upstream workflow.
+此目录还附带一个 curated catalogue，包含从 `VoltAgent/awesome-agent-skills` 和 `ComposioHQ/awesome-claude-skills` 手工挑选的 design/creative skills。每个 entry 都是 lightweight stub：frontmatter 加一个指向 upstream repo 的短 body；这样 Settings → Skills tab 开箱即可展示丰富、可筛选的列表，而不用 vendor 每个 upstream workflow。
 
-- `od.category` on these stubs powers the new category filter row in
-  Settings → Skills (e.g. `image-generation`, `video-generation`,
-  `audio-music`, `slides`, `documents`, `design-systems`, `figma`,
-  `animation-motion`, `3d-shaders`, `diagrams`, `creative-direction`,
-  `marketing-creative`, `screenshots`, `web-artifacts`).
-- The seed script lives at `scripts/seed-curated-design-skills.ts` and
-  is **idempotent**: running it again only creates folders that don't
-  already exist, so a hand-edited stub is never overwritten. Delete the
-  folder under `skills/` and re-run the script to refresh an entry.
-- Stubs intentionally do not vendor upstream assets. To run an upstream
-  workflow with its original scripts and references, copy the upstream
-  folder into your active agent's skills directory (Claude Code, Codex,
-  Cursor, etc.) — the body of each stub explains how.
+- 这些 stubs 上的 `od.category` 驱动 Settings → Skills 中新的 category filter row（例如 `image-generation`、`video-generation`、`audio-music`、`slides`、`documents`、`design-systems`、`figma`、`animation-motion`、`3d-shaders`、`diagrams`、`creative-direction`、`marketing-creative`、`screenshots`、`web-artifacts`）。
+- Seed script 位于 `scripts/seed-curated-design-skills.ts`，且是 **idempotent**：再次运行只会创建尚不存在的 folders，因此不会覆盖手工编辑过的 stub。要刷新某个 entry，删除 `skills/` 下对应 folder 后重新运行脚本。
+- Stubs 有意不 vendor upstream assets。若要用原始 scripts 和 references 运行 upstream workflow，请把 upstream folder 复制到 active agent 的 skills directory（Claude Code、Codex、Cursor 等）；每个 stub 的 body 都说明了做法。

@@ -2,8 +2,8 @@
 
 ## Source Scope
 
-This Design System 2.0 backfill is derived from the curated Open Design bundled fixture.
-It does not claim a fresh crawl of the original upstream brand repository or website.
+这个 Design System 2.0 backfill 派生自 curated Open Design bundled fixture。
+它不声称重新 crawl 了原始 upstream brand repository 或 website。
 
 ## Included Fixture Files
 
@@ -13,5 +13,5 @@ It does not claim a fresh crawl of the original upstream brand repository or web
 
 ## Token Contract
 
-`source/token-contract.report.json` maps every TOKEN_SCHEMA binding back to the committed `tokens.css` declaration line.
-`design-tokens.json` and `tailwind-v4.css` are derived outputs and should be regenerated from the report and token stylesheet rather than edited by hand.
+`source/token-contract.report.json` 会把每个 TOKEN_SCHEMA binding 映射回已提交的 `tokens.css` declaration line。
+`design-tokens.json` 和 `tailwind-v4.css` 是 derived outputs，应从 report 和 token stylesheet regenerate，而不是手动编辑。

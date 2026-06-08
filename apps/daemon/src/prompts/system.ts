@@ -1112,10 +1112,10 @@ function renderMetadataBlock(
   }
   if (metadata.kind === 'image') {
     lines.push(
-      `- **imageModel**: ${metadata.imageModel ?? '(unknown — ask: which image model/provider to use)'}`,
+      `- **imageModel**: ${metadata.imageModel ?? '(未知 — 询问：使用哪个 image model/provider)'}`,
     );
     lines.push(
-      `- **aspectRatio**: ${metadata.imageAspect ?? '(unknown — ask: 1:1, 16:9 for landscape, 9:16 for portrait)'}`,
+      `- **aspectRatio**: ${metadata.imageAspect ?? '(未知 — 询问：1:1、横向 16:9、竖向 9:16)'}`,
     );
     if (metadata.imageStyle) {
       lines.push(`- **styleNotes**: ${metadata.imageStyle}`);

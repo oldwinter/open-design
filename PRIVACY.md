@@ -1,70 +1,43 @@
-# Privacy
+# 隐私
 
-This page describes what data the Open Design desktop and web app collects,
-when it collects it, and how you stay in control. It documents the behavior
-shipped in the app — the same controls live under **Settings → Privacy**.
+本页说明 Open Design 桌面应用和 Web 应用会收集哪些数据、何时收集，以及你如何保持控制权。这里记录的是已随应用发布的行为；同样的控制项位于 **Settings → Privacy**。
 
-Open Design is **local-first**. Your projects, generated files, and BYOK API
-keys stay on your machine. The app works fully offline; nothing in this page
-applies unless you explicitly turn telemetry on.
+Open Design 是 **local-first**。你的项目、生成文件和 BYOK API keys 都保留在本机。应用可以完全离线工作；除非你明确开启 telemetry，否则本页所述的数据发送都不会发生。
 
-## Telemetry is opt-in
+## Telemetry 是 opt-in
 
-Usage telemetry is **off by default**. On first run the app shows a privacy
-consent banner asking you to make a choice — it never starts sending anything
-before you do. You can change your decision at any time under
-**Settings → Privacy**, where each category below has its own toggle.
+Usage telemetry 默认**关闭**。首次运行时，应用会显示隐私同意横幅，请你做出选择；在你选择之前，它绝不会开始发送任何内容。你可以随时在 **Settings → Privacy** 中修改决定，下列每个类别都有独立开关。
 
-## What is collected when you opt in
+## 开启后会收集什么
 
-When telemetry is enabled, the app may send the following to the Open Design
-team. Each category is independently controllable in Settings.
+启用 telemetry 后，应用可能向 Open Design 团队发送以下内容。每个类别都可在 Settings 中单独控制。
 
-- **Anonymous metrics** — run counts, token usage, error rate, and duration.
-  No prompts and no project data.
-- **Conversation and tool content** — your prompts, assistant responses, tool
-  inputs, and tool outputs (truncated before send). API keys, tokens, JWTs,
-  emails, IP addresses, and credit-card numbers are stripped automatically
-  before anything leaves your machine.
-- **Project artifacts manifest** — filenames, types, and sizes of generated
-  files. The **contents** of those files are never sent.
+- **匿名指标** - run 次数、token 用量、错误率和耗时。不包含 prompts，也不包含项目数据。
+- **对话与工具内容** - 你的 prompts、assistant responses、tool inputs 和 tool outputs（发送前会截断）。API keys、tokens、JWTs、emails、IP addresses 和 credit-card numbers 会在任何内容离开本机前自动移除。
+- **项目 artifacts manifest** - 生成文件的文件名、类型和大小。绝不会发送这些文件的**内容**。
 
-## What is never collected
+## 永远不会收集什么
 
-- The contents of your generated artifact files.
-- Your BYOK API keys, tokens, or other secrets — these are redacted before
-  send and are never part of telemetry.
-- Anything at all while telemetry is turned off.
+- 你生成的 artifact 文件内容。
+- 你的 BYOK API keys、tokens 或其他 secrets；这些内容在发送前会被 redact，且永远不是 telemetry 的一部分。
+- Telemetry 关闭时的任何内容。
 
-## How telemetry is sent
+## Telemetry 如何发送
 
-Redacted telemetry batches are sent to a Cloudflare Worker relay operated by
-the Open Design team, which forwards them to [Langfuse](https://langfuse.com)
-for analysis. The relay holds the Langfuse write credentials server-side, so
-packaged clients only ever ship a public relay URL — no secret keys. If the
-relay is unavailable the app retries quietly and keeps working; telemetry
-never blocks your workflow.
+Redacted telemetry batches 会发送到 Open Design 团队运营的 Cloudflare Worker relay，再由 relay 转发到 [Langfuse](https://langfuse.com) 进行分析。Relay 在 server-side 持有 Langfuse write credentials，因此打包客户端只会携带公开 relay URL，不会携带 secret keys。如果 relay 不可用，应用会安静重试并继续工作；telemetry 永远不会阻塞你的工作流。
 
-## Your anonymous ID
+## 你的匿名 ID
 
-When telemetry is enabled the app generates a random, opaque installation ID
-so related events can be grouped. It is not tied to your name, email, or
-account, and it carries no personal information.
+启用 telemetry 后，应用会生成一个随机、不透明的 installation ID，用于把相关 events 分组。它不绑定你的姓名、邮箱或账号，也不携带个人信息。
 
-## Deleting your data
+## 删除你的数据
 
-**Settings → Privacy → Delete my data** rotates your anonymous ID and stops
-sending. Telemetry already received ages out under the team's retention
-policy.
+**Settings → Privacy → Delete my data** 会轮换你的匿名 ID 并停止发送。已经收到的 telemetry 会按团队 retention policy 自动过期。
 
-## Bring your own key
+## 自带密钥
 
-Open Design is BYOK at every layer. The API keys you configure for coding
-agents and model providers are stored locally and used only to talk to those
-providers directly. They are never sent to the Open Design team.
+Open Design 在每一层都是 BYOK。你为 coding agents 和 model providers 配置的 API keys 都存储在本地，只用于直接调用对应 provider。它们永远不会发送给 Open Design 团队。
 
-## Changes to this page
+## 本页变更
 
-This document tracks the data handling of the shipped app. When the telemetry
-behavior changes, this page is updated alongside it. For questions, open a
-[GitHub Discussion](https://github.com/nexu-io/open-design/discussions).
+本文档跟踪已发布应用的数据处理行为。当 telemetry 行为发生变化时，本页会同步更新。如有问题，请打开 [GitHub Discussion](https://github.com/nexu-io/open-design/discussions)。

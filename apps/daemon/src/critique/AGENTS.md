@@ -1,70 +1,39 @@
-# `apps/daemon/src/critique/` (Critique Theater, daemon side)
+# `apps/daemon/src/critique/`（Critique Theater，daemon side）
 
-Module map agents enter when they need to change anything in the critique
-pipeline. The user-facing feature name is **Design Jury**; the directory
-keeps the **Critique Theater** internal name so the product label can move
-without churning code paths.
+当 agents 需要修改 critique pipeline 中的任何内容时，先进入这份 module map。面向用户的 feature name 是 **Design Jury**；目录保留 **Critique Theater** 这个内部名，这样 product label 可以移动而不造成 code paths churn。
 
 ## Layout
 
 | File | Responsibility |
 |---|---|
-| `config.ts` | `CritiqueConfig` defaults + `OD_CRITIQUE_*` env-var parsing. The single source of truth for thresholds, weights, max-rounds, timeouts. |
-| `orchestrator.ts` | The state machine. Spawns a CLI session, feeds the panelist prompts in order, awaits each round's SHIP / round_end, and decides whether to continue or terminate. |
-| `parser.ts` + `parsers/v1.ts` | Streaming parser that ingests the agent's stdout and yields `PanelEvent`s. Owns the `<CRITIQUE_RUN>`, `<PANELIST>`, `<SHIP>` envelope. |
-| `errors.ts` | Typed parser failures: `MalformedBlockError`, `OversizeBlockError`, `MissingArtifactError`. Each maps to a `DegradedReason` so the wire-level `critique.degraded` event carries the right tag. |
-| `persistence.ts` | SQLite writes for run rows and per-round summaries (`critique_runs`, `critique_rounds`). |
-| `artifact-writer.ts` | Disk persistence for the SHIP artifact body. Owns the byte-budget guard (`ArtifactTooLargeError`) and the `O_NOFOLLOW` path-traversal protections. |
-| `artifact-handler.ts` | HTTP read path: `GET /api/projects/:id/critique/:runId/artifact`. |
-| `interrupt-handler.ts` | Resolves the kill request from `POST /api/projects/:id/critique/:runId/interrupt`. |
-| `adapter-degraded.ts` | In-memory degraded-adapter registry with 24h TTL. The orchestrator + Settings UI consult `isDegraded(adapterId)` before routing a run to it. |
-| `conformance.ts` | Conformance harness entry point. The nightly cycle calls `runAdapterConformance` per adapter × per brief template and tallies `shipped / degraded / failed`. |
-| `__fixtures__/v1/` | Canonical transcripts the parser tests + conformance harness consume (happy-3-rounds, malformed-unbalanced, missing-artifact, etc.). |
-| `__fixtures__/adapters/` | Synthetic adapter stubs that emit the v1 fixtures. The conformance harness wraps them in `AsyncIterable<string>` so the parser path is exercised end-to-end without a real model. |
+| `config.ts` | `CritiqueConfig` defaults + `OD_CRITIQUE_*` env-var parsing。Thresholds、weights、max-rounds、timeouts 的 single source of truth。 |
+| `orchestrator.ts` | State machine。Spawn CLI session，按顺序喂入 panelist prompts，等待每一轮的 SHIP / round_end，并决定继续还是终止。 |
+| `parser.ts` + `parsers/v1.ts` | Streaming parser，读取 agent 的 stdout 并 yield `PanelEvent`s。拥有 `<CRITIQUE_RUN>`、`<PANELIST>`、`<SHIP>` envelope。 |
+| `errors.ts` | Typed parser failures：`MalformedBlockError`、`OversizeBlockError`、`MissingArtifactError`。每个都会映射到 `DegradedReason`，让 wire-level `critique.degraded` event 携带正确 tag。 |
+| `persistence.ts` | 针对 run rows 和 per-round summaries（`critique_runs`、`critique_rounds`）的 SQLite writes。 |
+| `artifact-writer.ts` | SHIP artifact body 的 disk persistence。拥有 byte-budget guard（`ArtifactTooLargeError`）和 `O_NOFOLLOW` path-traversal protections。 |
+| `artifact-handler.ts` | HTTP read path：`GET /api/projects/:id/critique/:runId/artifact`。 |
+| `interrupt-handler.ts` | 解析来自 `POST /api/projects/:id/critique/:runId/interrupt` 的 kill request。 |
+| `adapter-degraded.ts` | 带 24h TTL 的 in-memory degraded-adapter registry。Orchestrator + Settings UI 在将 run 路由给 adapter 前会查询 `isDegraded(adapterId)`。 |
+| `conformance.ts` | Conformance harness entry point。Nightly cycle 会按 adapter × brief template 调用 `runAdapterConformance`，并统计 `shipped / degraded / failed`。 |
+| `__fixtures__/v1/` | Parser tests + conformance harness 消费的 canonical transcripts（happy-3-rounds、malformed-unbalanced、missing-artifact 等）。 |
+| `__fixtures__/adapters/` | 发出 v1 fixtures 的 synthetic adapter stubs。Conformance harness 将它们包装为 `AsyncIterable<string>`，这样无需真实 model 也能端到端演练 parser path。 |
 
 ## Invariants
 
-- **Parser yields one `PanelEvent` at a time** via async generator. The
-  orchestrator drives the loop; nothing in this directory collects events
-  into an array eagerly.
-- **Terminal phases (`shipped`, `degraded`, `interrupted`, `failed`) are
-  emitted exactly once** per run. The reducer treats them as sticky;
-  duplicate ship events trip `duplicate_ship` in `parser_warning`.
-- **Artifact bytes never travel on the wire.** The SHIP event carries an
-  `artifactRef: { projectId, artifactId }` only; the byte body is written
-  by `artifact-writer.ts` and fetched via the HTTP route.
-- **Round bookkeeping is keyed by round number**, not by "always the
-  last." A stray late panelist event from round 1 must NOT corrupt
-  round 2's bucket. See `withRound` in the web reducer for the parallel.
-- **No `apps/daemon/src/agents/registry.ts`.** The plan refers to that
-  path historically; the actual adapter registry is `runtimes/registry.ts`
-  in this repo. Phase 10 routing extensions land here in
-  `adapter-degraded.ts` instead.
-- **Designer weight is frozen at 0.0 until v2 cast config lands.**
-  `config.ts` exposes the panel weights as `CritiqueConfig.weights`
-  but every production deployment uses the v1 distribution
-  (designer 0 / critic 0.4 / brand 0.2 / a11y 0.2 / copy 0.2). The
-  v2 work is cross-package: the daemon adds per-skill weight
-  overrides driven off `od.critique.cast` in `SKILL.md` frontmatter
-  (this directory) and the web Settings surface adds a per-project
-  weight editor (`apps/web/src/components/Settings/`). Treat the v1
-  weights as a wire-shape invariant rather than a tuning knob;
-  changing them mid-v1 will break the `composite` numbers persisted
-  in `critique_runs`.
+- **Parser 通过 async generator 一次 yield 一个 `PanelEvent`。** Orchestrator 驱动 loop；本目录内没有任何东西会 eager 地把 events 收集进 array。
+- **Terminal phases（`shipped`、`degraded`、`interrupted`、`failed`）每个 run 只发出一次。** Reducer 将它们视为 sticky；重复 ship events 会在 `parser_warning` 中触发 `duplicate_ship`。
+- **Artifact bytes 永不走 wire。** SHIP event 只携带 `artifactRef: { projectId, artifactId }`；byte body 由 `artifact-writer.ts` 写入，并通过 HTTP route 获取。
+- **Round bookkeeping 以 round number 为 key**，而不是“永远最后一个”。来自 round 1 的 stray late panelist event 不得污染 round 2 的 bucket。Web reducer 中的并行逻辑见 `withRound`。
+- **没有 `apps/daemon/src/agents/registry.ts`。** Plan 历史上提到过该路径；本 repo 中真实 adapter registry 是 `runtimes/registry.ts`。Phase 10 routing extensions 会落在这里的 `adapter-degraded.ts`。
+- **Designer weight 在 v2 cast config 落地前冻结为 0.0。** `config.ts` 将 panel weights 暴露为 `CritiqueConfig.weights`，但每个 production deployment 都使用 v1 distribution（designer 0 / critic 0.4 / brand 0.2 / a11y 0.2 / copy 0.2）。V2 work 是 cross-package：daemon 添加由 `SKILL.md` frontmatter 中 `od.critique.cast` 驱动的 per-skill weight overrides（本目录），web Settings surface 添加 per-project weight editor（`apps/web/src/components/Settings/`）。请把 v1 weights 当作 wire-shape invariant，而不是 tuning knob；v1 中途修改它们会破坏 `critique_runs` 中持久化的 `composite` numbers。
 
-## When you change anything here
+## 修改这里时
 
-1. The contracts in `packages/contracts/src/critique.ts` are the single
-   source of truth for `PanelEvent`, `DegradedReason`, `FailedCause`,
-   `ParserWarningKind`. Update them before changing this directory.
-2. The parser is the natural place to enforce schema strictness; do not
-   loosen it under pressure. The web `sseToPanelEvent` already runs a
-   defence-in-depth variant validator.
-3. Add a v1 fixture under `__fixtures__/v1/` for every new failure
-   shape, and a corresponding conformance test case.
-4. Bump `CRITIQUE_PROTOCOL_VERSION` in the contracts when the wire
-   shape changes. Adapter conformance auto-marks `degraded` on
-   protocol-version mismatch, so this is load-bearing.
+1. `packages/contracts/src/critique.ts` 中的 contracts 是 `PanelEvent`、`DegradedReason`、`FailedCause`、`ParserWarningKind` 的 single source of truth。修改本目录前先更新它们。
+2. Parser 是自然的 schema strictness enforcement 位置；不要在压力下放松它。Web `sseToPanelEvent` 已经运行 defence-in-depth variant validator。
+3. 每种新的 failure shape 都要在 `__fixtures__/v1/` 下添加一个 v1 fixture，并添加对应 conformance test case。
+4. Wire shape 变化时，在 contracts 中 bump `CRITIQUE_PROTOCOL_VERSION`。Adapter conformance 会在 protocol-version mismatch 时自动标记 `degraded`，所以这里是 load-bearing。
 
 ## Related
 

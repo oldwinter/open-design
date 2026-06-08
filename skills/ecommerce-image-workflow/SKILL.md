@@ -2,10 +2,9 @@
 name: ecommerce-image-workflow
 en_name: "Ecommerce Image Workflow"
 description: |
-  Reference-product ecommerce image workflow for generating a compact set
-  of product-faithful main, feature, and lifestyle images from real product
-  reference photos. V1 requires uploaded product imagery and intentionally
-  defers brief-only concept generation and platform-specific batch exports.
+  面向参考商品的电商图片工作流：基于真实商品参考图，生成一组紧凑、
+  忠于商品本身的主图、卖点图和生活方式图。V1 要求用户上传商品图片，
+  并有意暂缓仅凭 brief 的概念商品生成与按平台批量导出。
 triggers:
   - "ecommerce product images"
   - "product image set"
@@ -36,13 +35,9 @@ od:
 
 # Ecommerce Image Workflow
 
-Create a compact ecommerce image set from real product reference imagery.
-This V1 skill is intentionally narrow: it supports **reference-product mode
-only**. If the user only describes a product and does not provide a product
-photo, ask for one and stop. Do not create a brief-only concept product in
-this version.
+基于真实商品参考图生成一组紧凑的电商图片。这个 V1 skill 刻意收窄范围：只支持 **reference-product mode**。如果用户只描述了商品、没有提供商品照片，请要求用户先上传照片并停止。此版本不要创建仅凭 brief 的概念商品。
 
-## Resource map
+## 资源地图
 
 ```text
 ecommerce-image-workflow/
@@ -52,84 +47,75 @@ ecommerce-image-workflow/
     `-- checklist.md
 ```
 
-## What this skill produces
+## 这个 skill 会产出什么
 
-By default, generate three ecommerce-ready image assets for one product:
+默认情况下，为一个商品生成三张电商可用图片：
 
-1. **Main image** - clean product-first packshot on white or soft neutral
-   background.
-2. **Feature image** - one selling point shown clearly with controlled callout
-   space, without relying on tiny unreadable in-image text.
-3. **Lifestyle image** - product shown in a plausible use context while keeping
-   the product faithful to the reference.
+1. **Main image** - 干净、以商品为主的 packshot，背景为白色或柔和中性色。
+2. **Feature image** - 清楚呈现一个卖点，预留可控的标注空间，不依赖图片里很小、难读的文字。
+3. **Lifestyle image** - 在可信的使用场景中展示商品，同时保持商品与参考图一致。
 
-Also create:
+同时创建：
 
-- `image-manifest.json` describing reference inputs, slots, prompts, outputs,
-  aspect ratios, and fidelity notes.
-- `ecommerce-gallery.html` as a small preview gallery linking the generated
-  files and summarizing the image roles.
+- `image-manifest.json`，记录参考输入、slot、prompt、输出、宽高比和保真说明。
+- `ecommerce-gallery.html`，作为一个小型预览 gallery，链接生成文件并总结每张图的角色。
 
-## Input contract
+## 输入契约
 
-Required:
+必需：
 
-- At least one uploaded product reference image in the active project.
+- 当前项目中至少有一张已上传的商品参考图。
 
-Ask only for missing essentials:
+只询问缺失的关键内容：
 
-- Product name or short label if it is not obvious.
-- Main selling point if the feature image cannot be inferred safely.
-- Target marketplace or aspect only if the user asks for platform-specific
-  framing.
+- 如果商品名称或短标签不明显，再询问。
+- 如果无法安全推断 feature image 的主卖点，再询问。
+- 只有当用户要求特定平台构图时，才询问目标 marketplace 或宽高比。
 
-Do not ask broad discovery questions. Keep the workflow moving.
+不要问宽泛的 discovery 问题。保持工作流继续推进。
 
-## Workflow
+## 工作流
 
-### Step 0 - Confirm reference-product mode
+### Step 0 - 确认 reference-product mode
 
-Before planning, verify that the current project includes a real product
-reference image.
+规划前，先确认当前项目中包含真实商品参考图。
 
-If no product image is available, reply:
+如果没有商品图，回复：
 
 > Please upload at least one product reference image first. This V1 workflow
 > preserves a real product from reference photos; brief-only concept generation
 > is deferred to a later version.
 
-Then stop.
+然后停止。
 
-### Step 1 - Extract product identity anchors
+### Step 1 - 提取商品身份锚点
 
-Inspect the reference image and write a short internal identity lock:
+检查参考图，并写一段简短的内部 identity lock：
 
-- Product category and form factor.
-- Shape and silhouette.
-- Primary colors and materials.
-- Logo, label, pattern, fasteners, ports, straps, handles, or other fixed
-  details.
-- Scale cues and proportions.
-- What must not change.
+- 商品类别与形态。
+- 形状与轮廓。
+- 主色与材质。
+- Logo、标签、图案、扣件、接口、肩带、把手或其他固定细节。
+- 尺度线索与比例。
+- 哪些内容绝不能改变。
 
-Use these anchors in every generation prompt.
+每个生成 prompt 都要使用这些锚点。
 
-### Step 2 - Build a three-slot shot plan
+### Step 2 - 制定三 slot 拍摄计划
 
-Create a compact shot plan before dispatch:
+dispatch 前创建一个紧凑的 shot plan：
 
-| Slot | Default aspect | Goal |
+| Slot | 默认宽高比 | 目标 |
 |---|---:|---|
-| main | 1:1 | Product-first marketplace image on white or soft neutral background |
-| feature | 4:5 | One clear selling point with close-up detail or simple callout space |
-| lifestyle | 4:5 | Realistic use context with the product still visually faithful |
+| main | 1:1 | 白色或柔和中性背景上的商品优先 marketplace 主图 |
+| feature | 4:5 | 一个清晰卖点，配近景细节或简单标注空间 |
+| lifestyle | 4:5 | 真实使用场景，同时保持商品视觉忠于参考图 |
 
-If the project metadata provides `imageAspect`, use it when the user expects a
-single aspect across the set. Otherwise use the slot defaults above.
+如果项目 metadata 提供了 `imageAspect`，并且用户希望整组图片使用同一宽高比，就使用它。否则使用上面的 slot 默认值。
 
-### Step 3 - Compose prompts with a fidelity lock
+### Step 3 - 用 fidelity lock 组合 prompt
 
-Every prompt must include this product fidelity instruction near the top:
+每个 prompt 都必须在靠前位置包含这段商品保真指令：
 
 ```text
 Preserve the exact product identity from the reference image: shape,
@@ -138,41 +124,36 @@ details, and proportions. Do not redesign the product. Do not add, remove,
 or relocate product features.
 ```
 
-Then add slot-specific instructions:
+然后加入各 slot 的专门指令：
 
 #### Main image prompt
 
-- Product centered and fully visible.
-- White, off-white, or very light grey background.
-- Soft studio lighting with clean shadow.
-- No props unless the user asked for them.
-- No in-frame marketing text.
+- 商品居中且完整可见。
+- 白色、米白色或非常浅的灰色背景。
+- 柔和棚拍光线，阴影干净。
+- 除非用户要求，否则不要加入道具。
+- 画面内不要放营销文字。
 
 #### Feature image prompt
 
-- Focus on one user-provided or safely inferred feature.
-- Use close-up composition, cutaway-style crop, or clean negative space for
-  later designer-added labels.
-- Keep the product visually balanced in the frame. If no explicit callout
-  structure is being generated, center the product. If label space is needed,
-  offset the product only slightly and make the empty space feel intentional.
-- Do not invent certifications, performance numbers, materials, or claims.
-- Avoid tiny rendered text; leave label space instead.
+- 聚焦用户提供或可安全推断的一个 feature。
+- 使用近景构图、cutaway 风格裁切，或为后续设计师添加标签预留干净留白。
+- 让商品在画面中保持视觉平衡。如果没有生成明确的 callout 结构，就让商品居中。如果需要标签空间，只能轻微偏移商品，并让空白空间显得有意为之。
+- 不要编造认证、性能数字、材质或声明。
+- 避免渲染很小的文字；改为预留标签空间。
 
 #### Lifestyle image prompt
 
-- Use a realistic environment matched to the product category.
-- Keep the product the focal point.
-- Show human interaction only if it helps explain use and does not obscure the
-  product.
-- Preserve product scale and structure.
+- 使用匹配商品类别的真实环境。
+- 保持商品为视觉焦点。
+- 只有当人物交互有助于解释用途且不会遮挡商品时，才展示人物交互。
+- 保持商品尺度与结构。
 
-### Step 4 - Dispatch through the media contract
+### Step 4 - 通过 media contract dispatch
 
-Use the unified Open Design media dispatcher. Do not call provider APIs or
-custom model commands directly.
+使用统一的 Open Design media dispatcher。不要直接调用 provider API 或自定义 model 命令。
 
-For each slot, run the standard generate/wait loop:
+每个 slot 都运行标准的 generate/wait 循环：
 
 ```bash
 # POSIX bash. Do not call provider APIs directly.
@@ -212,16 +193,13 @@ done
 printf '%s\n' "$last"
 ```
 
-The final line must be JSON with `{"file": {"name": "...", ...}}`.
-Record each final returned filename in `image-manifest.json`.
+最后一行必须是包含 `{"file": {"name": "...", ...}}` 的 JSON。把每次最终返回的文件名记录到 `image-manifest.json`。
 
-If the active image model or provider cannot use `--image`, stop and tell the
-user that this workflow needs a reference-capable image generation path for
-product fidelity.
+如果当前 image model 或 provider 不能使用 `--image`，请停止并告诉用户：为了保证商品保真，这个工作流需要支持参考图的图片生成路径。
 
-### Step 5 - Write `image-manifest.json`
+### Step 5 - 写入 `image-manifest.json`
 
-After generation, create a project file named `image-manifest.json`:
+生成完成后，在项目中创建 `image-manifest.json`：
 
 ```json
 {
@@ -230,8 +208,8 @@ After generation, create a project file named `image-manifest.json`:
   "productName": "Example product",
   "referenceImages": ["reference-product.png"],
   "fidelityNotes": [
-    "Preserve product identity, color, material, construction, and proportions.",
-    "Do not treat these outputs as platform-compliance proof without human review."
+    "保持商品身份、颜色、材质、结构和比例。",
+    "不要在未经人工 review 的情况下，把这些输出视为平台合规证明。"
   ],
   "slots": [
     {
@@ -259,39 +237,35 @@ After generation, create a project file named `image-manifest.json`:
 }
 ```
 
-Keep the manifest honest. If a detail is unknown, write `null` or a short note
-instead of inventing claims.
+manifest 必须诚实。如果某个细节未知，写 `null` 或一句简短说明，不要编造声明。
 
-### Step 6 - Write `ecommerce-gallery.html`
+### Step 6 - 写入 `ecommerce-gallery.html`
 
-Create a simple single-file HTML gallery that:
+创建一个简单的单文件 HTML gallery：
 
-- Shows the reference image first.
-- Shows the three generated slots with their role names.
-- Lists product-fidelity notes.
-- Links to `image-manifest.json`.
-- Uses system fonts and local project files only; no CDN imports.
+- 首先展示参考图。
+- 展示三张生成 slot，并标出各自角色。
+- 列出商品保真说明。
+- 链接到 `image-manifest.json`。
+- 只使用系统字体和项目本地文件；不要引入 CDN。
 
-### Step 7 - Hand off
+### Step 7 - 交付
 
-Reply with:
+回复中包含：
 
-- The generated filenames.
-- A one-sentence summary of the fidelity lock used.
-- A reminder that marketplace-specific compliance, final text overlays, and
-  claim/legal review remain human review steps.
+- 生成的文件名。
+- 一句话总结使用的 fidelity lock。
+- 提醒用户：marketplace 特定合规、最终文字叠加、声明/法律审查仍需要人工 review。
 
-Do not emit an `<artifact>` tag.
+不要输出 `<artifact>` 标签。
 
-## Hard rules
+## 硬性规则
 
-- V1 requires real product reference imagery. No brief-only concept products.
-- One product per run.
-- Default to exactly three slots: main, feature, lifestyle.
-- Preserve the product; do not redesign it.
-- Do not invent claims, certifications, measurements, ingredients, or
-  performance data.
-- Use `"$OD_NODE_BIN" "$OD_BIN" media generate`; do not call provider APIs
-  directly.
-- Always create `image-manifest.json` after generation.
-- Run `references/checklist.md` before handoff.
+- V1 要求真实商品参考图。不要生成仅凭 brief 的概念商品。
+- 每次运行只处理一个商品。
+- 默认精确生成三个 slot：main、feature、lifestyle。
+- 保留商品本体；不要 redesign。
+- 不要编造声明、认证、测量值、成分或性能数据。
+- 使用 `"$OD_NODE_BIN" "$OD_BIN" media generate`；不要直接调用 provider API。
+- 生成后始终创建 `image-manifest.json`。
+- 交付前运行 `references/checklist.md`。

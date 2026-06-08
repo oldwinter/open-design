@@ -1,208 +1,207 @@
 # Roadmap
 
-**Parent:** [`spec.md`](spec.md) · **Siblings:** [`architecture.md`](architecture.md) · [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
+**父文档：** [`spec.md`](spec.md) · **同级文档：** [`architecture.md`](architecture.md) · [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
 
-Phased plan from "spec-only today" to "usable MVP" to "published v1." All estimates assume one focused developer; multiply by 0.6 for two and 0.4 for three.
+从“今天只有 spec”到“可用 MVP”再到“发布 v1”的分阶段计划。所有估算都按一名专注开发者计算；两人乘以 0.6，三人乘以 0.4。
 
 ---
 
-## Phase 0 — Spec finalization (current, ~3–5 days)
+## Phase 0 — Spec 收敛（当前，约 3–5 天）
 
-**Goal:** get the interfaces right before writing implementation code. All decisions that are cheap to change on paper and expensive to change in code live here.
+**目标：** 在写实现代码前把 interfaces 定准。所有在纸上便宜、在代码里昂贵的决策都放在这里。
 
-**Deliverables:**
-- [x] `README.md` + `docs/spec.md` + architecture / protocol / adapter / modes / references docs (this repo, as of now)
-- [ ] `docs/schemas/skill-manifest.json` — JSON Schema for the `od:` front-matter block
-- [ ] `docs/schemas/design-system.md` — formal spec of the 9-section `DESIGN.md`
+**交付物：**
+- [x] `README.md` + `docs/spec.md` + architecture / protocol / adapter / modes / references docs（截至目前，本 repo 内）
+- [ ] `docs/schemas/skill-manifest.json` — `od:` front-matter block 的 JSON Schema
+- [ ] `docs/schemas/design-system.md` — 9-section `DESIGN.md` 的正式 spec
 - [ ] `docs/schemas/protocol.md` — HTTP/SSE API schemas
-- [ ] `docs/schemas/adapter.md` — adapter interface in TypeScript, printed out
-- [ ] `docs/examples/DESIGN.sample.md` — a working example design system
-- [ ] `docs/examples/saas-landing-skill/` — a working example skill (the one sketched in `skills-protocol.md` §8)
-- [ ] Resolve the four "open questions" at the end of each spec doc
+- [ ] `docs/schemas/adapter.md` — 以 TypeScript 打印出的 adapter interface
+- [ ] `docs/examples/DESIGN.sample.md` — 可工作的 example design system
+- [ ] `docs/examples/saas-landing-skill/` — 可工作的 example skill（即 `skills-protocol.md` §8 中草拟的那个）
+- [ ] 解决每份 spec doc 末尾的四个 “open questions”
 
-**Exit criteria:** every interface we'll implement has a signed-off schema in this repo. No code yet.
+**退出标准：** 我们将要实现的每个 interface 都在本 repo 中有已签核 schema。还不写代码。
 
 ---
 
-## Phase 1 — MVP (~6–8 weeks)
+## Phase 1 — MVP（约 6–8 周）
 
-**Goal:** a single developer can clone, install, start the daemon, point at Claude Code, and produce a prototype and a deck from scratch. The tool is usable for real work even if not polished.
+**目标：** 单个开发者可以 clone、install、启动 daemon、指向 Claude Code，并从零产出 prototype 和 deck。即使还不够 polish，也能用于真实工作。
 
-### Scope
+### 范围
 
-**Included:**
-- Web app (Next.js 16, App Router)
+**包含：**
+- Web app（Next.js 16，App Router）
   - chat pane · artifact tree · sandboxed iframe preview · export menu
   - skill picker · mode picker · design-system picker
-  - **no** comment mode yet · **no** sliders yet · **no** template gallery UI yet
-- Local daemon (Node)
-  - HTTP/SSE API on `:7456`
+  - **暂不包含** comment mode · **暂不包含** sliders · **暂不包含** template gallery UI
+- Local daemon（Node）
+  - `:7456` 上的 HTTP/SSE API
   - agent detection + cached results
-  - skill registry (scan three dirs, hot-reload)
-  - artifact store (plain files + `history.jsonl`)
+  - skill registry（扫描三个 dirs，hot-reload）
+  - artifact store（plain files + `history.jsonl`）
   - design-system resolver
-  - export pipeline (HTML + ZIP only; PDF/PPTX in Phase 2)
+  - export pipeline（仅 HTML + ZIP；PDF/PPTX 放到 Phase 2）
 - Agent adapters
-  - **`claude-code`** — native skill loading, streaming, surgical edit
-  - **`api-fallback`** — direct Anthropic Messages API, minimal tool loop (Read/Write/Edit only)
-- Skills shipped in repo
-  - `saas-landing` (Prototype)
-  - `magazine-web-ppt` (Deck, fork of guizang-ppt-skill)
-- Modes available
-  - **Prototype** (fully working)
-  - **Deck** (fully working)
-  - **Design System** (basic: from text brief only; no screenshot input yet)
-  - **Template** (deferred to Phase 2)
+  - **`claude-code`** — native skill loading、streaming、surgical edit
+  - **`api-fallback`** — direct Anthropic Messages API，minimal tool loop（只含 Read/Write/Edit）
+- Repo 内置 skills
+  - `saas-landing`（Prototype）
+  - `magazine-web-ppt`（Deck，fork 自 guizang-ppt-skill）
+- 可用 modes
+  - **Prototype**（完整可用）
+  - **Deck**（完整可用）
+  - **Design System**（基础版：只从 text brief 生成；暂不支持 screenshot input）
+  - **Template**（推迟到 Phase 2）
 - Topologies
-  - **A — fully local** (primary)
-  - **C — Vercel + direct API** (partial; no daemon features)
+  - **A — fully local**（主路径）
+  - **C — Vercel + direct API**（部分支持；无 daemon features）
 
-**Explicitly out of MVP:**
+**MVP 明确不包含：**
 - Codex / Cursor / Gemini adapters
 - Comment mode + sliders
 - Template gallery + template skill
-- Design System from screenshot (vision) / PDF / URL
+- 从 screenshot（vision）/ PDF / URL 生成 Design System
 - PDF / PPTX export
-- Topology B (Vercel + tunneled local daemon)
+- Topology B（Vercel + tunneled local daemon）
 - Docker compose file
-- Skill tests (`od skill test`)
+- Skill tests（`od skill test`）
 - Auth / multi-user
 
-### Week-by-week breakdown
+### 按周拆解
 
-| Week | Theme | Concrete deliverables |
+| Week | 主题 | 具体交付物 |
 |---|---|---|
-| 1 | Scaffolding | pnpm workspaces (`apps/web`, `apps/daemon`, `e2e`); Next.js 16 base; daemon CLI skeleton; CI green |
-| 2 | Daemon core | HTTP/SSE API; project/conversation store; skill registry scanning; artifact store; design-system resolver loading `DESIGN.md` |
-| 3 | Claude Code adapter | detection (PATH + `~/.claude/` probe); spawn with `--output-format stream-json`; parser from JSON-lines → `AgentEvent`; streaming to daemon's session; cancel via SIGTERM |
-| 4 | API-fallback adapter | Anthropic Messages streaming; minimal tool loop (Read/Write/Edit rooted to artifact cwd); integration with skill prompt injection |
-| 5 | Web UI — chat + file workspace | React state + daemon-backed project store; SSE client; chat pane; file workspace reflects project files; skill picker |
-| 6 | Web UI — preview + export | sandboxed iframe with hot reload; JSX → vendored React/Babel runtime; export ZIP; export self-contained HTML (inline CSS) |
-| 7 | Default skills | port `guizang-ppt-skill` (no modifications; add `od:` extension block); write `saas-landing` skill; write 1–2 DESIGN.md examples; docs for skill authors |
-| 8 | Polish + dogfood | end-to-end dogfooding; performance pass (daemon <500ms cold start, first generation overhead <50ms); bug-fixing; first publishable alpha |
+| 1 | Scaffolding | pnpm workspaces（`apps/web`、`apps/daemon`、`e2e`）；Next.js 16 base；daemon CLI skeleton；CI green |
+| 2 | Daemon core | HTTP/SSE API；project/conversation store；skill registry scanning；artifact store；design-system resolver 加载 `DESIGN.md` |
+| 3 | Claude Code adapter | detection（PATH + `~/.claude/` probe）；用 `--output-format stream-json` spawn；JSON-lines → `AgentEvent` parser；streaming 到 daemon session；SIGTERM cancel |
+| 4 | API-fallback adapter | Anthropic Messages streaming；minimal tool loop（Read/Write/Edit，root 到 artifact cwd）；与 skill prompt injection 集成 |
+| 5 | Web UI — chat + file workspace | React state + daemon-backed project store；SSE client；chat pane；file workspace 反映 project files；skill picker |
+| 6 | Web UI — preview + export | sandboxed iframe + hot reload；JSX → vendored React/Babel runtime；export ZIP；export self-contained HTML（inline CSS） |
+| 7 | Default skills | port `guizang-ppt-skill`（不修改；添加 `od:` extension block）；编写 `saas-landing` skill；编写 1–2 个 DESIGN.md examples；skill author docs |
+| 8 | Polish + dogfood | 端到端 dogfooding；performance pass（daemon <500ms cold start，first generation overhead <50ms）；修 bug；首个可发布 alpha |
 
-### MVP exit criteria
+### MVP 退出标准
 
-1. `corepack enable && pnpm install && pnpm tools-dev run web` works on clean macOS and Linux with Node 24.
-2. With Claude Code installed: prototype + deck generation works end-to-end.
-3. Without Claude Code installed: API-fallback produces prototypes (not decks — guizang-ppt-skill needs native skill loading).
-4. A user can drop a DESIGN.md into the project root and subsequent generations respect it.
-5. A third party can publish a skill repo; `od skill add <url>` installs it and it works.
-6. Artifacts are plain files; `git add ./.od/artifacts/` and `git log` tell a sensible story.
-7. No Electron, no Tauri, no desktop packaging anywhere in the repo.
+1. `corepack enable && pnpm install && pnpm tools-dev run web` 可在干净 macOS 和 Linux + Node 24 上运行。
+2. 安装 Claude Code 后：prototype + deck generation 端到端可用。
+3. 未安装 Claude Code 时：API-fallback 可产出 prototypes（不产出 decks —— guizang-ppt-skill 需要 native skill loading）。
+4. 用户可把 DESIGN.md 放到 project root，后续 generations 会遵守它。
+5. 第三方可发布 skill repo；`od skill add <url>` 安装后可运行。
+6. Artifacts 是 plain files；`git add ./.od/artifacts/` 和 `git log` 能讲出合理的故事。
+7. Repo 中没有 Electron、Tauri 或 desktop packaging。
 
 ---
 
-## Phase 2 — v1 (~8 weeks after MVP)
+## Phase 2 — v1（MVP 后约 8 周）
 
-**Goal:** feature parity with the "UI-polish-heavy" parts of Open CoDesign + multi-agent support + the full four modes.
+**目标：** 达到 Open CoDesign 中 “UI-polish-heavy” 部分的功能对等 + multi-agent support + 完整四种 modes。
 
-### Scope
+### 范围
 
-**Agent adapters:**
-- `codex` (P1)
-- `cursor-agent` (P1)
-- capability-driven UI gating (disable features per adapter)
+**Agent adapters：**
+- `codex`（P1）
+- `cursor-agent`（P1）
+- capability-driven UI gating（按 adapter 禁用 features）
 - agent fallback chain
 
-**UI:**
-- **Comment mode** (click element → surgical edit; only when `capabilities.surgicalEdit`)
-- **Slider parameters** (live-tweak `od.parameters`)
-- **Multi-frame preview** (desktop / tablet / phone)
+**UI：**
+- **Comment mode**（点击元素 → surgical edit；仅当 `capabilities.surgicalEdit` 时启用）
+- **Slider parameters**（live-tweak `od.parameters`）
+- **Multi-frame preview**（desktop / tablet / phone）
 - **Template gallery** UI with thumbnails
-- **Design System editor** (split view: markdown ↔ sample-components preview)
+- **Design System editor**（split view：markdown ↔ sample-components preview）
 
-**Skills:**
-- Template skills: `stripe-ish-landing`, `linear-ish-docs`, `notion-ish-workspace`, `vercel-ish-pricing`
-- More Prototype skills: `dashboard`, `login-flow`, `empty-state-pack`, `pricing-page`
-- More Deck skills: `pitch-deck`, `product-demo-deck`
-- Design System skills: `design-system-from-screenshot`, `design-system-refine`
+**Skills：**
+- Template skills：`stripe-ish-landing`、`linear-ish-docs`、`notion-ish-workspace`、`vercel-ish-pricing`
+- 更多 Prototype skills：`dashboard`、`login-flow`、`empty-state-pack`、`pricing-page`
+- 更多 Deck skills：`pitch-deck`、`product-demo-deck`
+- Design System skills：`design-system-from-screenshot`、`design-system-refine`
 
-**Modes:**
-- **Template mode** fully shipped
-- **Design System mode** extended: screenshot input, URL input
+**Modes：**
+- **Template mode** 完整交付
+- **Design System mode** 扩展：screenshot input、URL input
 
-**Export:**
-- PDF (Puppeteer)
-- PPTX (pptxgenjs, driven by `slides.json`)
+**Export：**
+- PDF（Puppeteer）
+- PPTX（pptxgenjs，由 `slides.json` 驱动）
 
-**Deployment:**
+**Deployment：**
 - Docker compose file
-- Topology B: Vercel web + tunneled local daemon
-  - Ship a helper subcommand: `od daemon --expose` using `cloudflared` (opt-in, documented)
+- Topology B：Vercel web + tunneled local daemon
+  - 提供 helper subcommand：`od daemon --expose`，使用 `cloudflared`（opt-in，有文档）
 
-**Dev experience:**
+**Dev experience：**
 - `od skill test` with cheap-model runs
-- Skill author starter template: `od skill scaffold`
+- Skill author starter template：`od skill scaffold`
 
-### v1 exit criteria
+### v1 退出标准
 
-1. All four modes fully functional.
-2. Three adapters working (Claude Code, Codex, Cursor Agent); fallback chain shipping.
-3. PDF + PPTX export working for at least the `magazine-web-ppt` + `pitch-deck` skills.
-4. Deployed example at `demo.open-design.dev` (Topology C).
-5. Skill author docs published; at least one third-party skill submitted.
-6. Documentation site rebuilt from these spec docs.
+1. 四种 modes 全部可用。
+2. 三个 adapters 可用（Claude Code、Codex、Cursor Agent）；交付 fallback chain。
+3. PDF + PPTX export 对至少 `magazine-web-ppt` + `pitch-deck` skills 可用。
+4. `demo.open-design.dev` 上有 deployed example（Topology C）。
+5. Skill author docs 已发布；至少一个 third-party skill 已提交。
+6. Documentation site 从这些 spec docs 重建完成。
 
 ---
 
-## Phase 3 — v2 (~12 weeks after v1)
+## Phase 3 — v2（v1 后约 12 周）
 
-**Goal:** ecosystem + robustness.
+**目标：** ecosystem + robustness。
 
-**Scope sketch (non-binding):**
-- Skill marketplace UI — searchable, categorized, install with one click
+**范围草案（非绑定）：**
+- Skill marketplace UI — searchable、categorized、一键安装
 - Skill signing / checksums
-- Gemini CLI + OpenCode + OpenClaw adapters (P2 tier)
+- Gemini CLI + OpenCode + OpenClaw adapters（P2 tier）
 - Windows support
-- Collaborative mode (multi-user session on a single daemon)
-- "Freeze prototype as design system" action
-- Figma export (behind the Open CoDesign post-1.0 line; borrow their approach when they ship it)
-- Telemetry (opt-in, self-hosted, never phoning home to a central service)
-- Hosted SaaS offering (optional; full-local stays primary)
+- Collaborative mode（单 daemon 上的 multi-user session）
+- “Freeze prototype as design system” action
+- Figma export（沿 Open CoDesign post-1.0 线；他们交付后借鉴其方法）
+- Telemetry（opt-in、self-hosted，绝不向中心服务 phoning home）
+- Hosted SaaS offering（可选；full-local 仍是主路径）
 
-v2 isn't promised. It's the direction if v1 lands.
+v2 不作承诺。它是 v1 成立后的方向。
 
 ## Self-evolution track
 
-The newer Automations direction is tracked in
-[`specs/current/automation-self-evolution.md`](../specs/current/automation-self-evolution.md).
-It folds routines, scheduled connector digests, live-artifact refreshes, Orbit,
-memory extraction, skill creation, token compression, and design-system
-extraction into one Automation template model.
+较新的 Automations 方向在
+[`specs/current/automation-self-evolution.md`](../specs/current/automation-self-evolution.md)
+中跟踪。它把 routines、scheduled connector digests、live-artifact refreshes、Orbit、
+memory extraction、skill creation、token compression 和 design-system
+extraction 折叠进同一个 Automation template model。
 
-Milestones:
+Milestones：
 
 | Milestone | Deliverable |
 |---|---|
-| SE0 | Contracts for source packets, automation templates, evolution proposals, memory tree nodes, and compression reports. |
-| SE1 | Editable memory tree that agents actually consume through the daemon and BYOK/API-mode prompt resolver. |
-| SE2 | Automation template registry exposed in both web UI and `od automation`. |
-| SE3 | Design-system extraction and skill crystallization proposals with review gates. |
-| SE4 | Connector-driven ingestion into memory/design-system/skill proposals with provenance. |
-| SE5 | Optional token compression with before/after token reports and rollback-safe stored originals. |
+| SE0 | Source packets、automation templates、evolution proposals、memory tree nodes 和 compression reports 的 contracts。 |
+| SE1 | Agents 会通过 daemon 和 BYOK/API-mode prompt resolver 实际消费的 editable memory tree。 |
+| SE2 | 同时暴露在 web UI 和 `od automation` 中的 Automation template registry。 |
+| SE3 | 带 review gates 的 design-system extraction 与 skill crystallization proposals。 |
+| SE4 | Connector-driven ingestion into memory/design-system/skill proposals with provenance。 |
+| SE5 | Optional token compression，带 before/after token reports 和 rollback-safe stored originals。 |
 
-SE1 starts from the existing Markdown memory store: `/api/memory/tree` and
-`od memory tree list/view/edit/move` expose a derived editable tree while the
-same selected entries continue feeding daemon and BYOK/API-mode prompts.
+SE1 从现有 Markdown memory store 开始：`/api/memory/tree` 与
+`od memory tree list/view/edit/move` 暴露派生的 editable tree，同时相同的 selected entries
+继续喂给 daemon 与 BYOK/API-mode prompts。
 
-SE2 also includes the first review gate: `/api/automation-proposals` plus
-`od automation proposal list/get/apply/reject` can review memory-node, skill,
-and design-system proposals. Accepted memory proposals write into the memory
-tree; accepted skill and design-system proposals write reviewed drafts under
-the user-owned runtime roots.
+SE2 还包含第一道 review gate：`/api/automation-proposals` 加
+`od automation proposal list/get/apply/reject`，可以 review memory-node、skill
+和 design-system proposals。Accepted memory proposals 写入 memory
+tree；accepted skill 和 design-system proposals 会把已 review drafts 写入
+用户拥有的 runtime roots。
 
-SE3/SE4 start closing the source loop through `/api/automation-ingestions`,
-`/api/automation-source-packets`, and `od automation source ingest/list/get`.
-The Automations page now has a source-ingestion panel that can turn pasted
-connector/repo/artifact/chat context into stored source packets plus reviewable
-memory, skill, and design-system proposals. Each ingestion can choose
-off/balanced/aggressive compression and records before/after token counts while
-preserving the original packet.
+SE3/SE4 通过 `/api/automation-ingestions`、
+`/api/automation-source-packets` 和 `od automation source ingest/list/get`
+开始闭合 source loop。Automations page 现在有 source-ingestion panel，可把粘贴的
+connector/repo/artifact/chat context 转成 stored source packets，以及可 review 的
+memory、skill 和 design-system proposals。每次 ingestion 可选择
+off/balanced/aggressive compression，并记录 before/after token counts，同时保留原始 packet。
 
-Exit criteria: a connected or uploaded source can become reviewable memory,
-skill, and design-system proposals; accepted proposals are visible in the tree
-and are consumed by a later agent run without extra prompting.
+退出标准：一个 connected 或 uploaded source 能变成可 review 的 memory、skill 和
+design-system proposals；accepted proposals 在 tree 中可见，并且无需额外 prompting
+即可被后续 agent run 消费。
 
 ---
 
@@ -210,42 +209,42 @@ and are consumed by a later agent run without extra prompting.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Claude Code JSON stream format changes between versions | adapter breaks | pin version range; write a compatibility test; keep a parser for each major release |
-| Third-party agent CLIs don't expose enough to stream tool calls | UX degrades silently | capability flags + feature gates; document per-adapter limitations in-product |
-| `@mariozechner/pi-ai` or similar abstractions get popular and contributors ask us to support them | scope creep | defer; if demand is real, add as yet-another-adapter next to `api-fallback` |
-| Vercel deploy (Topology B) flaky because of tunnel setup | users can't try the cloud path | ship Topology C (direct API) as the always-works path; document Topology B as advanced |
-| `guizang-ppt-skill` or similar upstream skill changes format | default deck skill breaks | pin git SHA in our default install; monitor upstream |
-| DESIGN.md format evolves in awesome-claude-design | incompatibility | track upstream; adopt changes; our resolver is tolerant of missing sections |
-| Anthropic ships an open-source Claude Design | differentiation collapses | our moat is the "uses user's existing agent" angle; Anthropic is unlikely to ship that |
-| Skill security (malicious skill via `od skill add`) | user machine compromise | install-time warning; rely on agent's own permission model; document best practices |
+| Claude Code JSON stream format changes between versions | adapter breaks | pin version range；写 compatibility test；为每个 major release 保留 parser |
+| Third-party agent CLIs don't expose enough to stream tool calls | UX degrades silently | capability flags + feature gates；在产品内记录 per-adapter limitations |
+| `@mariozechner/pi-ai` 或类似 abstraction 变流行，contributors 要求支持 | scope creep | defer；如果需求真实存在，就作为 `api-fallback` 旁边的 another adapter 添加 |
+| Vercel deploy（Topology B）因 tunnel setup 不稳定 | users can't try the cloud path | 把 Topology C（direct API）作为 always-works path；把 Topology B 文档化为 advanced |
+| `guizang-ppt-skill` 或类似 upstream skill 改格式 | default deck skill breaks | 在默认安装中 pin git SHA；monitor upstream |
+| DESIGN.md format 在 awesome-claude-design 中演化 | incompatibility | 跟踪 upstream；采纳变化；resolver 容忍缺失 sections |
+| Anthropic 发布开源 Claude Design | differentiation collapses | moat 是 “uses user's existing agent”；Anthropic 不太可能交付这一点 |
+| Skill security（malicious skill via `od skill add`） | user machine compromise | install-time warning；依赖 agent 自身 permission model；document best practices |
 
 ---
 
-## Decision log (lightweight)
+## Decision log（轻量）
 
-Record one line per material decision as we go. Example entries:
+随着推进，每个 material decision 记一行。示例 entries：
 
 - 2026-04-24 — Use plain files + `history.jsonl` over SQLite for artifacts. *Why:* git-reviewable, no driver dependency, matches "skills are files" ethos.
 - 2026-04-24 — Adopt `DESIGN.md` (awesome-claude-design) verbatim rather than inventing a new format. *Why:* 68 existing files are immediately compatible.
 - 2026-04-24 — Do not ship an Electron / Tauri wrapper. *Why:* every minute on code-signing is a minute not on skills; `cc-switch` already solves the tray-icon use case.
 - 2026-04-24 — Delegate the entire agent loop to the user's CLI. *Why:* reimplementing is worse than integrating; ecosystem compatibility beats control.
 
-Decisions supersede each other; keep the log append-only and date every entry.
+Decisions 会互相 supersede；保持 log append-only，并为每条记录日期。
 
 ---
 
-## What to do right after reading this
+## 读完本文后该做什么
 
-If you're the implementer:
+如果你是 implementer：
 
-1. Read [`spec.md`](spec.md) top to bottom.
-2. Skim [`architecture.md`](architecture.md), [`skills-protocol.md`](skills-protocol.md), [`agent-adapters.md`](agent-adapters.md).
-3. Argue with anything in the four "open questions" sections; file one-line decisions.
-4. Fill in the missing Phase 0 deliverables (the `docs/schemas/` and `docs/examples/` files).
-5. Scaffold the monorepo and start Week 1.
+1. 从头到尾阅读 [`spec.md`](spec.md)。
+2. 快速浏览 [`architecture.md`](architecture.md)、[`skills-protocol.md`](skills-protocol.md)、[`agent-adapters.md`](agent-adapters.md)。
+3. 挑战四个 “open questions” sections 中任何不合理之处；提交一行 decisions。
+4. 补齐缺失的 Phase 0 deliverables（`docs/schemas/` 与 `docs/examples/` 文件）。
+5. Scaffold monorepo 并开始 Week 1。
 
-If you're evaluating the concept:
+如果你在评估这个 concept：
 
-1. Read [`README.md`](../README.md) + [`spec.md`](spec.md) §1–3.
-2. Check the comparison matrix in [`references.md`](references.md).
-3. Look at the worked example in [`skills-protocol.md`](skills-protocol.md) §7 — that's the end-to-end feel.
+1. 阅读 [`README.md`](../README.md) + [`spec.md`](spec.md) §1–3。
+2. 查看 [`references.md`](references.md) 中的 comparison matrix。
+3. 看 [`skills-protocol.md`](skills-protocol.md) §7 里的 worked example —— 那就是端到端体验。

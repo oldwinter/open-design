@@ -151,9 +151,9 @@ Shapes are squircle-soft: 12–16px radii on cards, 8px on tabs, 9999px pills fo
 - **Easing**: `cubic-bezier(0.32, 0.72, 0, 1)` for window expand (Apple's spring-style).
 - **Tab swap**: 1px translate + opacity blend, no scale change.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Keep the sidebar-first layout recognizable; top-nav-only compositions should be avoided unless the artifact is a marketing page.
-- Use frosted surfaces and gradient warmth as atmosphere, not as decorative blobs or unrelated background ornaments.
-- Reserve the saturated theme gradient for the browser shell, primary CTA, or one clear focal panel.
-- Keep product UI sans-only; use the serif display voice only for marketing/editorial moments.
+- 保持 sidebar-first layout 的识别度；除非 artifact 是 marketing page，否则应避免 top-nav-only composition。
+- 将 frosted surfaces 和 gradient warmth 当作 atmosphere 使用，不要做成 decorative blobs 或无关背景装饰。
+- 将 saturated theme gradient 保留给 browser shell、primary CTA 或一个清晰 focal panel。
+- Product UI 保持 sans-only；serif display voice 只用于 marketing/editorial moments。

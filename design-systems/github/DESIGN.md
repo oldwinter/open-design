@@ -154,8 +154,8 @@ Typography uses the **system-ui** stack across the entire product so text render
 - **Easing**: `ease-out` for opens, `ease-in` for closes.
 - **Avoided**: page-load animation, parallax, persistent micro-interactions. Things appear; they do not perform.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Keep dense lists, bordered boxes, and system typography together; isolated green buttons are not enough to create a GitHub-like product surface.
-- Use green for constructive repository actions, blue for links and focus, and red/purple/gray only for issue, PR, and workflow states.
-- Prefer quiet chrome, explicit borders, and compact spacing over decorative shadows or large marketing-style cards.
+- 同时保留 dense lists、bordered boxes 和 system typography；孤立的 green buttons 不足以形成 GitHub-like product surface。
+- Green 用于 constructive repository actions，blue 用于 links 和 focus，red/purple/gray 只用于 issue、PR 和 workflow states。
+- 优先使用 quiet chrome、explicit borders 和 compact spacing，而不是 decorative shadows 或 large marketing-style cards。

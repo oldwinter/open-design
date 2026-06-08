@@ -1,8 +1,8 @@
 # References
 
-**Parent:** [`spec.md`](spec.md)
+**父文档：** [`spec.md`](spec.md)
 
-Every external project this spec leans on. Three questions per entry: what is it, what do we borrow, and what do we deliberately not take.
+本 spec 依赖的外部项目清单。每个条目回答三个问题：它是什么、我们借鉴什么、我们刻意不采用什么。
 
 ---
 
@@ -12,142 +12,142 @@ Every external project this spec leans on. Three questions per entry: what is it
 - **URL:** [claude.ai/design][cd] · [release announcement](https://www.infoq.cn/article/TH0QVHpvVGZ7VP3hAEmm) · [ifanr review](https://www.ifanr.com/1662860)
 
 [cd]: https://x.com/claudeai/status/2045156267690213649
-- **What it is:** Anthropic's closed-source AI design product. Released 2026-04-17. Powered by Opus 4.7. Web-only (claude.ai). Generates prototypes, wireframes, decks, marketing pages, complex prototypes with voice/video/3D/shaders.
-- **Why it matters to us:** Defines the category. Its viral moment (~60M X impressions week 1) proves the market.
-- **What we borrow:** The high-level value prop — "natural language → editable visual design." Feature inspiration for modes (prototype, deck, marketing). UI ideas around inline editing and custom sliders.
-- **What we don't:** Closed source. Anthropic-only models. No self-hosting. Paid tiers (Pro/Max/Team/Enterprise) only. We are not trying to be a drop-in clone; we are an **open substrate** for the same category.
+- **它是什么：** Anthropic 的闭源 AI design product。2026-04-17 发布。由 Opus 4.7 驱动。仅 Web（claude.ai）。可生成 prototypes、wireframes、decks、marketing pages，以及带 voice/video/3D/shaders 的复杂 prototypes。
+- **为什么重要：** 它定义了这个 category。它的 viral moment（第一周约 6000 万 X impressions）证明了市场需求。
+- **我们借鉴什么：** 高层 value prop —— “natural language → editable visual design”。Modes（prototype、deck、marketing）的功能灵感。围绕 inline editing 和 custom sliders 的 UI 思路。
+- **我们不采用什么：** 闭源、Anthropic-only models、不可 self-hosting、仅付费 tiers（Pro/Max/Team/Enterprise）。我们不试图成为 drop-in clone；我们是同一 category 的 **open substrate**。
 
 ### [Open CoDesign][ocod] (OpenCoworkAI)
 - **Repo:** [github.com/OpenCoworkAI/open-codesign][ocod]
 - **Site:** [opencoworkai.github.io/open-codesign](https://opencoworkai.github.io/open-codesign/)
-- **What it is:** The main open-source Claude Design alternative. MIT-licensed. Electron desktop app. React 19 + Vite + Tailwind v4. [`@mariozechner/pi-ai`][piai] for multi-provider. SQLite for version history. 12 built-in design skill modules. HTML/JSX sandboxed iframe preview. Exports HTML/PDF/PPTX/ZIP/MD. 15 templates. Comment mode + slider controls + multi-frame preview.
+- **它是什么：** 主要的开源 Claude Design 替代品。MIT license。Electron desktop app。React 19 + Vite + Tailwind v4。用 [`@mariozechner/pi-ai`][piai] 做 multi-provider。SQLite 保存 version history。12 个内置 design skill modules。HTML/JSX sandboxed iframe preview。可导出 HTML/PDF/PPTX/ZIP/MD。15 个 templates。Comment mode + slider controls + multi-frame preview。
 
 [ocod]: https://github.com/OpenCoworkAI/open-codesign
 [piai]: https://github.com/badlogic/pi-mono/tree/main/packages/ai
-- **Why it matters:** Direct competitor; most overlap with what we're building.
-- **What we borrow:**
-  - UI concepts: **comment mode** (click-to-pin element edits), **tweak sliders** (agent-emitted parameters), **multi-frame preview** (desktop/tablet/phone).
-  - Sandboxed iframe preview (`<iframe sandbox="allow-scripts">` with vendored React 18 + Babel standalone for JSX).
-  - Export pipeline shape (HTML/PDF/PPTX/ZIP/MD).
-- **What we don't:**
-  - **Electron** — we go Next.js web app instead (runs local and deploys to Vercel).
-  - **Bundled agent on `pi-ai`** — we delegate to the user's existing CLI.
-  - **Proprietary skill format** (TypeScript modules compiled into the app) — we use Claude Code's `SKILL.md` so third-party skills drop in.
-  - **SQLite for artifacts** — plain files + `.jsonl` history, so git tracks it naturally.
-  - **Sole focus on UI panels** — we add Design System mode and `DESIGN.md` as first-class.
+- **为什么重要：** 直接竞争者；与我们要构建的东西重叠最多。
+- **我们借鉴什么：**
+  - UI concepts：**comment mode**（click-to-pin element edits）、**tweak sliders**（agent-emitted parameters）、**multi-frame preview**（desktop/tablet/phone）。
+  - Sandboxed iframe preview（`<iframe sandbox="allow-scripts">`，JSX 使用 vendored React 18 + Babel standalone）。
+  - Export pipeline shape（HTML/PDF/PPTX/ZIP/MD）。
+- **我们不采用什么：**
+  - **Electron** — 我们改走 Next.js web app（可本地运行，也可 deploy 到 Vercel）。
+  - **Bundled agent on `pi-ai`** — 我们委托给用户已有 CLI。
+  - **Proprietary skill format**（编进 app 的 TypeScript modules）— 我们使用 Claude Code 的 `SKILL.md`，第三方 skills 可直接放入。
+  - **SQLite for artifacts** — 使用 plain files + `.jsonl` history，让 git 自然追踪。
+  - **只聚焦 UI panels** — 我们加入 Design System mode，并把 `DESIGN.md` 作为 first-class。
 
 ### [multica][multica] (multica-ai)
 - **Repo:** [github.com/multica-ai/multica][multica]
 - **Docs:** [multica.ai/docs/skills](https://multica.ai/docs/skills)
 
 [multica]: https://github.com/multica-ai/multica
-- **What it is:** Open-source "managed agents platform." Frontend: Next.js 16. Backend: Go + Chi + WebSocket. DB: PostgreSQL + pgvector. **Local daemon auto-detects CLIs on PATH: Claude Code, Codex, OpenClaw, OpenCode, Hermes, Gemini, Pi, Cursor Agent.** Assigns work via a web board view; agents execute; WebSocket streams progress.
-- **Why it matters:** They already solved the "detect and wrap local code agents" problem.
-- **What we borrow:**
-  - **PATH-scan + config-dir probe detection** strategy.
-  - **Local daemon + WebSocket** topology (daemon on user's machine, thin web client).
-  - Agent catalog (our P0–P2 list maps closely to theirs).
-  - Workspace/local skill import and agent-scoped skill attachment model.
-- **What we don't:**
-  - Go backend + PostgreSQL — overkill for our scope; Node daemon + filesystem is enough.
-  - Team / board / issue-assignment model — not our domain.
-  - pgvector — we don't embed anything in MVP.
+- **它是什么：** 开源 “managed agents platform”。Frontend：Next.js 16。Backend：Go + Chi + WebSocket。DB：PostgreSQL + pgvector。**Local daemon 会自动检测 PATH 上的 CLIs：Claude Code、Codex、OpenClaw、OpenCode、Hermes、Gemini、Pi、Cursor Agent。** 通过 web board view 分配工作；agents 执行；WebSocket stream progress。
+- **为什么重要：** 他们已经解决了 “detect and wrap local code agents” 问题。
+- **我们借鉴什么：**
+  - **PATH-scan + config-dir probe detection** 策略。
+  - **Local daemon + WebSocket** topology（daemon 在用户机器上，web client 很薄）。
+  - Agent catalog（我们的 P0–P2 清单与它们非常接近）。
+  - Workspace/local skill import 与 agent-scoped skill attachment model。
+- **我们不采用什么：**
+  - Go backend + PostgreSQL — 对我们的范围过重；Node daemon + filesystem 足够。
+  - Team / board / issue-assignment model — 不是我们的 domain。
+  - pgvector — MVP 不做 embedding。
 
 ### [OpenHuman][openhuman] (tinyhumansai)
 - **Repo:** [github.com/tinyhumansai/openhuman][openhuman]
 
 [openhuman]: https://github.com/tinyhumansai/openhuman
-- **What it is:** Open-source personal AI assistant with many integrations, auto-fetch into a memory tree, local editable knowledge, and a TokenJuice-style compression layer before LLM use.
-- **Why it matters:** It is the clearest reference for "connect sources once, then the agent wakes up with compressed context already available."
-- **What we borrow:**
-  - Connector-driven ingestion as a first-class loop, not a prompt the user rewrites each time.
-  - Editable local memory tree rather than opaque vector-only recall.
-  - Token compression as an optional stage before agent context injection.
-- **What we don't:**
-  - General personal-assistant scope, messaging/voice/meeting participation, and bundled subscription/model routing.
+- **它是什么：** 开源 personal AI assistant，带大量 integrations、自动抓取到 memory tree、本地可编辑 knowledge，以及 LLM 使用前的 TokenJuice 风格 compression layer。
+- **为什么重要：** 它是 “connect sources once, then the agent wakes up with compressed context already available” 最清晰的 reference。
+- **我们借鉴什么：**
+  - Connector-driven ingestion 是 first-class loop，而不是用户每次重写的 prompt。
+  - Editable local memory tree，而不是 opaque vector-only recall。
+  - Token compression 作为 agent context injection 前的可选 stage。
+- **我们不采用什么：**
+  - General personal-assistant scope、messaging/voice/meeting participation，以及 bundled subscription/model routing。
 
 ### [Hermes Agent][hermes] (Nous Research)
 - **Repo:** [github.com/nousresearch/hermes-agent][hermes]
 - **Docs:** [hermes-agent.nousresearch.com/docs/skills](https://hermes-agent.nousresearch.com/docs/skills)
 
 [hermes]: https://github.com/nousresearch/hermes-agent
-- **What it is:** Self-improving agent with persistent memory, skills created from experience, skill improvement during use, scheduled automations, and a large skill hub.
-- **Why it matters:** It turns "agent learns from work" into a product loop instead of a side effect.
-- **What we borrow:**
-  - Closed learning loop: experience -> memory or skill proposal -> future run.
-  - Scheduled automations that can deliver across surfaces.
-  - Explicit compression and usage inspection controls.
-- **What we don't:**
-  - Owning the user's entire agent runtime, messaging gateway, or model/provider layer.
+- **它是什么：** Self-improving agent，具备 persistent memory、从 experience 创建 skills、使用中改进 skill、scheduled automations，以及大型 skill hub。
+- **为什么重要：** 它把 “agent learns from work” 变成 product loop，而不是副作用。
+- **我们借鉴什么：**
+  - Closed learning loop：experience -> memory or skill proposal -> future run。
+  - 可跨 surfaces delivery 的 scheduled automations。
+  - 显式 compression 与 usage inspection controls。
+- **我们不采用什么：**
+  - 拥有用户的整个 agent runtime、messaging gateway 或 model/provider layer。
 
 ### [GenericAgent][genericagent] (lsdefine)
 - **Repo:** [github.com/lsdefine/GenericAgent][genericagent]
 
 [genericagent]: https://github.com/lsdefine/GenericAgent
-- **What it is:** Minimal self-evolving autonomous agent framework that crystallizes solved tasks into a personal skill tree for direct reuse.
-- **Why it matters:** It names the core loop OD needs for design work: solve once, verify, save the execution path, and recall it with less context next time.
-- **What we borrow:**
-  - Skill crystallization from successful tasks.
-  - Layered memory and direct recall to reduce prompt size.
-  - A bias toward small composable primitives instead of a heavy agent framework.
-- **What we don't:**
-  - Broad uncontrolled desktop authority. OD keeps daemon, connector, filesystem, and review gates explicit.
+- **它是什么：** Minimal self-evolving autonomous agent framework，会把已解决任务 crystallize 成可直接复用的 personal skill tree。
+- **为什么重要：** 它命名了 OD 在设计工作中需要的核心 loop：solve once、verify、save the execution path，然后下次用更少 context recall。
+- **我们借鉴什么：**
+  - 从 successful tasks 中 skill crystallization。
+  - Layered memory 与 direct recall，用于减少 prompt size。
+  - 偏好小型 composable primitives，而不是 heavy agent framework。
+- **我们不采用什么：**
+  - 宽泛且不可控的 desktop authority。OD 会让 daemon、connector、filesystem 和 review gates 保持显式。
 
 ### [cc-switch][ccsw] (farion1231)
 - **Repo:** [github.com/farion1231/cc-switch][ccsw]
 
 [ccsw]: https://github.com/farion1231/cc-switch
-- **What it is:** Tauri desktop app for managing five CLI tools (Claude Code, Codex, Gemini CLI, OpenCode, OpenClaw). Provider management, MCP server config, skills install, session browsing. SQLite at `~/.cc-switch/cc-switch.db`. **Skills dir at `~/.cc-switch/skills/` with symlinks into each agent's config dir.** 50+ provider presets.
-- **Why it matters:** Shows exactly how to live beside multiple code-agent CLIs without stepping on their config.
-- **What we borrow:**
-  - **Symlink-based skill distribution.** Canonical skill location + symlinks to each agent's skills dir.
-  - Knowledge of per-agent config dir locations (`~/.claude/`, `~/.codex/`, …).
-  - "Provider presets" idea — a curated list we can ship so users don't have to hand-enter endpoint URLs for OpenAI-compatible relays.
-- **What we don't:**
-  - Tauri / desktop app — not our shape.
-  - Provider-switching as core feature — we defer that to the underlying agent. If a user wants to switch providers inside Claude Code, they use Claude Code's config, not ours.
-  - Tray icon / system integration — out of scope.
+- **它是什么：** 用于管理五个 CLI tools（Claude Code、Codex、Gemini CLI、OpenCode、OpenClaw）的 Tauri desktop app。Provider management、MCP server config、skills install、session browsing。SQLite 位于 `~/.cc-switch/cc-switch.db`。**Skills dir 位于 `~/.cc-switch/skills/`，并 symlink 到各 agent 的 config dir。** 50+ provider presets。
+- **为什么重要：** 它准确展示了如何与多个 code-agent CLIs 共存而不踩它们的 config。
+- **我们借鉴什么：**
+  - **Symlink-based skill distribution。** Canonical skill location + symlinks to each agent's skills dir。
+  - Per-agent config dir locations（`~/.claude/`、`~/.codex/` 等）。
+  - “Provider presets” 思路 —— 交付一份 curated list，让用户不用手填 OpenAI-compatible relays 的 endpoint URLs。
+- **我们不采用什么：**
+  - Tauri / desktop app — 不是我们的形态。
+  - Provider-switching as core feature — 交给底层 agent。如果用户想在 Claude Code 内切换 providers，就用 Claude Code 的 config，而不是我们。
+  - Tray icon / system integration — out of scope。
 
 ### [awesome-claude-design][acd] (VoltAgent)
 - **Repo:** [github.com/VoltAgent/awesome-claude-design][acd]
 
 [acd]: https://github.com/VoltAgent/awesome-claude-design
-- **Ecosystem:** 68 DESIGN.md files for named brands. Referenced schema has **9 standardized sections**: Visual Theme & Atmosphere, Color Palette & Roles, Typography Rules, Component Stylings, Layout Principles, Depth & Elevation, Do's and Don'ts, Responsive Behavior, Agent Prompt Guide.
-- **Related URLs:** claude.ai/design, getdesign.md, Discord community
-- **Why it matters:** Defines the de-facto portable design-system format for AI agents.
-- **What we borrow:**
-  - **The entire `DESIGN.md` format, unchanged.** We adopt their 9-section schema as OD's canonical design-system format.
-  - Ecosystem compatibility: any of their 68 DESIGN.md files works as an OD active design system out of the box.
-- **What we don't:**
-  - Their curated list itself — we don't fork their 68 files; we reference upstream.
-  - Their Discord / community layer — not our product.
+- **Ecosystem:** 68 个面向具名品牌的 DESIGN.md 文件。Referenced schema 有 **9 个标准 sections**：Visual Theme & Atmosphere、Color Palette & Roles、Typography Rules、Component Stylings、Layout Principles、Depth & Elevation、Do's and Don'ts、Responsive Behavior、Agent Prompt Guide。
+- **相关 URLs:** claude.ai/design、getdesign.md、Discord community
+- **为什么重要：** 它定义了 AI agents 的事实可移植 design-system format。
+- **我们借鉴什么：**
+  - **完整 `DESIGN.md` format，保持不变。** 我们采用它们的 9-section schema 作为 OD 的 canonical design-system format。
+  - Ecosystem compatibility：它们的 68 个 DESIGN.md 文件都可以作为 OD active design system 开箱使用。
+- **我们不采用什么：**
+  - 它们 curated list 本身 — 我们不 fork 这 68 个文件；只 reference upstream。
+  - 它们的 Discord / community layer — 不是我们的产品。
 
 ### [guizang-ppt-skill][guizang] (op7418)
 - **Repo:** [github.com/op7418/guizang-ppt-skill][guizang]
 
 [guizang]: https://github.com/op7418/guizang-ppt-skill
-- **What it is:** A Claude Code skill producing magazine-style, horizontal-swipe web decks. Structure: `SKILL.md` + `assets/template.html` + `references/{components,layouts,themes,checklist}.md`. 6-step workflow. Single-file HTML output with embedded CSS/WebGL. Keyboard/scroll/touch navigation.
-- **Why it matters:** Reference implementation of a high-quality Claude skill, and our default deck skill.
-- **What we borrow:**
-  - **The whole skill, unmodified.** It's our default v1 `deck-skill`. A user runs `od skill add https://github.com/op7418/guizang-ppt-skill` and it works.
-  - Skill directory convention (`assets/` + `references/` + `SKILL.md`) as the pattern we document for skill authors.
-  - The "6-step workflow + quality-checklist rubric" pattern for authoring new skills.
-- **What we don't:** Nothing — this is pure reuse. We add an `od:` block to its front-matter only if we want to expose theme sliders; the skill works without it.
+- **它是什么：** 一个 Claude Code skill，用于生成 magazine-style、horizontal-swipe web decks。结构：`SKILL.md` + `assets/template.html` + `references/{components,layouts,themes,checklist}.md`。6-step workflow。输出带 embedded CSS/WebGL 的 single-file HTML。支持 keyboard/scroll/touch navigation。
+- **为什么重要：** 高质量 Claude skill 的 reference implementation，也是我们的 default deck skill。
+- **我们借鉴什么：**
+  - **整个 skill，保持不改。** 它是我们的默认 v1 `deck-skill`。用户运行 `od skill add https://github.com/op7418/guizang-ppt-skill` 后即可使用。
+  - Skill directory convention（`assets/` + `references/` + `SKILL.md`）作为我们为 skill authors 记录的 pattern。
+  - “6-step workflow + quality-checklist rubric” pattern，用于编写新 skills。
+- **我们不采用什么：** 没有 —— 这是纯复用。只有在想暴露 theme sliders 时，我们才给它的 front-matter 添加 `od:` block；没有这个 block，skill 也能运行。
 
 ---
 
-## Secondary references (format / protocol / UI ideas)
+## Secondary references（format / protocol / UI ideas）
 
 | Project | Relevance |
 |---|---|
-| [Claude Code skills docs](https://docs.anthropic.com/) | Source of the `SKILL.md` format we adopt |
-| [Cursor .cursorrules](https://docs.cursor.com/) | Informs how the Cursor Agent adapter injects skill context |
-| [Reveal.js](https://revealjs.com/) / [Marp](https://marp.app/) | Reference for deck HTML navigation patterns |
-| [Shadcn/ui](https://ui.shadcn.com/) | Likely component library for the web UI shell |
-| [Vercel AI SDK](https://sdk.vercel.ai/) | Streaming primitives for the API-fallback adapter |
+| [Claude Code skills docs](https://docs.anthropic.com/) | 我们采用的 `SKILL.md` format 来源 |
+| [Cursor .cursorrules](https://docs.cursor.com/) | 为 Cursor Agent adapter 如何注入 skill context 提供参考 |
+| [Reveal.js](https://revealjs.com/) / [Marp](https://marp.app/) | Deck HTML navigation patterns 的参考 |
+| [Shadcn/ui](https://ui.shadcn.com/) | Web UI shell 可能采用的 component library |
+| [Vercel AI SDK](https://sdk.vercel.ai/) | API-fallback adapter 的 streaming primitives |
 | [Puppeteer](https://pptr.dev/) | PDF export engine |
 | [pptxgenjs](https://gitbrent.github.io/PptxGenJS/) | PPTX export engine |
-| [chokidar](https://github.com/paulmillr/chokidar) | Filesystem watching for skill / artifact hot-reload |
+| [chokidar](https://github.com/paulmillr/chokidar) | Skill / artifact hot-reload 的 filesystem watching |
 
 ---
 
@@ -156,33 +156,33 @@ Every external project this spec leans on. Three questions per entry: what is it
 | Dimension | [Claude Design][cd] | [Open CoDesign][ocod] | [multica][multica] | [cc-switch][ccsw] | **OD** |
 |---|---|---|---|---|---|
 | Open source | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Primary form factor | Web (hosted) | Electron | Web + Go daemon | Tauri | **Next.js web + Node daemon** |
+| Primary form factor | Web（hosted） | Electron | Web + Go daemon | Tauri | **Next.js web + Node daemon** |
 | Vercel-deployable | ❌ | ❌ | ❌ | ❌ | **✅** |
 | Runs local-only | ❌ | ✅ | ✅ | ✅ | **✅** |
-| Generates design artifacts | ✅ | ✅ | ❌ (general coding) | ❌ | **✅** |
-| Uses existing code agent | — (owns it) | ❌ | ✅ | ✅ | **✅** |
+| Generates design artifacts | ✅ | ✅ | ❌（general coding） | ❌ | **✅** |
+| Uses existing code agent | —（owns it） | ❌ | ✅ | ✅ | **✅** |
 | Supports Claude Code skills (`SKILL.md`) | — | ❌ | ✅ | ✅ | **✅** |
 | `DESIGN.md` as first-class | ❌ | ❌ | — | — | **✅** |
-| Deck mode / PPTX export | ✅ | ✅ | ❌ | ❌ | **✅ (via skill)** |
-| Template gallery | ✅ | ✅ (15) | ❌ | ❌ | **✅** |
+| Deck mode / PPTX export | ✅ | ✅ | ❌ | ❌ | **✅（via skill）** |
+| Template gallery | ✅ | ✅（15） | ❌ | ❌ | **✅** |
 | Design-system authoring mode | ❌ | ❌ | ❌ | ❌ | **✅** |
 
-The two empty-column crossings where OD lights up and others don't: **Vercel-deployable + design-system authoring**, and **uses existing code agent + first-class DESIGN.md**. That's the niche.
+OD 点亮而其他项目没有点亮的两个交叉点是：**Vercel-deployable + design-system authoring**，以及 **uses existing code agent + first-class DESIGN.md**。这就是 niche。
 
 ---
 
-## What we explicitly don't borrow (and why)
+## 我们明确不借鉴什么（以及原因）
 
-- **Desktop packaging** (Electron / Tauri). Every minute spent on code-signing is a minute not spent on skills. If a user wants a tray icon, [`cc-switch`][ccsw] already does that — install both.
-- **SQLite for artifacts** (from [Open CoDesign][ocod] and [cc-switch][ccsw]). Plain files + JSONL history are reviewable in git, trivially portable, and match the "skills are files" ethos.
-- **Bundled model router** ([`pi-ai`][piai] from [Open CoDesign][ocod]). The user's code agent already routes. Two routers is worse than one.
-- **PostgreSQL + pgvector** (from [multica][multica]). We don't embed anything in MVP. When we do, SQLite + `sqlite-vec` is enough for single-user scale.
-- **Board / issue model** (from [multica][multica]). Off-brand for a design tool.
+- **Desktop packaging**（Electron / Tauri）。花在 code-signing 上的每一分钟，都是没花在 skills 上的一分钟。如果用户想要 tray icon，[`cc-switch`][ccsw] 已经解决了 —— 两者都装即可。
+- **SQLite for artifacts**（来自 [Open CoDesign][ocod] 和 [cc-switch][ccsw]）。Plain files + JSONL history 可在 git 中 review，极易 portable，也匹配 “skills are files” 的 ethos。
+- **Bundled model router**（[Open CoDesign][ocod] 的 [`pi-ai`][piai]）。用户的 code agent 已经负责 routing。两个 routers 比一个更糟。
+- **PostgreSQL + pgvector**（来自 [multica][multica]）。MVP 不做 embedding。以后要做时，单用户规模下 SQLite + `sqlite-vec` 也足够。
+- **Board / issue model**（来自 [multica][multica]）。不符合 design tool 的品牌定位。
 
-These "don'ts" are what keep the MVP achievable in 6–8 weeks.
+这些 “don'ts” 让 MVP 能在 6–8 周内实现。
 
 ---
 
 ## Living references
 
-This file is maintained. When we add an adapter or borrow a pattern from a new upstream, add it here with the same three-question format. When upstream licensing or direction changes materially, flag it here and cross-link from [`spec.md`](spec.md).
+本文档会持续维护。新增 adapter 或从新的 upstream 借鉴 pattern 时，请按相同的三问格式添加到这里。当 upstream license 或方向发生实质变化时，也在这里标记，并从 [`spec.md`](spec.md) cross-link。

@@ -1,41 +1,41 @@
 # Typography
 
-The compiler embeds supported fonts — just write `font-family` in CSS.
+Compiler 会内嵌 supported fonts；只需要在 CSS 中写 `font-family`。
 
 ## Banned
 
-Training-data defaults that every LLM reaches for. These produce monoculture across compositions.
+每个 LLM 都会下意识选择的 training-data defaults。它们会让不同 composition 呈现同质化。
 
 Inter, Roboto, Open Sans, Noto Sans, Arimo, Lato, Source Sans, PT Sans, Nunito, Poppins, Outfit, Sora, Playfair Display, Cormorant Garamond, Bodoni Moda, EB Garamond, Cinzel, Prata, Syne
 
-**Syne in particular** is the most overused "distinctive" display font. It is an instant AI design tell.
+**尤其是 Syne**，它是最被滥用的“distinctive” display font。一用就暴露 AI design tell。
 
 ## Guardrails
 
-You know these rules but you violate them. Stop.
+这些规则你都知道，但你还是会违反。停下来。
 
-- **Don't pair two sans-serifs.** You do this constantly — one for headlines, one for body. Cross the boundary: serif + sans, or sans + mono.
-- **One expressive font per scene.** You pick two interesting fonts trying to make it "better." One performs, one recedes.
-- **Weight contrast must be extreme.** You default to 400 vs 700. Video needs 300 vs 900. The difference must be visible in motion at a glance.
-- **Video sizes, not web sizes.** Body: 20px minimum. Headlines: 60px+. Data labels: 16px. You will try to use 14px. Don't.
+- **不要搭配两个 sans-serif。** 你经常这样做：一个给 headlines，一个给 body。跨出边界：serif + sans，或 sans + mono。
+- **每个 scene 只用一个 expressive font。** 你会挑两个有趣字体，试图让它“更好”。一个负责表演，一个后退。
+- **Weight contrast 必须极端。** 你默认使用 400 vs 700。Video 需要 300 vs 900。差异必须在运动中一眼可见。
+- **使用 video sizes，而不是 web sizes。** Body: 最小 20px。Headlines: 60px+。Data labels: 16px。你会想用 14px。不要。
 
 ## What You Don't Do Without Being Told
 
-- **Tension should mean something.** Don't pattern-match pairings. Ask WHY these two fonts disagree. The pairing should embody the content's contradiction — mechanical vs human, public vs private, institutional vs personal. If you can't articulate the tension, it's arbitrary.
-- **Register switching.** Assign different fonts to different communicative modes — one voice for statements, another for data, another for attribution. Not hierarchy on a page. Voices in a conversation.
-- **Tension can live inside a single font.** A font that looks familiar but is secretly strange creates tension with the viewer's expectations, not with another font.
-- **One variable changed = dramatic contrast.** Same letterforms, monospaced vs proportional. Same family at different optical sizes. Changing only rhythm while everything else stays constant.
-- **Double personality works.** Two expressive fonts can coexist if they share an attitude (both irreverent, both precise) even when their forms are completely different.
-- **Time is hierarchy.** The first element to appear is the most important. In video, sequence replaces position.
-- **Motion is typography.** How a word enters carries as much meaning as the font. A 0.1s slam vs a 2s fade — same font, completely different message.
-- **Fixed reading time.** 3 seconds on screen = must be readable in 2. Fewer words, larger type.
-- **Tracking tighter than web.** -0.03em to -0.05em on display sizes. Video encoding compresses letter detail.
+- **Tension 应该有意义。** 不要 pattern-match pairings。问清楚为什么这两个字体彼此不一致。Pairing 应体现内容的矛盾：mechanical vs human、public vs private、institutional vs personal。如果你无法说清这个 tension，它就是任意的。
+- **Register switching。** 把不同字体分配给不同 communicative modes：一种 voice 用于陈述，一种用于数据，一种用于署名。不是页面 hierarchy，而是对话中的 voices。
+- **Tension 可以存在于单一字体内部。** 一个看似熟悉但暗藏怪异的字体，会与 viewer expectations 产生 tension，而不是与另一个字体产生 tension。
+- **只改变一个变量 = 戏剧化 contrast。** 相同 letterforms，monospaced vs proportional。同一 family 的不同 optical sizes。只改变 rhythm，其余保持不变。
+- **Double personality 可行。** 两个 expressive fonts 可以共存，只要它们共享一种态度（都不羁，或都精确），即使外形完全不同。
+- **Time is hierarchy。** 第一个出现的元素最重要。在 video 中，sequence 会替代 position。
+- **Motion is typography。** 一个词如何进入画面，和 font 本身一样有意义。0.1s slam 与 2s fade，同一个 font，会产生完全不同的 message。
+- **Fixed reading time。** 画面停留 3 秒，就必须能在 2 秒内读完。减少字数，放大 type。
+- **Tracking 比 web 更紧。** Display sizes 使用 -0.03em 到 -0.05em。Video encoding 会压缩 letter detail。
 
 ## Finding Fonts
 
-Don't default to what you know. If the content is luxury, a grotesque sans might create more tension than the expected Didone serif. Decide the register first, then search.
+不要默认使用你熟悉的字体。如果内容是 luxury，一个 grotesque sans 可能比预期的 Didone serif 更能制造 tension。先决定 register，再搜索。
 
-Save this script to `/tmp/fontquery.py` and run with `curl -s 'https://fonts.google.com/metadata/fonts' > /tmp/gfonts.json && python3 /tmp/fontquery.py /tmp/gfonts.json`:
+把这个脚本保存到 `/tmp/fontquery.py`，然后运行 `curl -s 'https://fonts.google.com/metadata/fonts' > /tmp/gfonts.json && python3 /tmp/fontquery.py /tmp/gfonts.json`：
 
 ```python
 import json, sys, random
@@ -119,31 +119,31 @@ for cat in R:
     print()
 ```
 
-Five categories: trending sans, trending serif, monospace, impact/condensed, script/handwriting. All dynamically filtered from Google Fonts metadata — no hardcoded font names. Cross classification boundaries when pairing.
+五个分类：trending sans、trending serif、monospace、impact/condensed、script/handwriting。全部从 Google Fonts metadata 动态筛选；没有 hardcoded font names。配对时要跨越 classification boundaries。
 
 ## Selection Thinking
 
-Don't pick fonts by category reflex (editorial → serif, tech → mono, modern → geometric sans). That's pattern matching, not design.
+不要按 category reflex 选字体（editorial -> serif、tech -> mono、modern -> geometric sans）。那是 pattern matching，不是设计。
 
-1. **Name the register.** What voice is the content speaking in? Institutional authority? Personal confession? Technical precision? Casual irreverence? The register narrows the field more than the category.
-2. **Think physically.** Imagine the font as a physical object the brand could ship — a museum exhibit caption, a hand-painted shop sign, a 1970s mainframe terminal manual, a fabric label inside a coat, a children's book printed on cheap newsprint, a tax form. Whichever physical object fits the register is pointing at the right _kind_ of typeface.
-3. **Reject your first instinct.** The first font that feels right is usually your training-data default for that register. If you picked it last time too, find something else.
-4. **Cross-check the assumption.** An editorial brief does NOT need a serif. A technical brief does NOT need a sans. A children's product does NOT need a rounded display font. The most distinctive choice often contradicts the category expectation.
+1. **Name the register。** 内容在用什么 voice 说话？Institutional authority？Personal confession？Technical precision？Casual irreverence？Register 比 category 更能收窄范围。
+2. **Think physically。** 把字体想象成品牌可以交付的实体物件：museum exhibit caption、hand-painted shop sign、1970s mainframe terminal manual、大衣里的 fabric label、印在廉价 newsprint 上的 children's book、tax form。哪个实体物件匹配 register，就指向正确的 typeface _kind_。
+3. **Reject your first instinct。** 第一个感觉正确的 font，通常是你对这个 register 的 training-data default。如果你上次也选了它，就换一个。
+4. **Cross-check the assumption。** Editorial brief 不一定需要 serif。Technical brief 不一定需要 sans。Children's product 不一定需要 rounded display font。最有辨识度的选择常常会违背 category expectation。
 
 ## Similar-Font Pairing
 
-Never pair two fonts that are similar but not identical — two geometric sans-serifs, two transitional serifs, two humanist sans. They create visual friction without clear hierarchy. The viewer senses something is "off" but can't articulate it. Either use one font at two weights, or pair fonts that contrast on multiple axes: serif + sans, condensed + wide, geometric + humanist.
+绝不要搭配两个相似但不完全相同的 fonts：两个 geometric sans-serifs、两个 transitional serifs、两个 humanist sans。它们会制造没有清晰 hierarchy 的视觉摩擦。Viewer 会感觉哪里“不对”，却说不出来。要么用同一 font 的两个 weights，要么搭配在多个 axes 上形成 contrast 的 fonts：serif + sans、condensed + wide、geometric + humanist。
 
 ## Dark Backgrounds
 
-Light text on dark backgrounds creates two optical illusions you need to compensate for:
+深色背景上的浅色文字会产生两种需要补偿的 optical illusions：
 
-- **Increased apparent weight.** Light-on-dark reads heavier than dark-on-light at the same `font-weight`. Use 350 instead of 400 for body text. Headlines are less affected because size compensates.
-- **Tighter apparent spacing.** Light halos around letterforms reduce perceived gaps. Increase `line-height` by 0.05-0.1 beyond your light-background value. For display sizes, add 0.01em `letter-spacing` to counteract.
+- **Increased apparent weight。** Light-on-dark 在相同 `font-weight` 下会比 dark-on-light 显得更重。Body text 用 350 替代 400。Headlines 因为 size 已经补偿，受影响较小。
+- **Tighter apparent spacing。** Letterforms 周围的浅色 halo 会减少感知间距。`line-height` 比浅色背景值增加 0.05-0.1。Display sizes 额外加 0.01em `letter-spacing` 抵消。
 
 ## OpenType Features for Data
 
-Most fonts ship with OpenType features that are off by default. Turn them on for data compositions:
+大多数字体都有默认关闭的 OpenType features。Data compositions 中要打开它们：
 
 ```css
 /* Tabular numbers — digits align vertically in columns */
@@ -172,4 +172,4 @@ code,
 }
 ```
 
-`tabular-nums` is essential any time numbers are stacked vertically — stat callouts, timers, scoreboards, data tables. Without it, digits have proportional widths and columns don't align.
+只要数字纵向堆叠，`tabular-nums` 就必不可少：stat callouts、timers、scoreboards、data tables 都是如此。没有它，数字宽度会按比例变化，列就对不齐。

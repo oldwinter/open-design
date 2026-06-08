@@ -1,7 +1,7 @@
-# Open Design — Product Spec
+# Open Design — 产品规格
 
-**Status:** Draft v0.1 · 2026-04-24
-**Scope:** Product definition, scenarios, non-goals, high-level modules, and positioning against both [Anthropic's Claude Design][cd] and the existing open-source alternative ([Open CoDesign][ocod]).
+**状态：** Draft v0.1 · 2026-04-24
+**范围：** 产品定义、场景、非目标、高层模块，以及相对 [Anthropic 的 Claude Design][cd] 和现有开源替代方案（[Open CoDesign][ocod]）的定位。
 
 [cd]: https://x.com/claudeai/status/2045156267690213649
 [ocod]: https://github.com/OpenCoworkAI/open-codesign
@@ -11,7 +11,7 @@
 [acd]: https://github.com/VoltAgent/awesome-claude-design
 [piai]: https://github.com/badlogic/pi-mono/tree/main/packages/ai
 
-Other docs:
+其他文档：
 - Architecture → [`architecture.md`](architecture.md)
 - Skills protocol → [`skills-protocol.md`](skills-protocol.md)
 - Agent adapters → [`agent-adapters.md`](agent-adapters.md)
@@ -23,52 +23,52 @@ Other docs:
 
 ---
 
-## 1. Product in one sentence
+## 1. 一句话产品定义
 
-> **A web app that turns natural-language briefs into editable, previewable design artifacts (prototypes, decks, templates, design systems) by orchestrating the code agent already installed on the user's machine.**
+> **一个 Web app：通过编排用户机器上已经安装的 code agent，把自然语言 brief 转成可编辑、可预览的设计 artifact（prototype、deck、template、design system）。**
 
-## 2. Core bets (and why they're different)
+## 2. 核心判断（以及差异点）
 
-| # | Bet | [Anthropic Claude Design][cd] | [Open CoDesign][ocod] | OD |
+| # | 判断 | [Anthropic Claude Design][cd] | [Open CoDesign][ocod] | OD |
 |---|---|---|---|---|
-| 1 | Where the product runs | claude.ai only | Local Electron app | **Next.js web app + local daemon + desktop loop** — `pnpm tools-dev`, Vercel web deploy |
-| 2 | Who owns the agent loop | Anthropic, closed | [Open CoDesign][ocod] itself, via [`pi-ai`][piai] | **The user's existing code agent CLI** (Claude Code, Codex, Devin for Terminal, Cursor Agent, Gemini CLI, OpenCode, OpenClaw); direct Anthropic API as fallback |
-| 3 | What "design skills" are | Proprietary internal tools | TypeScript modules baked into the app | **File-based skills** that follow Claude Code's `SKILL.md` spec — forkable, versionable, shareable, installable by symlink |
-| 4 | How design systems are authored | Implicit in prompt | N/A | **`DESIGN.md` files** following the [awesome-claude-design][acd] 9-section schema |
-| 5 | Extension point | Anthropic only | Custom PRs | **Drop a folder into `skills/`** — composable by third parties |
+| 1 | 产品在哪里运行 | 仅 claude.ai | 本地 Electron app | **Next.js web app + local daemon + desktop loop** — `pnpm tools-dev`、Vercel web deploy |
+| 2 | 谁拥有 agent loop | Anthropic，闭源 | [Open CoDesign][ocod] 自身，通过 [`pi-ai`][piai] | **用户现有的 code agent CLI**（Claude Code、Codex、Devin for Terminal、Cursor Agent、Gemini CLI、OpenCode、OpenClaw）；direct Anthropic API 作为 fallback |
+| 3 | “design skills” 是什么 | 专有内部工具 | 编进 app 的 TypeScript modules | **基于文件的 skills**，遵循 Claude Code 的 `SKILL.md` spec — 可 fork、可版本化、可共享、可用 symlink 安装 |
+| 4 | design system 如何编写 | 隐含在 prompt 中 | N/A | **`DESIGN.md` 文件**，遵循 [awesome-claude-design][acd] 的 9-section schema |
+| 5 | 扩展点 | 仅 Anthropic | 自定义 PR | **把文件夹放入 `skills/`** — 第三方可组合 |
 
-The differentiation is not "yet another design generator." It is **an integration shell that refuses to own the agent, the model, or the skill catalog** — all three are external and pluggable.
+差异化不是“又一个设计生成器”。它是一个 **integration shell，并明确拒绝拥有 agent、model 或 skill catalog** —— 三者都外部化且可插拔。
 
-## 3. Target users
+## 3. 目标用户
 
-- **Indie devs / designers** who already pay for one coding agent and don't want a second subscription or a second model router just to get design output.
-- **Design system maintainers** who want to codify their system as a `DESIGN.md` and have every skill respect it automatically.
-- **Skill authors** who want to publish a design skill (e.g. "SaaS marketing page with glassmorphism") and have it run inside any compatible agent without porting.
-- **Teams self-hosting AI tooling** who need a web deployment, not an Electron binary, and who need to keep keys in their own infra.
+- **Indie devs / designers**：已经为某个 coding agent 付费，不想为了设计输出再买第二份 subscription 或第二个 model router。
+- **Design system maintainers**：想把自己的系统 codify 成 `DESIGN.md`，并让每个 skill 自动遵守它。
+- **Skill authors**：想发布一个 design skill（例如 “SaaS marketing page with glassmorphism”），并让它在任何兼容 agent 中运行，而无需移植。
+- **自托管 AI tooling 的团队**：需要 Web deployment，而不是 Electron binary；也需要把 keys 留在自己的基础设施里。
 
-## 4. User scenarios
+## 4. 用户场景
 
-### S1 — "Give me a prototype"
-User opens the web app, types *"Airbnb-style search page, use our internal design system"*, OD picks the `prototype-skill`, resolves the user's `DESIGN.md`, dispatches to Claude Code with both files plus the brief, streams tool calls into the UI, and renders the resulting HTML in an iframe preview. User clicks an element, drops a comment, the agent rewrites just that region.
+### S1 — “给我一个 prototype”
+用户打开 Web app，输入 *"Airbnb-style search page, use our internal design system"*，OD 选择 `prototype-skill`，解析用户的 `DESIGN.md`，把两个文件和 brief 一起派发给 Claude Code，将 tool calls 流式传入 UI，并在 iframe preview 中渲染生成的 HTML。用户点击一个元素、留下评论，agent 只重写那一块区域。
 
-### S2 — "Make me a deck"
-User says *"8-slide magazine-style pitch deck for my seed round"*. OD routes to `deck-skill` (a fork of [`guizang-ppt-skill`][guizang]). Output is a single-file HTML deck; preview is the deck itself with arrow-key navigation; export is PDF/PPTX.
+### S2 — “给我做一个 deck”
+用户说 *"8-slide magazine-style pitch deck for my seed round"*。OD 路由到 `deck-skill`（[`guizang-ppt-skill`][guizang] 的 fork）。输出是单文件 HTML deck；preview 就是 deck 本身，支持方向键导航；可导出 PDF/PPTX。
 
-### S3 — "Start from a template"
-User picks "SaaS landing — Stripe-ish" from a gallery. Template is a pre-filled artifact bundle plus a `DESIGN.md` reference. Agent only fills content; structure is already there. This is the fastest mode — useful for users who don't want to prompt at all.
+### S3 — “从 template 开始”
+用户从 gallery 选择 “SaaS landing — Stripe-ish”。Template 是预填好的 artifact bundle 加一个 `DESIGN.md` reference。Agent 只填内容；结构已经存在。这是最快的 mode，适合不想写 prompt 的用户。
 
-### S4 — "Set up our design system"
-User uploads a screenshot, brand guide PDF, or Figma link. OD runs `design-system-skill` which produces a `DESIGN.md` following the 9-section format. That file is then referenced by every subsequent generation — prototypes, decks, templates all pick up the tokens.
+### S4 — “建立我们的 design system”
+用户上传 screenshot、brand guide PDF 或 Figma link。OD 运行 `design-system-skill`，产出符合 9-section format 的 `DESIGN.md`。之后每次生成都会引用这个文件 —— prototypes、decks、templates 都会继承这些 tokens。
 
-### S5 — "Let the design agent evolve"
-User connects sources such as GitHub, Notion, Drive, Slack, or a local folder, then picks an Automation template like "Ingest into memory tree," "Extract design system," or "Crystallize this run into a skill." OD canonicalizes the source, optionally compresses it, proposes memory / skill / design-system changes, and only applies them after the configured review policy. Future agent runs consume those accepted nodes automatically.
+### S5 — “让 design agent 自我演化”
+用户连接 GitHub、Notion、Drive、Slack 或本地文件夹等 sources，然后选择 “Ingest into memory tree”、“Extract design system” 或 “Crystallize this run into a skill” 这样的 Automation template。OD canonicalize source，可选压缩，提出 memory / skill / design-system changes，并且只有在配置的 review policy 通过后才 apply。未来的 agent runs 会自动消费这些 accepted nodes。
 
-The first four scenarios map 1:1 to the four modes in [`modes.md`](modes.md).
-The fifth is the cross-product loop described in [`automation-self-evolution.md`](../specs/current/automation-self-evolution.md).
+前四个场景与 [`modes.md`](modes.md) 中的四种 modes 一一对应。
+第五个场景是 [`automation-self-evolution.md`](../specs/current/automation-self-evolution.md) 描述的跨产品 loop。
 
-## 5. High-level modules
+## 5. 高层模块
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │                        Web App (Next.js)                         │
 │  chat · artifact tree · iframe preview · comment mode · exports  │
@@ -83,68 +83,68 @@ The fifth is the cross-product loop described in [`automation-self-evolution.md`
 └────────────┬──────────────────┘
              │ spawn / stdio / SDK
 ┌────────────▼──────────────────────────────────────────────────┐
-│  Code Agent CLIs on user's machine (one or more of):          │
+│  用户机器上的 Code Agent CLIs（一个或多个）：                 │
 │  Claude Code · Codex · Cursor Agent · Gemini CLI · OpenCode   │
 └───────────────────────────────────────────────────────────────┘
 ```
 
-Module responsibilities:
+模块职责：
 
-- **Web app** — chat UI, artifact tree, sandboxed iframe preview, comment mode, slider controls, export UI. Stateless; all state lives in the daemon or in the browser's IndexedDB for cloud deploys.
-- **Daemon** — long-running local process. Detects agents, registers skills, manages artifacts on disk, resolves the active design system, and brokers REST/SSE requests.
-- **Agent adapters** — one adapter per supported CLI; see [`agent-adapters.md`](agent-adapters.md).
-- **Skill registry** — scans `~/.claude/skills/`, `./skills/`, and `./.claude/skills/`; merges and exposes a typed catalog.
-- **Artifact store** — project-scoped folder (default `./.od/`) holding generated files, version snapshots (git-friendly), and per-artifact metadata.
-- **Design-system resolver** — loads the active `DESIGN.md`, injects it as skill context.
-- **Automations** — templates that orchestrate schedules, connectors, ingestion, memory updates, skill crystallization, design-system extraction, token compression, and review gates; source packets enter through the Automations page, `/api/automation-ingestions`, and `od automation source`, while evolution proposals are reviewable through `/api/automation-proposals` and `od automation proposal`.
-- **Memory / evolution store** — editable Markdown-backed memory tree exposed through Settings, `/api/memory/tree`, and `od memory tree`; accepted tree nodes feed future daemon and BYOK/API-mode agent prompts, and accepted proposals can write reviewed memory, skill, and design-system drafts into user-owned runtime roots.
-- **Preview renderer** — sandboxed iframe with vendored React + Babel for JSX artifacts; plain iframe for HTML; PDF via the daemon's headless Chrome.
-- **Export pipeline** — HTML (inlined), PDF, PPTX, ZIP, Markdown.
+- **Web app** — chat UI、artifact tree、sandboxed iframe preview、comment mode、slider controls、export UI。无状态；所有 state 都在 daemon 中，或在 cloud deploy 的 browser IndexedDB 中。
+- **Daemon** — 长驻本地进程。检测 agents、注册 skills、管理磁盘 artifacts、解析 active design system，并代理 REST/SSE requests。
+- **Agent adapters** — 每个受支持 CLI 一个 adapter；见 [`agent-adapters.md`](agent-adapters.md)。
+- **Skill registry** — 扫描 `~/.claude/skills/`、`./skills/` 和 `./.claude/skills/`；合并并暴露 typed catalog。
+- **Artifact store** — project-scoped folder（默认 `./.od/`），保存生成文件、version snapshots（git-friendly）和 per-artifact metadata。
+- **Design-system resolver** — 加载 active `DESIGN.md`，并把它作为 skill context 注入。
+- **Automations** — 编排 schedules、connectors、ingestion、memory updates、skill crystallization、design-system extraction、token compression 和 review gates 的 templates；source packets 从 Automations page、`/api/automation-ingestions` 和 `od automation source` 进入，而 evolution proposals 可通过 `/api/automation-proposals` 与 `od automation proposal` review。
+- **Memory / evolution store** — Markdown-backed、可编辑的 memory tree，通过 Settings、`/api/memory/tree` 和 `od memory tree` 暴露；accepted tree nodes 会进入未来 daemon 与 BYOK/API-mode agent prompts，accepted proposals 可把已 review 的 memory、skill 和 design-system drafts 写入用户拥有的 runtime roots。
+- **Preview renderer** — 对 JSX artifacts 使用带 vendored React + Babel 的 sandboxed iframe；对 HTML 使用普通 iframe；PDF 通过 daemon 的 headless Chrome 生成。
+- **Export pipeline** — HTML（inlined）、PDF、PPTX、ZIP、Markdown。
 
-## 6. Non-goals
+## 6. 非目标
 
-- **We do not ship a model router.** If the user's agent supports 20 providers, great. If it only supports Anthropic, that's the ceiling. We don't layer our own provider abstraction on top of someone else's.
-- **We do not ship a desktop app.** No Electron, no Tauri. The "local" story is a Next.js dev server + a Node daemon. If someone wants a tray icon, that's [`cc-switch`][ccsw]'s job, not ours.
-- **We do not reinvent the agent loop.** No custom tool-use harness, no bespoke context-manager. Everything goes through the detected agent's native loop.
-- **We do not maintain a skill marketplace in v1.** Skills are git URLs and local folders. A browsable UI is v2.
-- **We do not try to compete with Figma.** Output is code (HTML/JSX) and content (`DESIGN.md`, Markdown, PPTX), not editable vector canvases.
-- **We do not implement auth / billing / orgs in MVP.** Single-user, single-machine. Multi-user is post-v1 and optional.
+- **我们不内置 model router。** 如果用户的 agent 支持 20 个 providers，很好；如果只支持 Anthropic，那就是上限。我们不会在别人已有的 provider abstraction 上再叠一层自己的。
+- **我们不交付 desktop app。** 没有 Electron，没有 Tauri。“local” story 是 Next.js dev server + Node daemon。如果有人想要 tray icon，那是 [`cc-switch`][ccsw] 的职责，不是我们的。
+- **我们不重造 agent loop。** 没有自定义 tool-use harness，没有 bespoke context-manager。一切都走被检测到的 agent 的 native loop。
+- **v1 不维护 skill marketplace。** Skills 是 git URLs 和本地 folders。可浏览 UI 是 v2。
+- **我们不试图与 Figma 竞争。** 输出是 code（HTML/JSX）和 content（`DESIGN.md`、Markdown、PPTX），不是可编辑 vector canvases。
+- **MVP 不实现 auth / billing / orgs。** 单用户、单机器。Multi-user 是 post-v1，并且可选。
 
-## 7. Why not just extend [Open CoDesign][ocod]?
+## 7. 为什么不直接扩展 [Open CoDesign][ocod]？
 
-We seriously considered it. The concrete blockers:
+我们认真考虑过。具体 blocker 是：
 
-1. **It's Electron.** Porting to a web architecture requires ripping out ~40% of the code and rewriting the renderer/main IPC layer. At that point it's a rewrite.
-2. **It owns the agent loop.** [`pi-ai`][piai] is a perfectly fine provider abstraction, but it means every skill is written against `pi-ai`'s tool-use format — not against whatever Claude Code, Codex, or Cursor Agent natively speak. We can't reuse existing skills, and existing skills can't reuse us.
-3. **Skill format is proprietary.** Its 12 skills are TypeScript modules compiled into the app. A user cannot drop [`guizang-ppt-skill`][guizang] in and have it work; there's no `SKILL.md` loader.
-4. **No design system abstraction.** Design tokens live in prompts, not in a versioned file that can be shared across projects.
+1. **它是 Electron。** 移植到 Web architecture 需要拆掉约 40% 的代码并重写 renderer/main IPC layer。到那一步已经是重写了。
+2. **它拥有 agent loop。** [`pi-ai`][piai] 是很好的 provider abstraction，但这意味着每个 skill 都要按 `pi-ai` 的 tool-use format 编写，而不是按 Claude Code、Codex 或 Cursor Agent native 使用的格式。我们无法复用现有 skills，现有 skills 也无法复用我们。
+3. **Skill format 是专有的。** 它的 12 个 skills 是编进 app 的 TypeScript modules。用户无法把 [`guizang-ppt-skill`][guizang] 放进去就运行；没有 `SKILL.md` loader。
+4. **没有 design system abstraction。** Design tokens 活在 prompts 里，而不是一个可跨项目共享、可版本化的文件里。
 
-We keep the good parts: comment mode, slider-emitted parameters, multi-frame preview, single-file HTML export, sandboxed iframe rendering. These are all UI ideas that are orthogonal to the agent layer and we'll absolutely borrow them. See [`references.md`](references.md) for the explicit borrow list.
+我们会保留其中好的部分：comment mode、slider-emitted parameters、multi-frame preview、single-file HTML export、sandboxed iframe rendering。这些 UI 思路都与 agent layer 正交，完全值得借鉴。明确的 borrow list 见 [`references.md`](references.md)。
 
-## 8. Positioning against Anthropic's [Claude Design][cd]
+## 8. 相对 Anthropic 的 [Claude Design][cd] 的定位
 
-We are **not** trying to out-feature [Claude Design][cd]. Claude Design has Anthropic's model team, internal tooling, and a rendering pipeline we can't match. What we offer instead:
+我们**不是**要在功能上超过 [Claude Design][cd]。Claude Design 有 Anthropic 的 model team、内部 tooling 和我们无法匹配的 rendering pipeline。我们提供的是：
 
-- **Self-hostable.** Run on your laptop, your Vercel, your k8s. Secrets never leave.
-- **BYO-agent.** If you're already paying for Cursor, that's your agent. If you've standardized on Codex inside your company, use Codex. No mandatory Anthropic subscription.
-- **Skills as files.** Version them in git. Fork them. Ship them to teammates as a repo. Run your team's branded deck skill without rebuilding a product.
-- **Design systems as files.** A `DESIGN.md` is an artifact you can review in a PR. Claude Design's "design system" lives in an ephemeral chat.
+- **Self-hostable。** 跑在你的 laptop、你的 Vercel、你的 k8s。Secrets 永不离开。
+- **BYO-agent。** 如果你已经在为 Cursor 付费，那就是你的 agent。如果公司已经标准化到 Codex，就用 Codex。不强制 Anthropic subscription。
+- **Skills as files。** 放进 git。Fork。作为 repo 发给 teammates。不重建产品，也能运行团队自己的 branded deck skill。
+- **Design systems as files。** `DESIGN.md` 是可以在 PR 中 review 的 artifact。Claude Design 的 “design system” 活在临时 chat 里。
 
-In short: Claude Design is a product; OD is a **substrate**.
+简言之：Claude Design 是一个产品；OD 是一个 **substrate**。
 
-## 9. Success criteria for v1
+## 9. v1 成功标准
 
-- One developer can `git clone && corepack enable && pnpm install && pnpm tools-dev run web`, point at their Claude Code install, and produce a prototype in under 5 minutes.
-- A third party can author a skill in a separate git repo, publish it, and have a user install it by running `od skill add <git-url>` without touching OD's source.
-- A design system author can write a `DESIGN.md`, point OD at it, and have the style propagate across prototype / deck / template outputs.
-- Deploying to Vercel with a local daemon works end-to-end (the daemon is reachable via localhost tunnel or a user-provided URL).
-- Swapping the underlying agent from Claude Code to Codex requires zero skill changes.
+- 一个开发者可以 `git clone && corepack enable && pnpm install && pnpm tools-dev run web`，指向自己的 Claude Code install，并在 5 分钟内产出一个 prototype。
+- 第三方可以在独立 git repo 中编写 skill、发布它，并让用户运行 `od skill add <git-url>` 安装，无需修改 OD source。
+- Design system author 可以写一个 `DESIGN.md`，让 OD 指向它，并让风格传播到 prototype / deck / template outputs。
+- 部署到 Vercel 并搭配本地 daemon 可以端到端工作（daemon 通过 localhost tunnel 或用户提供的 URL reachable）。
+- 将底层 agent 从 Claude Code 换成 Codex 不需要改任何 skill。
 
-## 10. Open questions (to resolve before coding)
+## 10. 开放问题（编码前解决）
 
-- **Daemon ↔ Vercel bridge.** Do we ship a reverse-tunnel helper (like `cloudflared`), require the user to set one up, or punt to "run locally for now"? My current lean: punt for MVP, helper in v1.
-- **Artifact versioning.** Git, or SQLite, or both? [Open CoDesign][ocod] uses SQLite; that's easier but less reviewable. Lean: write artifacts as plain files + a `.od/history.jsonl` log. Git is the user's business.
-- **Comment mode on non-Claude-Code agents.** Claude Code supports surgical edits via its tool loop. Codex and Gemini CLI are less graceful. Do we degrade to "regenerate whole file" for weaker agents? Lean: yes, document clearly in the adapter table.
-- **Skill trust model.** Skills can shell out via the agent. We should at minimum warn on install, and probably sandbox the agent's cwd to the project directory. Claude Code's permission mode handles this for us if we use it; Codex is looser. Needs a per-adapter note.
+- **Daemon ↔ Vercel bridge。** 我们要不要提供 reverse-tunnel helper（例如 `cloudflared`），要求用户自行配置，还是先退回到 “run locally for now”？当前倾向：MVP 暂缓，v1 加 helper。
+- **Artifact versioning。** Git、SQLite，还是两者都要？[Open CoDesign][ocod] 使用 SQLite；更简单但更难 review。倾向：artifacts 写成 plain files + `.od/history.jsonl` log。Git 是用户自己的事。
+- **非 Claude-Code agents 的 comment mode。** Claude Code 通过自己的 tool loop 支持 surgical edits。Codex 和 Gemini CLI 没那么优雅。对于能力较弱的 agents，是否降级为 “regenerate whole file”？倾向：是，在 adapter table 中清楚说明。
+- **Skill trust model。** Skills 可以通过 agent shell out。至少应在 install 时警告，可能还要把 agent 的 cwd sandbox 到 project directory。若使用 Claude Code，其 permission mode 会处理；Codex 更宽松。需要 per-adapter note。
 
-These go on the roadmap as Phase 0 discovery items.
+这些会作为 Phase 0 discovery items 放入 roadmap。

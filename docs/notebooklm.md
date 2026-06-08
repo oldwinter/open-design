@@ -1,21 +1,21 @@
-# NotebookLM: export issues/PRs from Open Design
+# NotebookLM：从 Open Design 导出 issues/PRs
 
-Open Design gets a lot of feedback via GitHub Issues + PRs. If you want NotebookLM to help with:
+Open Design 通过 GitHub Issues + PRs 收到大量反馈。如果你希望 NotebookLM 协助：
 
-- support answers (with citations)
-- clustering + taxonomy of user scenarios
+- support answers（带 citations）
+- 用户场景的 clustering + taxonomy
 - backlog extraction
 - evaluation datasets / benchmark prompts
 
-…start by exporting a repo snapshot into a single Markdown file and upload it as a source in NotebookLM.
+……可以先把 repo snapshot 导出成单个 Markdown 文件，并作为 source 上传到 NotebookLM。
 
-## Export issues + PRs to Markdown
+## 将 issues + PRs 导出为 Markdown
 
-Prereqs:
-- `gh` (GitHub CLI) installed + authenticated
-- Node + pnpm (for `tsx`)
+Prereqs：
+- 已安装并认证 `gh`（GitHub CLI）
+- Node + pnpm（用于 `tsx`）
 
-From the repo root:
+从 repo root 运行：
 
 ```bash
 pnpm exec tsx scripts/notebooklm-export-github.ts \
@@ -25,13 +25,13 @@ pnpm exec tsx scripts/notebooklm-export-github.ts \
   --limit 50
 ```
 
-By default, output goes to:
+默认输出到：
 
-```
+```text
 notebooklm/<owner>__<repo>.md
 ```
 
-You can override the output path:
+你可以覆盖输出路径：
 
 ```bash
 pnpm exec tsx scripts/notebooklm-export-github.ts \
@@ -41,23 +41,23 @@ pnpm exec tsx scripts/notebooklm-export-github.ts \
 
 ### Flags
 
-- `--repo owner/name` (required)
-- `--out <path>` (optional)
-- `--issues open|closed|all|none` (default: `open`)
-- `--prs open|closed|merged|all` (default: `open`)
-- `--limit <n>` (default: `50`) — **total item budget across issues + PRs**. If you select multiple states (e.g. `--issues all --prs all`), the exporter will stop once it has written `n` total items.
+- `--repo owner/name`（必填）
+- `--out <path>`（可选）
+- `--issues open|closed|all|none`（默认：`open`）
+- `--prs open|closed|merged|all`（默认：`open`）
+- `--limit <n>`（默认：`50`）— **issues + PRs 的总 item budget**。如果选择多个 states（例如 `--issues all --prs all`），exporter 会在写入总数达到 `n` 后停止。
 
-## Upload to NotebookLM
+## 上传到 NotebookLM
 
-1) Open NotebookLM
-2) Create a new notebook
-3) Add a source → upload the generated `.md`
-4) Ask questions like:
+1. 打开 NotebookLM
+2. 创建新的 notebook
+3. Add a source → 上传生成的 `.md`
+4. 提问，例如：
    - “Summarize the top recurring user problems this week, with links.”
    - “Group issues into a taxonomy (installation, provider auth, UI bugs, exports).”
    - “Suggest 10 high-confidence ‘good first issues’ with rationale.”
 
 ## Notes
 
-- The exporter truncates long bodies to keep the file manageable.
-- It’s intentionally read-only: it doesn’t change issues or PRs.
+- Exporter 会截断过长 body，避免文件失控。
+- 它刻意保持 read-only：不会修改 issues 或 PRs。

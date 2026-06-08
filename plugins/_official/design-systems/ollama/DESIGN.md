@@ -1,80 +1,80 @@
-# Design System Inspired by Ollama
+# Inspired by Ollama 的 Design System
 
 > Category: AI & LLM
-> Run LLMs locally. Terminal-first, monochrome simplicity.
+> 本地运行 LLM。Terminal-first、单色、极简。
 
 ## 1. Visual Theme & Atmosphere
 
-Ollama's interface is radical minimalism taken to its logical conclusion — a pure-white void where content floats without decoration, shadow, or color. The design philosophy mirrors the product itself: strip away everything unnecessary until only the essential tool remains. This is the digital equivalent of a Dieter Rams object — every pixel earns its place, and the absence of design IS the design.
+Ollama 的界面把激进极简主义推到逻辑终点：一片纯白留白，内容悬浮其中，没有装饰、阴影或颜色。它的设计哲学映射了产品本身：剥离所有不必要的东西，直到只剩下必要工具。这像是数字版 Dieter Rams 物件——每个像素都必须有存在理由，而“没有设计感”本身就是设计。
 
-The entire page exists in pure grayscale. There is zero chromatic color in the interface — no brand blue, no accent green, no semantic red. The only colors that exist are shades between pure black (`#000000`) and pure white (`#ffffff`), creating a monochrome environment that lets the user's mental model of "open models" remain uncolored by brand opinion. The Ollama llama mascot, rendered in simple black line art, is the only illustration — and even it's monochrome.
+整个页面存在于纯灰度之中。界面里没有任何色彩性颜色——没有品牌蓝、没有强调绿、没有语义红。存在的只有 Pure Black (`#000000`) 与 Pure White (`#ffffff`) 之间的灰阶，形成一个单色环境，让用户对“open models”的心智模型不被品牌态度染色。以简单黑色线稿绘制的 Ollama llama mascot 是唯一插画，而且它同样是单色的。
 
-What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's rounded system font) with an exclusively pill-shaped geometry (9999px radius on everything interactive). The rounded letterforms + rounded buttons + rounded containers create a cohesive "softness language" that makes a developer CLI tool feel approachable and friendly rather than intimidating. This is minimalism with warmth — not cold Swiss-style grid minimalism, but the kind where the edges are literally softened.
+Ollama 的独特之处在于 SF Pro Rounded（Apple 的圆角系统字体）与完全 pill-shaped 的几何语言（所有交互元素 9999px radius）的组合。圆润字形 + 圆角按钮 + 圆角容器组成一套统一的“softness language”，让开发者 CLI 工具显得亲和友好，而不是令人生畏。这是一种带温度的极简主义——不是冷峻的 Swiss-style grid minimalism，而是连边缘都被字面意义上柔化的那一种。
 
 **Key Characteristics:**
-- Pure white canvas with zero chromatic color — completely grayscale
-- SF Pro Rounded headlines creating a distinctively Apple-like softness
-- Binary border-radius system: 12px (containers) or 9999px (everything interactive)
-- Zero shadows — depth comes exclusively from background color shifts and borders
-- Pill-shaped geometry on all interactive elements (buttons, tabs, inputs, tags)
-- The Ollama llama as the sole illustration — black line art, no color
-- Extreme content restraint — the homepage is short, focused, and uncluttered
+- 纯白画布，没有任何色彩性颜色——完全 grayscale
+- SF Pro Rounded 标题带来鲜明的 Apple-like 柔和感
+- 二元 border-radius 系统：12px（containers）或 9999px（所有 interactive elements）
+- 零阴影——层次完全来自 background color shifts 和 borders
+- 所有 interactive elements（buttons、tabs、inputs、tags）都采用 pill-shaped geometry
+- Ollama llama 是唯一插画——黑色 line art，无颜色
+- 极端克制的内容——homepage 短、聚焦、不拥挤
 
 ## 2. Color Palette & Roles
 
 ### Primary
-- **Pure Black** (`#000000`): Primary headlines, primary links, and the darkest text. The only "color" that demands attention.
-- **Near Black** (`#262626`): Button text on light surfaces, secondary headline weight.
-- **Darkest Surface** (`#090909`): The darkest possible surface — barely distinguishable from pure black, used for footer or dark containers.
+- **Pure Black** (`#000000`): 主标题、主链接和最深文本。唯一真正要求注意力的“颜色”。
+- **Near Black** (`#262626`): 浅色表面上的按钮文本、次级标题重量。
+- **Darkest Surface** (`#090909`): 最深的表面——几乎无法和 Pure Black 区分，用于 footer 或深色容器。
 
 ### Surface & Background
-- **Pure White** (`#ffffff`): The primary page background — not off-white, not cream, pure white. Button surfaces for secondary actions.
-- **Snow** (`#fafafa`): The subtlest possible surface distinction from white — used for section backgrounds and barely-elevated containers.
-- **Light Gray** (`#e5e5e5`): Button backgrounds, borders, and the primary containment color. The workhorse neutral.
+- **Pure White** (`#ffffff`): 主要页面背景——不是 off-white、不是 cream，而是 pure white。也用于 secondary actions 的按钮表面。
+- **Snow** (`#fafafa`): 与白色之间最细微的表面区分——用于 section backgrounds 和几乎不可察觉的 elevated containers。
+- **Light Gray** (`#e5e5e5`): 按钮背景、边框和主要 containment color。最常用的中性工作色。
 
 ### Neutrals & Text
-- **Stone** (`#737373`): Secondary body text, footer links, and de-emphasized content. The primary "muted" tone.
-- **Mid Gray** (`#525252`): Emphasized secondary text, slightly darker than Stone.
-- **Silver** (`#a3a3a3`): Tertiary text, placeholders, and deeply de-emphasized metadata.
-- **Button Text Dark** (`#404040`): Specific to white-surface button text.
+- **Stone** (`#737373`): 次级正文、footer links 和弱化内容。主要的 muted tone。
+- **Mid Gray** (`#525252`): 强调型次级文本，比 Stone 稍深。
+- **Silver** (`#a3a3a3`): 三级文本、placeholders 和极弱化 metadata。
+- **Button Text Dark** (`#404040`): 专用于白色表面按钮文本。
 
 ### Semantic & Accent
-- **Ring Blue** (`#3b82f6` at 50%): The ONLY non-gray color in the entire system — Tailwind's default focus ring, used exclusively for keyboard accessibility. Never visible in normal interaction flow.
-- **Border Light** (`#d4d4d4`): A slightly darker gray for white-surface button borders.
+- **Ring Blue** (`#3b82f6` at 50%): 整个系统中唯一非灰色颜色——Tailwind 默认 focus ring，只用于键盘可访问性。正常交互流程中不应可见。
+- **Border Light** (`#d4d4d4`): 用于白色表面按钮边框的稍深灰色。
 
 ### Gradient System
-- **None.** Ollama uses absolutely no gradients. Visual separation comes from flat color blocks and single-pixel borders. This is a deliberate, almost philosophical design choice.
+- **None.** Ollama 完全不使用 gradients。视觉分隔来自平面色块和 single-pixel borders。这是一种刻意、近乎哲学化的设计选择。
 
 ## 3. Typography Rules
 
 ### Font Family
-- **Display**: `SF Pro Rounded`, with fallbacks: `system-ui, -apple-system, system-ui`
-- **Body / UI**: `ui-sans-serif`, with fallbacks: `system-ui, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji`
-- **Monospace**: `ui-monospace`, with fallbacks: `SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New`
+- **Display**: `SF Pro Rounded`, fallbacks: `system-ui, -apple-system, system-ui`
+- **Body / UI**: `ui-sans-serif`, fallbacks: `system-ui, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji`
+- **Monospace**: `ui-monospace`, fallbacks: `SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New`
 
-*Note: SF Pro Rounded is Apple's system font — it renders with rounded terminals on macOS/iOS and falls back to the system sans-serif on other platforms.*
+*Note: SF Pro Rounded 是 Apple 的系统字体——在 macOS/iOS 上会渲染出圆润端点，在其他平台回退到 system sans-serif。*
 
 ### Hierarchy
 
 | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
 |------|------|------|--------|-------------|----------------|-------|
-| Display / Hero | SF Pro Rounded | 48px (3rem) | 500 | 1.00 (tight) | normal | Maximum impact, rounded letterforms |
+| Display / Hero | SF Pro Rounded | 48px (3rem) | 500 | 1.00 (tight) | normal | 最大冲击力，圆润字形 |
 | Section Heading | SF Pro Rounded | 36px (2.25rem) | 500 | 1.11 (tight) | normal | Feature section titles |
-| Sub-heading | SF Pro Rounded / ui-sans-serif | 30px (1.88rem) | 400–500 | 1.20 (tight) | normal | Card headings, feature names |
+| Sub-heading | SF Pro Rounded / ui-sans-serif | 30px (1.88rem) | 400-500 | 1.20 (tight) | normal | Card headings, feature names |
 | Card Title | ui-sans-serif | 24px (1.5rem) | 400 | 1.33 | normal | Medium emphasis headings |
-| Body Large | ui-sans-serif | 18px (1.13rem) | 400–500 | 1.56 | normal | Hero descriptions, button text |
-| Body / Link | ui-sans-serif | 16px (1rem) | 400–500 | 1.50 | normal | Standard body text, navigation |
+| Body Large | ui-sans-serif | 18px (1.13rem) | 400-500 | 1.56 | normal | Hero descriptions, button text |
+| Body / Link | ui-sans-serif | 16px (1rem) | 400-500 | 1.50 | normal | Standard body text, navigation |
 | Caption | ui-sans-serif | 14px (0.88rem) | 400 | 1.43 | normal | Metadata, descriptions |
 | Small | ui-sans-serif | 12px (0.75rem) | 400 | 1.33 | normal | Smallest sans-serif text |
 | Code Body | ui-monospace | 16px (1rem) | 400 | 1.50 | normal | Inline code, commands |
 | Code Caption | ui-monospace | 14px (0.88rem) | 400 | 1.43 | normal | Code snippets, secondary |
-| Code Small | ui-monospace | 12px (0.75rem) | 400–700 | 1.63 | normal | Tags, labels |
+| Code Small | ui-monospace | 12px (0.75rem) | 400-700 | 1.63 | normal | Tags, labels |
 
 ### Principles
-- **Rounded display, standard body**: SF Pro Rounded carries display headlines with its distinctive rounded terminals, while the standard system sans handles all body text. The rounded font IS the brand expression.
-- **Weight restraint**: Only two weights matter — 400 (regular) for body and 500 (medium) for headings. No bold, no light, no black weight. This extreme restraint reinforces the minimal philosophy.
-- **Tight display, comfortable body**: Headlines compress to 1.0 line-height, while body text relaxes to 1.43–1.56. The contrast creates clear hierarchy without needing weight contrast.
-- **Monospace for developer identity**: Code blocks and terminal commands appear throughout as primary content, using the system monospace stack.
+- **Rounded display, standard body**: SF Pro Rounded 承载 display headlines，靠独特的圆润端点表达品牌；标准 system sans 负责全部 body text。圆角字体本身就是品牌表达。
+- **Weight restraint**: 只使用两个核心字重——400 (regular) 用于 body，500 (medium) 用于 headings。没有 bold、没有 light、没有 black weight。这种极端克制强化了 minimal philosophy。
+- **Tight display, comfortable body**: 标题压缩到 1.0 line-height，body text 放松到 1.43-1.56。不依赖字重对比也能建立清晰层级。
+- **Monospace for developer identity**: Code blocks 和 terminal commands 作为主要内容频繁出现，使用 system monospace stack。
 
 ## 4. Component Stylings
 
@@ -86,7 +86,7 @@ What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's roun
 - Padding: 10px 24px
 - Border: thin solid Light Gray (`1px solid #e5e5e5`)
 - Radius: pill-shaped (9999px)
-- The primary action button — understated, grayscale, always pill-shaped
+- Primary action button——低调、grayscale，始终 pill-shaped
 
 **White Pill (Secondary)**
 - Background: Pure White (`#ffffff`)
@@ -94,91 +94,91 @@ What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's roun
 - Padding: 10px 24px
 - Border: thin solid Border Light (`1px solid #d4d4d4`)
 - Radius: pill-shaped (9999px)
-- Secondary action — visually lighter than Gray Pill
+- Secondary action——视觉重量比 Gray Pill 更轻
 
 **Black Pill (CTA)**
 - Background: Pure Black (`#000000`)
 - Text: Pure White (`#ffffff`)
 - Radius: pill-shaped (9999px)
-- Inferred from "Create account" and "Explore" buttons
-- Maximum emphasis — black on white
+- 从 "Create account" 和 "Explore" buttons 推断
+- 最高强调级别——白底上的黑色按钮
 
 ### Cards & Containers
-- Background: Pure White or Snow (`#fafafa`)
-- Border: thin solid Light Gray (`1px solid #e5e5e5`) when needed
-- Radius: comfortably rounded (12px) — the ONLY non-pill radius in the system
-- Shadow: **none** — zero shadows on any element
-- Hover: likely subtle background shift or border darkening
+- Background: Pure White 或 Snow (`#fafafa`)
+- Border: 需要时使用 thin solid Light Gray (`1px solid #e5e5e5`)
+- Radius: 舒适圆角 (12px)——系统中唯一非 pill radius
+- Shadow: **none**——任何元素都没有阴影
+- Hover: 可能是细微 background shift 或 border darkening
 
 ### Inputs & Forms
 - Background: Pure White
 - Border: `1px solid #e5e5e5`
-- Radius: pill-shaped (9999px) — search inputs and form fields are pill-shaped
+- Radius: pill-shaped (9999px)——search inputs 和 form fields 都是 pill-shaped
 - Focus: Ring Blue (`#3b82f6` at 50%) ring
 - Placeholder: Silver (`#a3a3a3`)
 
 ### Navigation
-- Clean horizontal nav with minimal elements
-- Logo: Ollama llama icon + wordmark in black
-- Links: "Models", "Docs", "Pricing" in black at 16px, weight 400
-- Search bar: pill-shaped with placeholder text
+- 干净的 horizontal nav，元素极少
+- Logo: Ollama llama icon + 黑色 wordmark
+- Links: "Models", "Docs", "Pricing"，黑色，16px，weight 400
+- Search bar: 带 placeholder text 的 pill-shaped 输入框
 - Right side: "Sign in" link + "Download" black pill CTA
-- No borders, no background — transparent nav on white page
+- 无 borders、无 background——白色页面上的透明 nav
 
 ### Image Treatment
-- The Ollama llama mascot is the only illustration — black line art on white
-- Code screenshots/terminal outputs shown in bordered containers (12px radius)
-- Integration logos displayed as simple icons in a grid
-- No photographs, no gradients, no decorative imagery
+- Ollama llama mascot 是唯一插画——白底黑色 line art
+- Code screenshots/terminal outputs 放在带边框的容器中（12px radius）
+- Integration logos 以简单 icons 的形式展示在 grid 中
+- 无 photographs、无 gradients、无 decorative imagery
 
 ### Distinctive Components
 
 **Tab Pills**
-- Pill-shaped tab selectors (e.g., "Coding" | "OpenClaw")
-- Active: Light Gray bg; Inactive: transparent
-- All pill-shaped (9999px)
+- Pill-shaped tab selectors（例如 "Coding" | "OpenClaw"）
+- Active: Light Gray bg；Inactive: transparent
+- 全部 pill-shaped (9999px)
 
 **Model Tags**
-- Small pill-shaped tags (e.g., "ollama", "launch", "claude")
-- Light Gray background, dark text
-- The primary way to browse models
+- 小型 pill-shaped tags（例如 "ollama", "launch", "claude"）
+- Light Gray background，dark text
+- 浏览 models 的主要方式
 
 **Terminal Command Block**
-- Monospace code showing `ollama run` commands
-- Minimal styling — just a bordered 12px-radius container
-- Copy button integrated
+- 展示 `ollama run` commands 的 monospace code
+- 极简样式——只有一个带边框的 12px-radius container
+- 集成 copy button
 
 **Integration Grid**
-- Grid of integration logos (Codex, Claude Code, OpenCode, LangChain, etc.)
-- Each in a bordered pill or card with icon + name
-- Tabbed by category (Coding, Documents & RAG, Automation, Chat)
+- Integration logos grid（Codex、Claude Code、OpenCode、LangChain 等）
+- 每项位于带边框的 pill 或 card 中，包含 icon + name
+- 按 category 分 tabs（Coding、Documents & RAG、Automation、Chat）
 
 ## 5. Layout Principles
 
 ### Spacing System
 - Base unit: 8px
 - Scale: 4px, 6px, 8px, 9px, 10px, 12px, 14px, 16px, 20px, 24px, 32px, 40px, 48px, 88px, 112px
-- Button padding: 10px 24px (consistent across all buttons)
-- Card internal padding: approximately 24–32px
-- Section vertical spacing: very generous (88px–112px)
+- Button padding: 10px 24px（所有 buttons 保持一致）
+- Card internal padding: 约 24-32px
+- Section vertical spacing: 非常宽松（88px-112px）
 
 ### Grid & Container
-- Max container width: approximately 1024–1280px, centered
-- Hero: centered single-column with llama illustration
-- Feature sections: 2-column layout (text left, code right)
+- Max container width: 约 1024-1280px，居中
+- Hero: 带 llama illustration 的 centered single-column
+- Feature sections: 2-column layout（text left, code right）
 - Integration grid: responsive multi-column
-- Footer: clean single-row
+- Footer: 干净的 single-row
 
 ### Whitespace Philosophy
-- **Emptiness as luxury**: The page is remarkably short and sparse — no feature section overstays its welcome. Each concept gets minimal but sufficient space.
-- **Content density is low by design**: Where other AI companies pack feature after feature, Ollama presents three ideas (run models, use with apps, integrations) and stops.
-- **The white space IS the brand**: Pure white space with zero decoration communicates "this tool gets out of your way."
+- **Emptiness as luxury**: 页面异常短且稀疏——没有任何 feature section 逗留太久。每个概念只获得最少但足够的空间。
+- **Content density is low by design**: 其他 AI 公司会堆满一个又一个 feature，Ollama 只呈现三个想法（run models、use with apps、integrations）然后停下。
+- **The white space IS the brand**: 纯白留白加零装饰传达“这个工具不会挡你的路”。
 
 ### Border Radius Scale
-- Comfortably rounded (12px): The sole container radius — code blocks, cards, panels
-- Pill-shaped (9999px): Everything interactive — buttons, tabs, inputs, tags, badges
+- 舒适圆角 (12px): 唯一 container radius——code blocks、cards、panels
+- Pill-shaped (9999px): 所有 interactive elements——buttons、tabs、inputs、tags、badges
 
-*This binary system is extreme and distinctive. There is no 4px, no 8px, no gradient of roundness. Elements are either containers (12px) or interactive (pill).*
+*这个二元系统极端而鲜明。没有 4px、没有 8px、没有连续的圆角梯度。元素要么是 containers (12px)，要么是 interactive (pill)。*
 
 ## 6. Depth & Elevation
 
@@ -187,31 +187,31 @@ What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's roun
 | Flat (Level 0) | No shadow, no border | Page background, most content |
 | Bordered (Level 1) | `1px solid #e5e5e5` | Cards, code blocks, buttons |
 
-**Shadow Philosophy**: Ollama uses **zero shadows**. This is not an oversight — it's a deliberate design decision. Every other major AI product site uses at least subtle shadows. Ollama's flat, shadowless approach creates a paper-like experience where elements are distinguished purely by background color and single-pixel borders. Depth is communicated through **content hierarchy and typography weight**, not visual layering.
+**Shadow Philosophy**: Ollama 使用 **zero shadows**。这不是疏忽，而是刻意的设计决定。几乎所有其他主流 AI 产品站点都会至少使用细微阴影；Ollama 的 flat、shadowless 方法创造出纸张般的体验，元素只通过 background color 和 single-pixel borders 区分。层次通过 **content hierarchy and typography weight** 传达，而不是视觉堆叠。
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use pure white (`#ffffff`) as the page background — never off-white or cream
-- Use pill-shaped (9999px) radius on all interactive elements — buttons, tabs, inputs, tags
-- Use 12px radius on all non-interactive containers — code blocks, cards, panels
-- Keep the palette strictly grayscale — no chromatic colors except the blue focus ring
-- Use SF Pro Rounded at weight 500 for display headings — the rounded terminals are the brand expression
-- Maintain zero shadows — depth comes from borders and background shifts only
-- Keep content density low — each section should present one clear idea
-- Use monospace for terminal commands and code — it's primary content, not decoration
-- Keep all buttons at 10px 24px padding with pill shape — consistency is absolute
+- 使用 pure white (`#ffffff`) 作为页面背景——不要使用 off-white 或 cream
+- 所有 interactive elements 使用 pill-shaped (9999px) radius——buttons、tabs、inputs、tags
+- 所有 non-interactive containers 使用 12px radius——code blocks、cards、panels
+- 严格保持 grayscale palette——除 blue focus ring 外没有色彩性颜色
+- Display headings 使用 SF Pro Rounded weight 500——圆润端点就是品牌表达
+- 保持 zero shadows——层次只来自 borders 和 background shifts
+- 保持低内容密度——每个 section 只呈现一个清晰想法
+- Terminal commands 和 code 使用 monospace——它是主要内容，不是装饰
+- 所有 buttons 保持 10px 24px padding 与 pill shape——一致性是绝对要求
 
 ### Don't
-- Don't introduce any chromatic color — no brand blue, no accent green, no warm tones
-- Don't use border-radius between 12px and 9999px — the system is binary
-- Don't add shadows to any element — the flat aesthetic is intentional
-- Don't use font weights above 500 — no bold, no black weight
-- Don't add decorative illustrations beyond the llama mascot
-- Don't use gradients anywhere — flat blocks and borders only
-- Don't overcomplicate the layout — two columns maximum, no complex grids
-- Don't use borders heavier than 1px — containment is always the lightest possible touch
-- Don't add hover animations or transitions — interactions should feel instant and direct
+- 不要引入任何色彩性颜色——没有 brand blue、accent green 或 warm tones
+- 不要使用 12px 和 9999px 之间的 border-radius——系统是二元的
+- 不要给任何元素添加 shadows——flat aesthetic 是有意为之
+- 不要使用 500 以上的 font weights——没有 bold、没有 black weight
+- 不要在 llama mascot 之外添加 decorative illustrations
+- 不要在任何地方使用 gradients——只使用 flat blocks 和 borders
+- 不要让 layout 复杂化——最多两栏，不要 complex grids
+- 不要使用超过 1px 的 borders——containment 永远是最轻触的
+- 不要添加 hover animations 或 transitions——交互应当即时、直接
 
 ## 8. Responsive Behavior
 
@@ -219,28 +219,28 @@ What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's roun
 | Name | Width | Key Changes |
 |------|-------|-------------|
 | Mobile | <640px | Single column, stacked everything, hamburger nav |
-| Small Tablet | 640–768px | Minor adjustments to spacing |
-| Tablet | 768–850px | 2-column layouts begin |
-| Desktop | 850–1024px | Standard layout, expanded features |
-| Large Desktop | 1024–1280px | Maximum content width |
+| Small Tablet | 640-768px | Spacing 的小幅调整 |
+| Tablet | 768-850px | 2-column layouts 开始出现 |
+| Desktop | 850-1024px | Standard layout, expanded features |
+| Large Desktop | 1024-1280px | Maximum content width |
 
 ### Touch Targets
-- All buttons are pill-shaped with generous padding (10px 24px)
-- Navigation links at comfortable 16px size
-- Minimum touch area easily exceeds 44x44px
+- 所有 buttons 都是 pill-shaped，并有宽松 padding（10px 24px）
+- Navigation links 使用舒适的 16px size
+- Minimum touch area 轻松超过 44x44px
 
 ### Collapsing Strategy
-- **Navigation**: Collapses to hamburger menu on mobile
-- **Feature sections**: 2-column → stacked single column
-- **Hero text**: 48px → 36px → 30px progressive scaling
-- **Integration grid**: Multi-column → 2-column → single column
-- **Code blocks**: Horizontal scroll maintained
+- **Navigation**: 移动端折叠为 hamburger menu
+- **Feature sections**: 2-column -> stacked single column
+- **Hero text**: 48px -> 36px -> 30px progressive scaling
+- **Integration grid**: Multi-column -> 2-column -> single column
+- **Code blocks**: 保持 horizontal scroll
 
 ### Image Behavior
-- Llama mascot scales proportionally
-- Code blocks maintain monospace formatting
-- Integration icons reflow to fewer columns
-- No art direction changes
+- Llama mascot 按比例缩放
+- Code blocks 保持 monospace formatting
+- Integration icons 重排为更少列
+- 无 art direction changes
 
 ## 9. Agent Prompt Guide
 
@@ -262,9 +262,9 @@ What makes Ollama distinctive is the combination of SF Pro Rounded (Apple's roun
 - "Design a navigation bar: transparent background, no border. Ollama logo on the left, 3 text links (Pure Black, 16px, weight 400), pill search input in the center, 'Sign in' text link and black pill 'Download' button on the right."
 
 ### Iteration Guide
-1. Focus on ONE component at a time
-2. Keep all values grayscale — "Stone (#737373)" not "use a light color"
-3. Always specify pill (9999px) or container (12px) radius — nothing in between
-4. Shadows are always zero — never add them
-5. Weight is always 400 or 500 — never bold
-6. If something feels too decorated, remove it — less is always more for Ollama
+1. 一次只聚焦 ONE component
+2. 所有值保持 grayscale——写 "Stone (#737373)"，不要写 "use a light color"
+3. 始终指定 pill (9999px) 或 container (12px) radius——不存在中间值
+4. Shadows 永远为 zero——绝不添加
+5. Weight 永远是 400 或 500——绝不 bold
+6. 如果某个东西感觉装饰过多，就移除它——对 Ollama 来说，less is always more

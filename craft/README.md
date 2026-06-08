@@ -1,27 +1,20 @@
 # Craft references
 
-Brand-agnostic craft knowledge. Each file is a small, dense rulebook on one
-dimension of professional UI craft (typography, color, motion, …). Skills
-opt into the references they need; the daemon injects only the requested
-ones into the system prompt above the active skill body.
+Brand-agnostic craft knowledge。每个文件都是围绕 professional UI craft 某一维度（typography、color、motion 等）的小而密的 rulebook。Skills 会 opt into 自己需要的 references；daemon 只会把被请求的内容注入到 active skill body 上方的 system prompt。
 
-## Why a third axis next to `skills/` and `design-systems/`
+## 为什么在 `skills/` 和 `design-systems/` 旁边需要第三条轴
 
 | Axis | Scope | Example |
 |---|---|---|
 | `skills/` | Artifact shape | `saas-landing`, `dashboard`, `pricing-page` |
-| `design-systems/` | Brand visual language (the 9-section `DESIGN.md`) | `linear-app`, `apple`, `notion` |
-| `craft/` | **Universal** craft knowledge — true regardless of brand | letter-spacing rules, accent-overuse caps, anti-AI-slop |
+| `design-systems/` | Brand visual language（9-section `DESIGN.md`） | `linear-app`, `apple`, `notion` |
+| `craft/` | **Universal** craft knowledge，不随 brand 改变 | letter-spacing rules, accent-overuse caps, anti-AI-slop |
 
-`DESIGN.md` tells the agent which colors and fonts a brand uses. `craft/`
-tells the agent the universal rules a competent designer applies on top —
-e.g. ALL CAPS always needs ≥0.06em tracking, regardless of the brand.
+`DESIGN.md` 告诉 agent 某个 brand 使用哪些 colors 和 fonts。`craft/` 告诉 agent 有能力的 designer 会叠加的 universal rules。例如 ALL CAPS 无论 brand 如何都需要 ≥0.06em tracking。
 
-## How a skill opts in
+## Skill 如何 opt in
 
-Add an `od.craft.requires` array to the skill's front-matter. Only the
-listed sections are injected, so a skill that needs only typography pays
-no token cost for color/motion content.
+在 skill front-matter 中添加 `od.craft.requires` array。只注入列出的 sections，因此只需要 typography 的 skill 不会为 color/motion 内容支付 token cost。
 
 ```yaml
 od:
@@ -29,8 +22,7 @@ od:
     requires: [typography, color, anti-ai-slop]
 ```
 
-Use the layered stack for editorial skills that require authored hierarchy
-and sustained reading behavior:
+对于需要 authored hierarchy 和持续阅读行为的 editorial skills，使用 layered stack：
 
 ```yaml
 od:
@@ -38,59 +30,43 @@ od:
     requires: [typography, typography-hierarchy, typography-hierarchy-editorial]
 ```
 
-Allowed values match the file names in this directory minus the `.md`
-extension. Unknown values are silently ignored (forward-compatible).
+Allowed values 与本目录中的文件名一致，但去掉 `.md` extension。Unknown values 会被静默忽略（forward-compatible）。
 
-### Why silent fallback instead of fail-fast?
+### 为什么 silent fallback 而不是 fail-fast？
 
-A skeptical reader will ask: "If a skill requests a planned-but-not-yet-vendored
-section and the corresponding file doesn't exist yet, shouldn't we warn
-the user?" We chose forward-compatibility over fail-fast: a skill
-authored today can list a planned slug and start benefiting the moment
-the matching `craft/<slug>.md` is vendored in a follow-up PR, with no
-skill edit needed. The cost of a missed reference is a missing
-paragraph in the system prompt, not a broken skill — so the loud
-failure mode is not worth the friction.
+挑剔的读者会问：“如果 skill 请求了 planned-but-not-yet-vendored section，而对应文件还不存在，难道不应该警告用户吗？”我们选择 forward-compatibility，而不是 fail-fast：今天编写的 skill 可以列出 planned slug，并在后续 PR vendored 对应 `craft/<slug>.md` 的那一刻自动受益，无需修改 skill。Missing reference 的代价只是 system prompt 少了一段，而不是 broken skill；因此 loud failure mode 不值得增加摩擦。
 
-Note for skill authors arriving from older guidance: an earlier draft
-used `motion` as the future-slug placeholder. The shipped equivalent
-today is `animation-discipline`. Use that one if your skill emits
-motion.
+给从旧 guidance 过来的 skill authors 的说明：早期草稿曾用 `motion` 作为 future-slug placeholder。今天 shipped equivalent 是 `animation-discipline`。如果你的 skill 会 emit motion，请使用它。
 
 ### Enforcement levels
 
-Craft files mix auto-checked rules and guidance.
+Craft files 混合 auto-checked rules 和 guidance。
 
-- **Auto-checked.** Rules wired into `apps/daemon/src/lint-artifact.ts` — currently the P0 list in `anti-ai-slop.md` (Tailwind-indigo accent, two-stop hero gradients, emoji-as-icons, etc.). The linter reports these as findings back to the UI (for P0/P1 badges) and to the agent (as a system reminder for self-correction). Artifact persistence is not currently hard-blocked on P0 hits.
-- **Guidance.** The rest. The agent reads the rules, reviewers apply them, the linter doesn't check them.
+- **Auto-checked.** 接入 `apps/daemon/src/lint-artifact.ts` 的 rules，目前是 `anti-ai-slop.md` 中的 P0 list（Tailwind-indigo accent、two-stop hero gradients、emoji-as-icons 等）。Linter 会将这些作为 findings 回传给 UI（用于 P0/P1 badges）和 agent（作为 self-correction 的 system reminder）。Artifact persistence 目前不会因 P0 hits 被 hard-block。
+- **Guidance.** 其余内容。Agent 读取规则，reviewers 应用规则，linter 不检查它们。
 
-A purely behavioral craft file (state-coverage, animation-discipline) is guidance unless a specific rule is later promoted into `lint-artifact.ts`.
+纯 behavioral craft file（state-coverage、animation-discipline）默认是 guidance，除非后续将某条具体 rule 提升到 `lint-artifact.ts`。
 
 ## Files
 
 | File | Section name | When to require |
 |---|---|---|
-| `typography.md` | `typography` | Any skill that emits typed content (~all skills) |
-| `typography-hierarchy.md` | `typography-hierarchy` | Any skill that emits typed content where hierarchy must feel authored, not assembled — especially surfaces with a strong entry point, varied levels, or intentional rhythm. Compose with `typography`. |
-| `typography-hierarchy-editorial.md` | `typography-hierarchy-editorial` | Skills whose primary artifact is a sustained reading surface: `blog-post`, `docs-page`, `digital-eguide`. Requires `typography` + `typography-hierarchy`. |
-| `color.md` | `color` | Any skill that emits styled output (~all skills) |
-| `anti-ai-slop.md` | `anti-ai-slop` | Marketing pages, landing pages, decks |
-| `state-coverage.md` | `state-coverage` | Any skill with stateful UI (dashboards, mobile apps, forms, list/table views) |
-| `animation-discipline.md` | `animation-discipline` | Any skill that ships motion: mobile apps, multi-screen flows, gamified UI, transitions, microinteractions |
-| `accessibility-baseline.md` | `accessibility-baseline` | Any skill that ships interactive UI: dashboards, forms, mobile flows, anything with focus/labels/keyboard paths |
-| `rtl-and-bidi.md` | `rtl-and-bidi` | Any skill that ships localized text or layout: blogs, docs, financial tables, mobile apps, anything that may render Arabic / Hebrew / Persian |
-| `form-validation.md` | `form-validation` | Any skill whose primary artifact contains an interactive form: lead capture, sign-in, signup, settings, multi-step intake |
-| `laws-of-ux.md` | `laws-of-ux` | Any skill whose composition decisions hit named cognitive limits: pricing pages (Hick's, Choice Overload, Von Restorff), dashboards (Pareto, Selective Attention, Working Memory), onboarding (Goal-Gradient, Zeigarnik, Peak-End), modals (Fitts's, Tesler's). Sibling axis to the rendering-rule files above — covers what to compose, not how to render. |
+| `typography.md` | `typography` | 任何 emit typed content 的 skill（约等于所有 skills） |
+| `typography-hierarchy.md` | `typography-hierarchy` | 任何 emit typed content 且 hierarchy 必须像被创作而非拼装出来的 skill，尤其是有强 entry point、多层级或有意 rhythm 的 surfaces。与 `typography` 组合使用。 |
+| `typography-hierarchy-editorial.md` | `typography-hierarchy-editorial` | Primary artifact 是持续阅读 surface 的 skills：`blog-post`、`docs-page`、`digital-eguide`。需要 `typography` + `typography-hierarchy`。 |
+| `color.md` | `color` | 任何 emit styled output 的 skill（约等于所有 skills） |
+| `anti-ai-slop.md` | `anti-ai-slop` | Marketing pages、landing pages、decks |
+| `state-coverage.md` | `state-coverage` | 任何带 stateful UI 的 skill（dashboards、mobile apps、forms、list/table views） |
+| `animation-discipline.md` | `animation-discipline` | 任何 ship motion 的 skill：mobile apps、multi-screen flows、gamified UI、transitions、microinteractions |
+| `accessibility-baseline.md` | `accessibility-baseline` | 任何 ship interactive UI 的 skill：dashboards、forms、mobile flows、任何带 focus/labels/keyboard paths 的内容 |
+| `rtl-and-bidi.md` | `rtl-and-bidi` | 任何 ship localized text 或 layout 的 skill：blogs、docs、financial tables、mobile apps，以及任何可能渲染 Arabic / Hebrew / Persian 的内容 |
+| `form-validation.md` | `form-validation` | Primary artifact 包含 interactive form 的任何 skill：lead capture、sign-in、signup、settings、multi-step intake |
+| `laws-of-ux.md` | `laws-of-ux` | Composition decisions 命中 named cognitive limits 的任何 skill：pricing pages（Hick's、Choice Overload、Von Restorff）、dashboards（Pareto、Selective Attention、Working Memory）、onboarding（Goal-Gradient、Zeigarnik、Peak-End）、modals（Fitts's、Tesler's）。它是上述 rendering-rule files 的 sibling axis，覆盖“组合什么”，而不是“如何渲染”。 |
 
-**Partial-stateful skills.** A skill that's mostly static but contains an embedded form, data table, or query surface should opt in. State-coverage rules apply to the stateful component, not the whole page.
+**Partial-stateful skills.** 大部分静态但包含 embedded form、data table 或 query surface 的 skill 应 opt in。State-coverage rules 作用于 stateful component，而不是整个页面。
 
-More sections (`icons`, `craft-details`) will be added in follow-up
-PRs as we wire the linter side.
+后续 PR 会在我们接入 linter side 时添加更多 sections（`icons`、`craft-details`）。
 
 ## Attribution
 
-Craft content is adapted from the MIT-licensed
-[refero_skill](https://github.com/referodesign/refero_skill) project
-(© Refero Design), with edits to fit Open Design's house style and link
-back to OD's design tokens (`var(--accent)` etc.) instead of generic
-Tailwind hex values.
+Craft content 改编自 MIT-licensed [refero_skill](https://github.com/referodesign/refero_skill) project（© Refero Design），并经过调整，以适配 Open Design 的 house style，并链接回 OD 的 design tokens（`var(--accent)` 等），而不是 generic Tailwind hex values。

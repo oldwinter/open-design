@@ -6,26 +6,26 @@ Accepted
 
 ## Context
 
-The `od` CLI serves two different roles: it can start the local daemon, and it can act as a thin client for commands such as `od media generate`. Client commands should talk to an already-running daemon and should not evaluate daemon startup code.
+`od` CLI 有两个不同角色：它可以启动 local daemon，也可以作为 `od media generate` 等 commands 的 thin client。Client commands 应该与 already-running daemon 通信，不应 evaluate daemon startup code。
 
-Previously, `apps/daemon/src/cli.ts` statically imported `server.ts`. Because ES modules execute top-level code during import, client-only commands also evaluated daemon startup globals, including `OD_DATA_DIR` resolution. A bad runtime data directory could therefore fail media generation before the CLI even sent its HTTP request.
+此前，`apps/daemon/src/cli.ts` 静态 import 了 `server.ts`。由于 ES modules 会在 import 时执行 top-level code，client-only commands 也会 evaluate daemon startup globals，包括 `OD_DATA_DIR` resolution。错误的 runtime data directory 可能因此在 CLI 发送 HTTP request 之前就让 media generation 失败。
 
-The daemon sidecar also started the server directly, so startup behavior was split between the human CLI path and the sidecar path.
+Daemon sidecar 也会直接启动 server，因此 startup behavior 被拆在 human CLI path 和 sidecar path 两边。
 
 ## Decision
 
-Introduce a shared daemon startup orchestrator used by both human CLI daemon mode and daemon sidecar startup.
+引入 shared daemon startup orchestrator，由 human CLI daemon mode 和 daemon sidecar startup 共用。
 
-`server.ts` remains the low-level server construction primitive. The startup orchestrator owns product startup concerns such as parsing daemon CLI options, invoking `startServer({ returnServer: true })`, shared HTTP shutdown, optional browser opening, and signal handling for CLI daemon mode.
+`server.ts` 仍然是 low-level server construction primitive。Startup orchestrator 拥有 product startup concerns，例如解析 daemon CLI options、调用 `startServer({ returnServer: true })`、shared HTTP shutdown、optional browser opening，以及 CLI daemon mode 的 signal handling。
 
-Client-only CLI commands must not import `server.ts`.
+Client-only CLI commands 不得 import `server.ts`。
 
 ## Alternatives considered
 
-- CLI-only lazy import: this fixes the immediate media failure, but leaves daemon startup behavior duplicated between CLI and sidecar paths.
-- Keep sidecar directly calling `startServer`: this preserves the old split ownership and makes future startup changes easier to apply inconsistently.
-- Extract all server runtime context from `server.ts`: this is a stronger boundary, but broader than needed for the current bug and can be done later if more top-level startup side effects leak.
+- CLI-only lazy import：能修复眼前 media failure，但 daemon startup behavior 仍在 CLI 和 sidecar paths 间重复。
+- 保持 sidecar 直接调用 `startServer`：保留旧的 split ownership，让未来 startup changes 更容易不一致地应用。
+- 从 `server.ts` 提取所有 server runtime context：这是更强的 boundary，但超出当前 bug 所需；如果以后更多 top-level startup side effects 泄漏，可以再做。
 
 ## Consequences
 
-Client commands can fail only on their own client concerns or daemon responses, not on daemon startup filesystem checks. CLI and sidecar startup now share the same server start/stop mechanics, while route tests can continue using `startServer` directly.
+Client commands 只会因自身 client concerns 或 daemon responses 失败，而不会因 daemon startup filesystem checks 失败。CLI 和 sidecar startup 现在共享同一套 server start/stop mechanics，同时 route tests 仍可直接使用 `startServer`。

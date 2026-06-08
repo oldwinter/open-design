@@ -1,8 +1,8 @@
-# Architecture
+# 架构
 
-**Parent:** [`spec.md`](spec.md) · **Siblings:** [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
+**父文档：** [`spec.md`](spec.md) · **同级文档：** [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
 
-This doc describes the system topology, runtime modes, data flow, and file layout. Design rationale lives in [`spec.md`](spec.md); protocol details for skills and agent adapters live in their own docs.
+本文档描述系统 topology、runtime modes、data flow 和 file layout。设计理由见 [`spec.md`](spec.md)；skills 与 agent adapters 的协议细节分别放在各自文档中。
 
 [ocod]: https://github.com/OpenCoworkAI/open-codesign
 [acd]: https://github.com/VoltAgent/awesome-claude-design
@@ -11,31 +11,31 @@ This doc describes the system topology, runtime modes, data flow, and file layou
 
 ---
 
-## 1. Three deployment topologies
+## 1. 三种部署拓扑
 
-OD is a web app plus a local daemon. The split means the same UI can run in three shapes:
+OD 是一个 Web app 加一个本地 daemon。这个拆分让同一套 UI 可以用三种形态运行：
 
-### Topology A — Fully local (the default)
+### Topology A — Fully local（默认）
 
-```
-┌────────────────── user's machine ──────────────────┐
+```text
+┌────────────────── 用户机器 ──────────────────┐
 │                                                    │
 │   browser ──► Next.js dev server (localhost:3000)  │
 │                       │                            │
 │                       │ http://localhost:7456      │
 │                       ▼                            │
-│            od daemon (Node, long-running)         │
+│            od daemon (Node，长驻进程)              │
 │                       │                            │
 │                       ▼                            │
-│            spawns: claude / codex / cursor / …     │
+│            启动: claude / codex / cursor / …       │
 └────────────────────────────────────────────────────┘
 ```
 
-One `pnpm tools-dev run web` starts both the Next.js app and the daemon. `pnpm tools-dev` adds the desktop shell. Zero config. No accounts.
+一条 `pnpm tools-dev run web` 会同时启动 Next.js app 和 daemon。`pnpm tools-dev` 额外启动 desktop shell。零配置，无需账号。
 
 ### Topology B — Web on Vercel + daemon on user's machine
 
-```
+```text
 browser ──► od.yourdomain.com (Vercel)
               │
               │ ws(s):// user-provided URL (e.g. cloudflared tunnel)
@@ -46,35 +46,35 @@ browser ──► od.yourdomain.com (Vercel)
         spawns: claude / codex / …
 ```
 
-The user runs `od daemon --expose` which prints a tunnel URL; they paste the URL into the deployed web app's "Connect daemon" screen. Daemon holds secrets; Vercel holds nothing sensitive.
+用户运行 `od daemon --expose`，它会打印一个 tunnel URL；用户把该 URL 粘贴到部署版 Web app 的 “Connect daemon” 页面。Daemon 持有 secrets；Vercel 不持有敏感信息。
 
-### Topology C — Web on Vercel + direct API (no daemon)
+### Topology C — Web on Vercel + direct API（无 daemon）
 
-```
+```text
 browser ──► od.yourdomain.com (Vercel serverless)
                        │
                        ▼
               Anthropic Messages API (BYOK stored in browser)
 ```
 
-No local CLI, no daemon. Degraded experience — no Claude Code skills, no filesystem artifacts (stored in IndexedDB), no PPTX export. But it's the "just try it" path. Keys stored `localStorage` with explicit warning.
+无本地 CLI、无 daemon。体验降级：没有 Claude Code skills，没有 filesystem artifacts（存入 IndexedDB），没有 PPTX export。但这是 “just try it” 路径。Keys 存在 `localStorage`，并显示明确 warning。
 
-The three topologies share the same web bundle; the difference is which transports are enabled.
+三种 topology 共享同一个 Web bundle；差别只是启用哪些 transports。
 
-## 2. Component diagram (logical)
+## 2. 组件图（逻辑视图）
 
-```
+```text
 ┌─────────────────────────────── Web App ─────────────────────────────┐
 │                                                                     │
 │  ┌──────────┐  ┌─────────────┐  ┌───────────┐  ┌────────────────┐  │
-│  │ chat pane│  │ artifact    │  │ preview   │  │ comment /      │  │
+│  │ chat 面板│  │ artifact    │  │ preview   │  │ comment /      │  │
 │  │          │  │ tree        │  │ iframe    │  │ slider overlay │  │
 │  └────┬─────┘  └──────┬──────┘  └─────┬─────┘  └────────┬───────┘  │
 │       │               │               │                  │           │
-│       └─────────── session bus (in-memory) ──────────────┘           │
+│       └─────────── session bus（内存中）──────────────┘              │
 │                        │                                             │
 │                        ▼                                             │
-│              Transport layer (daemon SSE | api-direct | browser)      │
+│              Transport layer（daemon SSE | api-direct | browser）     │
 └─────────────────────────┬───────────────────────────────────────────┘
                           │
   ┌───────────────────────┴────────────────────────────────┐
@@ -100,170 +100,173 @@ The three topologies share the same web bundle; the difference is which transpor
 └──────────────┘
 ```
 
-## 3. Key components
+## 3. 关键组件
 
 ### 3.1 Web app (Next.js 16, App Router)
 
-- **Why Next.js, not Vite SPA?** We want SSR for the marketing landing page + serverless routes for Topology C's direct-API path + Vercel deployment as a first-class citizen. An SPA would need a separate server for any of that.
-- **State:** React/browser state for UI config, with projects/conversations/files hydrated from the daemon APIs.
-- **Iframe preview:** Vendored React 18 + Babel standalone for JSX artifacts, following [Open CoDesign][ocod]'s approach. HTML artifacts load raw. See [§5](#5-preview-renderer).
-- **Comment mode:** Click captures `[data-od-id]` on preview DOM, opens a popover, sends `{artifact_id, element_id, note}` to daemon → agent gets a surgical edit instruction.
-- **Slider UI:** When an agent emits a "tweak parameter" tool call (see [`skills-protocol.md`](skills-protocol.md) §4.2), the web app renders a live-update control that re-sends parameterized prompts without round-tripping the chat.
+- **为什么是 Next.js，而不是 Vite SPA？** 我们需要 marketing landing page 的 SSR、Topology C direct-API path 的 serverless routes，以及一等 Vercel deployment。SPA 要做到这些会需要单独 server。
+- **State:** UI config 使用 React/browser state；projects/conversations/files 从 daemon APIs hydrate。
+- **Iframe preview:** JSX artifacts 使用 vendored React 18 + Babel standalone，沿用 [Open CoDesign][ocod] 的方式。HTML artifacts 直接加载 raw HTML。见 [§5](#5-preview-renderer)。
+- **Comment mode:** 点击 preview DOM 上的 `[data-od-id]`，打开 popover，把 `{artifact_id, element_id, note}` 发送给 daemon → agent 获得 surgical edit instruction。
+- **Slider UI:** 当 agent 发出 “tweak parameter” tool call（见 [`skills-protocol.md`](skills-protocol.md) §4.2）时，Web app 渲染一个 live-update control，用参数化 prompts 重新发送，不绕 chat。
 
 ### 3.2 Local daemon (`od daemon`)
 
-Single binary via `pkg` or a thin Node script distributed over npm. Responsibilities:
+通过 `pkg` 打成单 binary，或通过 npm 分发一层很薄的 Node script。职责：
 
-- Listen on `http://localhost:7456` by default. Accept REST/SSE routes under `/api/*`.
-- Maintain a **session** per web tab. Sessions hold: active agent, active skill, active artifact, in-flight tool calls, design-system reference.
-- Operate the **agent adapter pool**: one detected CLI = one adapter instance, reused across sessions.
-- Scan and index **skills** from `~/.claude/skills/`, `./skills/`, `./.claude/skills/` on startup and on FS-watch events.
-- Own the **artifact store** — writes files to disk, never in memory.
-- Run the **preview compile pipeline** (Babel transform for JSX, CSS inliner for HTML exports).
-- Provide export hooks for HTML/PDF/ZIP and skill-defined deck outputs.
+- 默认监听 `http://localhost:7456`。接受 `/api/*` 下的 REST/SSE routes。
+- 为每个 Web tab 维护一个 **session**。Session 持有：active agent、active skill、active artifact、in-flight tool calls、design-system reference。
+- 运行 **agent adapter pool**：一个检测到的 CLI = 一个 adapter instance，可跨 sessions 复用。
+- 启动时和 FS-watch events 时，扫描并索引来自 `~/.claude/skills/`、`./skills/`、`./.claude/skills/` 的 **skills**。
+- 拥有 **artifact store**：把文件写入磁盘，不写入内存。
+- 运行 **preview compile pipeline**（JSX 的 Babel transform、HTML exports 的 CSS inliner）。
+- 为 HTML/PDF/ZIP 和 skill-defined deck outputs 提供 export hooks。
 
 ### 3.3 Agent adapter pool
 
-See [`agent-adapters.md`](agent-adapters.md) for the full interface. Each adapter:
+完整 interface 见 [`agent-adapters.md`](agent-adapters.md)。每个 adapter：
 
-1. **Detects** its target CLI (PATH lookup + config-dir probe).
-2. **Spawns** the CLI with a standardized wrapper prompt + skill context + design-system context + CWD set to the project's artifact root.
-3. **Streams** stdout/stderr as structured events (JSON Lines if the CLI supports it; line-based parser otherwise).
-4. **Reports capabilities** — does it support multi-turn? Surgical edits? Native skill loading? Tool use?
+1. **检测**目标 CLI（PATH lookup + config-dir probe）。
+2. **启动** CLI，并传入标准 wrapper prompt + skill context + design-system context + CWD（设置为 project artifact root）。
+3. **流式转换** stdout/stderr 为 structured events（如果 CLI 支持 JSON Lines 就用它，否则用 line-based parser）。
+4. **报告 capabilities**：是否支持 multi-turn？Surgical edits？Native skill loading？Tool use？
 
 ### 3.4 Skill registry
 
-See [`skills-protocol.md`](skills-protocol.md). Scans three locations and merges:
+见 [`skills-protocol.md`](skills-protocol.md)。扫描三个位置并合并：
 
-| Source | Priority | Purpose |
+| 来源 | 优先级 | 用途 |
 |---|---|---|
-| `./.claude/skills/` | highest | project-private skills |
-| `./skills/` | medium | project-declared skills |
-| `~/.claude/skills/` | lowest | user-global skills |
+| `./.claude/skills/` | 最高 | project-private skills |
+| `./skills/` | 中 | project-declared skills |
+| `~/.claude/skills/` | 最低 | user-global skills |
 
-Conflicts resolve by priority (higher wins). Each skill parsed once; watched for changes in dev.
+冲突按 priority 解决（高者胜出）。每个 skill 只解析一次；dev 模式下 watch changes。
 
 ### 3.5 Design-system resolver
 
-- Looks for `./DESIGN.md` first, then `./design-system/DESIGN.md`, then user-configured path.
-- Parses the 9-section format (see [awesome-claude-design][acd] schema).
-- Injects as a prepended system message on every agent run, plus as a `{{ design_system }}` template variable skills can reference.
-- Hot-reloads on file change in dev.
+- 优先查找 `./DESIGN.md`，其次 `./design-system/DESIGN.md`，再查用户配置路径。
+- 解析 9-section format（见 [awesome-claude-design][acd] schema）。
+- 在每次 agent run 中作为 prepended system message 注入，同时作为 skills 可引用的 `{{ design_system }}` template variable。
+- Dev 模式下文件变化时 hot reload。
 
 ### 3.6 Artifact store
 
-Plain files on disk. Conventional layout per project:
+磁盘上的普通文件。每个 project 使用约定布局：
 
-```
+```text
 ./.od/
 ├── config.json                  # project-level daemon config
 ├── artifacts/
 │   ├── 2026-04-24T10-03-12-landing/
-│   │   ├── artifact.json        # metadata (skill, mode, prompt, parent)
-│   │   ├── index.html           # primary output (or .jsx, .md, .pptx.json)
-│   │   └── assets/              # skill-generated images, fonts, etc.
+│   │   ├── artifact.json        # metadata（skill、mode、prompt、parent）
+│   │   ├── index.html           # 主输出（或 .jsx、.md、.pptx.json）
+│   │   └── assets/              # skill 生成的图片、字体等
 │   └── …
-├── history.jsonl                # append-only action log (generations, edits, comments)
+├── history.jsonl                # append-only action log（generations、edits、comments）
 └── sessions/
-    └── <session-id>.json        # transient; garbage-collected after 24h
+    └── <session-id>.json        # 临时状态；24 小时后垃圾回收
 ```
 
-Rationale:
-- **Plain files** → users can `git add ./.od/artifacts/` and review designs in PRs.
-- **`artifact.json` metadata** → OD can reconstruct the artifact tree without a DB.
-- **`history.jsonl` not SQLite** → append-only, git-friendly, greppable. [Open CoDesign][ocod] uses SQLite; we deliberately don't.
-- **Sessions separate from artifacts** → sessions are ephemeral UI state; artifacts are durable.
+理由：
+
+- **Plain files** → 用户可以 `git add ./.od/artifacts/`，并在 PR 中 review designs。
+- **`artifact.json` metadata** → OD 无需 DB 也能重建 artifact tree。
+- **`history.jsonl` 而非 SQLite** → append-only、git-friendly、可 grep。[Open CoDesign][ocod] 使用 SQLite；我们有意不用。
+- **Sessions 与 artifacts 分开** → sessions 是 ephemeral UI state；artifacts 是 durable。
 
 ### 3.7 Export pipeline
 
-| Format | How |
+| 格式 | 实现方式 |
 |---|---|
-| HTML (self-contained) | Inline all CSS, rewrite asset URLs to data: URIs |
-| PDF | `puppeteer` → `page.pdf()` on the rendered HTML |
-| PPTX | `deck-skill` outputs a JSON intermediate (`slides.json`); `pptxgenjs` generates the `.pptx` |
-| ZIP | `archiver` over `artifacts/<id>/` |
-| Markdown | direct copy if artifact is `.md`, otherwise skill-defined render |
+| HTML（自包含） | 内联所有 CSS，并把 asset URL 改写为 data: URIs |
+| PDF | `puppeteer` → 对渲染后的 HTML 调用 `page.pdf()` |
+| PPTX | `deck-skill` 输出 JSON 中间格式（`slides.json`）；`pptxgenjs` 生成 `.pptx` |
+| ZIP | 对 `artifacts/<id>/` 运行 `archiver` |
+| Markdown | 如果 artifact 是 `.md` 则直接复制；否则使用 skill-defined render |
 
-## 4. Data flow — a typical "generate prototype" turn
+## 4. 数据流 — 一次典型的 “generate prototype” turn
 
-```
-1. User types prompt in web chat.
-2. Web sends { method: "session.generate", params: {
+```text
+1. 用户在 Web chat 中输入 prompt。
+2. Web 通过 WS 向 daemon 发送 { method: "session.generate", params: {
         sessionId, prompt, modeHint: "prototype"
-   }} to daemon via WS.
+   }}。
 
 3. Daemon:
-     a. picks active skill (prototype-skill)
-     b. loads design-system (DESIGN.md)
-     c. materializes a new artifact dir under ./.od/artifacts/<slug>/
-     d. invokes agent adapter with:
-          - system: skill's SKILL.md contents + DESIGN.md
-          - user: original prompt
-          - cwd: the new artifact dir
-     e. streams agent events back to web as they arrive:
+     a. 选择 active skill（prototype-skill）
+     b. 加载 design-system（DESIGN.md）
+     c. 在 ./.od/artifacts/<slug>/ 下 materialize 新 artifact dir
+     d. 调用 agent adapter，传入：
+          - system: skill 的 SKILL.md 内容 + DESIGN.md
+          - user: 原始 prompt
+          - cwd: 新 artifact dir
+     e. 随 agent events 到达，stream 回 web：
           - "tool_call" (edit file, write file, read file)
           - "text_delta"
           - "thinking" (if supported)
 
-4. Web shows:
-     - running tool-call feed in the side panel
-     - artifact tree updates as files materialize
-     - preview iframe loads the primary output file when agent signals "done"
-     - slider/comment overlay activates once preview loads
+4. Web 展示：
+     - side panel 中持续更新的 tool-call feed
+     - 文件 materialize 时更新 artifact tree
+     - agent 发出 "done" 后，preview iframe 加载主输出文件
+     - preview 加载后激活 slider/comment overlay
 
-5. On completion, daemon appends:
+5. 完成后，daemon 追加：
      { ts, sessionId, artifactId, action: "generate", skill, promptHash }
-   to history.jsonl.
+   到 history.jsonl。
 
-6. User comments on an element → web sends { method: "session.refine", params: {
+6. 用户评论某个元素 → web 发送 { method: "session.refine", params: {
         sessionId, artifactId, elementId, note }}
 
-7. Daemon re-invokes agent with surgical-edit instruction + the note.
-   Adapter translates based on capabilities:
-     - Claude Code → native tool loop, edits that region only
-     - Codex → regenerates the file with "only change element X" constraint
-     - API fallback → same as Codex path
+7. Daemon 带着 surgical-edit instruction + note 重新调用 agent。
+   Adapter 根据 capabilities 转换：
+     - Claude Code → native tool loop，只编辑该区域
+     - Codex → 带 "only change element X" constraint 重新生成文件
+     - API fallback → 与 Codex path 相同
 ```
 
 ## 5. Preview renderer
 
-**Constraints:**
-- Must isolate artifact code from the host app (no access to window, cookies, parent DOM).
-- Must hot-reload as the agent streams writes.
-- Must support both static HTML and JSX artifacts.
+**约束：**
 
-**Design:**
-- Always an `<iframe sandbox="allow-scripts">` — no `allow-same-origin`.
-- Static HTML: `srcdoc` load of the inlined artifact.
-- JSX: inject a small bootstrap that imports vendored React 18 + Babel standalone, then dynamically evals the JSX as Babel-transformed code. (This is what [Open CoDesign][ocod] does, and it works; no reason to reinvent.)
-- Agent writes trigger a debounced rebuild + iframe `srcdoc` replace. Full reload each time — React state loss is acceptable at this scope.
+- 必须隔离 artifact code 与 host app（不能访问 window、cookies、parent DOM）。
+- 必须在 agent 流式写入时 hot-reload。
+- 必须同时支持 static HTML 和 JSX artifacts。
 
-## 6. Config files
+**设计：**
 
-| File | Purpose |
+- 始终使用 `<iframe sandbox="allow-scripts">`，不加 `allow-same-origin`。
+- Static HTML：把 inlined artifact 作为 `srcdoc` 加载。
+- JSX：注入小 bootstrap，引入 vendored React 18 + Babel standalone，然后把 JSX 经 Babel transform 后动态 eval。（这就是 [Open CoDesign][ocod] 的做法，而且可行；没有必要重造。）
+- Agent 写文件触发 debounced rebuild + iframe `srcdoc` replace。每次 full reload；在这个 scope 下 React state loss 可以接受。
+
+## 6. 配置文件
+
+| 文件 | 用途 |
 |---|---|
-| `~/.open-design/config.toml` | daemon-global: default agent preference, keys (optional, BYOK), telemetry opt-in (default off) |
+| `~/.open-design/config.toml` | daemon-global：默认 agent preference、keys（可选，BYOK）、telemetry opt-in（默认 off） |
 | `~/.open-design/agents.json` | cached agent detection results |
-| `./.od/config.json` | project-local: active design system, preferred skills, preferred mode |
-| `./skills/<skill>/SKILL.md` | skill manifest (standard Claude Code format) |
-| `./DESIGN.md` | active design system ([awesome-claude-design][acd] format) |
+| `./.od/config.json` | project-local：active design system、preferred skills、preferred mode |
+| `./skills/<skill>/SKILL.md` | skill manifest（standard Claude Code format） |
+| `./DESIGN.md` | active design system（[awesome-claude-design][acd] format） |
 
-All config is plain text / TOML / JSON — no binary formats, no sqlite. Reviewable in PRs.
+所有 config 都是 plain text / TOML / JSON；没有 binary formats，没有 sqlite。可以在 PR 中 review。
 
-## 7. Protocol between web and daemon
+## 7. Web 与 daemon 之间的协议
 
-The shipped daemon uses HTTP routes plus Server-Sent Events for streaming chat output. This keeps the browser on the same `/api/*` surface in dev and production while still allowing incremental agent output.
+已发布的 daemon 使用 HTTP routes 加 Server-Sent Events 来 stream chat output。这让浏览器在 dev 和 production 中都使用同一套 `/api/*` surface，同时仍能接收增量 agent output。
 
-Representative API surface:
+代表性 API surface：
 
-```
+```text
 GET  /api/health
 GET  /api/agents
 GET  /api/skills
 GET  /api/design-systems
 GET  /api/projects
 POST /api/projects
-POST /api/import/folder                    # see Folder import
+POST /api/import/folder                    # 见 Folder import
 GET  /api/projects/:id/files
 POST /api/projects/:id/upload
 POST /api/chat              -> text/event-stream
@@ -272,137 +275,49 @@ POST /api/artifacts/save
 
 ### Folder import
 
-`POST /api/import/folder` creates a project rooted at an existing local
-folder instead of the default `.od/projects/<id>/`. The submitted
-`baseDir` is stored on `metadata.baseDir` and OD reads / writes directly
-inside it — there is no copy or shadow tree. The user owns the workspace
-and is responsible for their own version control (git, time machine,
-etc.), mirroring how Cursor / Claude Code / Aider behave.
+`POST /api/import/folder` 会创建一个 project，其 root 是已有本地文件夹，而不是默认的 `.od/projects/<id>/`。提交的 `baseDir` 存在 `metadata.baseDir`，OD 直接在其中读写；没有 copy，也没有 shadow tree。用户拥有该 workspace，并负责自己的 version control（git、Time Machine 等），这和 Cursor / Claude Code / Aider 的行为一致。
 
-Safety:
+安全性：
 
-- The submitted `baseDir` is canonicalized via `realpath()` before
-  storage, so user-controlled symlinks cannot redirect later writes.
-- Standard `resolveSafe` / `sanitizePath` checks apply on every write —
-  `metadata.baseDir` only changes the project root, not the bounds check.
-- Imports inside `RUNTIME_DATA_DIR` (the daemon's own data directory) are
-  refused after symlink resolution.
-- The file panel hides the conventional build / install dirs
-  (`node_modules .git dist build .next .nuxt .turbo .cache .output out
-  coverage __pycache__ .venv vendor target .od .tmp`) so the listing
-  stays focused on design content.
+- 提交的 `baseDir` 在存储前会通过 `realpath()` canonicalize，因此用户控制的 symlink 无法重定向后续写入。
+- 每次写入仍应用标准 `resolveSafe` / `sanitizePath` checks；`metadata.baseDir` 只改变 project root，不改变 bounds check。
+- Symlink resolution 后位于 `RUNTIME_DATA_DIR`（daemon 自己的数据目录）内部的 imports 会被拒绝。
+- File panel 会隐藏约定 build / install dirs（`node_modules .git dist build .next .nuxt .turbo .cache .output out coverage __pycache__ .venv vendor target .od .tmp`），让 listing 聚焦在 design content。
 
-Request / response types: `ImportFolderRequest`, `ImportFolderResponse`
-in `@open-design/contracts`.
+Request / response types: `@open-design/contracts` 中的 `ImportFolderRequest`、`ImportFolderResponse`。
 
 #### Desktop folder-import auth (PR #974)
 
-The desktop build adds a privileged `shell.openPath` IPC bridge so the
-"Continue in CLI" / "Finalize design package" buttons can reveal a
-project's working directory in Finder/Explorer. To prevent a
-compromised renderer from abusing that bridge to open arbitrary local
-paths via project-creation laundering, `POST /api/import/folder` is
-fronted by an HMAC gate when the daemon is paired with a desktop:
+Desktop build 添加了 privileged `shell.openPath` IPC bridge，让 “Continue in CLI” / “Finalize design package” 按钮可以在 Finder/Explorer 中 reveal project working directory。为了防止 compromised renderer 通过 project-creation laundering 滥用该 bridge 打开任意本地路径，当 daemon 与 desktop 配对时，`POST /api/import/folder` 前面会加一道 HMAC gate：
 
-- **Trust handshake.** At desktop main-process startup, before the
-  `BrowserWindow` is created, desktop generates a fresh 32-byte secret
-  (`randomBytes(32)`) and registers it with the daemon over the
-  daemon's sidecar IPC (`SIDECAR_MESSAGES.REGISTER_DESKTOP_AUTH`).
-- **Token shape.** When the user picks a folder via the
-  `dialog:pick-and-import` IPC, the desktop main process mints an HMAC
-  token `${nonce}~${expISO}~${signatureB64url}` where
-  `signature = HMAC-SHA256(secret, baseDir + "\n" + nonce + "\n" + exp)`.
-  The token is sent in `X-OD-Desktop-Import-Token` alongside the
-  `POST /api/import/folder` body. Field separator is `~` (not `.`)
-  because ISO 8601 expiries embed `.` and would split the token into
-  four parts.
-- **TTL & replay.** Tokens are single-use: the daemon rejects nonces
-  it has already consumed and prunes them on expiry. TTL is 60s;
-  expiries beyond 2× TTL are also rejected so a compromised desktop
-  cannot mint long-lived tokens against a small TTL contract.
-- **Fail-closed.** Two coordinated mechanisms prevent the gate from
-  silently relaxing when the desktop's registration is in flight or
-  has been lost (daemon restart mid-session, IPC race at startup):
-  - A **sticky in-process flag**: once a secret has ever been
-    registered with this daemon process, the gate stays active for
-    the rest of the process lifetime (a `setDesktopAuthSecret(null)`
-    call from tests does not relax it).
-  - An **orchestrator-pinned mode** via the `OD_REQUIRE_DESKTOP_AUTH=1`
-    env var, set by `tools-dev` / `tools-pack` / `apps/packaged` when
-    the daemon is spawned in a desktop-bundled flow. With the env set,
-    the gate is active from request 0 — a renderer that races to call
-    `/api/import/folder` before the desktop has registered gets a 503
-    `DESKTOP_AUTH_PENDING` (transient, retry).
-- **Web-only deployments are unaffected.** When neither mechanism
-  fires (standalone daemon spawn, no env var, no desktop ever paired),
-  the gate stays dormant and `/api/import/folder` behaves as before.
-  Browser-only builds have no `shell.openPath` surface, so a
-  renderer-named path cannot escalate.
-- **Trusted-picker marker on `openPath`.** Every import that passes
-  the HMAC gate is stamped with `metadata.fromTrustedPicker: true`.
-  The desktop main process's `shell:open-path` IPC refuses
-  folder-imported projects whose metadata lacks this marker — even if
-  a future codepath inadvertently sets `metadata.baseDir` outside the
-  trusted flow, the open-path surface stays closed. `POST /api/projects`
-  and `PATCH /api/projects/:id` reject any client-supplied
-  `fromTrustedPicker` so the marker cannot be smuggled or stripped.
-- **Legacy migration.** Folder-imported projects created before this
-  gate landed have no `fromTrustedPicker` flag. The "Continue in CLI"
-  button will return an error toast for those projects; the user
-  re-imports the same folder via the picker to restore the button.
-- **Daemon restart edge.** If the daemon is restarted while desktop
-  keeps running, the new daemon process will be in `OD_REQUIRE_DESKTOP_AUTH`
-  mode (orchestrator env survives restart) but has no secret registered
-  yet, so the first import after the restart returns `503
-  DESKTOP_AUTH_PENDING`. The desktop runtime catches that response in
-  `dialog:pick-and-import`, re-invokes its registration callback to
-  re-handshake with the new daemon, mints a fresh token (new nonce + new
-  exp — replay protection still works), and retries once. A persistent
-  failure (daemon truly down, IPC socket missing) surfaces in the
-  renderer toast instead of silently dropping. No desktop restart needed.
-- **Headless packaged mode.** The headless entrypoint
-  (`apps/packaged/src/headless.ts`) starts daemon + web only — no
-  Electron, no `shell.openPath` surface, no desktop main process to
-  register a secret. It calls `startPackagedSidecars(...)` with
-  `requireDesktopAuth: false`, which keeps the daemon's gate dormant
-  for that deployment. The Electron entry
-  (`apps/packaged/src/index.ts`) passes `true` because it does start
-  desktop main alongside the daemon.
-- **tools-dev split-start hardening.** `tools-dev start desktop`
-  introspects the running daemon's STATUS over IPC before launching
-  desktop main. The split-start dev sequence
-  `tools-dev start daemon` → `tools-dev start desktop` would
-  otherwise leave the daemon running without
-  `OD_REQUIRE_DESKTOP_AUTH=1` (the env var is only injected when
-  daemon and desktop spawn in the same orchestrator invocation, or
-  when a desktop is already alive at daemon spawn time). When
-  `start desktop` finds an ungated daemon
-  (`desktopAuthGateActive: false` on the new STATUS field), tools-dev
-  stops the daemon (and web, if running), respawns the daemon with
-  the env var pinned, restarts web, and only then launches desktop
-  main. The user sees a single `[tools-dev] daemon is running
-  without desktop-auth gate; restarting daemon (and web, if running)
-  before desktop start` line; in-flight daemon work is interrupted
-  but the gate is guaranteed armed before the BrowserWindow loads.
-  The bundled-targets path (`pnpm tools-dev`) is unaffected — its
-  daemon was already spawned gated by the same-invocation trigger,
-  so the helper is a single STATUS roundtrip with no side effects.
-  Packaged Electron and packaged headless modes are unaffected
-  because their gate state is fixed at packaged-runtime startup.
+- **Trust handshake.** Desktop main-process 启动时，在创建 `BrowserWindow` 之前生成新的 32-byte secret（`randomBytes(32)`），并通过 daemon 的 sidecar IPC（`SIDECAR_MESSAGES.REGISTER_DESKTOP_AUTH`）注册给 daemon。
+- **Token shape.** 用户通过 `dialog:pick-and-import` IPC 选择 folder 时，desktop main process 生成 HMAC token `${nonce}~${expISO}~${signatureB64url}`，其中 `signature = HMAC-SHA256(secret, baseDir + "\n" + nonce + "\n" + exp)`。Token 随 `POST /api/import/folder` body 一起放入 `X-OD-Desktop-Import-Token`。字段分隔符是 `~`（不是 `.`），因为 ISO 8601 expiries 自带 `.`，否则会把 token 拆成四段。
+- **TTL & replay.** Tokens 是 single-use：daemon 拒绝已消费的 nonces，并在过期时 prune。TTL 为 60s；超过 2× TTL 的 expiries 也会被拒绝，避免 compromised desktop 针对小 TTL contract 生成 long-lived tokens。
+- **Fail-closed.** 两个协调机制避免 desktop registration in-flight 或丢失时（daemon restart mid-session、IPC startup race）gate 静默放松：
+  - **Sticky in-process flag**：一旦某个 secret 曾注册到此 daemon process，gate 在该 process 剩余生命周期中保持 active（tests 调用 `setDesktopAuthSecret(null)` 不会放松它）。
+  - **Orchestrator-pinned mode**：通过 `OD_REQUIRE_DESKTOP_AUTH=1` env var，由 `tools-dev` / `tools-pack` / `apps/packaged` 在 desktop-bundled flow 中 spawn daemon 时设置。设置 env 后，gate 从 request 0 开始 active；renderer 如果抢在 desktop 注册前调用 `/api/import/folder`，会得到 503 `DESKTOP_AUTH_PENDING`（transient，可 retry）。
+- **Web-only deployments are unaffected.** 当两个机制都未触发时（standalone daemon spawn、无 env var、从未 paired desktop），gate 保持 dormant，`/api/import/folder` 行为如前。Browser-only builds 没有 `shell.openPath` surface，因此 renderer-named path 无法升级权限。
+- **Trusted-picker marker on `openPath`.** 每个通过 HMAC gate 的 import 都会写上 `metadata.fromTrustedPicker: true`。Desktop main process 的 `shell:open-path` IPC 会拒绝缺少此 marker 的 folder-imported projects；即便未来某条 codepath 意外在 trusted flow 外设置了 `metadata.baseDir`，open-path surface 仍保持关闭。`POST /api/projects` 和 `PATCH /api/projects/:id` 拒绝任何 client-supplied `fromTrustedPicker`，因此 marker 不能被 smuggle 或 strip。
+- **Legacy migration.** 此 gate 落地前创建的 folder-imported projects 没有 `fromTrustedPicker` flag。这些 project 的 “Continue in CLI” 按钮会返回 error toast；用户需要通过 picker 重新 import 同一 folder，以恢复按钮。
+- **Daemon restart edge.** 如果 daemon 在 desktop 仍运行时重启，新 daemon process 会处于 `OD_REQUIRE_DESKTOP_AUTH` mode（orchestrator env 在 restart 后仍存在），但尚未注册 secret，因此 restart 后的第一次 import 返回 `503 DESKTOP_AUTH_PENDING`。Desktop runtime 在 `dialog:pick-and-import` 中捕获该响应，重新触发 registration callback，与新 daemon re-handshake，生成 fresh token（new nonce + new exp，replay protection 仍有效），并 retry 一次。持续失败（daemon 真 down、IPC socket missing）会显示 renderer toast，而不是静默丢弃。不需要重启 desktop。
+- **Headless packaged mode.** Headless entrypoint（`apps/packaged/src/headless.ts`）只启动 daemon + web；没有 Electron，没有 `shell.openPath` surface，也没有 desktop main process 可注册 secret。它调用 `startPackagedSidecars(...)` 时传 `requireDesktopAuth: false`，因此该 deployment 中 daemon gate 保持 dormant。Electron entry（`apps/packaged/src/index.ts`）传 `true`，因为它会和 daemon 一起启动 desktop main。
+- **tools-dev split-start hardening.** `tools-dev start desktop` 在启动 desktop main 前，会通过 IPC introspect 正在运行的 daemon 的 STATUS。Split-start dev sequence `tools-dev start daemon` → `tools-dev start desktop` 否则会让 daemon 在没有 `OD_REQUIRE_DESKTOP_AUTH=1` 的情况下运行（该 env var 只在 daemon 和 desktop 于同一 orchestrator invocation 中 spawn，或 daemon spawn 时 desktop 已经 alive 时注入）。当 `start desktop` 发现 ungated daemon（新 STATUS field 上 `desktopAuthGateActive: false`）时，tools-dev 会停止 daemon（以及运行中的 web），带 env var 重新 spawn daemon，重启 web，然后才启动 desktop main。用户只会看到一行 `[tools-dev] daemon is running without desktop-auth gate; restarting daemon (and web, if running) before desktop start`；in-flight daemon work 会被中断，但 BrowserWindow 加载前 gate 必定已 armed。Bundled-targets path（`pnpm tools-dev`）不受影响，因为 daemon 已经由 same-invocation trigger 以 gated 方式 spawn，所以 helper 只是一次 STATUS roundtrip，无副作用。Packaged Electron 和 packaged headless modes 不受影响，因为它们的 gate state 在 packaged-runtime startup 时就固定。
 
-Shared API contract types live in [`packages/contracts/src`](../packages/contracts/src).
+共享 API contract types 位于 [`packages/contracts/src`](../packages/contracts/src)。
 
-## 8. Deployment
+## 8. 部署
 
-### Local
+### 本地
+
 ```sh
 pnpm install
-pnpm tools-dev run web       # starts daemon + web foreground loop
+pnpm tools-dev run web       # 启动 daemon + web 前台循环
 ```
 
-When a reverse proxy sits in front of the daemon, `/api/*` includes SSE streams and must stay unbuffered. The daemon sends `Cache-Control: no-cache, no-transform` and `X-Accel-Buffering: no`, and also emits SSE comment keepalives, but nginx can still break chunked streams if gzip is enabled. For nginx, set `proxy_buffering off;`, `gzip off;`, and long `proxy_read_timeout` / `proxy_send_timeout` values on the API location. Otherwise browsers can report `net::ERR_INCOMPLETE_CHUNKED_ENCODING 200 (OK)` on long generations.
+如果 daemon 前面有 reverse proxy，`/api/*` 包含 SSE streams，必须保持 unbuffered。Daemon 会发送 `Cache-Control: no-cache, no-transform` 和 `X-Accel-Buffering: no`，也会发送 SSE comment keepalives；但如果 nginx 启用了 gzip，仍可能破坏 chunked streams。对 nginx，请在 API location 上设置 `proxy_buffering off;`、`gzip off;`，以及较长的 `proxy_read_timeout` / `proxy_send_timeout`。否则长时间 generation 时，浏览器可能报 `net::ERR_INCOMPLETE_CHUNKED_ENCODING 200 (OK)`。
 
 ### Docker
+
 ```yaml
 # docker-compose.yml
 services:
@@ -417,44 +332,46 @@ services:
 ```
 
 ### Vercel + local daemon (Topology B)
+
 ```sh
-vercel deploy                     # web only
-od daemon --expose               # user runs locally; prints tunnel URL
-# user pastes URL into /connect UI
+vercel deploy                     # 仅 web
+od daemon --expose               # 用户本地运行；打印 tunnel URL
+# 用户把 URL 粘贴到 /connect UI
 ```
 
 ### Vercel direct (Topology C)
+
 ```sh
-vercel deploy                     # same bundle
-# flip VERCEL env flag OD_MODE=direct to hide daemon-connect UI
+vercel deploy                     # 同一个 bundle
+# 切换 VERCEL env flag OD_MODE=direct，隐藏 daemon-connect UI
 ```
 
-## 9. Security model
+## 9. 安全模型
 
-| Surface | Threat | Mitigation |
+| Surface | 威胁 | 缓解措施 |
 |---|---|---|
-| Daemon HTTP/SSE API | Arbitrary local process talks to daemon | Bind to localhost by default; add auth/tunnel hardening before exposing beyond the machine |
-| Artifact code in preview | XSS/cookie theft from host | `<iframe sandbox="allow-scripts">`, no `allow-same-origin` |
-| Agent running on user's machine | Agent reads/writes outside project | Adapter sets `cwd` to artifact dir; relies on agent's own permission system (Claude Code's `--allowed-tools` etc.) |
-| User secrets | Leak to cloud | BYOK stored only in daemon's `config.toml` (mode 0600) or browser `localStorage` in Topology C, never sent to OD's own servers (we don't have any) |
-| Skill from untrusted source | Malicious skill in `~/.claude/skills/` | Install-time warning; skills run under the agent's permission model, not ours |
-| Vercel web bundle | Compromised build | Standard Vercel integrity; bundle has zero secrets |
+| Daemon HTTP/SSE API | 任意本地进程与 daemon 通信 | 默认 bind 到 localhost；暴露到机器外前增加 auth/tunnel hardening |
+| Artifact code in preview | 从 host 窃取 XSS/cookie | `<iframe sandbox="allow-scripts">`，不加 `allow-same-origin` |
+| Agent running on user's machine | Agent 读写 project 外部内容 | Adapter 把 `cwd` 设为 artifact dir；依赖 agent 自己的 permission system（Claude Code 的 `--allowed-tools` 等） |
+| User secrets | 泄漏到 cloud | BYOK 只存在 daemon 的 `config.toml`（mode 0600）或 Topology C 中的 browser `localStorage`，绝不发送到 OD 自己的 servers（我们没有） |
+| Skill from untrusted source | `~/.claude/skills/` 中有恶意 skill | Install-time warning；skills 在 agent 的 permission model 下运行，不在 OD 自己的权限模型下 |
+| Vercel web bundle | 构建被攻破 | 标准 Vercel integrity；bundle 零 secrets |
 
-We inherit the agent's permission model on purpose — we don't invent our own sandbox, because Claude Code's `--permission-mode` / Codex's sandboxing / Cursor's containment already exist and are maintained.
+我们有意继承 agent 的 permission model，而不是发明自己的 sandbox，因为 Claude Code 的 `--permission-mode`、Codex 的 sandboxing、Cursor 的 containment 已经存在并有人维护。
 
-## 10. Performance notes
+## 10. 性能说明
 
-- Daemon startup: < 500 ms (lazy adapter init).
-- Agent detection: < 200 ms (parallel PATH probes).
-- First generation latency: dominated by agent model time; OD overhead should be < 50 ms.
-- Preview reload: debounced 100 ms on artifact file writes.
-- Skill index: cold scan < 100 ms for ~50 skills; watched with `chokidar`.
+- Daemon startup: < 500 ms（lazy adapter init）。
+- Agent detection: < 200 ms（parallel PATH probes）。
+- First generation latency: 主要由 agent model time 决定；OD overhead 应 < 50 ms。
+- Preview reload: 对 artifact file writes debounce 100 ms。
+- Skill index: 约 50 个 skills 时 cold scan < 100 ms；用 `chokidar` watch。
 
-## 11. What's explicitly out of scope for MVP
+## 11. MVP 明确不包含的范围
 
 - Multi-user / RBAC / orgs
-- Hosted skill marketplace (git URLs only in v1)
-- Figma export (post-1.0, same as [Open CoDesign][ocod])
+- Hosted skill marketplace（v1 只支持 git URLs）
+- Figma export（post-1.0，与 [Open CoDesign][ocod] 相同）
 - Collaborative editing
-- Mobile web support (desktop only in MVP)
-- Offline mode (beyond "the agent is local" — we don't cache model responses)
+- Mobile web support（MVP 只支持 desktop）
+- Offline mode（除了 “agent is local” 之外，我们不 cache model responses）

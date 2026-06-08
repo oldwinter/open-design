@@ -1,18 +1,18 @@
 # Contributing a Skill
 
-**Parent:** [`spec.md`](spec.md) · **Siblings:** [`skills-protocol.md`](skills-protocol.md) · [`architecture.md`](architecture.md) · [`modes.md`](modes.md)
+**父文档：** [`spec.md`](spec.md) · **同级文档：** [`skills-protocol.md`](skills-protocol.md) · [`architecture.md`](architecture.md) · [`modes.md`](modes.md)
 
-> Want to read the protocol spec instead? See [`skills-protocol.md`](skills-protocol.md). This file is the **how-to** for shipping a skill upstream — what to write, how to run it locally, what we'll send back at review.
+> 想直接读 protocol spec？见 [`skills-protocol.md`](skills-protocol.md)。本文是把 skill upstream 的 **how-to**：写什么、如何本地运行、review 时我们会反馈什么。
 
-A skill is the most leverage you can ship into Open Design without writing framework code. One folder, one Markdown file with frontmatter, a hand-built example, and the picker shows it. This guide walks you through the path from `git clone` to merged PR, plus the bar we hold skill PRs to and the patterns that get bounced.
+Skill 是你无需写 framework code 就能给 Open Design 带来最大杠杆的贡献。一个文件夹、一个带 frontmatter 的 Markdown 文件、一个手写 example，picker 就能显示它。本指南带你从 `git clone` 走到 merged PR，并说明 skill PR 的门槛和常见退回模式。
 
-If you only have ten seconds, the picture is:
+如果你只有十秒钟，记住这张图：
 
-> **Drop a folder under `skills/`, restart the daemon, your skill shows up in the picker. The whole rest of this doc is about making that folder good enough to merge.**
+> **把文件夹放到 `skills/` 下，重启 daemon，你的 skill 就会出现在 picker 中。本文剩下的部分都在讲如何让这个文件夹好到可以 merge。**
 
 ---
 
-## 1. Ship a skill in 30 minutes — the happy path
+## 1. 30 分钟交付一个 skill — happy path
 
 ```bash
 # 1. Fork & clone
@@ -43,37 +43,37 @@ git push -u origin skill/<your-skill-name>
 gh pr create --title "skills: add <your-skill-name>" --body "..."
 ```
 
-That's the whole loop. The next sections explain each step in depth and tell you what we look at when the PR lands in review.
+这就是完整 loop。后续 sections 会深入解释每一步，并说明 PR 进入 review 后我们会看什么。
 
 ---
 
-## 2. What a skill IS, and what it isn't
+## 2. Skill 是什么，不是什么
 
-A skill is a **recipe for producing one kind of artifact**. Not a feature, not an integration, not a marketing page.
+Skill 是**生成某一种 artifact 的 recipe**。它不是 feature，不是 integration，也不是 marketing page。
 
-**Yes:**
-- "A 6–10 page investor pitch deck with editorial typography" → deck-skill
-- "A single-screen consumer dashboard with stats, charts, and a community ticker" → prototype-skill
-- "A populated copy of our PM-spec template with the brief filled in" → template-skill
-- "A `DESIGN.md` for the Linear brand sampled from their site" → design-system-skill
-- "A 9:16 short-form video reel from a script + b-roll prompts" → video-skill
-- "A square poster from a one-line brief" → image-skill
-- "A 30-second jingle from a mood description" → audio-skill
+**Yes：**
+- “6–10 页、editorial typography 的 investor pitch deck” → deck-skill
+- “带 stats、charts 和 community ticker 的 single-screen consumer dashboard” → prototype-skill
+- “把 brief 填进 PM-spec template 的 populated copy” → template-skill
+- “从 Linear 网站 sampled 出来的 `DESIGN.md`” → design-system-skill
+- “由 script + b-roll prompts 生成的 9:16 short-form video reel” → video-skill
+- “由一句 brief 生成的 square poster” → image-skill
+- “由 mood description 生成的 30 秒 jingle” → audio-skill
 
-**No:**
-- A wrapper around a third-party API (Stripe, Alipay, Slack API, GitHub API). That's a feature; submit it via the agent / daemon path, not as a skill.
-- A model loader, vendor SDK bundle, or "BYOK for `<provider>`". OD's bet is "your existing CLI is enough."
-- A brand-promotion bundle for a sponsor or product launch. Skills are reusable artifact recipes, not campaigns.
-- A duplicate of an existing skill with marginal differentiation. Before opening, search `skills/` and read the descriptions of the closest 2–3 — if you can't articulate the differentiator in one sentence, fold your work into the existing skill instead.
-- A skill whose only output is a screenshot or a video. The artifact has to be something the agent generates from a prompt, not a static asset shipped in `assets/`.
+**No：**
+- 第三方 API wrapper（Stripe、Alipay、Slack API、GitHub API）。那是 feature；请走 agent / daemon path 提交，不要做成 skill。
+- Model loader、vendor SDK bundle 或 “BYOK for `<provider>`”。OD 的判断是 “your existing CLI is enough”。
+- Sponsor 或 product launch 的 brand-promotion bundle。Skills 是 reusable artifact recipes，不是 campaigns。
+- 与现有 skill 只有边际差异的 duplicate。提交前先搜索 `skills/`，阅读最接近的 2–3 个 descriptions —— 如果你无法用一句话说清 differentiator，就把工作折叠进现有 skill。
+- 唯一输出是 screenshot 或 video 的 skill。Artifact 必须是 agent 根据 prompt 生成的东西，而不是随 `assets/` ship 的 static asset。
 
-**Third option: ship as an external skill bundle.** If your workflow is genuinely a recipe (not a daemon feature) but is too vendor-specific or audience-narrow to land in-tree, the skills protocol supports user-global skills via `~/.claude/skills/` (see [`skills-protocol.md` §3](skills-protocol.md#3-skill-discovery--precedence)). Publishing your bundle as a standalone repo lets users `git clone` or `od skill add` it without us taking on the maintenance surface. This is the right path for payment-provider workflows, regional marketplace integrations, in-house design systems, and similar — not a rejection, just a different distribution channel.
+**第三条路径：作为 external skill bundle 发布。** 如果你的 workflow 确实是 recipe（不是 daemon feature），但过于 vendor-specific 或 audience-narrow，不适合进 tree，skills protocol 支持通过 `~/.claude/skills/` 使用 user-global skills（见 [`skills-protocol.md` §3](skills-protocol.md#3-skill-discovery--precedence)）。把 bundle 作为 standalone repo 发布，用户就可以 `git clone` 或 `od skill add` 安装，而不需要我们承担 maintenance surface。这适合 payment-provider workflows、regional marketplace integrations、in-house design systems 等 —— 不是拒绝，只是不同的 distribution channel。
 
-If you're not sure your idea fits, **open a discussion first** ([github.com/nexu-io/open-design/discussions](https://github.com/nexu-io/open-design/discussions)) — we'd rather spend 5 minutes redirecting than have you build the wrong thing for a week.
+如果不确定 idea 是否合适，**先开 discussion**（[github.com/nexu-io/open-design/discussions](https://github.com/nexu-io/open-design/discussions)）—— 我们宁愿花 5 分钟 redirect，也不希望你花一周构建错误的东西。
 
 ---
 
-## 3. Skill anatomy — the minimum
+## 3. Skill anatomy — 最小结构
 
 ```text
 skills/<your-skill>/
@@ -89,7 +89,7 @@ skills/<your-skill>/
 
 ### `SKILL.md` frontmatter cheat sheet
 
-The first three keys (`name`, `description`, `triggers`) are the [Claude Code base spec](https://docs.anthropic.com/en/docs/claude-code/skills) — your skill works in plain Claude Code with just these. Everything under `od:` is OD-specific and optional, but **`od.mode`** decides which group the skill shows up under.
+前三个 keys（`name`、`description`、`triggers`）来自 [Claude Code base spec](https://docs.anthropic.com/en/docs/claude-code/skills) —— 只靠这些，你的 skill 就能在 plain Claude Code 中工作。`od:` 下的所有字段都是 OD-specific 且可选，但 **`od.mode`** 决定 skill 出现在哪个分组下。
 
 ```yaml
 ---
@@ -124,13 +124,13 @@ Numbered steps work well. Lift the format from skills/dating-web/SKILL.md
 or skills/guizang-ppt/SKILL.md.
 ```
 
-Full grammar — typed inputs, slider parameters (`od.parameters`), capability gating (`od.capabilities_required`), `od.craft.requires` for cross-brand craft references — lives in [`skills-protocol.md`](skills-protocol.md). You don't need any of those to ship v1.
+完整 grammar —— typed inputs、slider parameters（`od.parameters`）、capability gating（`od.capabilities_required`）、用于 cross-brand craft references 的 `od.craft.requires` —— 位于 [`skills-protocol.md`](skills-protocol.md)。交付 v1 不需要这些。
 
 ---
 
-## 4. Running it locally
+## 4. 本地运行
 
-You need exactly four commands once your tree is set up.
+Tree 设置好后，只需要四条命令。
 
 ```bash
 # 1. Bootstrap (only the first time, or after pulling main with manifest changes)
@@ -158,59 +158,59 @@ pnpm tools-dev run web
 #    - Verify export (PPTX / PDF) works if the mode supports it
 ```
 
-If the picker doesn't show your skill, check the daemon stderr — the most common cause is a YAML syntax error in frontmatter. The daemon logs the parse error with the offending line.
+如果 picker 没显示你的 skill，请检查 daemon stderr —— 最常见原因是 frontmatter 中的 YAML syntax error。Daemon log 会带 offending line。
 
-You don't need any agent CLI on your `PATH` to develop a skill — the daemon falls back to the **Anthropic API · BYOK** path, which is the fastest dev loop anyway. Set your key in Settings once and reuse across runs.
+开发 skill 不要求任何 agent CLI 在你的 `PATH` 上 —— daemon 会 fallback 到 **Anthropic API · BYOK** 路径，这也是最快的 dev loop。在 Settings 中设置一次 key，即可复用。
 
 ---
 
-## 5. The merge bar — checklist before you open the PR
+## 5. Merge bar — 打开 PR 前的 checklist
 
-We hold skill PRs to a higher bar than feature PRs because skills are the user-facing surface. Every item below is something a reviewer will check, so save the round-trip and check it yourself first.
+Skill PR 的门槛比 feature PR 更高，因为 skills 是 user-facing surface。下面每一项 reviewer 都会检查；先自查可以省掉来回沟通。
 
 ### Content
 
-- [ ] **`example.html` is hand-built.** Opens straight from disk, looks like something a designer would actually deliver. No lorem ipsum, no `<svg><rect/></svg>` placeholder hero. If you can't build the example yourself, the skill probably isn't ready.
-- [ ] **No AI slop in the example.** No purple gradients, no generic emoji icons (📊 💡 🚀), no rounded card with a left-border accent, no Inter as a *display* face, no invented stats ("10× faster", "users save 4 hours/week"). Read the **Anti-AI-slop machinery** section of the README for the full list.
-- [ ] **Honest placeholders.** When the agent doesn't have a real number, the skill body should instruct it to write `—` or a labelled grey block, not fabricate one.
-- [ ] **`references/checklist.md` exists** with at least P0 gates (the rules the agent has to pass before emitting `<artifact>`). Lift the format from [`skills/guizang-ppt/references/checklist.md`](../skills/guizang-ppt/references/checklist.md) or [`skills/web-prototype/references/checklist.md`](../skills/web-prototype/references/checklist.md).
-- [ ] **`example_prompt` actually works.** Run it locally end-to-end before submitting. If you wouldn't paste this prompt in front of a stranger to demo the skill, rewrite it.
-- [ ] **Triggers are concrete.** "design something cool" is not a trigger. "investor pitch deck", "saas landing page", "约会应用" are.
+- [ ] **`example.html` 是手写的。** 能直接从磁盘打开，看起来像 designer 真的会交付的东西。没有 lorem ipsum，没有 `<svg><rect/></svg>` placeholder hero。如果你自己都构建不出 example，这个 skill 可能还没 ready。
+- [ ] **Example 中没有 AI slop。** 没有 purple gradients、generic emoji icons（📊 💡 🚀）、带 left-border accent 的 rounded card、作为 *display* face 的 Inter、虚构 stats（“10× faster”、“users save 4 hours/week”）。完整清单见 README 的 **Anti-AI-slop machinery** section。
+- [ ] **Honest placeholders。** 当 agent 没有真实数字时，skill body 应指示它写 `—` 或带 label 的 grey block，而不是编造。
+- [ ] **存在 `references/checklist.md`**，且至少包含 P0 gates（agent 发出 `<artifact>` 前必须通过的规则）。可参考 [`skills/guizang-ppt/references/checklist.md`](../skills/guizang-ppt/references/checklist.md) 或 [`skills/web-prototype/references/checklist.md`](../skills/web-prototype/references/checklist.md)。
+- [ ] **`example_prompt` 确实能运行。** 提交前本地端到端运行。如果你不愿意把这个 prompt 粘给陌生人 demo skill，就重写它。
+- [ ] **Triggers 具体。** “design something cool” 不是 trigger。“investor pitch deck”、“saas landing page”、“约会应用” 才是。
 
 ### Shape
 
-- [ ] **Single self-contained folder + discoverable English display copy.** Everything the skill needs lives under `skills/<your-skill>/`. The folder's `SKILL.md` must include the English display fields consumed by the picker — see "i18n coverage" below. No edits to `apps/daemon/`, `packages/`, `tools/`, etc. in the same PR.
-- [ ] **No CDN imports** beyond what other skills already use. If you need a new font CDN, GSAP, three.js, etc., raise it in your PR description.
-- [ ] **No images larger than ~250 KB.** If your example genuinely needs a hero photo, run it through an optimizer first. No raw PNG screenshots.
-- [ ] **No fonts you didn't license.** System font stack is always safe; Google Fonts and Adobe Fonts free tier are also safe; anything else needs a license file in `references/`.
-- [ ] **Slug is ASCII, kebab-case.** `your-skill-name`, not `YourSkillName` or `your_skill_name` or `你的技能`.
+- [ ] **单个 self-contained folder + discoverable English display copy。** Skill 所需的一切都在 `skills/<your-skill>/` 下。该 folder 的 `SKILL.md` 必须包含 picker 消费的 English display fields —— 见下方 “i18n coverage”。同一个 PR 不要改 `apps/daemon/`、`packages/`、`tools/` 等。
+- [ ] **No CDN imports**，除非其他 skills 已经使用。如果需要新的 font CDN、GSAP、three.js 等，请在 PR description 中提出。
+- [ ] **没有大于约 250 KB 的 images。** 如果 example 真的需要 hero photo，先用 optimizer。不要提交 raw PNG screenshots。
+- [ ] **没有未授权 fonts。** System font stack 永远安全；Google Fonts 和 Adobe Fonts free tier 也安全；其他字体需要在 `references/` 中附 license file。
+- [ ] **Slug 是 ASCII、kebab-case。** `your-skill-name`，不是 `YourSkillName`、`your_skill_name` 或 `你的技能`。
 
-### i18n coverage (every skill, not just featured)
+### i18n coverage（每个 skill，而不只是 featured）
 
-The `e2e/tests/localized-content.test.ts` test enforces that every directory under `skills/` with a `SKILL.md` is discoverable and displayable for de / ru / fr. Locales use translated copy when present and otherwise derive the runtime fallback from the English source fields in `SKILL.md`.
+`e2e/tests/localized-content.test.ts` 会强制每个包含 `SKILL.md` 的 `skills/` 子目录可 discover，并能在 de / ru / fr 中 display。Locales 有 translated copy 时使用翻译；否则从 `SKILL.md` 中的 English source fields 派生 runtime fallback。
 
-For a non-featured skill, the cheap path is to keep the source metadata complete:
+对 non-featured skill，便宜路径是保持 source metadata 完整：
 
-- [ ] **Ensure `SKILL.md` has complete English display copy**: title/name, description, example prompt, and any picker metadata required by the skill schema. The localized runtime uses these fields as the fallback display path.
-- [ ] **Use optional localized display fields when useful**: `en_name` / `zh_name`, `en_description` / `zh_description`, and `od.example_prompt_i18n.<locale>`. Keep `description` and `od.example_prompt` in English because those are the fallback fields for every locale without localized copy.
-- [ ] **Run `pnpm --filter @open-design/web test` and `pnpm --filter @open-design/e2e test tests/localized-content.test.ts`** locally before pushing. These suites catch undisplayable discovered resources and verify localized fallback behavior.
+- [ ] **确保 `SKILL.md` 有完整 English display copy**：title/name、description、example prompt，以及 skill schema 需要的任何 picker metadata。Localized runtime 使用这些字段作为 fallback display path。
+- [ ] **有用时使用 optional localized display fields**：`en_name` / `zh_name`、`en_description` / `zh_description`、以及 `od.example_prompt_i18n.<locale>`。保持 `description` 与 `od.example_prompt` 为 English，因为它们是所有没有 localized copy 的 locale fallback fields。
+- [ ] **本地运行 `pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/e2e test tests/localized-content.test.ts`** 后再 push。这些 suites 会捕获无法 display 的 discovered resources，并验证 localized fallback behavior。
 
-### Featured skills (optional path)
+### Featured skills（可选路径）
 
-If you set `od.featured: 1`, also:
+如果设置 `od.featured: 1`，还要：
 
-- [ ] **Add a screenshot** at `docs/screenshots/skills/<skill>.png`. PNG, ~1024×640 retina, captured from the real `example.html` at zoomed-out browser scale.
-- [ ] **Optionally add full localized display copy** in `content.ts` (DE), `content.fr.ts` (FR), `content.ru.ts` (RU) — title, summary, scenario tag. The featured row in the picker uses this copy when present; the default fallback path renders English everywhere.
+- [ ] **添加 screenshot** 到 `docs/screenshots/skills/<skill>.png`。PNG，约 1024×640 retina，从真实 `example.html` 在 zoomed-out browser scale 下 capture。
+- [ ] **可选地在 `content.ts`（DE）、`content.fr.ts`（FR）、`content.ru.ts`（RU）中添加完整 localized display copy** —— title、summary、scenario tag。Picker 中的 featured row 会在存在时使用这些 copy；默认 fallback path 会在所有地方渲染 English。
 
 ### Forking
 
-If you fork an existing skill (e.g. start from `dating-web` and remix into `recruiting-web`), keep the original LICENSE and authorship in `references/` and call it out in the PR description.
+如果 fork 现有 skill（例如从 `dating-web` remix 成 `recruiting-web`），请在 `references/` 中保留原 LICENSE 和 authorship，并在 PR description 中说明。
 
 ---
 
 ## 6. PR description template
 
-Copy-paste this into your PR body and fill it in. Reviewers spend 80% of their first pass checking this template.
+把这段复制到 PR body 并填好。Reviewers 第一次看 PR 时，80% 时间都在检查这个 template。
 
 ```markdown
 ## Skill: <name>
@@ -247,48 +247,48 @@ they don't cover this case. If you can't, fold into the existing skill instead.
 
 ---
 
-## 7. Common reasons we close skill PRs
+## 7. 我们关闭 skill PR 的常见原因
 
-So you don't waste a week. Each pattern below has been the close reason on a recent PR — saving the next person from running into the same wall.
+这能帮你少浪费一周。下面每种模式都曾是近期 PR 的 close reason —— 写下来是为了让下一个人不用撞同一堵墙。
 
-- **Sponsor / promo / brand-campaign content.** A skill named "Phantom Motion V8.0 Engine" with a `sponsor-qrcode.png` in `assets/` and marketing copy in the README — that's an ad, not a contribution. We close on sight.
-- **Vendor API integration packaged as a skill.** Payment provider integration, marketplace API, vendor SDK wrappers — even when the workflow is real, this is a feature, not a skill. Open it as a daemon PR with proper API contract changes in `packages/contracts`.
-- **Duplicate of an existing skill with marginal differentiation.** "Add Trading Terminal X" when "Trading Terminal Y" already exists is a fork-or-fold-in decision, not a new skill PR. Be explicit about the differentiator in the description.
-- **Wider repo edits in the same PR.** A skill PR that also bumps `package.json`, modifies `types.ts`, regenerates locale files, or touches `apps/daemon/` is two PRs at minimum. Skill PRs land fast because they're small — keep them small.
-- **Stale rebase artefacts.** If your `types.ts` grows by 1000+ lines while you're just adding Turkish, that's a rebase gone wrong, not an i18n addition. Reset the file from main and only touch what you intentionally changed.
-- **Lorem ipsum in `example.html`.** The example is the marketing material for the skill. If it has placeholder text, it tells reviewers the skill isn't ready.
-- **AI-slop visuals.** Purple-to-pink gradients, hero with three colored squiggles, `Inter` at 64px in a card, `border-l-4 border-violet-500` accent — the README's anti-slop list exists for a reason. We bounce on first pass.
-- **Triggers that won't fire.** "creative project", "modern design", "beautiful page" don't disambiguate; they fire for everything. Triggers should be specific enough that the planner knows when to *not* pick your skill.
+- **Sponsor / promo / brand-campaign content。** 一个名为 “Phantom Motion V8.0 Engine” 的 skill，`assets/` 里带 `sponsor-qrcode.png`，README 里放 marketing copy —— 那是广告，不是贡献。我们会直接关闭。
+- **Vendor API integration packaged as a skill。** Payment provider integration、marketplace API、vendor SDK wrappers —— 即使 workflow 真实存在，这也是 feature，不是 skill。请作为 daemon PR 打开，并在 `packages/contracts` 中做 proper API contract changes。
+- **与现有 skill 只有边际差异的 duplicate。** “Add Trading Terminal X” 但 “Trading Terminal Y” 已存在时，这是 fork-or-fold-in decision，不是新 skill PR。请在 description 中明确 differentiator。
+- **同一个 PR 中有更宽的 repo edits。** 一个 skill PR 同时 bump `package.json`、修改 `types.ts`、regenerate locale files 或 touch `apps/daemon/`，至少应拆成两个 PR。Skill PR 快速合并是因为它们小 —— 请保持小。
+- **Stale rebase artefacts。** 如果你只是加 Turkish，`types.ts` 却增长 1000+ 行，那是 rebase 出错，不是 i18n addition。请从 main reset 该文件，只保留有意改动。
+- **`example.html` 中有 Lorem ipsum。** Example 是 skill 的 marketing material。有 placeholder text 说明 skill 还没 ready。
+- **AI-slop visuals。** Purple-to-pink gradients、三条彩色 squiggles 的 hero、card 中 64px 的 `Inter`、`border-l-4 border-violet-500` accent —— README 的 anti-slop list 是有原因的。第一轮就会退回。
+- **不会触发的 triggers。** “creative project”、“modern design”、“beautiful page” 无法 disambiguate；它们什么都能匹配。Triggers 应具体到 planner 知道什么时候**不**该选你的 skill。
 
 ---
 
 ## 8. References
 
-### Skills to imitate
+### 值得模仿的 Skills
 
-Pick the closest one to your idea and read its `SKILL.md` body before writing your own.
+挑与你 idea 最接近的一个，先读它的 `SKILL.md` body，再写自己的。
 
 - **Visual showcase, single-screen prototype:** [`skills/dating-web/`](../skills/dating-web/), [`skills/digital-eguide/`](../skills/digital-eguide/)
 - **Multi-frame mobile flow:** [`skills/mobile-onboarding/`](../skills/mobile-onboarding/), [`skills/gamified-app/`](../skills/gamified-app/)
 - **Document / template (no design system required):** [`skills/pm-spec/`](../skills/pm-spec/), [`skills/weekly-update/`](../skills/weekly-update/)
-- **Deck mode:** [`skills/guizang-ppt/`](../skills/guizang-ppt/) (bundled verbatim from [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill)) and [`skills/simple-deck/`](../skills/simple-deck/)
+- **Deck mode:** [`skills/guizang-ppt/`](../skills/guizang-ppt/)（从 [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 原样 bundled）和 [`skills/simple-deck/`](../skills/simple-deck/)
 - **Media skills (image / video / audio):** [`skills/image-poster/`](../skills/image-poster/), [`skills/video-shortform/`](../skills/video-shortform/), [`skills/audio-jingle/`](../skills/audio-jingle/)
 
 ### Spec & supporting docs
 
-- [`skills-protocol.md`](skills-protocol.md) — full frontmatter grammar, discovery & precedence rules, mode semantics, craft references, testing primitives
+- [`skills-protocol.md`](skills-protocol.md) — 完整 frontmatter grammar、discovery & precedence rules、mode semantics、craft references、testing primitives
 - [`architecture.md`](architecture.md) — daemon ↔ web ↔ skill registry data flow
-- [`modes.md`](modes.md) — what Prototype / Deck / Template / Design system actually mean to the runtime
-- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — code style, commit conventions, "what we don't accept" for the broader project
+- [`modes.md`](modes.md) — Prototype / Deck / Template / Design system 对 runtime 的实际含义
+- [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — broader project 的 code style、commit conventions、“what we don't accept”
 
 ### Upstream
 
-- [Claude Code `SKILL.md` convention](https://docs.anthropic.com/en/docs/claude-code/skills) — the base format
-- [`VoltAgent/awesome-design-md`](https://github.com/VoltAgent/awesome-design-md) — upstream registry for product design systems (most `design-systems/` PRs belong here, not here)
-- [Anti-AI-slop checklist](../README.md) — section in the main README; lift the rules into your `references/checklist.md`
+- [Claude Code `SKILL.md` convention](https://docs.anthropic.com/en/docs/claude-code/skills) — base format
+- [`VoltAgent/awesome-design-md`](https://github.com/VoltAgent/awesome-design-md) — product design systems 的 upstream registry（大多数 `design-systems/` PR 应投到那里，而不是这里）
+- [Anti-AI-slop checklist](../README.md) — main README 中的 section；请把规则 lift 到你的 `references/checklist.md`
 
 ---
 
 ## License
 
-By contributing a skill, you agree your contribution is licensed under the [Apache-2.0 License](../LICENSE) of this repository, with the exception of files inside [`skills/guizang-ppt/`](../skills/guizang-ppt/), which retain their original MIT license and authorship attribution to [op7418](https://github.com/op7418).
+贡献 skill 即表示你同意你的贡献按本 repository 的 [Apache-2.0 License](../LICENSE) 授权；[`skills/guizang-ppt/`](../skills/guizang-ppt/) 内的文件例外，它们保留原 MIT license 以及 [op7418](https://github.com/op7418) 的 authorship attribution。

@@ -1,7 +1,7 @@
 ---
 name: impeccable-design-polish
 description: |
-  Follow-up design polish skill inspired by Impeccable. Use after a web or HTML artifact exists to audit, critique, polish, animate, harden, and prepare the page for a live/share pass.
+  受 Impeccable 启发的后续 design polish skill。用于已有 web 或 HTML artifact 之后，执行 audit、critique、polish、animate、harden，并为 live/share pass 准备页面。
 triggers:
   - "impeccable"
   - "design polish"
@@ -35,35 +35,34 @@ od:
 
 # Impeccable Design Polish
 
-Use this skill as the post-generation pass for an existing design. It should not restart the project from scratch; it should make the current artifact sharper, more usable, and closer to something a designer would ship.
+把这个 skill 用作既有 design 的 post-generation pass。它不应该从头重启项目，而是让当前 artifact 更锋利、更可用、更接近 designer 会交付的状态。
 
 ## Follow-Up Modes
 
-- **Audit**: identify the highest-impact issues in hierarchy, spacing, color, type, interaction states, responsiveness, and accessibility.
-- **Critique**: explain what feels generic, overdesigned, underdesigned, or inconsistent.
-- **Polish**: directly edit the artifact to improve the top issues while preserving the user's intent.
-- **Animate**: add restrained, useful motion only where it improves feedback or storytelling.
-- **Harden**: repair mobile overflow, text clipping, contrast problems, missing states, broken links, and fragile layout assumptions.
-- **Live**: prepare the artifact for presentation or sharing, including final visual QA and clear next actions.
+- **Audit**：识别 hierarchy、spacing、color、type、interaction states、responsiveness 和 accessibility 中影响最大的 issues。
+- **Critique**：说明哪些地方显得 generic、overdesigned、underdesigned 或 inconsistent。
+- **Polish**：在保留用户 intent 的前提下，直接编辑 artifact 改善最重要的问题。
+- **Animate**：只在能改善 feedback 或 storytelling 的地方加入克制、有用的 motion。
+- **Harden**：修复 mobile overflow、text clipping、contrast problems、missing states、broken links 和脆弱的 layout assumptions。
+- **Live**：为 presentation 或 sharing 准备 artifact，包括最终 visual QA 和清晰的 next actions。
 
 ## Operating Rules
 
-1. Inspect the current HTML/page before editing. Do not guess from the prompt alone.
-2. Keep the existing content, brand, and scenario unless the user explicitly asks to change them.
-3. Prefer a few decisive fixes over broad cosmetic churn.
-4. Remove common AI tells:
-   - purple-blue glow gradients with no product reason
+1. 编辑前先检查当前 HTML/page。不要只根据 prompt 猜。
+2. 除非用户明确要求改变，否则保留既有 content、brand 和 scenario。
+3. 优先做少数关键修复，而不是大范围 cosmetic churn。
+4. 移除常见 AI 味：
+   - 没有 product reason 的 purple-blue glow gradients
    - generic 3-card feature rows
-   - oversized rounded cards everywhere
-   - empty marketing adjectives
-   - inconsistent spacing and type scale
-   - decorative effects that do not support comprehension
-5. Preserve accessibility: focus states, contrast, semantic controls, readable text, and reduced-motion fallbacks.
-6. Finish with the artifact in a better runnable state, not just a critique list.
+   - 到处都是 oversized rounded cards
+   - 空泛的 marketing adjectives
+   - 不一致的 spacing 和 type scale
+   - 不支持理解的 decorative effects
+5. 保留 accessibility：focus states、contrast、semantic controls、readable text 和 reduced-motion fallbacks。
+6. 结束时让 artifact 处于更好的可运行状态，而不只是输出 critique list。
 
 ## Best Pairings
 
-- Pair with `design-taste-frontend` or `gpt-taste` for stronger anti-slop redesign work.
-- Pair with `emilkowalski-motion` or GSAP skills for motion-specific polish.
-- Pair with image/video skills when the artifact needs real visual assets rather than CSS-only decoration.
-
+- 与 `design-taste-frontend` 或 `gpt-taste` 搭配，用于更强的 anti-slop redesign work。
+- 与 `emilkowalski-motion` 或 GSAP skills 搭配，用于 motion-specific polish。
+- 当 artifact 需要真实 visual assets 而不是纯 CSS decoration 时，与 image/video skills 搭配。

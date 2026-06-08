@@ -1,53 +1,53 @@
 # Alibaba Cloud (阿里云) Deployment
 
-This guide covers self-hosting Open Design on Alibaba Cloud for users in mainland China and the broader Asia-Pacific region. It documents the supported deployment paths, image-pull optimisations, and ICP filing considerations for public-facing instances.
+本指南面向中国大陆和更广泛亚太地区的用户，说明如何在 Alibaba Cloud 上 self-host Open Design。它记录受支持的部署路径、image-pull optimisations，以及面向公网实例的 ICP filing considerations。
 
-> **Status:** This is a docs-only guide. The flows below follow Alibaba Cloud's published product behaviour and the existing [`docs/deployment/docker.md`](../docker.md) and [`docs/install-guide.md`](../../install-guide.md) container model. Live ROS templates, one-click scripts, and verification screenshots are tracked as a follow-up under issue #1025; contributions from operators with active Alibaba Cloud accounts are welcome.
+> **Status:** 这是 docs-only guide。下面的流程遵循 Alibaba Cloud 已发布的产品行为，以及现有 [`docs/deployment/docker.md`](../docker.md) 和 [`docs/install-guide.md`](../../install-guide.md) container model。Live ROS templates、one-click scripts 和 verification screenshots 会在 issue #1025 下作为 follow-up 跟踪；欢迎有活跃 Alibaba Cloud 账号的 operators 贡献。
 
-## Why Alibaba Cloud?
+## 为什么选择 Alibaba Cloud？
 
-For users in mainland China, deploying Open Design to Alibaba Cloud (阿里云) instead of an overseas provider gives you:
+对中国大陆用户，把 Open Design 部署到 Alibaba Cloud（阿里云）而不是海外 provider，可以获得：
 
-- **Lower latency** for users on China Telecom, China Unicom, and China Mobile networks.
-- **Image acceleration** via Alibaba Cloud Container Registry (容器镜像服务 ACR) — Docker Hub pulls from the mainland are unreliable; ACR mirrors solve this.
-- **Compliant public hosting** through ICP filing (备案), required for any internet-facing service on a `.cn` domain or a domain pointed at a mainland China IP.
+- **更低 latency**：面向中国电信、中国联通、中国移动网络用户。
+- **Image acceleration**：通过 Alibaba Cloud Container Registry（容器镜像服务 ACR）加速。大陆直连 Docker Hub 不稳定；ACR mirrors 可以解决。
+- **合规公网托管**：面向 `.cn` domain 或指向中国大陆 IP 的 domain，internet-facing service 都需要 ICP filing（备案）。
 
-If your users are outside mainland China, AWS, GCP, or Azure are typically simpler. This guide is targeted at the mainland use case.
+如果你的用户在中国大陆之外，AWS、GCP 或 Azure 通常更简单。本指南面向大陆使用场景。
 
 ## Deployment paths
 
 | Path | Best for | Complexity | Cost shape |
 |------|----------|------------|------------|
-| **A. ECS (云服务器 ECS)** | Single-machine self-host, small teams, evaluation | Low | Pay-as-you-go or subscription, fixed per VM |
-| **B. ACK (容器服务 ACK)** | Multi-tenant teams, autoscaling, HA | Medium-High | Cluster + node pool + load balancer |
-| **C. ROS (资源编排 ROS)** | Repeatable infra-as-code provisioning | Medium | Same as the underlying ECS/ACK resources |
+| **A. ECS（云服务器 ECS）** | Single-machine self-host、小团队、评估 | Low | Pay-as-you-go 或 subscription，按 VM 固定计费 |
+| **B. ACK（容器服务 ACK）** | Multi-tenant teams、autoscaling、HA | Medium-High | Cluster + node pool + load balancer |
+| **C. ROS（资源编排 ROS）** | Repeatable infra-as-code provisioning | Medium | 与底层 ECS/ACK resources 相同 |
 
-Most first-time deployments should start with **Path A (ECS)**.
+大多数首次部署应从 **Path A（ECS）** 开始。
 
 ## Prerequisites
 
-- An Alibaba Cloud account with a verified payment method.
-- For mainland China regions (e.g. `cn-hangzhou`, `cn-shanghai`, `cn-beijing`): a real-name verified (实名认证) account.
-- For public domains served from a mainland China region: an [ICP filing](#icp-filing-备案) for the domain.
-- Local install of the [Alibaba Cloud CLI (`aliyun`)](https://www.alibabacloud.com/help/en/cli) if you plan to script provisioning.
+- 一个已验证 payment method 的 Alibaba Cloud account。
+- 对中国大陆 regions（例如 `cn-hangzhou`、`cn-shanghai`、`cn-beijing`）：已实名认证的账号。
+- 对从中国大陆 region 提供服务的 public domains：该 domain 已完成 [ICP filing](#icp-filing-备案)。
+- 如果计划 script provisioning，本地安装 [Alibaba Cloud CLI (`aliyun`)](https://www.alibabacloud.com/help/en/cli)。
 
 ## Path A — Deploy to ECS
 
-This path puts Open Design on a single ECS instance using the same Docker Compose stack documented in [`docs/deployment/docker.md`](../docker.md).
+这条路径会把 Open Design 放在单台 ECS instance 上，使用 [`docs/deployment/docker.md`](../docker.md) 记录的同一套 Docker Compose stack。
 
 ### Step 1: Create the ECS instance
 
-Use the Alibaba Cloud console or the CLI. A reasonable starting shape for evaluation:
+使用 Alibaba Cloud console 或 CLI。评估时可以从以下配置开始：
 
 | Setting | Recommended value | Notes |
 |---------|------------------|-------|
-| Instance type | `ecs.t6-c1m2.large` (2 vCPU / 4 GiB) | Lightweight; bump to `ecs.c7` for production |
-| Image | Ubuntu 24.04 LTS 64-bit | Open Design's Docker image is `linux/amd64` and `linux/arm64` |
-| Storage | 40 GiB ESSD | Enough for the image, agent CWDs, and SQLite |
-| Network | VPC with a public IP or EIP | Required if users will reach the instance directly |
-| Security group | Inbound `22/tcp` (your IP only), outbound all | Add `443/tcp` only behind a reverse proxy — see [Network exposure](#network-exposure) |
+| Instance type | `ecs.t6-c1m2.large`（2 vCPU / 4 GiB） | 轻量；production 可升级到 `ecs.c7` |
+| Image | Ubuntu 24.04 LTS 64-bit | Open Design 的 Docker image 是 `linux/amd64` 和 `linux/arm64` |
+| Storage | 40 GiB ESSD | 足够容纳 image、agent CWDs 和 SQLite |
+| Network | 带 public IP 或 EIP 的 VPC | 用户需要直接访问 instance 时必需 |
+| Security group | Inbound `22/tcp`（仅你的 IP），outbound all | 只在 reverse proxy 后添加 `443/tcp` —— 见 [Network exposure](#network-exposure) |
 
-CLI equivalent (replace placeholders):
+CLI equivalent（替换 placeholders）：
 
 ```bash
 aliyun ecs RunInstances \
@@ -63,7 +63,7 @@ aliyun ecs RunInstances \
 
 ### Step 2: Install Docker
 
-SSH in and install Docker Engine plus the Compose plugin:
+SSH 进入 instance，安装 Docker Engine 和 Compose plugin：
 
 ```bash
 # Aliyun's mirrored Docker install script (faster from mainland China than get.docker.com)
@@ -74,11 +74,11 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 sudo usermod -aG docker $USER
 ```
 
-Log out and back in so the group change takes effect.
+登出再登录，使 group change 生效。
 
-### Step 3: Configure image acceleration (镜像加速)
+### Step 3: Configure image acceleration（镜像加速）
 
-Pulling from `docker.io` directly inside mainland China is slow and intermittently fails. Configure ACR's free public mirror:
+在中国大陆直接从 `docker.io` pull 很慢且间歇失败。配置 ACR 免费 public mirror：
 
 ```bash
 sudo mkdir -p /etc/docker
@@ -92,11 +92,11 @@ EOF
 sudo systemctl restart docker
 ```
 
-Get your personal mirror prefix from the Alibaba Cloud console under **Container Registry → Image Tools → Image Accelerator** (容器镜像服务 → 镜像工具 → 镜像加速器).
+在 Alibaba Cloud console 的 **Container Registry → Image Tools → Image Accelerator**（容器镜像服务 → 镜像工具 → 镜像加速器）中获取你的 personal mirror prefix。
 
 ### Step 4: Run Open Design
 
-From this point the flow matches [`docs/install-guide.md`](../../install-guide.md):
+从这里开始，流程与 [`docs/install-guide.md`](../../install-guide.md) 一致：
 
 ```bash
 git clone https://github.com/nexu-io/open-design.git
@@ -106,9 +106,9 @@ bash deploy/scripts/install.sh --non-interactive --port 7456
 
 ### Step 5: Put a reverse proxy in front
 
-Open Design binds to `127.0.0.1:7456` by design — the daemon is never directly exposed to the network. For public access, terminate TLS at Nginx or an Alibaba Cloud SLB / ALB and forward to `127.0.0.1:7456`. Do not expose port 7456 directly through the security group. See the network section of [`docs/install-guide.md`](../../install-guide.md) for the full rationale.
+Open Design 按设计 bind 到 `127.0.0.1:7456` —— daemon 永远不会直接暴露到网络。公网访问应在 Nginx 或 Alibaba Cloud SLB / ALB 上终止 TLS，并转发到 `127.0.0.1:7456`。不要在 security group 中直接暴露 port 7456。完整 rationale 见 [`docs/install-guide.md`](../../install-guide.md) 的 network section。
 
-A minimal Nginx block:
+最小 Nginx block：
 
 ```nginx
 server {
@@ -141,23 +141,23 @@ server {
 }
 ```
 
-Set `OPEN_DESIGN_ALLOWED_ORIGINS` in `deploy/.env` to the public URL so CORS clears the proxy. The `OD_API_TOKEN` referenced in the Nginx block above is generated automatically by `deploy/scripts/install.sh` and written into `deploy/.env`; copy that value (or wire `proxy_set_header Authorization` to read it from a secrets manager) so the proxy authenticates on every request.
+将 `deploy/.env` 中的 `OPEN_DESIGN_ALLOWED_ORIGINS` 设置为 public URL，确保 CORS 允许 proxy。上面 Nginx block 引用的 `OD_API_TOKEN` 由 `deploy/scripts/install.sh` 自动生成并写入 `deploy/.env`；复制该值（或把 `proxy_set_header Authorization` 接到 secrets manager），让 proxy 在每个 request 上完成认证。
 
 ## Path B — Deploy to ACK
 
-[Container Service for Kubernetes (容器服务 ACK)](https://www.alibabacloud.com/product/kubernetes) is the right choice when you need:
+当你需要以下能力时，[Container Service for Kubernetes（容器服务 ACK）](https://www.alibabacloud.com/product/kubernetes) 是正确选择：
 
-- Horizontal scaling beyond a single VM.
-- High availability across availability zones.
-- Standard Kubernetes tooling (`kubectl`, Helm) for ops.
+- 横向扩展超过单台 VM。
+- 跨 availability zones 的 high availability。
+- 用于 ops 的标准 Kubernetes tooling（`kubectl`、Helm）。
 
-Open Design does not yet ship an official Helm chart. The minimal manifest below is a starting point — production users should harden it (resource limits, PodDisruptionBudget, NetworkPolicy, persistent storage class).
+Open Design 目前还没有 official Helm chart。下面的 minimal manifest 是起点 —— production users 应加固它（resource limits、PodDisruptionBudget、NetworkPolicy、persistent storage class）。
 
-> **Required env for Kubernetes:** the daemon defaults to `OD_BIND_HOST=127.0.0.1`, which makes the readiness probe (and the Service) unable to reach the container. To make the Pod reachable inside the cluster you must set `OD_BIND_HOST=0.0.0.0`, and the daemon's bound-API-token guard then requires `OD_API_TOKEN` to be set whenever it binds to a non-loopback interface. Both env vars are reflected in the manifest below.
+> **Required env for Kubernetes:** daemon 默认 `OD_BIND_HOST=127.0.0.1`，这会让 readiness probe（以及 Service）无法到达 container。要让 Pod 在 cluster 内可达，必须设置 `OD_BIND_HOST=0.0.0.0`；daemon 的 bound-API-token guard 会要求凡是 bind 到 non-loopback interface 时都设置 `OD_API_TOKEN`。下面 manifest 已体现两个 env vars。
 >
-> Also note that the daemon reads `OD_ALLOWED_ORIGINS` directly. The `OPEN_DESIGN_ALLOWED_ORIGINS` name documented in `deploy/.env.example` is a Compose-only alias mapped in `deploy/docker-compose.yml`; for the direct-container ACK path you must set `OD_ALLOWED_ORIGINS` instead.
+> 另请注意，daemon 直接读取 `OD_ALLOWED_ORIGINS`。`deploy/.env.example` 中记录的 `OPEN_DESIGN_ALLOWED_ORIGINS` 是 Compose-only alias，由 `deploy/docker-compose.yml` 映射；direct-container ACK path 必须改设 `OD_ALLOWED_ORIGINS`。
 
-Create the API-token secret first:
+先创建 API-token secret：
 
 ```bash
 # Generate a random token and store it in the cluster
@@ -165,7 +165,7 @@ kubectl create secret generic open-design-secrets \
   --from-literal=api-token="$(openssl rand -hex 32)"
 ```
 
-Then apply the manifest:
+然后 apply manifest：
 
 ```yaml
 # open-design.yaml
@@ -224,77 +224,77 @@ spec:
       targetPort: 7456
 ```
 
-Apply with `kubectl apply -f open-design.yaml`. Front the Service with an Ingress (NGINX Ingress Controller is preinstalled on ACK Pro) and an ACM-issued certificate. With `OD_API_TOKEN` set, every `/api/*` request from non-loopback origins must carry an `Authorization: Bearer <token>` header — wire that into your Ingress / proxy auth layer.
+用 `kubectl apply -f open-design.yaml` apply。用 Ingress（ACK Pro 预装 NGINX Ingress Controller）和 ACM-issued certificate 放在 Service 前面。设置 `OD_API_TOKEN` 后，来自 non-loopback origins 的每个 `/api/*` request 都必须携带 `Authorization: Bearer <token>` header —— 请把它接入你的 Ingress / proxy auth layer。
 
-> **Note on `replicas: 1`:** the daemon writes SQLite at `.od/app.sqlite` (see [`AGENTS.md`](../../../AGENTS.md) FAQ "Where is data written?"). Running multiple replicas without shared storage will diverge state. A multi-replica ACK topology needs an external database; that is out of scope for this guide.
+> **Note on `replicas: 1`:** daemon 将 SQLite 写到 `.od/app.sqlite`（见 [`AGENTS.md`](../../../AGENTS.md) FAQ “Where is data written?”）。没有 shared storage 就运行多个 replicas 会导致 state 分叉。Multi-replica ACK topology 需要 external database；这超出本指南 scope。
 
 ## Path C — ROS templates
 
-Resource Orchestration Service (资源编排 ROS) provisions the same resources declaratively. There is no first-party ROS template for Open Design yet. Operators with Alibaba Cloud access are welcome to contribute one as a follow-up to this guide; the natural location is `deploy/aliyun/ros/`.
+Resource Orchestration Service（资源编排 ROS）可以 declaratively provision 相同 resources。目前还没有 Open Design first-party ROS template。欢迎有 Alibaba Cloud access 的 operators 作为本指南 follow-up 贡献；自然位置是 `deploy/aliyun/ros/`。
 
-Until a template lands, treat ROS as advanced infra-as-code and use Path A or Path B above.
+Template 落地前，请把 ROS 视为 advanced infra-as-code，并使用上面的 Path A 或 Path B。
 
-## Image acceleration (镜像加速)
+## Image acceleration（镜像加速）
 
-If you have not already done it during ECS setup, configure Docker's image mirror so image pulls from `docker.io` go through Alibaba Cloud's mirror:
+如果你在 ECS setup 阶段还没有配置，请配置 Docker image mirror，让来自 `docker.io` 的 image pulls 走 Alibaba Cloud mirror：
 
-1. Log in to the Alibaba Cloud console.
-2. Open **Container Registry → Image Tools → Image Accelerator** (容器镜像服务 → 镜像工具 → 镜像加速器).
-3. Copy your personal accelerator URL (looks like `https://<prefix>.mirror.aliyuncs.com`).
-4. Add it to `/etc/docker/daemon.json` under `registry-mirrors` and restart Docker.
+1. 登录 Alibaba Cloud console。
+2. 打开 **Container Registry → Image Tools → Image Accelerator**（容器镜像服务 → 镜像工具 → 镜像加速器）。
+3. 复制你的 personal accelerator URL（形如 `https://<prefix>.mirror.aliyuncs.com`）。
+4. 将其加入 `/etc/docker/daemon.json` 的 `registry-mirrors`，并重启 Docker。
 
-For ACK, image acceleration is enabled by default on the cluster's node pool — no per-node config needed.
+对于 ACK，image acceleration 默认在 cluster node pool 上启用 —— 不需要 per-node config。
 
-## ICP filing (备案)
+## ICP filing（备案）
 
-Any service that serves a domain pointed at a mainland China IP, or serves a `.cn` domain, must complete ICP filing through the Ministry of Industry and Information Technology (工信部). Skipping this is a hard block — Alibaba Cloud will firewall HTTP/HTTPS on unfiled domains.
+任何服务只要使用指向中国大陆 IP 的 domain，或提供 `.cn` domain，都必须通过 Ministry of Industry and Information Technology（工信部）完成 ICP filing。跳过它是 hard block —— Alibaba Cloud 会 firewall 未备案 domains 的 HTTP/HTTPS。
 
 | Item | Detail |
 |------|--------|
-| Who files | The domain owner (个人 or 企业) |
-| Where | Alibaba Cloud's ICP filing console (备案系统) |
-| What you need | Real-name verified Alibaba Cloud account, hosting purchased for ≥ 3 months in a mainland region, valid Chinese ID or business licence, photo on a blue/white background (taken via the Aliyun ICP app) |
-| How long | Typically 7–20 business days |
-| Result | A 备案号 (ICP filing number) you must display in the site footer, e.g. `京ICP备XXXXXXX号` |
+| Who files | Domain owner（个人 or 企业） |
+| Where | Alibaba Cloud 的 ICP filing console（备案系统） |
+| What you need | Real-name verified Alibaba Cloud account，中国大陆 region 中已购买 ≥ 3 个月的 hosting，有效中国身份证或 business licence，通过 Aliyun ICP app 拍摄的蓝/白背景照片 |
+| How long | 通常 7–20 个工作日 |
+| Result | 一个必须显示在站点 footer 的 备案号（ICP filing number），例如 `京ICP备XXXXXXX号` |
 
-You do **not** need ICP filing if:
+以下情况**不需要** ICP filing：
 
-- You deploy to a Hong Kong, Singapore, or other non-mainland Alibaba Cloud region (no firewall on those regions for HTTP/HTTPS).
-- The service is internal (no public domain, accessed only via VPN or private IP).
+- 部署到 Hong Kong、Singapore 或其他非中国大陆 Alibaba Cloud region（这些 regions 的 HTTP/HTTPS 不会被这样 firewall）。
+- Service 是 internal（没有 public domain，只通过 VPN 或 private IP 访问）。
 
-A practical pattern for many teams: deploy to **Hong Kong (`cn-hongkong`)** first to skip ICP, then migrate to a mainland region once filing is complete and latency to mainland users matters more than time-to-launch.
+很多团队的实用模式：先部署到 **Hong Kong (`cn-hongkong`)** 跳过 ICP，等备案完成且大陆用户 latency 比 time-to-launch 更重要时，再迁移到 mainland region。
 
 ## Network exposure
 
-Open Design's daemon binds to `127.0.0.1:7456` and is never exposed directly. Public access must go through:
+Open Design 的 daemon bind 到 `127.0.0.1:7456`，永远不直接暴露。Public access 必须通过：
 
-1. A reverse proxy that terminates TLS (Nginx, Caddy, Alibaba Cloud SLB/ALB).
-2. An ICP-filed domain (for mainland regions).
-3. CORS allowlist set via `OPEN_DESIGN_ALLOWED_ORIGINS` (Compose / `deploy/.env` path) or `OD_ALLOWED_ORIGINS` (direct-container / Kubernetes path).
+1. 终止 TLS 的 reverse proxy（Nginx、Caddy、Alibaba Cloud SLB/ALB）。
+2. ICP-filed domain（mainland regions）。
+3. 通过 `OPEN_DESIGN_ALLOWED_ORIGINS`（Compose / `deploy/.env` path）或 `OD_ALLOWED_ORIGINS`（direct-container / Kubernetes path）设置 CORS allowlist。
 
-See [`docs/install-guide.md`](../../install-guide.md) for the full topology and reverse-proxy guidance.
+完整 topology 和 reverse-proxy guidance 见 [`docs/install-guide.md`](../../install-guide.md)。
 
 ## Common pitfalls
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
-| `docker pull` hangs or times out | No image acceleration configured; pulling from `docker.io` directly | Configure ACR mirror in `/etc/docker/daemon.json` |
-| HTTP/HTTPS to your domain is blocked | Domain not ICP-filed for a mainland region | Complete ICP filing, or move to a non-mainland region (HK/SG) |
-| `aliyun ecs RunInstances` fails with "Real-name authentication required" | Account not 实名认证 | Complete real-name verification in the account console |
-| ACK pods stuck in `ImagePullBackOff` from a private ACR repo | Cluster lacks pull credentials for the namespace | Create an `aliyun-acr-credential-helper` secret or use the cluster's ACR plugin |
-| 200 from `/api/health` but UI fails to load | CORS rejecting the proxied origin, **or** the reverse proxy not forwarding the bearer token (Compose always generates `OD_API_TOKEN`; only `/api/health`, `/api/version`, `/api/daemon/status` skip auth) | Set `OPEN_DESIGN_ALLOWED_ORIGINS` (Compose / `deploy/.env`) or `OD_ALLOWED_ORIGINS` (direct container / ACK) to the public URL, **and** add `proxy_set_header Authorization "Bearer <OD_API_TOKEN>"` to the Nginx / SLB upstream config |
-| ACK Pod stuck in `NotReady`, readiness probe fails | Daemon defaulting to `OD_BIND_HOST=127.0.0.1` so the kubelet can't reach it | Set `OD_BIND_HOST=0.0.0.0` and `OD_API_TOKEN` in the Pod env (the daemon refuses non-loopback binds without a token) |
-| SLB health check fails | SLB hits `7456` but security group blocks intra-VPC | Allow the SLB backend CIDR on `7456/tcp` in the security group |
+| `docker pull` hangs or times out | 未配置 image acceleration；直接从 `docker.io` pull | 在 `/etc/docker/daemon.json` 中配置 ACR mirror |
+| HTTP/HTTPS to your domain is blocked | Mainland region 的 domain 未备案 | 完成 ICP filing，或迁移到非 mainland region（HK/SG） |
+| `aliyun ecs RunInstances` fails with "Real-name authentication required" | Account 未实名认证 | 在 account console 中完成 real-name verification |
+| ACK pods stuck in `ImagePullBackOff` from a private ACR repo | Cluster 缺少该 namespace 的 pull credentials | 创建 `aliyun-acr-credential-helper` secret，或使用 cluster 的 ACR plugin |
+| 200 from `/api/health` but UI fails to load | CORS 拒绝 proxied origin，**或** reverse proxy 未转发 bearer token（Compose 总会生成 `OD_API_TOKEN`；只有 `/api/health`、`/api/version`、`/api/daemon/status` 跳过 auth） | 将 `OPEN_DESIGN_ALLOWED_ORIGINS`（Compose / `deploy/.env`）或 `OD_ALLOWED_ORIGINS`（direct container / ACK）设为 public URL，**并**向 Nginx / SLB upstream config 添加 `proxy_set_header Authorization "Bearer <OD_API_TOKEN>"` |
+| ACK Pod stuck in `NotReady`, readiness probe fails | Daemon 默认 `OD_BIND_HOST=127.0.0.1`，kubelet 无法到达 | 在 Pod env 中设置 `OD_BIND_HOST=0.0.0.0` 和 `OD_API_TOKEN`（daemon 拒绝无 token 的 non-loopback binds） |
+| SLB health check fails | SLB hit `7456`，但 security group 阻止 intra-VPC | 在 security group 中允许 SLB backend CIDR 访问 `7456/tcp` |
 
 ## Follow-up work
 
-This guide is intentionally docs-only. Tracked under #1025, contributions welcome:
+本指南刻意保持 docs-only。#1025 下跟踪，欢迎贡献：
 
-- A first-party ROS template for one-click ECS provisioning.
-- An official Helm chart for ACK with multi-replica safety (external DB or shared volume topology).
-- An end-to-end one-click script equivalent to `deploy/scripts/install.sh` but targeting ECS via the `aliyun` CLI.
-- A Chinese-language sibling of this file at `docs/deployment/cloud/aliyun.zh-CN.md` once the English content stabilises.
-- Verification screenshots under `docs/screenshots/deployment/aliyun/`, mirroring the Docker layout.
+- 用于 one-click ECS provisioning 的 first-party ROS template。
+- 面向 ACK 的 official Helm chart，带 multi-replica safety（external DB 或 shared volume topology）。
+- 等价于 `deploy/scripts/install.sh`、但通过 `aliyun` CLI 指向 ECS 的 end-to-end one-click script。
+- English content 稳定后，在 `docs/deployment/cloud/aliyun.zh-CN.md` 添加本文件的 Chinese-language sibling。
+- `docs/screenshots/deployment/aliyun/` 下的 verification screenshots，对齐 Docker layout。
 
 ## References
 

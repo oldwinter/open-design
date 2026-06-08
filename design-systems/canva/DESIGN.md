@@ -156,9 +156,9 @@ The shape system is ultra-soft: 12px on most cards, 16–20px on larger panels, 
 - **Easing**: `cubic-bezier(0.4, 0, 0.2, 1)` (Material-style).
 - **Card lift**: translateY(-2px) + shadow grow on hover, single transition.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Keep the white canvas dominant; the purple-to-cyan gradient should signal brand, Pro, Magic, or one primary CTA moment.
-- Use filled rounded icons and soft 12-20px geometry rather than sharp enterprise controls.
-- Keep category colors in tags, templates, and supporting metadata; do not let them compete with the main gradient action.
-- Preserve the friendly editor/product tone: dense tool UI is fine, but it should stay approachable and visually generous.
+- 保持 white canvas 占主导；purple-to-cyan gradient 应用于 brand、Pro、Magic 或一个 primary CTA moment。
+- 使用 filled rounded icons 和 soft 12-20px geometry，而不是 sharp enterprise controls。
+- 将 category colors 限定在 tags、templates 和 supporting metadata 中；不要让它们与主 gradient action 抢注意力。
+- 保持友好的 editor/product tone：dense tool UI 可以存在，但仍应显得 approachable 且 visually generous。

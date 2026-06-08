@@ -1,68 +1,68 @@
-# Design System Inspired by Nike
+# Inspired by Nike 的 Design System
 
 > Category: E-Commerce & Retail
-> Athletic retail. Monochrome UI, massive uppercase type, full-bleed photography.
+> Athletic retail。Monochrome UI、massive uppercase type、full-bleed photography。
 
 ## 1. Visual Theme & Atmosphere
 
-Nike.com is a kinetic retail cathedral — a site that channels the explosive energy of sport into a digital shopping experience. The design operates on a principle of radical simplicity: strip everything back to black, white, and grey so that athletic photography and product color can dominate without competition. The result feels less like a website and more like a sports editorial laid out with the precision of a luxury magazine. Every pixel of real estate is either selling product or driving toward product.
+Nike.com 是一座 kinetic retail cathedral：把运动的爆发性能量导入 digital shopping experience 的网站。设计运行在 radical simplicity 原则上：把一切退回 black、white 和 grey，让 athletic photography 与 product color 在没有竞争的情况下成为主角。结果不像普通网站，更像一本以 luxury magazine 精度排版的 sports editorial。每一寸屏幕空间要么在销售产品，要么在推动用户走向产品。
 
-The "Podium CDS" (Nike's internal Core Design System) establishes an aggressively monochromatic foundation. The UI disappears into black (`#111111`) text and white surfaces, allowing hero photography — sweating athletes, mid-air shoes, stadium energy — to carry the emotional weight. When color does appear in the UI, it's almost exclusively functional: red for errors, blue for links, green for success. The product itself is the color story. This restraint creates a visual paradox: the most colorful pages on the internet feel the most minimal, because all vibrancy comes from merchandise rather than interface.
+"Podium CDS"（Nike 内部的 Core Design System）建立了 aggressively monochromatic foundation。UI 消隐在 black（`#111111`）text 与 white surfaces 中，让 hero photography 中的 sweating athletes、mid-air shoes、stadium energy 承载情绪重量。当 UI 中出现 color 时，它几乎总是功能性的：red 表示 errors，blue 表示 links，green 表示 success。产品本身就是 color story。这种克制造成一种视觉悖论：互联网上最 colorful 的页面反而显得最 minimal，因为所有 vibrancy 都来自 merchandise，而不是 interface。
 
-The typography system is the other half of Nike's visual identity. Massive uppercase headlines in Nike Futura ND — a custom condensed Futura variant with impossibly tight line-height (0.90) — punch through hero imagery like a typographic shockwave. Below the headlines, the workhorse Helvetica Now family handles everything from navigation to product descriptions with Swiss-precision clarity. This split between expressive display type and functional body type mirrors Nike's brand duality: inspiration meets execution.
+Typography system 是 Nike visual identity 的另一半。Nike Futura ND 中 massive uppercase headlines，这是一款 custom condensed Futura variant，带几乎不可思议的 tight line-height（0.90），像 typographic shockwave 一样穿透 hero imagery。Headlines 下方，workhorse Helvetica Now family 以 Swiss-precision clarity 处理从 navigation 到 product descriptions 的所有内容。这种 expressive display type 与 functional body type 的分工，映射了 Nike 的 brand duality：inspiration meets execution。
 
 **Key Characteristics:**
-- Monochromatic UI (black/white/grey) that lets product photography be the only color source
-- Massive uppercase display typography (96px, line-height 0.90) that punches through hero images
-- Full-bleed photography with no border radius — imagery fills every available edge
-- Pill-shaped buttons (30px radius) as the primary interactive element
-- 8px spacing grid with athletic discipline — every measurement snaps to the system
-- Category-driven shopping architecture with large navigational image cards
-- Shadow-free, border-minimal elevation model — surface differentiation through grey shifts only
+- Monochromatic UI（black/white/grey），让 product photography 成为唯一 color source
+- Massive uppercase display typography（96px，line-height 0.90），能穿透 hero images
+- Full-bleed photography，无 border radius；imagery 填满所有可用边缘
+- Pill-shaped buttons（30px radius）作为 primary interactive element
+- 8px spacing grid 带 athletic discipline；每个 measurement 都贴合系统
+- Category-driven shopping architecture，使用大型 navigational image cards
+- Shadow-free、border-minimal elevation model；只通过 grey shifts 做 surface differentiation
 
 ## 2. Color Palette & Roles
 
 ### Primary
 
-- **Nike Black** (`#111111`): The foundation — primary text, button backgrounds, nav text, hero overlays. Deliberately not pure black (#000000), creating a fractionally softer reading experience
-- **Nike White** (`#FFFFFF`): Primary page canvas, button text on dark, card surfaces, nav bar background
+- **Nike Black** (`#111111`): foundation；primary text、button backgrounds、nav text、hero overlays。刻意不用 pure black（#000000），创造略微柔和的阅读体验。
+- **Nike White** (`#FFFFFF`): Primary page canvas、dark 上的 button text、card surfaces、nav bar background。
 
 ### Surface & Background
 
-- **Snow** (`#FAFAFA`): Lightest surface, near-white subtle differentiation (--podium-cds-color-grey-50)
-- **Light Gray** (`#F5F5F5`): Secondary background, search input fill, image placeholder, loading skeleton (--podium-cds-color-grey-100)
-- **Hover Gray** (`#E5E5E5`): Hover state background, disabled button fill (--podium-cds-color-grey-200)
-- **Dark Surface** (`#28282A`): Primary background on dark/inverted sections (--podium-cds-color-grey-800)
-- **Deep Charcoal** (`#1F1F21`): Inverse primary background, darkest non-black surface (--podium-cds-color-grey-900)
-- **Dark Hover** (`#39393B`): Hover state on dark backgrounds (--podium-cds-color-grey-700)
+- **Snow** (`#FAFAFA`): 最浅 surface，near-white subtle differentiation（--podium-cds-color-grey-50）。
+- **Light Gray** (`#F5F5F5`): Secondary background、search input fill、image placeholder、loading skeleton（--podium-cds-color-grey-100）。
+- **Hover Gray** (`#E5E5E5`): Hover state background、disabled button fill（--podium-cds-color-grey-200）。
+- **Dark Surface** (`#28282A`): Dark/inverted sections 上的 primary background（--podium-cds-color-grey-800）。
+- **Deep Charcoal** (`#1F1F21`): Inverse primary background，最深的 non-black surface（--podium-cds-color-grey-900）。
+- **Dark Hover** (`#39393B`): Dark backgrounds 上的 hover state（--podium-cds-color-grey-700）。
 
 ### Neutrals & Text
 
-- **Primary Text** (`#111111`): Main body text, headings, nav links (--podium-cds-color-text-primary)
-- **Secondary Text** (`#707072`): Descriptive copy, metadata, timestamps, price labels (--podium-cds-color-text-secondary)
-- **Disabled Text** (`#9E9EA0`): Inactive elements, unavailable options (--podium-cds-color-text-disabled)
-- **Disabled Inverse** (`#4B4B4D`): Disabled text on dark backgrounds (--podium-cds-color-text-disabled-inverse)
-- **Border Primary** (`#707072`): Standard border color, matching secondary text
-- **Border Secondary** (`#CACACB`): Subtle borders, input borders, divider lines (--podium-cds-color-grey-300)
-- **Border Disabled** (`#CACACB`): Inactive border state
-- **Border Active** (`#111111`): Active/focused border, matching primary text
+- **Primary Text** (`#111111`): Main body text、headings、nav links（--podium-cds-color-text-primary）。
+- **Secondary Text** (`#707072`): Descriptive copy、metadata、timestamps、price labels（--podium-cds-color-text-secondary）。
+- **Disabled Text** (`#9E9EA0`): Inactive elements、unavailable options（--podium-cds-color-text-disabled）。
+- **Disabled Inverse** (`#4B4B4D`): Dark backgrounds 上的 disabled text（--podium-cds-color-text-disabled-inverse）。
+- **Border Primary** (`#707072`): Standard border color，与 secondary text 匹配。
+- **Border Secondary** (`#CACACB`): Subtle borders、input borders、divider lines（--podium-cds-color-grey-300）。
+- **Border Disabled** (`#CACACB`): Inactive border state。
+- **Border Active** (`#111111`): Active/focused border，与 primary text 匹配。
 
 ### Semantic & Accent
 
-- **Nike Red** (`#D30005`): Critical errors, sale badges, urgent notifications (--podium-cds-color-red-600)
-- **Bright Red** (`#EE0005`): Red-500, slightly lighter red for emphasis
-- **Nike Orange Badge** (`#D33918`): Badge text, promotional callouts (--podium-cds-color-text-badge)
-- **Orange Flash** (`#FF5000`): Expressive orange accent (--podium-cds-color-orange-400)
-- **Success Green** (`#007D48`): Confirmation, availability, positive states (--podium-cds-color-green-600)
-- **Success Inverse** (`#1EAA52`): Success on dark backgrounds (--podium-cds-color-green-500)
-- **Link Blue** (`#1151FF`): Text links, informational highlights (--podium-cds-color-blue-500)
-- **Info Inverse** (`#1190FF`): Links on dark backgrounds (--podium-cds-color-blue-400)
-- **Warning Yellow** (`#FEDF35`): Warning backgrounds, attention banners (--podium-cds-color-yellow-200)
-- **Focus Ring** (`rgba(39, 93, 197, 1)`): Keyboard focus indicator ring
+- **Nike Red** (`#D30005`): Critical errors、sale badges、urgent notifications（--podium-cds-color-red-600）。
+- **Bright Red** (`#EE0005`): Red-500，稍浅的 red，用于 emphasis。
+- **Nike Orange Badge** (`#D33918`): Badge text、promotional callouts（--podium-cds-color-text-badge）。
+- **Orange Flash** (`#FF5000`): Expressive orange accent（--podium-cds-color-orange-400）。
+- **Success Green** (`#007D48`): Confirmation、availability、positive states（--podium-cds-color-green-600）。
+- **Success Inverse** (`#1EAA52`): Dark backgrounds 上的 success（--podium-cds-color-green-500）。
+- **Link Blue** (`#1151FF`): Text links、informational highlights（--podium-cds-color-blue-500）。
+- **Info Inverse** (`#1190FF`): Dark backgrounds 上的 links（--podium-cds-color-blue-400）。
+- **Warning Yellow** (`#FEDF35`): Warning backgrounds、attention banners（--podium-cds-color-yellow-200）。
+- **Focus Ring** (`rgba(39, 93, 197, 1)`): Keyboard focus indicator ring。
 
 ### Extended Color Spectrum (Podium CDS)
 
-Each color ramp runs 50–900 for expressive use in campaigns and product pages:
+每条 color ramp 都覆盖 50-900，用于 campaigns 和 product pages 中的 expressive use：
 
 - **Red**: `#FFE5E5` → `#EE0005` → `#530300`
 - **Orange**: `#FFE2D6` → `#FF5000` → `#3E1009`
@@ -75,30 +75,30 @@ Each color ramp runs 50–900 for expressive use in campaigns and product pages:
 
 ### Gradient System
 
-Nike avoids UI gradients. When gradients appear, they are photographic — applied to product hero backgrounds (e.g., a red shoe on a red-to-deeper-red gradient). The design system itself is flat-color only.
+Nike 避免 UI gradients。当 gradients 出现时，它们是 photographic 的，用在 product hero backgrounds 上（例如 red shoe on a red-to-deeper-red gradient）。Design system 本身只使用 flat-color。
 
 ## 3. Typography Rules
 
 ### Font Family
 
-**Display:** Nike Futura ND (custom condensed Futura variant exclusive to Nike)
+**Display:** Nike Futura ND（Nike 专属 custom condensed Futura variant）
 - Fallbacks: Helvetica Now Text Medium, Helvetica, Arial
-- Used exclusively for large uppercase display headlines
-- Characteristically tight line-height (0.90) and uppercase transform
+- 只用于 large uppercase display headlines
+- 特征是 tight line-height（0.90）和 uppercase transform
 
 **Heading:** Helvetica Now Display Medium
 - Fallbacks: Helvetica, Arial
-- Used for section headings and product titles at 24–32px
+- 用于 24-32px 的 section headings 和 product titles
 
-**Body Medium:** Helvetica Now Text Medium (weight 500)
+**Body Medium:** Helvetica Now Text Medium（weight 500）
 - Fallbacks: Helvetica, Arial
-- Used for links, buttons, captions, emphasized body text
+- 用于 links、buttons、captions、emphasized body text
 
-**Body:** Helvetica Now Text (weight 400)
+**Body:** Helvetica Now Text（weight 400）
 - Fallbacks: Helvetica, Arial
-- Used for standard body copy, descriptions, metadata
+- 用于 standard body copy、descriptions、metadata
 
-**Arabic:** Neue Frutiger Arabic — locale-specific alternative
+**Arabic:** Neue Frutiger Arabic；locale-specific alternative
 
 ### Hierarchy
 
@@ -120,7 +120,7 @@ Nike avoids UI gradients. When gradients appear, they are photographic — appli
 
 ### Principles
 
-Nike's typography is a study in tension. The display layer — Nike Futura ND at 96px with a devastating 0.90 line-height — is engineered to feel like a stadium scoreboard: massive, condensed, uppercase, impossible to ignore. It transforms headlines into battle cries. Below the display layer, Helvetica Now provides a clinical counterpoint: Swiss-precision legibility with generous 1.75 line-height for comfortable product browsing. Weight 500 (Medium) dominates throughout the body text, giving Nike's prose a slight assertiveness without the heaviness of bold — every sentence reads like a confident recommendation, not a shout.
+Nike 的 typography 是一套 tension study。Display layer 中，96px、0.90 line-height 的 Nike Futura ND 被设计得像 stadium scoreboard：massive、condensed、uppercase，让人无法忽视。它把 headlines 变成 battle cries。在 display layer 下方，Helvetica Now 提供 clinical counterpoint：Swiss-precision legibility 加 generous 1.75 line-height，让 product browsing 更舒适。Weight 500（Medium）贯穿 body text，让 Nike 的 prose 带轻微 assertiveness，却没有 bold 的沉重感；每句话都像 confident recommendation，而不是 shout。
 
 ## 4. Component Stylings
 
@@ -132,7 +132,7 @@ Nike's typography is a study in tension. The display layer — Nike Futura ND at
 - Border: none
 - Border radius: fully rounded pill (30px)
 - Padding: ~12px 24px
-- Hover: background shifts to Grey-500 (`#707072`), text hover color
+- Hover: background 切换到 Grey-500 (`#707072`)，text hover color
 - Active: scale(0) ripple effect with opacity 0.5
 - Focus: 2px box-shadow ring in `rgba(39, 93, 197, 1)`
 - Transition: background 200ms ease
@@ -140,14 +140,14 @@ Nike's typography is a study in tension. The display layer — Nike Futura ND at
 **Primary on Dark**
 - Background: White (`#FFFFFF`)
 - Text: Black (`#111111`)
-- Hover: background shifts to Grey-300 (`#CACACB`)
+- Hover: background 切换到 Grey-300 (`#CACACB`)
 
 **Secondary (Outlined)**
 - Background: transparent
 - Text: Nike Black (`#111111`)
 - Border: 1.5px solid `#CACACB` (grey-300)
 - Border radius: 30px
-- Hover: border darkens to `#707072`, background to grey-200
+- Hover: border 加深到 `#707072`，background 到 grey-200
 
 **Disabled**
 - Background: Grey-200 (`#E5E5E5`)
@@ -156,27 +156,27 @@ Nike's typography is a study in tension. The display layer — Nike Futura ND at
 
 **Icon Button**
 - Background: Grey-100 (`#F5F5F5`)
-- Shape: 30px radius (or 50% for circular)
+- Shape: 30px radius（或 50% circular）
 - Padding: 6px
 - Hover: Grey-500 background
 
 ### Cards & Containers
 
-- Background: White (`#FFFFFF`) — no visible card boundary in most cases
-- Border radius: 0px for product image cards (edge-to-edge imagery), 20px for interactive containers
-- Shadow: none — Nike uses no card shadows whatsoever
-- Hover: no lift effect on product cards; underline on text links within cards
-- Product cards: image on top (no radius), text metadata below with 12px gap
-- Category cards: full-bleed photography with text overlay on dark gradient
-- Transition: opacity 200ms ease for image swap on hover
+- Background: White (`#FFFFFF`)；大多数情况下没有 visible card boundary
+- Border radius: product image cards 为 0px（edge-to-edge imagery），interactive containers 为 20px
+- Shadow: none；Nike 完全不使用 card shadows
+- Hover: product cards 没有 lift effect；cards 内 text links 使用 underline
+- Product cards: image on top（no radius），下方 text metadata，间距 12px
+- Category cards: full-bleed photography，叠加 text overlay on dark gradient
+- Transition: hover image swap 使用 opacity 200ms ease
 
 ### Inputs & Forms
 
 - Background: Grey-100 (`#F5F5F5`)
-- Border: 1px solid `#CACACB` when visible, or borderless on search
-- Border radius: 24px (search inputs), 8px (form inputs)
+- Border: 可见时为 1px solid `#CACACB`，search 中可以 borderless
+- Border radius: search inputs 为 24px，form inputs 为 8px
 - Font: Helvetica Now Text, 16px
-- Focus: border shifts to `#111111` (border-active), 2px focus ring in `rgba(39, 93, 197, 1)`
+- Focus: border 切换到 `#111111`（border-active），2px focus ring in `rgba(39, 93, 197, 1)`
 - Error: border `#D30005` (critical)
 - Placeholder: Grey-500 (`#707072`)
 - Transition: border-color 200ms ease
@@ -184,35 +184,35 @@ Nike's typography is a study in tension. The display layer — Nike Futura ND at
 ### Navigation
 
 - Background: White (`#FFFFFF`), sticky
-- Height: ~60px desktop
-- Left: Nike Swoosh logo (24x24px SVG)
-- Center: Category links (New & Featured, Men, Women, Kids, Sale) in 16px/500 Helvetica Now Text Medium
-- Right: Search (24px radius input), Favorites, Cart icons
-- Hover: text color shifts to Grey-500 (`#707072`)
+- Height: desktop 约 60px
+- Left: Nike Swoosh logo（24x24px SVG）
+- Center: Category links（New & Featured、Men、Women、Kids、Sale），16px/500 Helvetica Now Text Medium
+- Right: Search（24px radius input）、Favorites、Cart icons
+- Hover: text color 切换到 Grey-500 (`#707072`)
 - Mobile: hamburger menu, full-screen overlay
-- Top banner: promotional message bar with dark background (#111111) and white text
+- Top banner: dark background（#111111）和 white text 的 promotional message bar
 
 ### Image Treatment
 
-- Hero images: full-bleed, no border radius, edge-to-edge
-- Product grid: square (1:1) or 4:3 aspect ratio, no border radius
-- Category cards: 16:9 or 4:3, full-bleed with text overlay
+- Hero images: full-bleed、no border radius、edge-to-edge
+- Product grid: square（1:1）或 4:3 aspect ratio，无 border radius
+- Category cards: 16:9 或 4:3，full-bleed with text overlay
 - Image placeholder: Grey-100 (`#F5F5F5`) solid background
-- Lazy loading: native loading="lazy", skeleton uses #F5F5F5 bg
-- Product hover: secondary image swap (front → side view)
+- Lazy loading: native loading="lazy"，skeleton uses #F5F5F5 bg
+- Product hover: secondary image swap（front → side view）
 
 ### Promotional Banners
 
 - Full-width dark (`#111111`) background with white text
-- Tight padding (8-12px vertical)
-- Centered text, 12px/500 Helvetica Now Text Medium
-- Used for shipping promotions, member benefits, sale announcements
+- Tight padding（8-12px vertical）
+- Centered text，12px/500 Helvetica Now Text Medium
+- 用于 shipping promotions、member benefits、sale announcements
 
 ## 5. Layout Principles
 
 ### Spacing System
 
-Base unit: 4px (primary grid is 8px multiples)
+Base unit: 4px（primary grid 是 8px multiples）
 
 | Token | Value | Use |
 |-------|-------|-----|
@@ -231,14 +231,14 @@ Base unit: 4px (primary grid is 8px multiples)
 
 - Max container width: 1920px
 - Standard content width: ~1440px with horizontal padding
-- Product grid: 3-column on desktop, 2-column on tablet, 1-column on mobile
+- Product grid: desktop 3-column，tablet 2-column，mobile 1-column
 - Category grid: 3-column with full-bleed images
-- Grid gap: 4-12px between product cards (intentionally tight)
-- Horizontal padding: 48px desktop, 24px tablet, 16px mobile
+- Grid gap: product cards 之间 4-12px（刻意 tight）
+- Horizontal padding: desktop 48px，tablet 24px，mobile 16px
 
 ### Whitespace Philosophy
 
-Nike's whitespace strategy is deliberately aggressive — not in the luxurious, breathing way of a fashion brand, but in a compressed, high-density way that fills every pixel with either content or intentional absence. Product grids use minimal gaps (4-12px) to create a sense of abundance and choice. Section breaks are generous (48-80px) to separate shopping contexts. The overall effect is a store that feels packed with product while remaining navigable — like a well-organized athletic superstore.
+Nike 的 whitespace strategy 刻意 aggressive；不是 fashion brand 那种奢侈、呼吸感强的方式，而是 compressed、high-density，把每个 pixel 都填入 content 或 intentional absence。Product grids 使用 minimal gaps（4-12px）创造 abundance 和 choice 的感觉。Section breaks 则 generous（48-80px），用来分隔 shopping contexts。整体效果像一家 well-organized athletic superstore：产品很满，但仍然 navigable。
 
 ### Border Radius Scale
 
@@ -261,40 +261,40 @@ Nike's whitespace strategy is deliberately aggressive — not in the luxurious, 
 | Focus | `0 0 0 2px rgba(39, 93, 197, 1)` | Keyboard focus ring |
 | Overlay | Dark scrim over photography | Text-on-image legibility |
 
-Nike's elevation philosophy is radically flat. There are no card shadows, no hover lifts, no floating elements. Depth is communicated exclusively through color — dark sections recede, light sections advance, grey shifts indicate state changes. This flatness reinforces the athletic, no-nonsense brand personality: no visual frills, just direct communication. The only "shadow" in the entire system is a 1px inset divider line and the accessibility-required focus ring.
+Nike 的 elevation philosophy 极度 flat。没有 card shadows、没有 hover lifts、没有 floating elements。Depth 完全通过 color 传达：dark sections 后退，light sections 前进，grey shifts 表示 state changes。这种 flatness 强化 athletic、no-nonsense 的 brand personality：没有 visual frills，只有直接沟通。整个系统中唯一的 “shadow” 是 1px inset divider line 和 accessibility-required focus ring。
 
 ### Decorative Depth
 
-- **Hero photography overlays**: Dark gradient scrims over full-bleed photography for text readability
-- **Product background gradients**: Colored backgrounds behind hero product shots (e.g., red shoe on red gradient)
-- **Banner bars**: Solid dark (#111111) promotional strips at page top
+- **Hero photography overlays**: Full-bleed photography 上的 dark gradient scrims，用于 text readability
+- **Product background gradients**: Hero product shots 背后的 colored backgrounds（例如 red shoe on red gradient）
+- **Banner bars**: Page top 的 solid dark（#111111）promotional strips
 
 ## 7. Do's and Don'ts
 
 ### Do
 
-- Use Nike Black (#111111) for all primary text — never pure #000000
-- Keep buttons pill-shaped (30px radius) and limited to primary/secondary variants
-- Use full-bleed, edge-to-edge photography for hero sections — no border radius on images
-- Let product photography provide all color vibrancy; keep UI monochromatic
-- Use uppercase Nike Futura ND ONLY for display headlines (96px+)
-- Maintain tight product grid gaps (4-12px) for a dense, abundant feel
-- Use Grey-100 (#F5F5F5) for all input and placeholder backgrounds
-- Reserve color exclusively for semantic meaning (red=error, green=success, blue=link)
-- Use weight 500 (Medium) for all interactive text elements
+- 所有 primary text 使用 Nike Black (#111111)；不要用 pure #000000
+- Buttons 保持 pill-shaped（30px radius），并限制为 primary/secondary variants
+- Hero sections 使用 full-bleed、edge-to-edge photography；images 不要 border radius
+- 让 product photography 提供所有 color vibrancy；UI 保持 monochromatic
+- Uppercase Nike Futura ND 只用于 display headlines（96px+）
+- Product grid gaps 保持 tight（4-12px），制造 dense、abundant feel
+- 所有 input 和 placeholder backgrounds 使用 Grey-100 (#F5F5F5)
+- Color 只保留给 semantic meaning（red=error、green=success、blue=link）
+- 所有 interactive text elements 使用 weight 500（Medium）
 
 ### Don't
 
-- Don't add shadows to cards — Nike's elevation model is entirely flat
-- Don't use border radius on product imagery — only UI elements get rounded corners
-- Don't introduce brand colors beyond the grey scale for UI elements
-- Don't use Nike Futura ND below 24px — it's exclusively a display face
-- Don't add hover lift effects — Nike cards don't animate on hover
-- Don't use regular weight (400) for buttons or links — always use 500
-- Don't place colored backgrounds behind UI elements — color is reserved for product contexts
-- Don't use more than two levels of text hierarchy per card (title + body)
-- Don't add decorative dividers — the 1px inset is the only divider pattern
-- Don't soften the contrast — Nike's design deliberately pushes black-on-white to maximum
+- 不要给 cards 添加 shadows；Nike 的 elevation model 完全 flat
+- Product imagery 不要使用 border radius；只有 UI elements 才有 rounded corners
+- UI elements 不要引入 grey scale 之外的 brand colors
+- Nike Futura ND 不要用于 24px 以下；它只属于 display face
+- 不要添加 hover lift effects；Nike cards 不在 hover 时做动画 lift
+- Buttons 或 links 不要使用 regular weight（400）；始终使用 500
+- UI elements 背后不要放 colored backgrounds；color 只保留给 product contexts
+- 每张 card 不要使用超过两个 text hierarchy levels（title + body）
+- 不要添加 decorative dividers；1px inset 是唯一 divider pattern
+- 不要柔化 contrast；Nike design 有意把 black-on-white 推到 maximum
 
 ## 8. Responsive Behavior
 
@@ -318,20 +318,20 @@ Nike's elevation philosophy is radically flat. There are no card shadows, no hov
 
 ### Collapsing Strategy
 
-- **Navigation**: Full category links → hamburger menu below 960px; search, favorites, cart icons remain visible
-- **Product grids**: 3-col → 2-col at 960px → 1-col at 640px
-- **Hero sections**: Display text scales from 96px → 64px → 48px; hero images remain full-bleed at all sizes
-- **Category cards**: 3-col → 2-col → 1-col with maintained full-bleed imagery
-- **Section padding**: 80px → 48px → 32px → 24px as viewport narrows
-- **Promotional banner**: text wraps or truncates, maintains dark background
+- **Navigation**: 960px 以下从 full category links → hamburger menu；search、favorites、cart icons 保持可见
+- **Product grids**: 960px 时 3-col → 2-col，640px 时 → 1-col
+- **Hero sections**: Display text 从 96px → 64px → 48px 缩放；hero images 在所有尺寸保持 full-bleed
+- **Category cards**: 3-col → 2-col → 1-col，并保持 full-bleed imagery
+- **Section padding**: 随 viewport 变窄从 80px → 48px → 32px → 24px
+- **Promotional banner**: text wraps 或 truncates，同时保持 dark background
 
 ### Image Behavior
 
-- Responsive images via Nike CDN (`c.static-nike.com`) with width parameters
-- Product images: srcset with multiple resolutions (w_320, w_640, w_960, w_1920)
-- Hero images: full-bleed at all breakpoints, aspect ratio shifts (16:9 desktop → 4:3 mobile)
-- Lazy loading: native loading="lazy", grey-100 placeholder during load
-- Art direction: hero crops change between desktop and mobile compositions
+- 通过 Nike CDN（`c.static-nike.com`）与 width parameters 提供 responsive images
+- Product images: srcset 包含多个 resolutions（w_320、w_640、w_960、w_1920）
+- Hero images: 所有 breakpoints 下 full-bleed，aspect ratio 会变化（desktop 16:9 → mobile 4:3）
+- Lazy loading: native loading="lazy"，加载期间使用 grey-100 placeholder
+- Art direction: desktop 与 mobile compositions 之间 hero crops 会变化
 
 ## 9. Agent Prompt Guide
 
@@ -356,11 +356,11 @@ Nike's elevation philosophy is radically flat. There are no card shadows, no hov
 
 ### Iteration Guide
 
-When refining existing screens generated with this design system:
-1. Focus on ONE component at a time
-2. Reference specific color names and hex codes from this document
-3. Remember: product photography is the color — UI stays monochromatic
-4. Use the grey scale for state changes: #F5F5F5 → #E5E5E5 → #CACACB → #707072
-5. If something feels too colorful in the UI, it probably is — Nike keeps UI greyscale
-6. Display type (Nike Futura) should ALWAYS be uppercase and never below 24px
-7. Body type (Helvetica Now) should almost always be weight 500 for interactive elements
+使用此 design system 细化已生成 screens 时：
+1. 一次只聚焦一个 component
+2. 引用本文档中的 specific color names 和 hex codes
+3. 记住：product photography 才是 color；UI 保持 monochromatic
+4. 使用 grey scale 表达 state changes：#F5F5F5 → #E5E5E5 → #CACACB → #707072
+5. 如果 UI 中某个东西感觉太 colorful，它大概率确实太 colorful；Nike 让 UI 保持 greyscale
+6. Display type（Nike Futura）必须始终 uppercase，且永远不要低于 24px
+7. Body type（Helvetica Now）在 interactive elements 中几乎总是 weight 500

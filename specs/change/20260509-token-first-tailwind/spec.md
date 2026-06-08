@@ -5,317 +5,317 @@ status: designed
 created: '2026-05-09'
 ---
 
-## Overview
+## 概览
 
-### Problem Statement
+### 问题陈述
 
-- Current frontend styles are concentrated in `index.css`. When contributors change UI, they often edit the same global CSS file, increasing the chance of code conflicts.
-- The project already has a CSS variable token system. It needs to become the visual source for Tailwind so contributors mainly express styles in TSX through Tailwind utilities.
-- The refactor needs to keep the existing frontend presentation stable, especially the overall page style and visual tone.
+- 当前 frontend styles 集中在 `index.css`。Contributors 修改 UI 时，经常编辑同一个 global CSS file，增加 code conflicts 的概率。
+- 项目已经有 CSS variable token system。它需要成为 Tailwind 的 visual source，让 contributors 主要通过 TSX 中的 Tailwind utilities 表达 styles。
+- 这次 refactor 需要保持既有 frontend presentation 稳定，尤其是整体页面风格和 visual tone。
 
-### Goals
+### 目标
 
-- Implement token-first Tailwind: Tailwind is the style authoring and composition tool, while visual tokens continue to come from existing CSS variables.
-- Migrate component styles in existing TSX that depend on global CSS classes to token-first Tailwind `className` values, reducing day-to-day dependency on `index.css` edits.
-- Reduce conflict probability from the global CSS hotspot file during multi-contributor work.
-- Keep the existing page style, light/dark themes, warm paper-like tone, and overall presentation stable.
-- Establish repeatable agent visual comparison validation: each development worktree and baseline worktree starts its own web/daemon pair, and an agent equipped with the agent-browser CLI and Chrome DevTools MCP compares frontend presentation across the two services. The comparison uses screenshots as the primary evidence and component source inspection as supporting context to confirm visual consistency and prevent display drift before and after the refactor.
+- 实现 token-first Tailwind：Tailwind 作为 style authoring 和 composition tool，而 visual tokens 继续来自既有 CSS variables。
+- 将现有 TSX 中依赖 global CSS classes 的 component styles 迁移为 token-first Tailwind `className` values，减少日常对 `index.css` edits 的依赖。
+- 在 multi-contributor 工作中，降低 global CSS hotspot file 带来的冲突概率。
+- 保持既有 page style、light/dark themes、warm paper-like tone 和整体 presentation 稳定。
+- 建立可重复的 agent visual comparison validation：每个 development worktree 和 baseline worktree 各自启动 web/daemon pair，配备 agent-browser CLI 和 Chrome DevTools MCP 的 agent 对比两个服务的 frontend presentation。比较以 screenshots 作为 primary evidence，以 component source inspection 作为 supporting context，用来确认 visual consistency，并防止 refactor 前后的 display drift。
 
-### Scope
+### 范围
 
-- Integrate Tailwind and map existing design tokens to usable Tailwind token classes.
-- Keep base tokens, global base styles, and content styles that must remain globally managed in `index.css`.
-- Establish constraints that guide contributors to prefer project tokens and base UI primitives.
-- Preserve the existing component abstraction for this change; fully replace migratable global CSS classes in existing TSX with token-first Tailwind classes.
-- Land the work in batches: first the toolchain, token mapping, and constraints, then migrate existing TSX classes by area while retaining styles that must remain globally managed.
+- 集成 Tailwind，并将现有 design tokens 映射为可用的 Tailwind token classes。
+- 在 `index.css` 中保留必须继续 global 管理的 base tokens、global base styles 和 content styles。
+- 建立 constraints，引导 contributors 优先使用 project tokens 和 base UI primitives。
+- 本次 change 保留既有 component abstraction；将现有 TSX 中可迁移的 global CSS classes 完整替换为 token-first Tailwind classes。
+- 分批落地：先处理 toolchain、token mapping 和 constraints，再按 area 迁移现有 TSX classes，同时保留必须 global 管理的 styles。
 
-### Constraints
+### 约束
 
-- Frontend presentation must not drift during migration, and the overall page style must remain consistent.
-- Full migration is judged by visual equivalence to the current UI, with migration slices organized by page/component area.
-- Tailwind integration validation and migration happen inside existing components; component abstractions remain unchanged.
-- `index.css` continues to carry global tokens and base styles, and the visual source remains the project CSS variables.
+- 迁移期间 frontend presentation 不得漂移，整体 page style 必须保持一致。
+- Full migration 以当前 UI 的 visual equivalence 判断，migration slices 按 page/component area 组织。
+- Tailwind integration validation 和 migration 在现有 components 内完成；component abstractions 保持不变。
+- `index.css` 继续承载 global tokens 和 base styles，visual source 仍是项目 CSS variables。
 
-### Success Criteria
+### 成功标准
 
-- Baseline: at migration start, record that `apps/web/src/index.css` currently has about 16,038 lines and 1,415 CSS class selectors, and `apps/web/src/**/*.tsx` currently has about 51 files and 2,126 `className=` occurrences; the final PR must refresh these numbers in the implementation notes.
-- TSX migration target: migratable component-level global classes are completed by PR slice, and each slice records complete migrated / retained / deferred class lists; after the final slice, normal component UI changes primarily use TSX Tailwind utilities.
-- `index.css` retention target: by the end, it only retains tokens, base, keyframes, loading shell, content-level/third-party boundary styles, and explicitly documented retained global styles; component-level retained global classes need an itemized reason and follow-up point.
-- Guard target: default Tailwind palette utilities and unregistered hardcoded app UI colors fail in `pnpm guard`; each allowlist entry includes file scope, pattern scope, and reason.
-- Visual consistency acceptance target: each development worktree and baseline worktree starts an independent web/daemon service pair. The agent uses agent-browser CLI and Chrome DevTools MCP to compare the same pages, same viewport, same theme/accent state, and same fixture data across the two services. Screenshot comparison is the primary validation artifact; component source inspection is used as supporting evidence when screenshots expose a difference or when a migrated class needs traceability to its token-first Tailwind replacement. Coverage includes Dashboard/app shell, project detail, settings dialog, file viewer/inspect overlay, sketch editor, live artifact card, and modal/popover/control states under light, dark, system, and custom accent. The refactor is accepted when visual effects are consistent and frontend presentation does not drift; any layout offset, token color drift, radius/shadow difference, or theme-state difference must be fixed or recorded as an approved deviation.
+- Baseline：migration 开始时记录 `apps/web/src/index.css` 当前约有 16,038 行和 1,415 个 CSS class selectors，`apps/web/src/**/*.tsx` 当前约有 51 个 files 和 2,126 个 `className=` occurrences；final PR 必须在 implementation notes 中刷新这些数字。
+- TSX migration target：可迁移的 component-level global classes 按 PR slice 完成，每个 slice 记录完整的 migrated / retained / deferred class lists；最终 slice 后，常规 component UI changes 主要使用 TSX Tailwind utilities。
+- `index.css` retention target：结束时只保留 tokens、base、keyframes、loading shell、content-level/third-party boundary styles，以及明确记录的 retained global styles；component-level retained global classes 需要逐项说明 reason 和 follow-up point。
+- Guard target：default Tailwind palette utilities 和未注册的 hardcoded app UI colors 会让 `pnpm guard` 失败；每个 allowlist entry 都包含 file scope、pattern scope 和 reason。
+- Visual consistency acceptance target：每个 development worktree 和 baseline worktree 启动独立的 web/daemon service pair。Agent 使用 agent-browser CLI 和 Chrome DevTools MCP，在两个服务之间对比相同 pages、相同 viewport、相同 theme/accent state 和相同 fixture data。Screenshot comparison 是 primary validation artifact；当 screenshots 暴露 difference，或 migrated class 需要追踪到 token-first Tailwind replacement 时，component source inspection 作为 supporting evidence。Coverage 包括 Dashboard/app shell、project detail、settings dialog、file viewer/inspect overlay、sketch editor、live artifact card，以及 light、dark、system、custom accent 下的 modal/popover/control states。当 visual effects 一致且 frontend presentation 不漂移时，refactor 才可接受；任何 layout offset、token color drift、radius/shadow difference 或 theme-state difference 都必须修复，或记录为 approved deviation。
 
-## Research
+## 研究
 
-### Existing System
+### 现有系统
 
-- The global CSS entry for `apps/web` is the `../src/index.css` import in the Next root layout. Source: `apps/web/app/layout.tsx:1-4`
-- The product shell runs as a client SPA through `dynamic(() => import('../../src/App'), { ssr: false })`; the loading shell still depends on the global class `od-loading-shell`. Source: `apps/web/app/[[...slug]]/client-app.tsx:5-13`
-- Current `apps/web` dependencies include Next, React, React DOM, and testing tools, with no Tailwind, PostCSS, or Autoprefixer declared in `dependencies` / `devDependencies`. Source: `apps/web/package.json:30-50`
-- The root package only keeps repository-level tool scripts and TypeScript/tsx dev dependencies, with no Tailwind/PostCSS packages declared in root devDependencies. Source: `package.json:12-29`
-- The current visual source is concentrated in CSS variables in `apps/web/src/index.css`: surface, border, text, accent, semantic colors, shadow, radius, and font tokens are all defined in `:root`. Source: `apps/web/src/index.css:6-63`
-- Dark theme overrides the same token set through `[data-theme="dark"]`, and system mode overrides tokens through `@media (prefers-color-scheme: dark)` and `html:not([data-theme])`. Source: `apps/web/src/index.css:65-157`
-- Base reset, body font/background/text color, and loading shell are globally defined in `index.css`. Source: `apps/web/src/index.css:160-181`
-- `index.css` also carries component styling responsibilities, such as global selectors for button base, primary, and ghost variants. Source: `apps/web/src/index.css:183-219`
-- `index.css` also carries global animation and complex component-area styles, such as settings modal keyframes and live artifact badge/card styles. Source: `apps/web/src/index.css:1121-1143,6219-6299`
-- Existing TSX connects to `index.css` through many semantic global classes. Full migration needs to inline the visual semantics of those classes as token-first Tailwind utilities by functional area, while retaining loading shell, keyframes, and content-level styles that must apply across trees in global CSS. Source: `apps/web/src/index.css:183-219,1121-1143,6219-6299`; `apps/web/src/runtime/markdown.tsx:112-196`; `apps/web/src/components/SketchEditor.tsx:220-339`; `apps/web/src/components/pet/PetRail.tsx:58-170`
-- Runtime supports user-custom accent color: `applyAppearanceToDocument()` writes `--accent*` CSS variables to `document.documentElement`, and mix ratios must stay consistent with the pre-hydration script. Source: `apps/web/src/state/appearance.ts:17-25,28-52`; `apps/web/app/layout.tsx:21-29`
-- The local web runtime in this repository should start through `pnpm tools-dev run web --namespace <name> --daemon-port <port> --web-port <port>`. Runtime files and IPC sockets are namespace-scoped, so the development worktree and baseline worktree need different namespace values as well as different daemon/web ports to run independent service pairs concurrently. Source: `AGENTS.md:40-45,82-89,91-104`
+- `apps/web` 的 global CSS entry 是 Next root layout 中的 `../src/index.css` import。Source: `apps/web/app/layout.tsx:1-4`
+- Product shell 通过 `dynamic(() => import('../../src/App'), { ssr: false })` 作为 client SPA 运行；loading shell 仍依赖 global class `od-loading-shell`。Source: `apps/web/app/[[...slug]]/client-app.tsx:5-13`
+- 当前 `apps/web` dependencies 包含 Next、React、React DOM 和 testing tools，但 `dependencies` / `devDependencies` 中没有声明 Tailwind、PostCSS 或 Autoprefixer。Source: `apps/web/package.json:30-50`
+- Root package 只保留 repository-level tool scripts 和 TypeScript/tsx dev dependencies，root devDependencies 中没有声明 Tailwind/PostCSS packages。Source: `package.json:12-29`
+- 当前 visual source 集中在 `apps/web/src/index.css` 的 CSS variables 中：surface、border、text、accent、semantic colors、shadow、radius 和 font tokens 都定义在 `:root`。Source: `apps/web/src/index.css:6-63`
+- Dark theme 通过 `[data-theme="dark"]` 覆盖同一组 token，system mode 通过 `@media (prefers-color-scheme: dark)` 和 `html:not([data-theme])` 覆盖 tokens。Source: `apps/web/src/index.css:65-157`
+- Base reset、body font/background/text color 和 loading shell 都在 `index.css` 中 global 定义。Source: `apps/web/src/index.css:160-181`
+- `index.css` 还承担 component styling responsibilities，例如 button base、primary 和 ghost variants 的 global selectors。Source: `apps/web/src/index.css:183-219`
+- `index.css` 也承载 global animation 和复杂 component-area styles，例如 settings modal keyframes 与 live artifact badge/card styles。Source: `apps/web/src/index.css:1121-1143,6219-6299`
+- 现有 TSX 通过大量 semantic global classes 连接到 `index.css`。Full migration 需要按 functional area 将这些 classes 的 visual semantics inline 为 token-first Tailwind utilities，同时在 global CSS 中保留必须跨 trees 生效的 loading shell、keyframes 和 content-level styles。Source: `apps/web/src/index.css:183-219,1121-1143,6219-6299`; `apps/web/src/runtime/markdown.tsx:112-196`; `apps/web/src/components/SketchEditor.tsx:220-339`; `apps/web/src/components/pet/PetRail.tsx:58-170`
+- Runtime 支持 user-custom accent color：`applyAppearanceToDocument()` 将 `--accent*` CSS variables 写入 `document.documentElement`，mix ratios 必须与 pre-hydration script 保持一致。Source: `apps/web/src/state/appearance.ts:17-25,28-52`; `apps/web/app/layout.tsx:21-29`
+- 本 repository 的 local web runtime 应通过 `pnpm tools-dev run web --namespace <name> --daemon-port <port> --web-port <port>` 启动。Runtime files 和 IPC sockets 按 namespace 隔离，因此 development worktree 与 baseline worktree 需要不同 namespace values，并使用不同 daemon/web ports，以便并发运行独立 service pairs。Source: `AGENTS.md:40-45,82-89,91-104`
 
-### Available Approaches
+### 可选方案
 
-- Tailwind CSS v4's official Next.js integration path uses `tailwindcss`, `@tailwindcss/postcss`, and `postcss`; PostCSS config loads `@tailwindcss/postcss`. The app imports Tailwind theme and utilities layers while keeping Preflight omitted. Retained element/reset rules that may conflict with migrated utilities need to live in an earlier base layer or be removed/constrained before migrating affected elements, because unlayered CSS outranks normal layered utilities. Source: `https://tailwindcss.com/docs/guides/nextjs`; `https://tailwindcss.com/docs/installation/using-postcss`; `https://tailwindcss.com/docs/preflight`; `https://developer.mozilla.org/en-US/docs/Web/CSS/@layer`
-- Tailwind CSS v4 supports CSS-first theme variables, where the `--color-*` namespace in `@theme` generates color utilities such as `bg-*`, `text-*`, and `border-*`. Source: `https://tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/customizing-colors`
-- Tailwind CSS v4 can clear the default color namespace with `--color-*: initial`, then declare only color variables that correspond to project tokens. Source: `https://tailwindcss.com/docs/customizing-colors`
-- Tailwind CSS v3 primarily configures theme colors through `tailwind.config.js` / `theme.colors`; the v4 official docs move theme values to CSS theme variables. Source: `https://v3.tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/upgrade-guide`
-- The existing repository `guard` mechanism already aggregates checks in a TypeScript script and sets a non-zero exit code on failure, so it can be extended as the token/Tailwind constraint entrypoint. Source: `scripts/guard.ts:6-9,401-422`
-- Web tests live under `apps/web/tests/`. Existing Vitest coverage for components, runtime, state, and providers is a fit for lightweight tests around new helper functions and style constraints. Source: `apps/AGENTS.md:19-24`; `apps/web/package.json:23-29`
-- Visual consistency validation can be performed by an agent with browser automation capability comparing two local service pairs: a baseline worktree running pre-migration code and a development worktree running the current slice. The agent checks display consistency under the same scenario, viewport, theme/accent, and fixture data, using screenshot comparison as the main evidence and component source inspection as auxiliary evidence for drift diagnosis and migration traceability. Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
+- Tailwind CSS v4 的 official Next.js integration path 使用 `tailwindcss`、`@tailwindcss/postcss` 和 `postcss`；PostCSS config 加载 `@tailwindcss/postcss`。App import Tailwind theme 和 utilities layers，同时省略 Preflight。可能与 migrated utilities 冲突的 retained element/reset rules，需要放在更早的 base layer，或在迁移受影响 elements 前移除/约束，因为 unlayered CSS 优先级高于 normal layered utilities。Source: `https://tailwindcss.com/docs/guides/nextjs`; `https://tailwindcss.com/docs/installation/using-postcss`; `https://tailwindcss.com/docs/preflight`; `https://developer.mozilla.org/en-US/docs/Web/CSS/@layer`
+- Tailwind CSS v4 支持 CSS-first theme variables，`@theme` 中的 `--color-*` namespace 会生成 `bg-*`、`text-*` 和 `border-*` 等 color utilities。Source: `https://tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/customizing-colors`
+- Tailwind CSS v4 可以用 `--color-*: initial` 清空 default color namespace，然后只声明与 project tokens 对应的 color variables。Source: `https://tailwindcss.com/docs/customizing-colors`
+- Tailwind CSS v3 主要通过 `tailwind.config.js` / `theme.colors` 配置 theme colors；v4 official docs 将 theme values 移到 CSS theme variables。Source: `https://v3.tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/upgrade-guide`
+- 现有 repository `guard` mechanism 已经在 TypeScript script 中聚合 checks，并在 failure 时设置 non-zero exit code，因此可以扩展为 token/Tailwind constraint entrypoint。Source: `scripts/guard.ts:6-9,401-422`
+- Web tests 位于 `apps/web/tests/`。现有 components、runtime、state 和 providers 的 Vitest coverage 适合为新 helper functions 与 style constraints 添加 lightweight tests。Source: `apps/AGENTS.md:19-24`; `apps/web/package.json:23-29`
+- Visual consistency validation 可由具备 browser automation capability 的 agent 执行，对比两个 local service pairs：baseline worktree 运行 pre-migration code，development worktree 运行 current slice。Agent 在相同 scenario、viewport、theme/accent 和 fixture data 下检查 display consistency，以 screenshot comparison 作为 main evidence，以 component source inspection 作为 drift diagnosis 与 migration traceability 的 auxiliary evidence。Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
 
-### Alternatives Considered
+### 已考虑的替代方案
 
-- Keep CSS variables plus CSS Modules or component-scoped CSS: this preserves the current token source and reduces selector leakage, while continuing to require a separate stylesheet edit path for most UI changes. The chosen path keeps CSS variables as the visual source and moves component composition into TSX where contributors already edit behavior.
-- Introduce a smaller project utility layer without Tailwind: a custom utility layer could expose only approved tokens, while the team would own naming, variants, responsive states, editor tooling expectations, and guard behavior. Tailwind v4 provides the utility compiler and variant system while still allowing the project to clear the default color namespace.
-- Use Tailwind with a JS config or compatibility layer: a JS config can centralize theme values, while this repository's TypeScript-first guard and Tailwind v4 CSS-first model favor `@theme` values colocated with existing CSS variables. The PostCSS `.mjs` entry remains a narrow tool compatibility file and must be explicitly allowlisted.
-- Extract shared UI primitives before class migration: primitives would reduce repeated class strings, while they would also turn this spec into a component architecture migration. This plan keeps current component boundaries, migrates visual expression first, and leaves primitive extraction as a later refactor once token utilities are stable.
+- 保留 CSS variables，并增加 CSS Modules 或 component-scoped CSS：这能保留当前 token source 并减少 selector leakage，但多数 UI changes 仍需要单独 stylesheet edit path。选定路径会保留 CSS variables 作为 visual source，并将 component composition 移到 contributors 已经编辑行为的 TSX 中。
+- 不使用 Tailwind，改为引入较小的 project utility layer：custom utility layer 可以只暴露 approved tokens，但 team 需要自行维护 naming、variants、responsive states、editor tooling expectations 和 guard behavior。Tailwind v4 提供 utility compiler 和 variant system，同时仍允许项目清空 default color namespace。
+- 使用带 JS config 或 compatibility layer 的 Tailwind：JS config 可以集中 theme values，但本 repository 的 TypeScript-first guard 和 Tailwind v4 CSS-first model 更适合将 `@theme` values 与现有 CSS variables colocate。PostCSS `.mjs` entry 仍是窄范围 tool compatibility file，必须显式 allowlist。
+- 在 class migration 前提取 shared UI primitives：primitives 能减少重复 class strings，但也会把这个 spec 变成 component architecture migration。本计划保持当前 component boundaries，先迁移 visual expression，并在 token utilities 稳定后再把 primitive extraction 作为后续 refactor。
 
-### Constraints & Dependencies
+### 约束与依赖
 
-- Migration must follow app test directory boundaries: `apps/web` tests live in `apps/web/tests/`; visual consistency validation for this spec is performed by an agent comparing two local service pairs with agent-browser CLI and Chrome DevTools MCP, recorded in phase notes as the development acceptance workflow. Source: `apps/AGENTS.md:19-24`; `AGENTS.md:82-89`
-- Dual-worktree comparison requires independent namespace values and daemon/web port assignments for the baseline and development worktrees; `tools-dev` supports `--namespace`, `--daemon-port`, and `--web-port`. Source: `AGENTS.md:40-45,82-89,91-104`
-- The root command boundary keeps repository-level checks such as `pnpm guard` and `pnpm typecheck`; web validation uses package-scoped commands. Source: `AGENTS.md#Root command boundary`; `apps/AGENTS.md:39-51`
-- Adding Tailwind/PostCSS dependencies or config changes package manifests / build entries, so `pnpm install` must run to keep workspace links and the lockfile consistent. Source: `AGENTS.md#Validation strategy`; `apps/web/package.json:23-29`
-- Reasonable hardcoded color scenarios currently exist: Agent brand icons use brand gradients and SVG colors; Sketch canvas uses user drawing colors and canvas drawing colors; FileViewer `rgbToHex()` converts user content colors. Source: `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
-- Governable token deviations also currently exist: `NewProjectPanel` SVG preview uses hardcoded colors that match or are close to existing token values; `SettingsDialog` local inline styles use legacy token fallbacks. Source: `apps/web/src/components/NewProjectPanel.tsx:797-825`; `apps/web/src/components/SettingsDialog.tsx:3807-3953`
-- `index.css` still contains component status colors using specific hex/rgba values, such as blue/red hardcoded colors for live artifact refreshing/failed badges. Before migrating these styles, classify status tokens, brand colors, user content colors, and one-off illustration colors. Source: `apps/web/src/index.css:6270-6288`
+- Migration 必须遵循 app test directory boundaries：`apps/web` tests 位于 `apps/web/tests/`；本 spec 的 visual consistency validation 由 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 对比两个 local service pairs 完成，并作为 development acceptance workflow 记录在 phase notes 中。Source: `apps/AGENTS.md:19-24`; `AGENTS.md:82-89`
+- Dual-worktree comparison 需要为 baseline 和 development worktrees 分配独立 namespace values 与 daemon/web ports；`tools-dev` 支持 `--namespace`、`--daemon-port` 和 `--web-port`。Source: `AGENTS.md:40-45,82-89,91-104`
+- Root command boundary 保留 `pnpm guard` 和 `pnpm typecheck` 等 repository-level checks；web validation 使用 package-scoped commands。Source: `AGENTS.md#Root command boundary`; `apps/AGENTS.md:39-51`
+- 添加 Tailwind/PostCSS dependencies 或 config changes 会修改 package manifests / build entries，因此必须运行 `pnpm install`，保持 workspace links 和 lockfile 一致。Source: `AGENTS.md#Validation strategy`; `apps/web/package.json:23-29`
+- 当前存在合理的 hardcoded color scenarios：Agent brand icons 使用 brand gradients 和 SVG colors；Sketch canvas 使用 user drawing colors 和 canvas drawing colors；FileViewer `rgbToHex()` 转换 user content colors。Source: `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
+- 当前也存在可治理的 token deviations：`NewProjectPanel` SVG preview 使用与现有 token values 匹配或接近的 hardcoded colors；`SettingsDialog` local inline styles 使用 legacy token fallbacks。Source: `apps/web/src/components/NewProjectPanel.tsx:797-825`; `apps/web/src/components/SettingsDialog.tsx:3807-3953`
+- `index.css` 仍包含使用特定 hex/rgba values 的 component status colors，例如 live artifact refreshing/failed badges 的 blue/red hardcoded colors。迁移这些 styles 前，需要分类 status tokens、brand colors、user content colors 和 one-off illustration colors。Source: `apps/web/src/index.css:6270-6288`
 
-### Key References
+### 关键参考
 
-- `apps/web/app/layout.tsx:1-44` - web layout, CSS import, and pre-hydration theme/accent script.
-- `apps/web/app/[[...slug]]/client-app.tsx:1-17` - client-only App entry and loading shell class.
-- `apps/web/src/index.css:1-219,1121-1143,6219-6299` - tokens, base, global component styles, keyframes, and live artifact styles.
-- `apps/web/src/state/appearance.ts:1-52` - runtime theme/accent CSS variable writes.
-- `apps/web/package.json:23-50` - web scripts and dependency surface.
-- `AGENTS.md:40-45,82-89,91-104` - tools-dev local lifecycle, web/daemon ports, and validation command boundaries.
-- `scripts/guard.ts:138-151,205-221,328-350,401-422` - existing guard shape and failure behavior.
-- `apps/AGENTS.md:19-24,39-51` - app test/layout and validation boundaries.
-- `specs/change/20260509-token-first-tailwind/token.md` - Tailwind color/radius/shadow/font token vocabulary, existing CSS variable mapping, native spacing/type decision, and guardrail target.
+- `apps/web/app/layout.tsx:1-44` - web layout、CSS import 和 pre-hydration theme/accent script。
+- `apps/web/app/[[...slug]]/client-app.tsx:1-17` - client-only App entry 和 loading shell class。
+- `apps/web/src/index.css:1-219,1121-1143,6219-6299` - tokens、base、global component styles、keyframes 和 live artifact styles。
+- `apps/web/src/state/appearance.ts:1-52` - runtime theme/accent CSS variable writes。
+- `apps/web/package.json:23-50` - web scripts 和 dependency surface。
+- `AGENTS.md:40-45,82-89,91-104` - tools-dev local lifecycle、web/daemon ports 和 validation command boundaries。
+- `scripts/guard.ts:138-151,205-221,328-350,401-422` - existing guard shape 和 failure behavior。
+- `apps/AGENTS.md:19-24,39-51` - app test/layout 和 validation boundaries。
+- `specs/change/20260509-token-first-tailwind/token.md` - Tailwind color/radius/shadow/font token vocabulary、existing CSS variable mapping、native spacing/type decision 和 guardrail target。
 - `https://tailwindcss.com/docs/guides/nextjs` - Tailwind v4 Next.js setup.
 - `https://tailwindcss.com/docs/theme` - Tailwind v4 CSS-first theme variables and namespaces.
 
-## Design
+## 设计
 
 ### Change Scope
 
-- Scope: `apps/web` style toolchain. Impact: add Tailwind v4/PostCSS dependencies and config at the web package boundary because `@open-design/web` owns `dev/build/typecheck/test` scripts and currently declares no Tailwind/PostCSS dependencies. Source: `apps/web/package.json:23-50`; `https://tailwindcss.com/docs/guides/nextjs`
-- Scope: `apps/web/src/index.css`. Impact: keep CSS variables, dark/system theme overrides, reset, body styles, loading shell, keyframes, and truly global content styles; add Tailwind import/theme/base layers in the same entry so the existing `layout.tsx` import remains the only global CSS entry, move retained conflicting element/reset rules into `@layer base` or constrain them before the affected TSX migration, and remove component-level global classes that have moved to TSX. Source: `apps/web/app/layout.tsx:1-4`; `apps/web/src/index.css:6-181,1121-1143,6219-6299`
-- Scope: existing `apps/web/src/**/*.tsx`. Impact: migrate replaceable global CSS classes to token-first Tailwind `className` values by page/component area while keeping DOM structure and component responsibilities stable. Source: `apps/web/src/index.css:183-219`; `apps/web/src/**/*.tsx`
-- Scope: token mapping. Impact: expose existing color, radius, shadow, and font CSS variables as Tailwind theme variables while preserving runtime custom accent behavior that writes to the same `--accent*` variables; use native Tailwind utilities for spacing and standard typography sizes, with exact `text-ui-*` aliases for existing non-standard UI sizes where visual parity requires them. Source: `apps/web/src/index.css:6-63`; `apps/web/src/state/appearance.ts:17-52`; `apps/web/app/layout.tsx:21-29`; `specs/change/20260509-token-first-tailwind/token.md`; `https://tailwindcss.com/docs/theme`
-- Scope: constraints. Impact: extend the repository guard to reject default Tailwind palette classes, add hardcoded color detection with staged enforcement, and maintain allowlists for brand/user-content scenarios. Source: `scripts/guard.ts:138-151,205-221`; `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
-- Scope: testing and validation. Impact: web-owned tests live in `apps/web/tests/`; validate through `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`. Source: `apps/AGENTS.md:19-24,39-51`; `AGENTS.md#Validation strategy`
-- Scope: agent visual consistency validation. Impact: each development slice uses a baseline worktree and development worktree, each running its own web/daemon pair; the agent compares the same scenarios across both services through the agent-browser CLI and Chrome DevTools MCP, using screenshots as the primary comparison record and component source inspection as auxiliary evidence, to validate consistent frontend display before and after the refactor. Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
+- Scope: `apps/web` style toolchain。Impact：在 web package boundary 添加 Tailwind v4/PostCSS dependencies 和 config，因为 `@open-design/web` 拥有 `dev/build/typecheck/test` scripts，且当前没有声明 Tailwind/PostCSS dependencies。Source: `apps/web/package.json:23-50`; `https://tailwindcss.com/docs/guides/nextjs`
+- Scope: `apps/web/src/index.css`。Impact：保留 CSS variables、dark/system theme overrides、reset、body styles、loading shell、keyframes 和真正 global 的 content styles；在同一入口添加 Tailwind import/theme/base layers，让既有 `layout.tsx` import 仍是唯一 global CSS entry；将 retained conflicting element/reset rules 移入 `@layer base`，或在受影响 TSX migration 前约束它们，并移除已迁移到 TSX 的 component-level global classes。Source: `apps/web/app/layout.tsx:1-4`; `apps/web/src/index.css:6-181,1121-1143,6219-6299`
+- Scope: existing `apps/web/src/**/*.tsx`。Impact：按 page/component area 将可替换的 global CSS classes 迁移为 token-first Tailwind `className` values，同时保持 DOM structure 和 component responsibilities 稳定。Source: `apps/web/src/index.css:183-219`; `apps/web/src/**/*.tsx`
+- Scope: token mapping。Impact：将既有 color、radius、shadow 和 font CSS variables 暴露为 Tailwind theme variables，同时保留写入同一组 `--accent*` variables 的 runtime custom accent behavior；spacing 和标准 typography sizes 使用 native Tailwind utilities，只有视觉一致性需要时才提供精确的 `text-ui-*` aliases。Source: `apps/web/src/index.css:6-63`; `apps/web/src/state/appearance.ts:17-52`; `apps/web/app/layout.tsx:21-29`; `specs/change/20260509-token-first-tailwind/token.md`; `https://tailwindcss.com/docs/theme`
+- Scope: constraints。Impact：扩展 repository guard，拒绝 default Tailwind palette classes，加入 staged enforcement 的 hardcoded color detection，并维护 brand/user-content scenarios 的 allowlists。Source: `scripts/guard.ts:138-151,205-221`; `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
+- Scope: testing and validation。Impact：web-owned tests 位于 `apps/web/tests/`；通过 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build` 验证。Source: `apps/AGENTS.md:19-24,39-51`; `AGENTS.md#Validation strategy`
+- Scope: agent visual consistency validation。Impact：每个 development slice 使用 baseline worktree 和 development worktree，各自运行自己的 web/daemon pair；agent 通过 agent-browser CLI 和 Chrome DevTools MCP 对比两个服务中的相同 scenarios，以 screenshots 作为 primary comparison record，以 component source inspection 作为 auxiliary evidence，用来验证 refactor 前后的 frontend display 一致性。Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
 
 ### Design Decisions
 
-- Decision: use Tailwind CSS v4 in `apps/web`, with `tailwindcss`, `@tailwindcss/postcss`, and `postcss`, configured through PostCSS, and import the official layered theme/utilities CSS entries in the existing global CSS entry: `@layer theme, base, utilities;`, `@import "tailwindcss/theme.css" layer(theme);`, and `@import "tailwindcss/utilities.css" layer(utilities);`. This keeps Tailwind Preflight out of the foundation slice while putting retained base rules that must coexist with utilities into `@layer base`; unlayered element rules that set properties later migrated to utilities must be removed, constrained, or moved into the base layer before those elements migrate. Add the narrow local border-style reset from Tailwind's Preflight contract inside `@layer base` so `border border-*` utilities render solid borders from the later utilities layer without importing the full Preflight reset. Source: `apps/web/package.json:23-50`; `apps/web/app/layout.tsx:1-4`; `apps/web/src/index.css:183-219`; `https://tailwindcss.com/docs/guides/nextjs`; `https://tailwindcss.com/docs/preflight#border-styles-are-reset`; `https://developer.mozilla.org/en-US/docs/Web/CSS/@layer`
-- Decision: define Tailwind theme values through CSS `@theme` because v4 converts `--color-*` theme variables into utilities such as `bg-*`, `text-*`, and `border-*`. Source: `https://tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/customizing-colors`
-- Decision: map Tailwind color tokens to existing runtime CSS variables, such as `--color-bg: var(--bg)`, `--color-panel: var(--bg-panel)`, `--color-accent: var(--accent)`, `--color-danger: var(--red)`, and `--color-success: var(--green)`. Source: `apps/web/src/index.css:6-63`; `apps/web/src/state/appearance.ts:17-52`; `specs/change/20260509-token-first-tailwind/token.md`
-- Decision: clear Tailwind's default color namespace with `--color-*: initial` before declaring project colors, so project classes express the Open Design token set. Source: `https://tailwindcss.com/docs/customizing-colors`; `apps/web/src/index.css:6-49`
-- Decision: keep theme state and custom accent behavior CSS-variable-first; Tailwind utilities resolve through variables and automatically inherit light/dark/system/user accent changes. Source: `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`; `apps/web/app/layout.tsx:21-29`
-- Decision: `index.css` continues to own token definitions, layered reset/base behavior, loading shell, keyframes, and cross-content-area styles; this change preserves existing component abstractions and migrates all replaceable component-level global classes in existing TSX to token-first Tailwind classes. Any retained unlayered selector must avoid overriding migrated utilities for the same element/property, and migration notes must call out the resolution for conflicts such as global button base declarations. Source: `apps/web/src/index.css:160-219,1121-1143,6219-6299`; `apps/web/app/[[...slug]]/client-app.tsx:5-13`
-- Decision: add project-owned style constraint checks inside `scripts/guard.ts`, reusing the existing guard aggregation model and root command boundary. Source: `scripts/guard.ts:138-151,205-221,401-422`; `AGENTS.md#Root command boundary`
-- Decision: allow explicit exceptions for brand assets, SVG illustrations, canvas/user content colors, and color conversion helpers; app UI chrome uses token classes or CSS variables. Source: `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
-- Decision: project custom Tailwind tokens cover color, radius, shadow, and font; radius/shadow/font utilities resolve to existing CSS variables so cards, popovers, modals, inputs, buttons, dark-theme shadow overrides, editorial typography, and code/file-path text keep their current visuals; spacing and typography scale use native Tailwind utilities, with exact text-size aliases for current 9px, 10px, 10.5px, 11px, 11.5px, 12.5px, 13px, and 13.5px UI. Source: `specs/change/20260509-token-first-tailwind/token.md`
-- Decision: after dependency or config-related package changes, run `pnpm install`, then run package-scoped web validation and repo checks. Source: `AGENTS.md#Validation strategy`; `apps/web/package.json:23-29`
-- Decision: migration acceptance uses dual-worktree agent comparison. Every migration PR runs independent web/daemon pairs for the baseline and development worktrees, and the agent checks visual consistency for the same scenarios across both services. Screenshot comparison is the required primary artifact; component source inspection supports diagnosis and traceability for migrated styles. Display drift is fixed or recorded as an approved deviation. Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
+- Decision：在 `apps/web` 使用 Tailwind CSS v4，配套 `tailwindcss`、`@tailwindcss/postcss` 和 `postcss`，通过 PostCSS 配置，并在既有 global CSS entry 中 import official layered theme/utilities CSS entries：`@layer theme, base, utilities;`、`@import "tailwindcss/theme.css" layer(theme);` 和 `@import "tailwindcss/utilities.css" layer(utilities);`。这让 Tailwind Preflight 不进入 foundation slice，同时把需要与 utilities 共存的 retained base rules 放进 `@layer base`；后续要迁移到 utilities 的 properties 所在的 unlayered element rules，必须在 affected elements 迁移前移除、约束或移入 base layer。在 `@layer base` 内添加来自 Tailwind Preflight contract 的 narrow local border-style reset，让 `border border-*` utilities 在不 import 完整 Preflight reset 的情况下，也能通过后续 utilities layer 渲染 solid borders。Source: `apps/web/package.json:23-50`; `apps/web/app/layout.tsx:1-4`; `apps/web/src/index.css:183-219`; `https://tailwindcss.com/docs/guides/nextjs`; `https://tailwindcss.com/docs/preflight#border-styles-are-reset`; `https://developer.mozilla.org/en-US/docs/Web/CSS/@layer`
+- Decision：通过 CSS `@theme` 定义 Tailwind theme values，因为 v4 会把 `--color-*` theme variables 转成 `bg-*`、`text-*`、`border-*` 等 utilities。Source: `https://tailwindcss.com/docs/theme`; `https://tailwindcss.com/docs/customizing-colors`
+- Decision：将 Tailwind color tokens 映射到既有 runtime CSS variables，例如 `--color-bg: var(--bg)`、`--color-panel: var(--bg-panel)`、`--color-accent: var(--accent)`、`--color-danger: var(--red)` 和 `--color-success: var(--green)`。Source: `apps/web/src/index.css:6-63`; `apps/web/src/state/appearance.ts:17-52`; `specs/change/20260509-token-first-tailwind/token.md`
+- Decision：在声明 project colors 前，用 `--color-*: initial` 清空 Tailwind default color namespace，让 project classes 表达 Open Design token set。Source: `https://tailwindcss.com/docs/customizing-colors`; `apps/web/src/index.css:6-49`
+- Decision：保持 theme state 和 custom accent behavior CSS-variable-first；Tailwind utilities 通过 variables 解析，并自动继承 light/dark/system/user accent changes。Source: `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`; `apps/web/app/layout.tsx:21-29`
+- Decision：`index.css` 继续拥有 token definitions、layered reset/base behavior、loading shell、keyframes 和 cross-content-area styles；本 change 保留既有 component abstractions，并将现有 TSX 中所有可替换 component-level global classes 迁移为 token-first Tailwind classes。任何 retained unlayered selector 都不能覆盖同一 element/property 的 migrated utilities，migration notes 必须说明 global button base declarations 等 conflicts 的解决方式。Source: `apps/web/src/index.css:160-219,1121-1143,6219-6299`; `apps/web/app/[[...slug]]/client-app.tsx:5-13`
+- Decision：在 `scripts/guard.ts` 内添加 project-owned style constraint checks，复用既有 guard aggregation model 和 root command boundary。Source: `scripts/guard.ts:138-151,205-221,401-422`; `AGENTS.md#Root command boundary`
+- Decision：允许 brand assets、SVG illustrations、canvas/user content colors 和 color conversion helpers 的明确 exceptions；app UI chrome 使用 token classes 或 CSS variables。Source: `apps/web/src/components/AgentIcon.tsx:46-99`; `apps/web/src/components/SketchEditor.tsx:72,144-149`; `apps/web/src/components/FileViewer.tsx:1448-1474`
+- Decision：Project custom Tailwind tokens 覆盖 color、radius、shadow 和 font；radius/shadow/font utilities 解析到既有 CSS variables，让 cards、popovers、modals、inputs、buttons、dark-theme shadow overrides、editorial typography 和 code/file-path text 保持当前 visuals；spacing 和 typography scale 使用 native Tailwind utilities，并为当前 9px、10px、10.5px、11px、11.5px、12.5px、13px 和 13.5px UI 提供精确 text-size aliases。Source: `specs/change/20260509-token-first-tailwind/token.md`
+- Decision：dependency 或 config 相关 package changes 后，运行 `pnpm install`，再运行 package-scoped web validation 和 repo checks。Source: `AGENTS.md#Validation strategy`; `apps/web/package.json:23-29`
+- Decision：Migration acceptance 使用 dual-worktree agent comparison。每个 migration PR 为 baseline 和 development worktrees 运行独立 web/daemon pairs，agent 在两个服务中检查相同 scenarios 的 visual consistency。Screenshot comparison 是必需 primary artifact；component source inspection 支持 diagnosis 和 migrated styles traceability。Display drift 必须修复，或记录为 approved deviation。Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
 
-### Why this design
+### 为什么这样设计
 
-- Existing CSS variables continue to carry visual truth, so light/dark/system themes and custom accent behavior stay stable while Tailwind becomes the component-level composition language.
-- After component-level styles in existing TSX migrate to Tailwind classes, day-to-day UI changes mostly land in local component files, reducing global CSS hotspot conflicts.
-- Contributors get a constrained Tailwind vocabulary that directly matches the product's warm paper-like visual language.
-- Tailwind foundations land first, then guardrails and area-by-area migration complete the TSX class replacement, reducing style refactor risk.
-- Dual-worktree agent comparison turns “visual equivalence” into a repeatable migration gate, letting human review focus on approved deviations and product judgment.
+- 既有 CSS variables 继续承载 visual truth，因此 light/dark/system themes 和 custom accent behavior 保持稳定，同时 Tailwind 成为 component-level composition language。
+- 现有 TSX 中的 component-level styles 迁移到 Tailwind classes 后，日常 UI changes 大多落在本地 component files，减少 global CSS hotspot conflicts。
+- Contributors 得到受约束的 Tailwind vocabulary，直接匹配 product 的 warm paper-like visual language。
+- Tailwind foundations 先落地，再通过 guardrails 和 area-by-area migration 完成 TSX class replacement，降低 style refactor risk。
+- Dual-worktree agent comparison 将 “visual equivalence” 变成可重复 migration gate，让 human review 聚焦 approved deviations 和 product judgment。
 
 ### Test Strategy
 
-- Toolchain: run `pnpm install`, then `pnpm --filter @open-design/web build`, proving the Next/Tailwind/PostCSS integration compiles. Source: `apps/web/package.json:23-29`; `AGENTS.md#Validation strategy`
-- Type safety: after config and TS guard changes, run `pnpm typecheck` and `pnpm --filter @open-design/web typecheck`. Source: `AGENTS.md#Validation strategy`; `apps/AGENTS.md:39-51`
-- Constraint mechanism: add/extend guard coverage for disallowed default palette classes, and add hardcoded UI color detection plus allowlist scaffolding in Phase 1. Existing hardcoded UI colors stay classified as migration inventory or explicit exceptions until the component migration phases tighten enforcement by area; Phase 6 runs the strict app UI check. Source: `scripts/guard.ts:138-151,205-221,401-422`
-- Web tests: when adding style-policy helper logic, add focused Vitest coverage under `apps/web/tests/`. Source: `apps/AGENTS.md:19-24`; `apps/web/package.json:23-29`
-- Agent visual consistency validation: run `pnpm tools-dev run web --namespace baseline --daemon-port <port> --web-port <port>` in the baseline worktree and `pnpm tools-dev run web --namespace candidate --daemon-port <port> --web-port <port>` in the development worktree; the agent uses agent-browser CLI and Chrome DevTools MCP to compare screenshots for major pages/component areas, fixed viewport, light/dark/system themes, and custom accent across the two services, with component source inspection used to explain differences and confirm class migration traceability. Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
-- Manual visual review: use the agent comparison record to check Dashboard/app shell, project detail, settings dialog, file viewer/inspect overlay, sketch editor, live artifact card, and modal/popover/control states; approved deviations must be included in implementation notes.
+- Toolchain：运行 `pnpm install`，然后运行 `pnpm --filter @open-design/web build`，证明 Next/Tailwind/PostCSS integration 能 compile。Source: `apps/web/package.json:23-29`; `AGENTS.md#Validation strategy`
+- Type safety：config 和 TS guard changes 后，运行 `pnpm typecheck` 和 `pnpm --filter @open-design/web typecheck`。Source: `AGENTS.md#Validation strategy`; `apps/AGENTS.md:39-51`
+- Constraint mechanism：增加/扩展 guard coverage，覆盖 disallowed default palette classes，并在 Phase 1 加入 hardcoded UI color detection 和 allowlist scaffolding。现有 hardcoded UI colors 在 component migration phases 按 area 收紧 enforcement 前，继续分类为 migration inventory 或 explicit exceptions；Phase 6 运行 strict app UI check。Source: `scripts/guard.ts:138-151,205-221,401-422`
+- Web tests：添加 style-policy helper logic 时，在 `apps/web/tests/` 下增加 focused Vitest coverage。Source: `apps/AGENTS.md:19-24`; `apps/web/package.json:23-29`
+- Agent visual consistency validation：在 baseline worktree 中运行 `pnpm tools-dev run web --namespace baseline --daemon-port <port> --web-port <port>`，在 development worktree 中运行 `pnpm tools-dev run web --namespace candidate --daemon-port <port> --web-port <port>`；agent 使用 agent-browser CLI 和 Chrome DevTools MCP，对两个服务的 major pages/component areas、fixed viewport、light/dark/system themes 和 custom accent 进行 screenshot comparison，并用 component source inspection 解释 differences 和确认 class migration traceability。Source: `AGENTS.md:40-45,82-89,91-104`; `apps/web/src/index.css:65-157`; `apps/web/src/state/appearance.ts:28-52`
+- Manual visual review：使用 agent comparison record 检查 Dashboard/app shell、project detail、settings dialog、file viewer/inspect overlay、sketch editor、live artifact card，以及 modal/popover/control states；approved deviations 必须写入 implementation notes。
 
 ### File Structure
 
-- `apps/web/package.json` - add Tailwind/PostCSS dependencies at the web package boundary.
-- `apps/web/postcss.config.mjs` - configure the Tailwind v4 PostCSS plugin; this file needs an exact-path allowlist entry in the residual JavaScript guard because the PostCSS config loader consumes a `.mjs` config entry.
-- `apps/web/src/index.css` - retain global tokens/base styles, add Tailwind import/theme aliases, add the narrow local border-style reset needed by Tailwind border utilities when Preflight is omitted, and layer or constrain retained element/reset selectors before migrated utilities depend on overriding the same properties.
-- `specs/change/20260509-token-first-tailwind/token.md` - record Tailwind color/radius/shadow/font token naming, mapping to existing CSS variables, and the design decision to use native Tailwind utilities for spacing/type.
-- `apps/web/src/**/*.tsx` - fully replace migratable global CSS classes with token-first Tailwind classes.
-- `scripts/guard.ts` - add the PostCSS config residual JavaScript allowlist and style policy checks to the existing repo guard.
-- `apps/web/tests/` - add focused tests when extracting style policy helpers.
-- `phase*-notes.md` - each PR slice records commands/results, screenshot artifact links or paths, exact dual-worktree startup parameters or full commands, service URLs, namespace names, agent comparison coverage scenarios, discovered visual drift, and approved deviations.
+- `apps/web/package.json` - 在 web package boundary 添加 Tailwind/PostCSS dependencies。
+- `apps/web/postcss.config.mjs` - 配置 Tailwind v4 PostCSS plugin；因为 PostCSS config loader 会消费 `.mjs` config entry，所以这个文件需要在 residual JavaScript guard 中加入精确路径 allowlist entry。
+- `apps/web/src/index.css` - 保留 global tokens/base styles，添加 Tailwind import/theme aliases，添加省略 Preflight 时 Tailwind border utilities 所需的窄范围 local border-style reset，并在迁移后的 utilities 依赖覆盖同类 properties 前，对保留的 element/reset selectors 进行 layer 处理或约束。
+- `specs/change/20260509-token-first-tailwind/token.md` - 记录 Tailwind color/radius/shadow/font token naming、到现有 CSS variables 的 mapping，以及 spacing/type 使用 native Tailwind utilities 的 design decision。
+- `apps/web/src/**/*.tsx` - 用 token-first Tailwind classes 完整替换可迁移的 global CSS classes。
+- `scripts/guard.ts` - 将 PostCSS config residual JavaScript allowlist 和 style policy checks 加入现有 repo guard。
+- `apps/web/tests/` - 在抽取 style policy helpers 时添加 focused tests。
+- `phase*-notes.md` - 每个 PR slice 记录 commands/results、screenshot artifact links 或 paths、精确 dual-worktree startup parameters 或完整 commands、service URLs、namespace names、agent comparison coverage scenarios、发现的 visual drift 和 approved deviations。
 
 ### Edge Cases
 
-- Custom accent color updates Tailwind-derived accent utilities because the utilities resolve through `var(--accent*)`.
-- Dark/system mode continues working because token values still come from `[data-theme="dark"]` and `html:not([data-theme])` media overrides.
-- Brand icons, user sketch colors, canvas drawing colors, and file color conversion helpers require explicit allowlist handling.
-- Loading shell stays global because it renders before the client SPA component tree is available.
-- Existing long-tail global CSS needs classification: component-level styles migrate to TSX, while loading shell, keyframes, third-party/content rendering boundaries, and truly cross-tree styles remain global.
+- Custom accent color 会更新 Tailwind-derived accent utilities，因为这些 utilities 通过 `var(--accent*)` resolve。
+- Dark/system mode 会继续工作，因为 token values 仍来自 `[data-theme="dark"]` 和 `html:not([data-theme])` media overrides。
+- Brand icons、user sketch colors、canvas drawing colors 和 file color conversion helpers 需要显式 allowlist 处理。
+- Loading shell 保持 global，因为它会在 client SPA component tree 可用之前渲染。
+- 现有 long-tail global CSS 需要分类：component-level styles 迁移到 TSX，而 loading shell、keyframes、third-party/content rendering boundaries 和真正 cross-tree 的 styles 保持 global。
 
 ### Guardrail Rules
 
-Guard needs to cover three rule categories and record file scope, match pattern, and reason for every exception.
+Guard 需要覆盖三类规则，并为每个 exception 记录 file scope、match pattern 和 reason。
 
-1. Default Tailwind palette class check: reject default palette utilities such as `text-red-500`, `bg-white`, `border-zinc-200`, `from-orange-500`, and `ring-blue-400` in app UI files. Allowed color utilities come from project tokens exposed through `@theme` in `token.md`.
-2. Hardcoded UI color check: Phase 1 adds detection, keyword exemptions, allowlist structure, and fixture/temp-sample validation while existing hardcoded UI colors remain classified as migration inventory or explicit exceptions. Component migration phases then reject unregistered `#hex`, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and real named colors in the areas being migrated. Phase 6 tightens this to the remaining app UI surface after migrated colors are gone. CSS-wide/special keywords such as `transparent`, `currentColor` / `currentcolor`, `inherit`, `initial`, `unset`, and `revert` express transparency, inheritance, or reset semantics, so guard should explicitly exempt them or handle them by property semantics. When real unregistered colors are found, prefer migrating them to Tailwind token classes or CSS variables; any arbitrary color that appears repeatedly should be promoted to a named token.
-3. Explicit allowlist check: allow brand assets, SVG illustrations, user accent input, canvas/sketch user colors, user-authored file/inspect color conversion, external document/iframe/popup runtime HTML, and test fixtures. The allowlist should be as narrow as possible, with reasons annotated by file, function, or pattern, so path-level exemptions do not cover normal UI chrome.
+1. Default Tailwind palette class check：拒绝 app UI files 中的 default palette utilities，例如 `text-red-500`、`bg-white`、`border-zinc-200`、`from-orange-500` 和 `ring-blue-400`。允许的 color utilities 来自 `token.md` 中通过 `@theme` 暴露的 project tokens。
+2. Hardcoded UI color check：Phase 1 添加 detection、keyword exemptions、allowlist structure 和 fixture/temp-sample validation，同时现有 hardcoded UI colors 保持分类为 migration inventory 或 explicit exceptions。后续 component migration phases 会在被迁移区域拒绝未注册的 `#hex`、`rgb()`、`rgba()`、`hsl()`、`hsla()` 和真实 named colors。Phase 6 会在已迁移 colors 清理后，把约束收紧到剩余 app UI surface。`transparent`、`currentColor` / `currentcolor`、`inherit`、`initial`、`unset` 和 `revert` 等 CSS-wide/special keywords 表达 transparency、inheritance 或 reset semantics，因此 guard 应显式 exempt 它们，或按 property semantics 处理。发现真实未注册 colors 时，优先迁移为 Tailwind token classes 或 CSS variables；任何重复出现的 arbitrary color 都应提升为 named token。
+3. Explicit allowlist check：允许 brand assets、SVG illustrations、user accent input、canvas/sketch user colors、user-authored file/inspect color conversion、external document/iframe/popup runtime HTML 和 test fixtures。Allowlist 应尽可能窄，并按 file、function 或 pattern 标注 reasons，避免 path-level exemptions 覆盖普通 UI chrome。
 
 ### Open Questions
 
 | Question | Resolution point |
 | --- | --- |
-| Initial style guard allowlist structure and fixture/temp-sample scopes | Phase 1 before guard scaffolding lands |
-| Final strict hardcoded-color allowlist and app UI path/pattern scopes | Phase 6 before strict enforcement lands |
-| Exact dual-worktree port assignments, scenario matrix, and agent comparison note format | Phase 1 before Phase 2 merges |
+| Initial style guard allowlist structure 和 fixture/temp-sample scopes | Phase 1，在 guard scaffolding 落地前 |
+| Final strict hardcoded-color allowlist 和 app UI path/pattern scopes | Phase 6，在 strict enforcement 落地前 |
+| 精确的 dual-worktree port assignments、scenario matrix 和 agent comparison note format | Phase 1，在 Phase 2 merge 前 |
 | Final retained global CSS inventory | Phase 6 |
-| Dynamic class handling policy for each migrated component | During each phase before replacing dynamic class composition |
-| Threshold for promoting repeated arbitrary colors to named tokens | Phase 1; default policy is promotion after the second real app UI use |
-| Deferred component areas | Before Phase 6 |
+| 每个 migrated component 的 dynamic class handling policy | 每个 phase 中，在替换 dynamic class composition 前 |
+| 将重复 arbitrary colors 提升为 named tokens 的 threshold | Phase 1；default policy 是第二次真实 app UI 使用后提升 |
+| Deferred component areas | Phase 6 前 |
 
-## Plan
+## 计划
 
-Each phase maps to one PR. Every PR must be reviewable on its own, keep business logic stable, and include a migrated / retained / deferred class inventory for its slice. Rollback is handled by reverting the PR.
+每个 phase 对应一个 PR。每个 PR 都必须能够独立 review、保持 business logic 稳定，并为其 slice 包含 migrated / retained / deferred class inventory。Rollback 通过 revert 对应 PR 处理。
 
 ### Phase 1: Foundation PR
 
-Goal: add Tailwind v4 infrastructure, expose Open Design tokens as Tailwind utilities, and land the first style guard scaffolding.
+Goal：添加 Tailwind v4 infrastructure，将 Open Design tokens 暴露为 Tailwind utilities，并落地第一版 style guard scaffolding。
 
 - [x] Step 1: Install Tailwind foundations
-  - [x] Substep 1.1 Implement: Add Tailwind v4/PostCSS dependencies to `apps/web/package.json`.
-  - [x] Substep 1.2 Implement: Add a web-local PostCSS config for `@tailwindcss/postcss`.
-  - [x] Substep 1.3 Implement: Add `apps/web/postcss.config.mjs` to the exact residual JavaScript allowlist in `scripts/guard.ts`, with a comment explaining that the PostCSS/Tailwind config entry needs the `.mjs` compatibility format, keeping `pnpm guard` coverage for planned config files.
-  - [x] Substep 1.4 Implement: Import Tailwind theme and utilities layers in `apps/web/src/index.css` with `@layer theme, base, utilities;`, `@import "tailwindcss/theme.css" layer(theme);`, and `@import "tailwindcss/utilities.css" layer(utilities);`, while preserving the existing global entry behavior and excluding Preflight from the foundation slice. Add the narrow local border-style reset in the base layer with `@layer base { *, ::before, ::after, ::backdrop, ::file-selector-button { border: 0 solid; } }` so Tailwind `border` width utilities in the later utilities layer combine with project `border-*` color utilities without requiring `border-solid` on every migrated element. Record the cascade policy that retained element/reset rules which may conflict with migrated utilities must also live in `@layer base`, be constrained to non-migrated scopes, or be removed before the affected elements migrate.
-  - [x] Substep 1.5 Verify: Run `pnpm install`.
-  - [x] Substep 1.6 Verify: Run `pnpm guard` and confirm the PostCSS config allowlist works.
-  - [x] Substep 1.7 Verify: Run `pnpm --filter @open-design/web build`.
+  - [x] Substep 1.1 Implement：向 `apps/web/package.json` 添加 Tailwind v4/PostCSS dependencies。
+  - [x] Substep 1.2 Implement：为 `@tailwindcss/postcss` 添加 web-local PostCSS config。
+  - [x] Substep 1.3 Implement：将 `apps/web/postcss.config.mjs` 加入 `scripts/guard.ts` 中精确的 residual JavaScript allowlist，并用 comment 说明 PostCSS/Tailwind config entry 需要 `.mjs` compatibility format，同时保持 `pnpm guard` 对 planned config files 的 coverage。
+  - [x] Substep 1.4 Implement：在 `apps/web/src/index.css` 中通过 `@layer theme, base, utilities;`、`@import "tailwindcss/theme.css" layer(theme);` 和 `@import "tailwindcss/utilities.css" layer(utilities);` 导入 Tailwind theme 和 utilities layers，同时保留现有 global entry behavior，并在 foundation slice 中排除 Preflight。在 base layer 中添加窄范围 local border-style reset：`@layer base { *, ::before, ::after, ::backdrop, ::file-selector-button { border: 0 solid; } }`，让后续 utilities layer 中的 Tailwind `border` width utilities 能与 project `border-*` color utilities 组合，而不要求每个 migrated element 都写 `border-solid`。记录 cascade policy：可能与 migrated utilities 冲突的 retained element/reset rules，也必须位于 `@layer base`，或被约束到 non-migrated scopes，或在 affected elements 迁移前移除。
+  - [x] Substep 1.5 Verify：运行 `pnpm install`。
+  - [x] Substep 1.6 Verify：运行 `pnpm guard` 并确认 PostCSS config allowlist 生效。
+  - [x] Substep 1.7 Verify：运行 `pnpm --filter @open-design/web build`。
 - [x] Step 2: Expose Open Design tokens as Tailwind utilities
-  - [x] Substep 2.1 Implement: Add CSS-first `@theme` aliases for colors, core semantic status, selection/inspect overlays, radius, shadow, font tokens, and exact existing UI text-size aliases; use native Tailwind utilities for spacing and standard typography scale. Confirm token border examples such as `border border-border` render against the local border-style reset when Preflight is omitted.
-  - [x] Substep 2.2 Implement: Clear default Tailwind colors and declare the project-approved color namespace.
-  - [x] Substep 2.3 Implement: Document the token class vocabulary near the theme block.
-  - [x] Substep 2.4 Verify: Confirm light, dark, system, and custom accent modes all resolve through the same CSS variables.
-  - [x] Substep 2.5 Verify: Run `pnpm --filter @open-design/web build`.
+  - [x] Substep 2.1 Implement：为 colors、core semantic status、selection/inspect overlays、radius、shadow、font tokens 和精确的现有 UI text-size aliases 添加 CSS-first `@theme` aliases；spacing 和 standard typography scale 使用 native Tailwind utilities。确认省略 Preflight 时，`border border-border` 等 token border examples 能依托 local border-style reset 正确渲染。
+  - [x] Substep 2.2 Implement：清空 default Tailwind colors，并声明 project-approved color namespace。
+  - [x] Substep 2.3 Implement：在 theme block 附近记录 token class vocabulary。
+  - [x] Substep 2.4 Verify：确认 light、dark、system 和 custom accent modes 都通过同一组 CSS variables resolve。
+  - [x] Substep 2.5 Verify：运行 `pnpm --filter @open-design/web build`。
 - [x] Step 3: Add base style guardrails
-  - [x] Substep 3.1 Implement: Add a default Tailwind palette class check for app UI code in `scripts/guard.ts`.
-  - [x] Substep 3.2 Implement: Add hardcoded UI color check scaffolding covering `#hex`, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named colors. In Phase 1, keep existing hardcoded UI colors classified as migration inventory or explicit exceptions, and validate the checker through focused fixtures or temporary scoped samples so `pnpm guard` stays green until component migration phases tighten enforcement.
-  - [x] Substep 3.2a Implement: Exempt CSS-wide/special keywords such as `transparent`, `currentColor` / `currentcolor`, `inherit`, `initial`, `unset`, and `revert` in the named-color check so ghost buttons, SVG current-color, and inherit/reset states pass by semantics.
-  - [x] Substep 3.3 Implement: Add an explicit allowlist mechanism covering brand assets, SVG illustrations, user accent input, canvas/sketch user colors, user-authored file/inspect colors, external runtime documents, and tests/fixtures.
-  - [x] Substep 3.4 Implement: If helpers need extraction, add focused tests under `apps/web/tests/`; test fixtures must cover `transparent`, `currentColor` / `currentcolor`, `inherit`, `initial`, `unset`, and `revert` passing, and real unregistered named colors failing.
-  - [x] Substep 3.5 Verify: Run `pnpm guard` and confirm the hardcoded-color scaffolding does not fail known migration inventory items such as legacy `SettingsDialog` fallbacks or component colors still scheduled for later phases.
-  - [x] Substep 3.6 Verify: Temporarily write a default Tailwind native color class in a TSX file, such as `text-red-500`, confirm `pnpm guard` detects it and fails, then remove the temporary code.
-  - [x] Substep 3.7 Verify: Temporarily write an unallowlisted hardcoded color in a guard fixture or temporary scoped sample, such as `style={{ color: '#ff0000' }}`, confirm `pnpm guard` detects it and fails, then remove the temporary code.
-  - [x] Substep 3.8 Verify: Run `pnpm --filter @open-design/web test`.
+  - [x] Substep 3.1 Implement：在 `scripts/guard.ts` 中为 app UI code 添加 default Tailwind palette class check。
+  - [x] Substep 3.2 Implement：添加 hardcoded UI color check scaffolding，覆盖 `#hex`、`rgb()`、`rgba()`、`hsl()`、`hsla()` 和 named colors。在 Phase 1 中，现有 hardcoded UI colors 保持分类为 migration inventory 或 explicit exceptions，并通过 focused fixtures 或 temporary scoped samples 验证 checker，让 `pnpm guard` 在 component migration phases 收紧 enforcement 前保持 green。
+  - [x] Substep 3.2a Implement：在 named-color check 中 exempt `transparent`、`currentColor` / `currentcolor`、`inherit`、`initial`、`unset` 和 `revert` 等 CSS-wide/special keywords，让 ghost buttons、SVG current-color 和 inherit/reset states 按 semantics 通过。
+  - [x] Substep 3.3 Implement：添加 explicit allowlist mechanism，覆盖 brand assets、SVG illustrations、user accent input、canvas/sketch user colors、user-authored file/inspect colors、external runtime documents 和 tests/fixtures。
+  - [x] Substep 3.4 Implement：如果需要抽取 helpers，就在 `apps/web/tests/` 下添加 focused tests；test fixtures 必须覆盖 `transparent`、`currentColor` / `currentcolor`、`inherit`、`initial`、`unset` 和 `revert` passing，以及真实未注册 named colors failing。
+  - [x] Substep 3.5 Verify：运行 `pnpm guard`，确认 hardcoded-color scaffolding 不会让已知 migration inventory items 失败，例如 legacy `SettingsDialog` fallbacks 或仍计划在后续 phases 处理的 component colors。
+  - [x] Substep 3.6 Verify：在 TSX file 中临时写入 default Tailwind native color class，例如 `text-red-500`，确认 `pnpm guard` 能检测并失败，然后移除临时代码。
+  - [x] Substep 3.7 Verify：在 guard fixture 或 temporary scoped sample 中临时写入 unallowlisted hardcoded color，例如 `style={{ color: '#ff0000' }}`，确认 `pnpm guard` 能检测并失败，然后移除临时代码。
+  - [x] Substep 3.8 Verify：运行 `pnpm --filter @open-design/web test`。
 - [x] Step 4: Build migration inventory and agent visual comparison prep
-  - [x] Substep 4.1 Implement: Generate an inventory of global CSS classes referenced in `apps/web/src/**/*.tsx` and map them to definitions in `apps/web/src/index.css`.
-  - [x] Substep 4.2 Implement: Classify classes as component-level migratable styles, global base styles, loading shell, keyframes/animation, content-level/third-party boundary styles, and retained exceptions; identify unlayered element selectors that set properties planned for Tailwind utilities, such as global `button` base rules, and assign each one a remove, constrain, or move-to-`@layer base` resolution before its affected TSX migration slice.
-  - [x] Substep 4.3 Implement: Record the corresponding token-first Tailwind utility combination or migration note for each component-level class.
-  - [x] Substep 4.4 Implement: Define style guard allowlist entries, path/pattern scopes, and the repeated arbitrary color promotion threshold.
-  - [x] Substep 4.5 Verify: Confirm the migration inventory covers all global classes referenced by TSX; the migration inventory is an implementation reference, while actual migration scope and classification follow the current code at implementation time, with on-the-spot judgment for classes added or changed after rebase.
-  - [x] Substep 4.6 Verify: Run `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`.
+  - [x] Substep 4.1 Implement：生成 `apps/web/src/**/*.tsx` 引用的 global CSS classes inventory，并映射到 `apps/web/src/index.css` 中的 definitions。
+  - [x] Substep 4.2 Implement：将 classes 分类为 component-level migratable styles、global base styles、loading shell、keyframes/animation、content-level/third-party boundary styles 和 retained exceptions；识别设置计划由 Tailwind utilities 接管的 properties 的 unlayered element selectors，例如 global `button` base rules，并在 affected TSX migration slice 前为每个 selector 指定 remove、constrain 或 move-to-`@layer base` resolution。
+  - [x] Substep 4.3 Implement：为每个 component-level class 记录对应的 token-first Tailwind utility combination 或 migration note。
+  - [x] Substep 4.4 Implement：定义 style guard allowlist entries、path/pattern scopes 和 repeated arbitrary color promotion threshold。
+  - [x] Substep 4.5 Verify：确认 migration inventory 覆盖所有 TSX 引用的 global classes；migration inventory 是 implementation reference，实际 migration scope 和 classification 按 implementation time 的当前代码决定，并对 rebase 后新增或变更的 classes 做现场判断。
+  - [x] Substep 4.6 Verify：运行 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build`。
 - [x] Step 5: Establish the dual-worktree agent visual comparison workflow
-  - [x] Substep 5.1 Implement: Define the agent comparison scenario list, viewport, theme/accent matrix, fixture data, dual-worktree namespace values and port assignments, screenshot artifact requirements, component source inspection guidance, and phase notes format.
-  - [x] Substep 5.2 Implement: Prepare startup instructions for the baseline and development worktrees: run `pnpm tools-dev run web --namespace baseline --daemon-port <baseline-daemon-port> --web-port <baseline-web-port>` in the baseline worktree and `pnpm tools-dev run web --namespace candidate --daemon-port <candidate-daemon-port> --web-port <candidate-web-port>` in the development worktree so each web/daemon pair has independent runtime files and IPC sockets.
-  - [x] Substep 5.3 Verify: In Phase 1, have an agent equipped with agent-browser CLI and Chrome DevTools MCP smoke-compare the workflow definition against a Dashboard/app shell baseline-vs-development run so the dual-worktree process, screenshot artifact shape, and comparison notes format are proven end to end.
-  - [ ] Substep 5.4 Verify: The full migration gate for follow-up slices remains the complete scenario and theme matrix: Dashboard/app shell, project detail, settings dialog, file viewer/inspect overlay, sketch editor, live artifact card, and modal/popover/control states under light, dark, system, and custom accent. When layout offset, token color drift, radius/shadow differences, or theme-state differences appear, fix the styles or record an approved deviation.
-  - [x] Substep 5.5 Implement: In `phase1-notes.md`, record foundation changes, migration inventory, dual-worktree service URLs, agent comparison coverage scenarios, discovered issues, and approved deviations.
+  - [x] Substep 5.1 Implement：定义 agent comparison scenario list、viewport、theme/accent matrix、fixture data、dual-worktree namespace values 和 port assignments、screenshot artifact requirements、component source inspection guidance，以及 phase notes format。
+  - [x] Substep 5.2 Implement：准备 baseline 和 development worktrees 的 startup instructions：在 baseline worktree 中运行 `pnpm tools-dev run web --namespace baseline --daemon-port <baseline-daemon-port> --web-port <baseline-web-port>`，在 development worktree 中运行 `pnpm tools-dev run web --namespace candidate --daemon-port <candidate-daemon-port> --web-port <candidate-web-port>`，让每组 web/daemon pair 都拥有独立 runtime files 和 IPC sockets。
+  - [x] Substep 5.3 Verify：在 Phase 1 中，让配备 agent-browser CLI 和 Chrome DevTools MCP 的 agent 针对 Dashboard/app shell baseline-vs-development run smoke-compare workflow definition，证明 dual-worktree process、screenshot artifact shape 和 comparison notes format 端到端可用。
+  - [ ] Substep 5.4 Verify：后续 slices 的 full migration gate 仍是完整 scenario 和 theme matrix：Dashboard/app shell、project detail、settings dialog、file viewer/inspect overlay、sketch editor、live artifact card，以及 light、dark、system 和 custom accent 下的 modal/popover/control states。出现 layout offset、token color drift、radius/shadow differences 或 theme-state differences 时，修复 styles，或记录 approved deviation。
+  - [x] Substep 5.5 Implement：在 `phase1-notes.md` 中记录 foundation changes、migration inventory、dual-worktree service URLs、agent comparison coverage scenarios、发现的问题和 approved deviations。
 
 ### Phase 2: Shell and common controls PR
 
-Goal: migrate app shell, buttons, inputs, cards, popovers, and modals using token-backed colors/radius/shadows.
+Goal：使用 token-backed colors/radius/shadows 迁移 app shell、buttons、inputs、cards、popovers 和 modals。
 
 - [ ] Step 6: Migrate shell and common controls
-  - [ ] Substep 6.1 Implement: Replace component-level global classes for app shell, buttons, inputs, cards, popovers, and modals with token-first Tailwind classes according to the migration inventory and `token.md` migration rules, including font aliases, exact text-size aliases, and retained element/reset selector resolution before applying utilities to affected elements.
-  - [ ] Substep 6.2 Implement: For common UI that depends on `--radius*` and `--shadow*`, use variable-backed Tailwind utilities such as `rounded-card`, `rounded-panel`, `rounded-token-pill`, `shadow-token-sm`, and `shadow-token-md`.
-  - [ ] Substep 6.3 Implement: When retaining necessary dynamic class composition, use a complete static class map; cases that need runtime-generated classes must have explicit safelist and guard/test coverage.
-  - [ ] Substep 6.4 Implement: Remove component-level class definitions migrated in this phase from `index.css`, while retaining styles still used by global boundaries.
-  - [ ] Substep 6.5 Verify: Confirm shell/common controls stay visually stable through CSS variables under light, dark, system, and custom accent modes.
-  - [ ] Substep 6.6 Verify: Run `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`.
+  - [ ] Substep 6.1 Implement：根据 migration inventory 和 `token.md` migration rules，将 app shell、buttons、inputs、cards、popovers 和 modals 的 component-level global classes 替换为 token-first Tailwind classes，包括 font aliases、精确 text-size aliases，以及在对 affected elements 应用 utilities 前完成 retained element/reset selector resolution。
+  - [ ] Substep 6.2 Implement：对于依赖 `--radius*` 和 `--shadow*` 的 common UI，使用 variable-backed Tailwind utilities，例如 `rounded-card`、`rounded-panel`、`rounded-token-pill`、`shadow-token-sm` 和 `shadow-token-md`。
+  - [ ] Substep 6.3 Implement：保留必要 dynamic class composition 时，使用完整 static class map；需要 runtime-generated classes 的情况必须有 explicit safelist 和 guard/test coverage。
+  - [ ] Substep 6.4 Implement：从 `index.css` 中移除本 phase 已迁移的 component-level class definitions，同时保留 global boundaries 仍需使用的 styles。
+  - [ ] Substep 6.5 Verify：确认 shell/common controls 在 light、dark、system 和 custom accent modes 下通过 CSS variables 保持视觉稳定。
+  - [ ] Substep 6.6 Verify：运行 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build`。
 - [ ] Step 7: Agent-validate shell and common controls visual equivalence
-  - [ ] Substep 7.1 Verify: Start one web/daemon pair in the baseline worktree and one in the development worktree with distinct `--namespace`, `--daemon-port`, and `--web-port` values; have the agent use agent-browser CLI and Chrome DevTools MCP to compare shell/common controls screenshots, with component source inspection used as supporting context for any drift.
-  - [ ] Substep 7.2 Implement: In `phase2-notes.md`, record this phase's migrated / retained / deferred class list, dual-worktree service URLs, agent comparison results, and approved deviations.
+  - [ ] Substep 7.1 Verify：在 baseline worktree 和 development worktree 中分别启动一组 web/daemon pair，使用不同 `--namespace`、`--daemon-port` 和 `--web-port` values；让 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 对比 shell/common controls screenshots，并将 component source inspection 作为任何 drift 的 supporting context。
+  - [ ] Substep 7.2 Implement：在 `phase2-notes.md` 中记录本 phase 的 migrated / retained / deferred class list、dual-worktree service URLs、agent comparison results 和 approved deviations。
 
 ### Phase 3: Settings and project panels PR
 
-Goal: migrate settings dialogs, project creation, project detail panels, and status surfaces.
+Goal：迁移 settings dialogs、project creation、project detail panels 和 status surfaces。
 
 - [ ] Step 8: Migrate settings and project panel areas
-  - [ ] Substep 8.1 Implement: Replace component-level global classes for settings dialog, project creation, project detail panels, and status surfaces with token-first Tailwind classes according to `token.md` migration rules, including font aliases, exact text-size aliases, and retained element/reset selector resolution before applying utilities to affected elements.
-  - [ ] Substep 8.2 Implement: Migrate legacy token fallbacks in `SettingsDialog` and governable hardcoded colors in project panels to current tokens or Tailwind utilities.
-  - [ ] Substep 8.3 Implement: Use semantic token utilities such as `success`, `info`, `discovery`, `danger`, and `warning` for status surfaces.
-  - [ ] Substep 8.4 Implement: Remove component-level class definitions migrated in this phase from `index.css`, while retaining explicitly documented retained styles.
-  - [ ] Substep 8.5 Verify: Cover visual checks for settings dialog, project creation, project detail, and status surfaces under light/dark/system/custom accent.
-  - [ ] Substep 8.6 Verify: Run `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`.
+  - [ ] Substep 8.1 Implement：根据 `token.md` migration rules，将 settings dialog、project creation、project detail panels 和 status surfaces 的 component-level global classes 替换为 token-first Tailwind classes，包括 font aliases、精确 text-size aliases，以及在对 affected elements 应用 utilities 前完成 retained element/reset selector resolution。
+  - [ ] Substep 8.2 Implement：将 `SettingsDialog` 中的 legacy token fallbacks 和 project panels 中可治理的 hardcoded colors 迁移到 current tokens 或 Tailwind utilities。
+  - [ ] Substep 8.3 Implement：为 status surfaces 使用 `success`、`info`、`discovery`、`danger` 和 `warning` 等 semantic token utilities。
+  - [ ] Substep 8.4 Implement：从 `index.css` 中移除本 phase 已迁移的 component-level class definitions，同时保留显式记录的 retained styles。
+  - [ ] Substep 8.5 Verify：覆盖 light/dark/system/custom accent 下 settings dialog、project creation、project detail 和 status surfaces 的 visual checks。
+  - [ ] Substep 8.6 Verify：运行 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build`。
 - [ ] Step 9: Agent-validate settings and project panel visual equivalence
-  - [ ] Substep 9.1 Verify: Start one web/daemon pair in the baseline worktree and one in the development worktree with distinct `--namespace`, `--daemon-port`, and `--web-port` values; have the agent use agent-browser CLI and Chrome DevTools MCP to compare settings/project panel screenshots, with component source inspection used as supporting context for any drift.
-  - [ ] Substep 9.2 Implement: In `phase3-notes.md`, record this phase's migrated / retained / deferred class list, dual-worktree service URLs, agent comparison results, and approved deviations.
+  - [ ] Substep 9.1 Verify：在 baseline worktree 和 development worktree 中分别启动一组 web/daemon pair，使用不同 `--namespace`、`--daemon-port` 和 `--web-port` values；让 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 对比 settings/project panel screenshots，并将 component source inspection 作为任何 drift 的 supporting context。
+  - [ ] Substep 9.2 Implement：在 `phase3-notes.md` 中记录本 phase 的 migrated / retained / deferred class list、dual-worktree service URLs、agent comparison results 和 approved deviations。
 
 ### Phase 4: File viewer, inspect, and edit-mode PR
 
-Goal: migrate file viewer chrome, inspect/comment overlays, and edit-mode integration to token-first utilities while keeping user-authored file color conversion helpers allowlisted.
+Goal：将 file viewer chrome、inspect/comment overlays 和 edit-mode integration 迁移到 token-first utilities，同时保留 user-authored file color conversion helpers 的 allowlist。
 
 - [ ] Step 10: Migrate file viewer and inspect/edit-mode overlays
-  - [ ] Substep 10.1 Implement: Replace component-level global classes for file viewer app chrome with token-first Tailwind classes according to `token.md` migration rules, including font aliases, exact text-size aliases, and retained element/reset selector resolution before applying utilities to affected elements.
-  - [ ] Substep 10.2 Implement: Migrate inspect/comment overlays to `selection`/`inspect` tokens, such as `bg-selection-overlay`, `border-selection-outline`, `ring-selection-outline`, and `bg-inspect-overlay`.
-  - [ ] Substep 10.3 Implement: Keep file color conversion helpers and user-authored content colors in a narrow allowlist, annotated with a runtime/user-content reason.
-  - [ ] Substep 10.4 Implement: Remove component-level class definitions migrated in this phase from `index.css`, while retaining file/user-content boundary styles.
-  - [ ] Substep 10.5 Verify: Cover visual checks for file viewer, inspect overlay, comment/selection overlay, and edit-mode integration under light/dark/system/custom accent.
-  - [ ] Substep 10.6 Verify: Run `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`.
+  - [ ] Substep 10.1 Implement：根据 `token.md` migration rules，将 file viewer app chrome 的 component-level global classes 替换为 token-first Tailwind classes，包括 font aliases、精确 text-size aliases，以及在对 affected elements 应用 utilities 前完成 retained element/reset selector resolution。
+  - [ ] Substep 10.2 Implement：将 inspect/comment overlays 迁移到 `selection`/`inspect` tokens，例如 `bg-selection-overlay`、`border-selection-outline`、`ring-selection-outline` 和 `bg-inspect-overlay`。
+  - [ ] Substep 10.3 Implement：将 file color conversion helpers 和 user-authored content colors 保持在窄范围 allowlist 中，并标注 runtime/user-content reason。
+  - [ ] Substep 10.4 Implement：从 `index.css` 中移除本 phase 已迁移的 component-level class definitions，同时保留 file/user-content boundary styles。
+  - [ ] Substep 10.5 Verify：覆盖 light/dark/system/custom accent 下 file viewer、inspect overlay、comment/selection overlay 和 edit-mode integration 的 visual checks。
+  - [ ] Substep 10.6 Verify：运行 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build`。
 - [ ] Step 11: Agent-validate file viewer and inspect/edit-mode overlays visual equivalence
-  - [ ] Substep 11.1 Verify: Start one web/daemon pair in the baseline worktree and one in the development worktree with distinct `--namespace`, `--daemon-port`, and `--web-port` values; have the agent use agent-browser CLI and Chrome DevTools MCP to compare file viewer/inspect/edit-mode screenshots, with component source inspection used as supporting context for any drift.
-  - [ ] Substep 11.2 Implement: In `phase4-notes.md`, record this phase's migrated / retained / deferred class list, dual-worktree service URLs, agent comparison results, and approved deviations.
+  - [ ] Substep 11.1 Verify：在 baseline worktree 和 development worktree 中分别启动一组 web/daemon pair，使用不同 `--namespace`、`--daemon-port` 和 `--web-port` values；让 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 对比 file viewer/inspect/edit-mode screenshots，并将 component source inspection 作为任何 drift 的 supporting context。
+  - [ ] Substep 11.2 Implement：在 `phase4-notes.md` 中记录本 phase 的 migrated / retained / deferred class list、dual-worktree service URLs、agent comparison results 和 approved deviations。
 
 ### Phase 5: Sketch, runtime content, and external document PR
 
-Goal: migrate app chrome around sketch canvases and runtime surfaces while retaining user content, iframe, popup, generated runtime HTML, and fixtures under explicit exceptions.
+Goal：迁移 sketch canvases 和 runtime surfaces 周围的 app chrome，同时将 user content、iframe、popup、generated runtime HTML 和 fixtures 保持在 explicit exceptions 下。
 
 - [ ] Step 12: Migrate sketch and runtime content boundaries
-  - [ ] Substep 12.1 Implement: Replace component-level global classes for sketch editor app chrome, runtime surfaces, live artifact card, and related controls with token-first Tailwind classes according to `token.md` migration rules, including font aliases, exact text-size aliases, and retained element/reset selector resolution before applying utilities to affected elements.
-  - [ ] Substep 12.2 Implement: Keep sketch/canvas user drawing colors, external document, iframe, popup, generated runtime HTML, and fixtures in the explicit allowlist, annotated with boundary reasons.
-  - [ ] Substep 12.3 Implement: Use app token utilities for canvas-adjacent UI; canvas data and user content keep data semantics.
-  - [ ] Substep 12.4 Implement: Remove component-level class definitions migrated in this phase from `index.css`, while retaining content-wide, iframe/runtime, and fixture boundary styles.
-  - [ ] Substep 12.5 Verify: Cover visual checks for sketch editor, runtime content surface, live artifact card, iframe/popup boundary, and generated runtime HTML under light/dark/system/custom accent.
-  - [ ] Substep 12.6 Verify: Confirm global loading shell, base styles, keyframes, and content-wide CSS in `index.css` continue to work.
-  - [ ] Substep 12.7 Verify: Run `pnpm guard`, `pnpm typecheck`, `pnpm --filter @open-design/web test`, and `pnpm --filter @open-design/web build`.
+  - [ ] Substep 12.1 Implement：根据 `token.md` migration rules，将 sketch editor app chrome、runtime surfaces、live artifact card 和 related controls 的 component-level global classes 替换为 token-first Tailwind classes，包括 font aliases、精确 text-size aliases，以及在对 affected elements 应用 utilities 前完成 retained element/reset selector resolution。
+  - [ ] Substep 12.2 Implement：将 sketch/canvas user drawing colors、external document、iframe、popup、generated runtime HTML 和 fixtures 保持在 explicit allowlist 中，并标注 boundary reasons。
+  - [ ] Substep 12.3 Implement：canvas-adjacent UI 使用 app token utilities；canvas data 和 user content 保持 data semantics。
+  - [ ] Substep 12.4 Implement：从 `index.css` 中移除本 phase 已迁移的 component-level class definitions，同时保留 content-wide、iframe/runtime 和 fixture boundary styles。
+  - [ ] Substep 12.5 Verify：覆盖 light/dark/system/custom accent 下 sketch editor、runtime content surface、live artifact card、iframe/popup boundary 和 generated runtime HTML 的 visual checks。
+  - [ ] Substep 12.6 Verify：确认 `index.css` 中的 global loading shell、base styles、keyframes 和 content-wide CSS 继续工作。
+  - [ ] Substep 12.7 Verify：运行 `pnpm guard`、`pnpm typecheck`、`pnpm --filter @open-design/web test` 和 `pnpm --filter @open-design/web build`。
 - [ ] Step 13: Agent-validate sketch and runtime content boundary visual equivalence
-  - [ ] Substep 13.1 Verify: Start one web/daemon pair in the baseline worktree and one in the development worktree with distinct `--namespace`, `--daemon-port`, and `--web-port` values; have the agent use agent-browser CLI and Chrome DevTools MCP to compare sketch/runtime/live artifact screenshots, with component source inspection used as supporting context for any drift.
-  - [ ] Substep 13.2 Implement: In `phase5-notes.md`, record this phase's migrated / retained / deferred class list, dual-worktree service URLs, agent comparison results, and approved deviations.
+  - [ ] Substep 13.1 Verify：在 baseline worktree 和 development worktree 中分别启动一组 web/daemon pair，使用不同 `--namespace`、`--daemon-port` 和 `--web-port` values；让 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 对比 sketch/runtime/live artifact screenshots，并将 component source inspection 作为任何 drift 的 supporting context。
+  - [ ] Substep 13.2 Implement：在 `phase5-notes.md` 中记录本 phase 的 migrated / retained / deferred class list、dual-worktree service URLs、agent comparison results 和 approved deviations。
 
 ### Phase 6: Cleanup and enforcement PR
 
-Goal: remove migrated component-level selectors, tighten guard allowlists, refresh baseline counts, and record retained/deferred globals.
+Goal：移除已迁移的 component-level selectors，收紧 guard allowlists，刷新 baseline counts，并记录 retained/deferred globals。
 
 - [ ] Step 14: Final cleanup and strict enforcement
-  - [ ] Substep 14.1 Implement: Consolidate migrated / retained / deferred class lists from all phases, and confirm the retained global CSS inventory, reasons, and follow-up points.
-  - [ ] Substep 14.2 Implement: Delete remaining migrated component-level selectors and tighten the style guard allowlist to actual file scopes, pattern scopes, and reasons.
-  - [ ] Substep 14.2a Implement: Enable strict hardcoded UI color enforcement for the remaining app UI surface after migrated colors have been removed or explicitly classified.
-  - [ ] Substep 14.3 Implement: Refresh the line count for `apps/web/src/index.css`, CSS class selector count, `apps/web/src/**/*.tsx` file count, and `className=` occurrence baseline.
-  - [ ] Substep 14.4 Implement: Record final implementation notes, migration inventory results, and any approved deviations in `phase6-notes.md`.
-  - [ ] Substep 14.5 Verify: Run `pnpm guard`.
-  - [ ] Substep 14.6 Verify: Run `pnpm typecheck`.
-  - [ ] Substep 14.7 Verify: Run `pnpm --filter @open-design/web test`.
-  - [ ] Substep 14.8 Verify: Run `pnpm --filter @open-design/web build`.
+  - [ ] Substep 14.1 Implement：整合所有 phases 的 migrated / retained / deferred class lists，并确认 retained global CSS inventory、reasons 和 follow-up points。
+  - [ ] Substep 14.2 Implement：删除剩余 migrated component-level selectors，并将 style guard allowlist 收紧到实际 file scopes、pattern scopes 和 reasons。
+  - [ ] Substep 14.2a Implement：在 migrated colors 已移除或显式分类后，对剩余 app UI surface 启用 strict hardcoded UI color enforcement。
+  - [ ] Substep 14.3 Implement：刷新 `apps/web/src/index.css` 的 line count、CSS class selector count、`apps/web/src/**/*.tsx` file count 和 `className=` occurrence baseline。
+  - [ ] Substep 14.4 Implement：在 `phase6-notes.md` 中记录 final implementation notes、migration inventory results 和任何 approved deviations。
+  - [ ] Substep 14.5 Verify：运行 `pnpm guard`。
+  - [ ] Substep 14.6 Verify：运行 `pnpm typecheck`。
+  - [ ] Substep 14.7 Verify：运行 `pnpm --filter @open-design/web test`。
+  - [ ] Substep 14.8 Verify：运行 `pnpm --filter @open-design/web build`。
 - [ ] Step 15: Agent-validate final visual equivalence
-  - [ ] Substep 15.1 Verify: Start one web/daemon pair in the baseline worktree and one in the development worktree with distinct `--namespace`, `--daemon-port`, and `--web-port` values; have the agent use agent-browser CLI and Chrome DevTools MCP run the full screenshot scenario matrix, use component source inspection as supporting context, and confirm the visuals are consistent before and after the refactor or deviations have been approved.
-  - [ ] Substep 15.2 Implement: In `phase6-notes.md`, record final dual-worktree service URLs, agent comparison results, and any approved deviations.
+  - [ ] Substep 15.1 Verify：在 baseline worktree 和 development worktree 中分别启动一组 web/daemon pair，使用不同 `--namespace`、`--daemon-port` 和 `--web-port` values；让 agent 使用 agent-browser CLI 和 Chrome DevTools MCP 运行完整 screenshot scenario matrix，使用 component source inspection 作为 supporting context，并确认 refactor 前后 visuals 一致，或 deviations 已获 approved。
+  - [ ] Substep 15.2 Implement：在 `phase6-notes.md` 中记录 final dual-worktree service URLs、agent comparison results 和任何 approved deviations。
 
 ## Notes
 
-Phase notes are split by PR phase so each implementation slice can update its own notes file:
+Phase notes 按 PR phase 拆分，这样每个 implementation slice 都可以更新自己的 notes file：
 
-- `phase1-notes.md` - Foundation PR notes, migration inventory, and agent visual comparison setup.
-- `phase2-notes.md` - Shell/common controls migration notes and agent visual comparison results.
-- `phase3-notes.md` - Settings/project panels migration notes and agent visual comparison results.
-- `phase4-notes.md` - File viewer/inspect/edit-mode migration notes and agent visual comparison results.
-- `phase5-notes.md` - Sketch/runtime content migration notes and agent visual comparison results.
-- `phase6-notes.md` - Cleanup/enforcement notes, final retained global CSS inventory, final agent visual comparison results, and approved deviations.
+- `phase1-notes.md` - Foundation PR notes、migration inventory 和 agent visual comparison setup。
+- `phase2-notes.md` - Shell/common controls migration notes 和 agent visual comparison results。
+- `phase3-notes.md` - Settings/project panels migration notes 和 agent visual comparison results。
+- `phase4-notes.md` - File viewer/inspect/edit-mode migration notes 和 agent visual comparison results。
+- `phase5-notes.md` - Sketch/runtime content migration notes 和 agent visual comparison results。
+- `phase6-notes.md` - Cleanup/enforcement notes、final retained global CSS inventory、final agent visual comparison results 和 approved deviations。

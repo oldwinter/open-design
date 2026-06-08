@@ -1,13 +1,6 @@
 # `_schema/` — design-system contracts
 
-This directory codifies the structural contracts for design systems.
-`tokens.schema.ts` re-exports the token contract that every tokenized brand under
-`design-systems/<brand>/` must satisfy. The canonical runtime copy lives in
-`packages/contracts/src/design-systems/token-schema.ts` so daemon importers and
-repo guards consume one schema. `manifest.schema.ts` is the
-project contract for folders that opt into the Design System Project
-shape by adding `manifest.json`; legacy `DESIGN.md`-only folders remain
-valid until they are migrated.
+此目录 codifies design systems 的 structural contracts。`tokens.schema.ts` re-export 每个 `design-systems/<brand>/` 下 tokenized brand 都必须满足的 token contract。Canonical runtime copy 位于 `packages/contracts/src/design-systems/token-schema.ts`，这样 daemon importers 和 repo guards 会消费同一个 schema。`manifest.schema.ts` 是通过添加 `manifest.json` opt into Design System Project shape 的 folders 所用的 project contract；legacy `DESIGN.md`-only folders 在迁移前仍然有效。
 
 ```
 _schema/
@@ -17,118 +10,76 @@ _schema/
 └── AGENTS.md          ← this file
 ```
 
-The TypeScript schemas are the source of truth. `defaults.css` is a
-human-readable mirror of the A2 `fallback` fields in the token schema
-and exists so that reviewers can scan real CSS without parsing a TS
-array — drift between the two is enforced by the `design-system: A2
-defaults parity` guard. Manifest shape is enforced by
-`scripts/check-design-system-manifests.ts` for any
-`design-systems/<brand>/manifest.json` that exists.
+TypeScript schemas 是 source of truth。`defaults.css` 是 token schema 中 A2 `fallback` fields 的 human-readable mirror；它存在的目的是让 reviewers 不用 parse TS array 也能扫描真实 CSS。两者之间的 drift 由 `design-system: A2 defaults parity` guard 强制检查。对于任何存在的 `design-systems/<brand>/manifest.json`，Manifest shape 由 `scripts/check-design-system-manifests.ts` 强制检查。
 
 ## Project manifest contract
 
-Design System Project folders use fixed v1 file names:
+Design System Project folders 使用固定 v1 file names：
 
-- `manifest.json` — machine-readable project entry.
-- `DESIGN.md` — canonical design prose.
-- `tokens.css` — canonical compiled tokens.
-- `design-tokens.json` — optional Design Tokens JSON derived from
-  `tokens.css` + `source/token-contract.report.json`.
-- `tailwind-v4.css` — optional Tailwind v4 `@theme` CSS derived from
-  `tokens.css`; it must not redefine source values independently.
-- `components.html` — optional standalone component fixture.
-- `assets/` — optional brand assets.
-- `preview/` — optional static preview pages.
-- `USAGE.md` — optional agent-facing package guide.
-- `components.manifest.json` — optional rebuildable cache derived from
-  `components.html` and `tokens.css`.
-- `fonts/` — optional webfont files.
-- `source/` — optional importer evidence (`scanned-files.json`,
-  `evidence.md`, `tokens.source.json`, `token-contract.report.json`,
-  and `snippets/INDEX.json`).
+- `manifest.json`：machine-readable project entry。
+- `DESIGN.md`：canonical design prose。
+- `tokens.css`：canonical compiled tokens。
+- `design-tokens.json`：可选 Design Tokens JSON，从 `tokens.css` + `source/token-contract.report.json` 派生。
+- `tailwind-v4.css`：可选 Tailwind v4 `@theme` CSS，从 `tokens.css` 派生；它不得独立重新定义 source values。
+- `components.html`：可选 standalone component fixture。
+- `assets/`：可选 brand assets。
+- `preview/`：可选 static preview pages。
+- `USAGE.md`：可选 agent-facing package guide。
+- `components.manifest.json`：可选 rebuildable cache，从 `components.html` 和 `tokens.css` 派生。
+- `fonts/`：可选 webfont files。
+- `source/`：可选 importer evidence（`scanned-files.json`、`evidence.md`、`tokens.source.json`、`token-contract.report.json` 和 `snippets/INDEX.json`）。
 
-The manifest guard validates only folders that ship `manifest.json`; it
-does not require the bundled catalog to migrate all at once. Rich import
-fields are structural in PR0: when declared, paths must be safe and present,
-JSON indexes must parse, and committed `components.manifest.json` files must
-match a fresh derivation from `components.html` plus `tokens.css`. Runtime
-prompt composition and picker behavior are unchanged until later PRs consume
-those fields.
+Manifest guard 只验证带有 `manifest.json` 的 folders；它不要求 bundled catalog 一次性全部迁移。Rich import fields 在 PR0 中是 structural：声明时 paths 必须 safe 且存在，JSON indexes 必须能 parse，committed `components.manifest.json` files 必须匹配从 `components.html` 加 `tokens.css` freshly derivation 的结果。Runtime prompt composition 和 picker behavior 在后续 PRs 消费这些 fields 前保持不变。
 
 ## Four layers, two questions
 
-Every shared token answers two questions:
+每个 shared token 回答两个问题：
 
-1. **Who decides the value?** — the brand author (Layer A) or the
-   schema author (Layer B-slot, when the brand has no opinion).
-2. **What happens if the brand omits it?** — required, fallback, or
-   alias.
+1. **谁决定 value？** 是 brand author（Layer A），还是 schema author（Layer B-slot，当 brand 没有观点时）。
+2. **brand 省略它时会发生什么？** required、fallback 或 alias。
 
-The four layers fall out of those answers:
+这四层由这些答案自然导出：
 
 | Layer | Who decides | If omitted | Examples |
 | --- | --- | --- | --- |
 | **A1-identity** | brand | guard fails | `--bg`, `--fg`, `--accent`, `--font-display` |
 | **A1-structure** | brand | guard fails | type scale, `--container-max`, `--section-y-*` |
-| **A2** | brand (with fallback) | guard fails today; derive script fills tomorrow | `--motion-fast`, `--success`, `--space-4`, `--font-mono` |
-| **B-slot** | brand or schema-suggested alias | guard fails — brand must declare, either as `var(--sibling)` (collapsed) or independent value (richer) | `--fg-2 → var(--fg)`, `--surface-warm → var(--surface)` |
+| **A2** | brand (with fallback) | 目前 guard fails；明天 derive script fills | `--motion-fast`, `--success`, `--space-4`, `--font-mono` |
+| **B-slot** | brand or schema-suggested alias | guard fails；brand 必须声明，形式可以是 `var(--sibling)`（collapsed）或 independent value（richer） | `--fg-2 → var(--fg)`, `--surface-warm → var(--surface)` |
 
-Brand-specific tokens that fall outside the shared schema are tracked
-as **C-extensions** in `BRAND_EXTENSIONS` (per-brand allowlist) or
-`BRAND_EXTENSION_PREFIXES` (global prefix allowlist for whole families
-like `--tag-bg-*`).
+落在 shared schema 之外的 brand-specific tokens 会作为 **C-extensions** 记录在 `BRAND_EXTENSIONS`（per-brand allowlist）或 `BRAND_EXTENSION_PREFIXES`（用于整个 families 的 global prefix allowlist，例如 `--tag-bg-*`）中。
 
 ## Why A2 fails the guard today (and might not later)
 
-A2 conceptually means "optional with fallback" — but artifacts are
-generated by agents pasting one brand's `:root` block into a single
-`<style>`. There is no global stylesheet that loads alongside the
-brand, so a missing `--motion-fast` resolves to nothing inside the
-artifact and any `transition: var(--motion-fast)` rule silently breaks.
+概念上，A2 意味着“optional with fallback”；但 artifacts 是由 agents 把某个 brand 的 `:root` block paste 到单个 `<style>` 中生成的。没有 global stylesheet 与该 brand 一起加载，所以缺失的 `--motion-fast` 会在 artifact 内 resolve to nothing，任何 `transition: var(--motion-fast)` rule 都会静默破坏。
 
-Until the derive script (PR-B) lands and inlines `defaults.css` values
-into every brand's `tokens.css`, the only safe contract is "every
-brand must declare every A2 token". The `design-system: A2 required
-tokens` guard enforces that strictly.
+在 derive script（PR-B）落地、并把 `defaults.css` values inline 到每个 brand 的 `tokens.css` 之前，唯一安全的 contract 是“每个 brand 必须声明每个 A2 token”。`design-system: A2 required tokens` guard 会严格执行这一点。
 
-After the derive script ships, brand authors only need to write the
-A1 tokens (and any A2 they want to override); the script populates A2
-slots from `defaults.css`. The guard contract does not change — every
-final `tokens.css` still contains every A2 token — but the work
-shifts from human author to script.
+derive script 发布后，brand authors 只需要写 A1 tokens（以及任何想 override 的 A2）；script 会从 `defaults.css` 填充 A2 slots。Guard contract 不变：每个最终 `tokens.css` 仍包含每个 A2 token；只是工作从 human author 转移到 script。
 
 ## Why B-slot is required (and what the alias is for)
 
-Same artifact-paste constraint applies to B-slot tokens. Shared
-components reference richer tiers via `var(--fg-2)`, `var(--meta)`,
-`var(--surface-warm)`, `var(--border-soft)` — if a brand omits the
-slot, those references resolve to nothing and the artifact silently
-breaks.
+同样的 artifact-paste constraint 也适用于 B-slot tokens。Shared components 通过 `var(--fg-2)`、`var(--meta)`、`var(--surface-warm)`、`var(--border-soft)` 引用 richer tiers；如果 brand 省略 slot，这些引用会 resolve to nothing，artifact 会静默破坏。
 
-The `aliasTo` field on each B-slot entry is the **schema-suggested
-default**, not a runtime fallback. A brand with no opinion on the
-richer tier copies the alias verbatim into its `:root`:
+每个 B-slot entry 上的 `aliasTo` field 是 **schema-suggested default**，不是 runtime fallback。对 richer tier 没有观点的 brand 会把 alias 原样复制到自己的 `:root`：
 
 ```
 --fg-2: var(--fg);                /* default brand: 2-level fg */
 --surface-warm: var(--surface);   /* default brand: 2-level surface */
 ```
 
-A brand that does have the richer tier binds an independent value:
+确实拥有 richer tier 的 brand 会绑定 independent value：
 
 ```
 --fg-2: #3d3d3a;                  /* kami brand: dark warm */
 --surface-warm: #e8e6dc;          /* kami brand: warm sand */
 ```
 
-Either form satisfies the `design-system: B-slot required tokens`
-guard. The pre-derive-script contract is identical to A2: every
-brand's `:root` declares every shared slot.
+任一形式都满足 `design-system: B-slot required tokens` guard。Pre-derive-script contract 与 A2 完全相同：每个 brand 的 `:root` 都声明每个 shared slot。
 
 ## C → B-slot → A2 promotion path
 
-Brand-specific tokens start in `BRAND_EXTENSIONS[brand]`. They earn
-promotion when a second brand needs the same name:
+Brand-specific tokens 从 `BRAND_EXTENSIONS[brand]` 开始。当第二个 brand 需要同名 token 时，它们获得 promotion 资格：
 
 ```
 C-extension                    B-slot                       A2
@@ -139,78 +90,39 @@ kami: --leading-display    →   schema: --leading-display    →   schema: --le
                                aliasTo: var(--leading-tight)    fallback: 1.1
 ```
 
-Concrete promotion rules:
+具体 promotion rules：
 
-1. **C → B-slot** when **≥2 brands** declare a token of the same name
-   *and* there is a meaningful sibling to alias to for brands that
-   lack the richer tier. Move the entry from `BRAND_EXTENSIONS` to
-   `TOKEN_SCHEMA` with `layer: "B-slot"` and `aliasTo: "var(--sibling)"`.
-2. **C → A2** when **≥2 brands** declare a token of the same name
-   *and* a defensible cross-brand fallback exists (no aliasing
-   needed). Move to `TOKEN_SCHEMA` with `layer: "A2"` and a `fallback`,
-   then mirror the value in `defaults.css`.
-3. **B-slot → A2** when a B-slot starts being independently bound by
-   ≥2 brands (instead of aliasing). Replace `aliasTo` with `fallback`
-   and add a defaults.css declaration.
-4. **A2 → A1** is rare. It happens when the previously-defaultable
-   value turns out to be brand-determining — e.g. if a future brand
-   redefines `--motion-base` from 200ms to 50ms because its identity
-   is "instant", and that change ripples meaningfully through the
-   brand voice. Drop the `fallback` and reclassify.
+1. **C → B-slot**：当 **≥2 brands** 声明同名 token，*且* 对缺少 richer tier 的 brands 存在一个有意义的 sibling 可 alias 时。把 entry 从 `BRAND_EXTENSIONS` 移到 `TOKEN_SCHEMA`，设置 `layer: "B-slot"` 和 `aliasTo: "var(--sibling)"`。
+2. **C → A2**：当 **≥2 brands** 声明同名 token，*且* 存在 defensible cross-brand fallback（不需要 aliasing）时。移到 `TOKEN_SCHEMA`，设置 `layer: "A2"` 和 `fallback`，然后在 `defaults.css` 中 mirror 该 value。
+3. **B-slot → A2**：当某个 B-slot 开始被 ≥2 brands independent bound（而不是 aliasing）时。用 `fallback` 替换 `aliasTo`，并添加 defaults.css declaration。
+4. **A2 → A1** 很少见。它发生在之前可 default 的 value 变成 brand-determining 时。例如，如果未来某个 brand 把 `--motion-base` 从 200ms 重新定义为 50ms，因为它的 identity 是 "instant"，且这个变化会有意义地影响 brand voice。此时 drop `fallback` 并 reclassify。
 
-Demotion (A → B → C) is not currently supported. A token that is
-genuinely no longer needed should be marked `@deprecated` in the
-schema for one release and then deleted from every brand's
-`tokens.css` in the same PR.
+目前不支持 Demotion（A → B → C）。如果 token 真的不再需要，应先在 schema 中标记 `@deprecated` 一个 release，然后在同一个 PR 中从每个 brand 的 `tokens.css` 删除。
 
 ## When **not** to add a token
 
-Schema growth has a cost — every new entry forces 138 brands to
-declare or alias the new name when the derive script next runs.
-Resist adding tokens that are:
+Schema growth 有成本：derive script 下次运行时，每个新 entry 都会迫使 138 个 brands 声明或 alias 新 name。应抵制添加以下 tokens：
 
-- **Component-internal**: a `.btn-primary` background offset that no
-  other component will ever read. Inline the value in the component
-  rule.
-- **One-off**: a single layout's hero crop ratio. Not a token.
-- **Speculative**: "we might want a `--motion-slow` someday." Add it
-  the first time a real interaction needs it, not before.
-- **Already expressible**: a `--accent-tint-50` that resolves to
-  `color-mix(in oklab, var(--accent), transparent 50%)`. Inline the
-  `color-mix(...)` call until ≥2 components need the same tint with
-  the same alpha, then promote to a token.
+- **Component-internal**：例如没有其他 component 会读取的 `.btn-primary` background offset。把 value inline 到 component rule 中。
+- **One-off**：单个 layout 的 hero crop ratio。不是 token。
+- **Speculative**："we might want a `--motion-slow` someday." 等真实 interaction 第一次需要时再添加，不要提前加。
+- **Already expressible**：例如可 resolve 为 `color-mix(in oklab, var(--accent), transparent 50%)` 的 `--accent-tint-50`。在 ≥2 components 需要相同 tint 和相同 alpha 前，先 inline `color-mix(...)` call；然后再 promote 为 token。
 
 ## Editing this directory
 
-When you change the token schema:
+更改 token schema 时：
 
-- Run `pnpm guard` and confirm both `default` and `kami` still pass
-  every design-system sub-check.
-- If you added an A2 entry: also update `defaults.css` with the
-  matching declaration, byte-equivalent to the `fallback` field.
-- If you renamed a token: bump every brand's `tokens.css` and the
-  matching `components.html` `:root` paste in the same commit.
-  Otherwise the drift guard will fail.
-- If you removed a token from `TOKEN_SCHEMA` and the same name now
-  appears in only one brand: add it to that brand's
-  `BRAND_EXTENSIONS` entry so the unknown-token guard does not fail.
+- 运行 `pnpm guard`，并确认 `default` 和 `kami` 仍通过每个 design-system sub-check。
+- 如果添加了 A2 entry：同时用匹配的 declaration 更新 `defaults.css`，并与 `fallback` field byte-equivalent。
+- 如果重命名 token：在同一个 commit 中 bump 每个 brand 的 `tokens.css` 和对应 `components.html` `:root` paste。否则 drift guard 会失败。
+- 如果从 `TOKEN_SCHEMA` 移除了某个 token，而同名 token 现在只出现在一个 brand 中：把它添加到该 brand 的 `BRAND_EXTENSIONS` entry，避免 unknown-token guard 失败。
 
 ## Open questions deferred to PR-B
 
-This PR codifies the schema and enforces it on hand-authored brands.
-The following questions are intentionally not answered here:
+此 PR codifies schema，并在 hand-authored brands 上强制执行。以下问题有意不在这里回答：
 
-- **How does the derive script source A1 values from `DESIGN.md`?**
-  Some sections (color palette, type scale) parse cleanly; others
-  (visual atmosphere, do's and don'ts) do not. A frontmatter or
-  fenced-block convention will likely emerge.
-- **What happens when a brand's `DESIGN.md` contradicts itself?**
-  e.g. accents listed as both cobalt and indigo. The derive script
-  will need a deterministic resolution (last-wins, manual override
-  flag, or hard fail).
-- **Are A2 fallback formulas stable when re-derived?** Bit-for-bit
-  reproducibility of the script's output is required so that running
-  the script twice on the same input does not churn 138 files.
+- **derive script 如何从 `DESIGN.md` source A1 values？** 有些 sections（color palette、type scale）很好 parse；其他 sections（visual atmosphere、do's and don'ts）不行。很可能会出现 frontmatter 或 fenced-block convention。
+- **当 brand 的 `DESIGN.md` 自相矛盾时怎么办？** 例如 accents 同时列为 cobalt 和 indigo。derive script 需要 deterministic resolution（last-wins、manual override flag 或 hard fail）。
+- **A2 fallback formulas 在 re-derived 时是否稳定？** Script output 必须 bit-for-bit reproducible，这样在相同 input 上运行两次不会 churn 138 个文件。
 
-These will be addressed in the PR that introduces
-`scripts/derive-tokens-css.ts`.
+这些问题会在引入 `scripts/derive-tokens-css.ts` 的 PR 中处理。

@@ -1,7 +1,7 @@
 ---
 name: canvas-design
 description: |
-  Create beautiful visual art in PNG and PDF documents using design philosophy and aesthetic principles for posters, illustrations, and static pieces.
+  运用 design philosophy 和 aesthetic principles，在 PNG 与 PDF documents 中创作精美 visual art，适合 posters、illustrations 和静态作品。
 triggers:
   - "canvas design"
   - "visual art"
@@ -18,28 +18,24 @@ od:
 
 # canvas-design
 
-> Curated from Anthropic's official skills repository.
+> 从 Anthropic 官方 skills repository 精选整理。
 
-## What it does
+## 功能
 
-Create beautiful visual art in PNG and PDF documents using design philosophy and aesthetic principles for posters, illustrations, and static pieces.
+运用 design philosophy 和 aesthetic principles，在 PNG 与 PDF documents 中创作精美 visual art，适合 posters、illustrations 和静态作品。
 
-## Source
+## 来源
 
 - Upstream: https://github.com/anthropics/skills/tree/main/skills/canvas-design
 - Category: `image-generation`
 
-## How to use
+## 使用方式
 
-This catalogue entry advertises the skill in Open Design so the agent
-discovers it during planning. To run the full upstream workflow with
-its original assets, scripts, and references, install the upstream
-bundle into your active agent's skills directory:
+这个 catalogue entry 会在 Open Design 中发布该 skill，让 agent 在 planning 阶段发现它。要运行包含原始 assets、scripts 和 references 的完整 upstream workflow，请把 upstream bundle 安装到当前 active agent 的 skills directory：
 
 ```bash
-# Inspect the upstream README for exact paths
+# 查看 upstream README 以确认精确路径
 open https://github.com/anthropics/skills/tree/main/skills/canvas-design
 ```
 
-Then ask the agent to invoke this skill by name (`canvas-design`) or with
-one of the trigger phrases listed in this skill's frontmatter.
+然后要求 agent 按名称（`canvas-design`）调用此 skill，或使用本 skill frontmatter 中列出的任一 trigger phrase。

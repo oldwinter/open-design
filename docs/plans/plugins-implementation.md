@@ -1,33 +1,33 @@
 # Open Design Plugin & Marketplace — Implementation Plan (living)
 
-Source spec: [`docs/plugins-spec.md`](../plugins-spec.md) (zh-CN: [`docs/plugins-spec.zh-CN.md`](../plugins-spec.zh-CN.md)).
+Source spec: [`docs/plugins-spec.md`](../plugins-spec.md)（zh-CN: [`docs/plugins-spec.zh-CN.md`](../plugins-spec.zh-CN.md)）。
 
-Sibling docs: [`spec.md`](../spec.md) · [`skills-protocol.md`](../skills-protocol.md) · [`architecture.md`](../architecture.md).
+Sibling docs: [`spec.md`](../spec.md) · [`skills-protocol.md`](../skills-protocol.md) · [`architecture.md`](../architecture.md)。
 
-Update protocol — read first
+更新协议 — 请先阅读
 
-- This file is a **living roadmap**. Every PR that lands a chunk of the plugin system must flip the matching `[ ]` to `[x]` in the same PR, and update §3 "Architecture state" if a new module / table / endpoint becomes real.
-- Do not edit `docs/plugins-spec.md` from this file's PRs except to fix factual drift; the spec is the contract, this file is the schedule.
-- The "Definition of done" gates in §8 are the **only** hard sign-off bar; an empty checkbox under a phase does not mean v1 is broken — only an empty checkbox under §8 does.
-- When `docs/plugins-spec.md` patches change phase numbering or atom names, mirror those changes here in the same PR (per §21.6 / §22.5 / §23.6 of the spec).
-
----
-
-## 1. Invariants (lock these first; never violate without a spec patch)
-
-These are the five rules that decide every downstream design decision. They sit above phases and are checked by reviewers on every plugin-related PR.
-
-- [x] **I1. `SKILL.md` is the floor; `open-design.json` is a sidecar; never bidirectionally couple.** `packages/plugin-runtime/adapters/agent-skill.ts` synthesizes a schema-valid `PluginManifest` from `SKILL.md` `od:` frontmatter (verified via `packages/plugin-runtime/tests/adapter-agent-skill.test.ts`). The bundled e2e fixture under `apps/daemon/tests/fixtures/plugin-fixtures/sample-plugin/` ships both halves and `apps/daemon/tests/plugins-e2e-fixture.test.ts` exercises the merger.
-- [x] **I2. Apply is a pure function; side effects only after `POST /api/projects` / `POST /api/runs`.** `apps/daemon/src/plugins/apply.ts` is FS- and DB-free; the snapshot writer (`snapshots.ts`) and installer are the only modules that mutate persistent state. `apps/daemon/tests/plugins-apply.test.ts` asserts deterministic snapshots from the same inputs and refuses to touch the registry / FS.
-- [x] **I3. `AppliedPluginSnapshot` is the only contract between "plugin" and "run".** `composeSystemPrompt()` now accepts a `pluginBlock` derived from the snapshot via `pluginPromptBlock(snapshot)` (`apps/daemon/src/plugins/apply.ts`); the run reads context through the snapshot. Plugin runs in web API-fallback mode are rejected at the HTTP layer (Phase 2A wires the 409); the snapshot table is the only writable surface for the contract.
-- [ ] **I4. CLI is the canonical agent-facing API; UI mirrors CLI, not the other way round.** Phase 1: `od plugin install/list/info/uninstall/apply/doctor` and the matching `/api/plugins/*` HTTP routes ship in the same PR. Remaining `od project/run/files/conversation/marketplace` subcommands roll in over Phase 1 / 2C / 3 PRs.
-- [x] **I5. Kernel/userspace boundary (spec §23) is drawn from day 1.** `composeSystemPrompt()` is structured as a pure assembler with a content table (DESIGN.md, craft, skill, plugin block, metadata); the new `pluginBlock` parameter slots in without restructuring. Phase 2A lifts the renderer into `packages/contracts/src/prompts/plugin-block.ts` (PB1).
-
-CI guard placement: each invariant must have at least one automated test that fails when the rule is violated. The test path is recorded next to the box when it lands.
+- 本文件是 **living roadmap**。每个落地 plugin system 一部分内容的 PR，都必须在同一个 PR 中把对应 `[ ]` 翻为 `[x]`；如果新的 module / table / endpoint 变成现实，还要更新 §3 "Architecture state"。
+- 除了修正事实漂移，不要在本文件对应的 PR 中编辑 `docs/plugins-spec.md`；spec 是 contract，本文件是 schedule。
+- §8 中的 "Definition of done" gates 是**唯一**硬性 sign-off bar；某个 phase 下的空 checkbox 不表示 v1 损坏，只有 §8 下的空 checkbox 才表示。
+- 当 `docs/plugins-spec.md` patches 改变 phase numbering 或 atom names 时，请在同一个 PR 中同步这里的变更（按 spec §21.6 / §22.5 / §23.6）。
 
 ---
 
-## 2. Layered architecture target (where every new file goes)
+## 1. Invariants（先锁定这些；没有 spec patch 不得违反）
+
+这五条规则决定每一个 downstream design decision。它们高于 phases，并由 reviewers 在每个 plugin-related PR 中检查。
+
+- [x] **I1. `SKILL.md` 是 floor；`open-design.json` 是 sidecar；绝不双向耦合。** `packages/plugin-runtime/adapters/agent-skill.ts` 会从 `SKILL.md` 的 `od:` frontmatter 合成 schema-valid `PluginManifest`（由 `packages/plugin-runtime/tests/adapter-agent-skill.test.ts` 验证）。`apps/daemon/tests/fixtures/plugin-fixtures/sample-plugin/` 下的 bundled e2e fixture 同时提供两半，`apps/daemon/tests/plugins-e2e-fixture.test.ts` 会执行 merger。
+- [x] **I2. Apply 是纯函数；side effects 只发生在 `POST /api/projects` / `POST /api/runs` 之后。** `apps/daemon/src/plugins/apply.ts` 不接触 FS 和 DB；snapshot writer（`snapshots.ts`）与 installer 是唯一会 mutate persistent state 的 modules。`apps/daemon/tests/plugins-apply.test.ts` 断言相同 inputs 产生 deterministic snapshots，并拒绝触碰 registry / FS。
+- [x] **I3. `AppliedPluginSnapshot` 是 "plugin" 与 "run" 之间的唯一 contract。** `composeSystemPrompt()` 现在接受由 snapshot 通过 `pluginPromptBlock(snapshot)`（`apps/daemon/src/plugins/apply.ts`）派生的 `pluginBlock`；run 通过 snapshot 读取 context。Web API-fallback mode 下的 plugin runs 会在 HTTP layer 被拒绝（Phase 2A 接入 409）；snapshot table 是该 contract 的唯一 writable surface。
+- [ ] **I4. CLI 是 canonical agent-facing API；UI 镜像 CLI，而不是反过来。** Phase 1: `od plugin install/list/info/uninstall/apply/doctor` 与匹配的 `/api/plugins/*` HTTP routes 在同一个 PR 中交付。剩余 `od project/run/files/conversation/marketplace` subcommands 会在 Phase 1 / 2C / 3 PRs 中逐步进入。
+- [x] **I5. Kernel/userspace boundary（spec §23）从第 1 天起画清楚。** `composeSystemPrompt()` 作为带 content table（DESIGN.md、craft、skill、plugin block、metadata）的 pure assembler 组织；新的 `pluginBlock` parameter 无需重构即可插入。Phase 2A 会把 renderer 提升到 `packages/contracts/src/prompts/plugin-block.ts`（PB1）。
+
+CI guard placement：每个 invariant 都必须至少有一个 automated test，在规则被违反时失败。落地时将 test path 记录在对应 checkbox 旁。
+
+---
+
+## 2. Layered architecture target（每个新文件应该放在哪里）
 
 ```text
 packages/contracts/src/plugins/      ← pure types + Zod schemas, no runtime deps
@@ -62,27 +62,27 @@ apps/daemon/src/genui/               ← spec §10.3
   └── store.ts                       ← genui_surfaces table writer
 ```
 
-Hard layering rules
+硬性 layering rules
 
-- `packages/plugin-runtime` does not import `node:fs`. It receives `loader: (relpath) => Promise<string>`. Daemon injects real FS, CI injects mocks, web preview sandbox injects fetch.
-- `apps/daemon/src/plugins/snapshots.ts` is the only file that issues `INSERT/UPDATE` against `applied_plugin_snapshots`. CI guard: `rg "applied_plugin_snapshots" --type ts -g '!**/*.test.ts'` may match `INSERT` only inside `snapshots.ts`.
-- `connector-gate.ts` is a stateless validator (`(snapshotId, connectorId) => allow | deny`); `tool-tokens.ts` calls it before issuing a token, and `/api/tools/connectors/execute` re-validates on every call to defeat token replacement.
+- `packages/plugin-runtime` 不导入 `node:fs`。它接收 `loader: (relpath) => Promise<string>`。Daemon 注入真实 FS，CI 注入 mocks，web preview sandbox 注入 fetch。
+- `apps/daemon/src/plugins/snapshots.ts` 是唯一会对 `applied_plugin_snapshots` 发出 `INSERT/UPDATE` 的文件。CI guard：`rg "applied_plugin_snapshots" --type ts -g '!**/*.test.ts'` 只能在 `snapshots.ts` 内匹配到 `INSERT`。
+- `connector-gate.ts` 是 stateless validator（`(snapshotId, connectorId) => allow | deny`）；`tool-tokens.ts` 在签发 token 前调用它，`/api/tools/connectors/execute` 会在每次调用时重新验证，以阻止 token replacement。
 
 ---
 
-## 3. Architecture state (update as modules land)
+## 3. Architecture state（modules 落地时更新）
 
-This section tracks **what exists in the repo today**. Update in the same PR that lands the module; never let it lie about reality.
+本节跟踪**当前仓库中真实存在的内容**。请在 module 落地的同一个 PR 中更新；不要让它与现实脱节。
 
 ### 3.0 Current architecture clarifications (2026-05-13)
 
-These notes capture the product/implementation answers that otherwise get lost between the spec and the code:
+这些 notes 捕获了容易在 spec 和 code 之间丢失的 product/implementation answers：
 
-- **No plugin selected does not mean a naked agent.** `composeSystemPrompt()` still always layers the Open Design base designer/discovery prompt, project metadata, active design system/craft, and daemon-owned safety/tooling guidance. Plugin context is additive: a selected plugin contributes snapshot-derived `## Active plugin`, `## Plugin inputs`, and active-stage atom blocks. Home free-form runs route through the bundled hidden `od-default` scenario, which shapes task type and then returns to the normal design pipeline.
-- **The pipeline is plugin-assembled, not a fixed wizard.** The reference shorthand is `discovery -> plan -> generate -> critique`, but the runnable shape comes from `od.pipeline.stages[].atoms[]` on the applied plugin or bundled scenario fallback. `apps/daemon/src/plugins/pipeline-runner.ts` emits stage/GenUI events and `packages/contracts/src/prompts/atom-block.ts` renders the active stage body. Some atoms are still prompt fragments / permissive workers; observable atoms such as `diff-review`, `build-test`, and `handoff` now emit durable files or signals.
-- **GenUI is controlled rendering.** Agents/plugins emit structured surface requests (`form`, `choice`, `confirmation`, `oauth-prompt`) and OD renders them with product-owned React/CLI components. Inline `<question-form>` chat UI follows the same principle: parse structured data, render through `QuestionForm`, and keep styling in OD. Plugin-bundled custom components are a separate sandboxed path behind `genui:custom-component`.
-- **AG-UI is interoperability, not the product UI runtime.** `packages/agui-adapter` and `GET /api/runs/:runId/agui` are shipped so CopilotKit / AG-UI clients can consume an OD run. The internal web/desktop UI remains OD-native; adding CopilotKit itself is only justified for an explicit external embed/demo/client.
-- **Scenario discovery still has one product gap.** `apps/web/src/components/home-hero/chips.ts` is a curated Home rail for high-frequency scenarios. `apps/web/src/components/plugins-home/facets.ts` is more data-driven and derives category/subcategory facets from plugin metadata. The desired next slice is a single scenario registry / manifest projection that feeds Home chips, plugin filters, composer tools, and `@search`.
+- **未选择 plugin 不等于裸 agent。** `composeSystemPrompt()` 仍始终叠加 Open Design base designer/discovery prompt、project metadata、active design system/craft，以及 daemon-owned safety/tooling guidance。Plugin context 是 additive：被选中的 plugin 会贡献由 snapshot 派生的 `## Active plugin`、`## Plugin inputs` 和 active-stage atom blocks。Home free-form runs 会路由到 bundled hidden `od-default` scenario，它塑造 task type 后回到正常 design pipeline。
+- **Pipeline 是 plugin-assembled，不是固定 wizard。** Reference shorthand 是 `discovery -> plan -> generate -> critique`，但可运行形态来自 applied plugin 或 bundled scenario fallback 上的 `od.pipeline.stages[].atoms[]`。`apps/daemon/src/plugins/pipeline-runner.ts` 发出 stage/GenUI events，`packages/contracts/src/prompts/atom-block.ts` 渲染 active stage body。有些 atoms 仍是 prompt fragments / permissive workers；`diff-review`、`build-test`、`handoff` 等 observable atoms 现在会发出 durable files 或 signals。
+- **GenUI 是 controlled rendering。** Agents/plugins 发出 structured surface requests（`form`、`choice`、`confirmation`、`oauth-prompt`），OD 用 product-owned React/CLI components 渲染。Inline `<question-form>` chat UI 遵循同样原则：解析 structured data，通过 `QuestionForm` 渲染，并把 styling 保留在 OD 中。Plugin-bundled custom components 是 `genui:custom-component` 背后的独立 sandboxed path。
+- **AG-UI 是 interoperability，而不是 product UI runtime。** `packages/agui-adapter` 和 `GET /api/runs/:runId/agui` 已交付，方便 CopilotKit / AG-UI clients 消费 OD run。内部 web/desktop UI 仍保持 OD-native；只有明确的 external embed/demo/client 需求才足以 justify 添加 CopilotKit 本身。
+- **Scenario discovery 仍有一个 product gap。** `apps/web/src/components/home-hero/chips.ts` 是面向高频 scenarios 的 curated Home rail。`apps/web/src/components/plugins-home/facets.ts` 更 data-driven，并从 plugin metadata 派生 category/subcategory facets。理想的下一片是单一 scenario registry / manifest projection，同时供给 Home chips、plugin filters、composer tools 和 `@search`。
 
 ### 3.1 Packages
 
@@ -309,9 +309,9 @@ Three reads from the graph (drove the §6 phase reorder)
 
 ---
 
-## 6. Phase plan (re-ordered from spec §16 by dependency, not by user-visible feature)
+## 6. Phase plan（按依赖而不是 user-visible feature 从 spec §16 重排）
 
-The spec §16 ordering is reader-facing; this is the build order. Each phase has explicit deliverables, validation steps, and an exit criterion. Flip checkboxes in PRs that land each item.
+Spec §16 的顺序面向读者；这里是 build order。每个 phase 都有明确的 deliverables、validation steps 和 exit criterion。落地每项内容的 PR 需要翻转对应 checkbox。
 
 ### Phase 0 — Spec freeze + contracts skeleton (1–2 d)
 
@@ -331,29 +331,29 @@ Validation
 
 Exit criterion
 
-- Importing `import type { ApplyResult, AppliedPluginSnapshot } from '@open-design/contracts'` works from daemon and web. ✓ verified.
+- 从 daemon 和 web 导入 `import type { ApplyResult, AppliedPluginSnapshot } from '@open-design/contracts'` 可用。已验证。
 
 ### Phase 1 — Loader + installer + apply + snapshot + headless CLI loop (5–7 d)
 
-Why merged with the spec's "headless MVP CLI loop" — see I4. The spec's Phase 1 explicitly pulls this forward; this plan keeps that.
+为何与 spec 中的 "headless MVP CLI loop" 合并：见 I4。Spec 的 Phase 1 明确将它前移；本计划保持这一点。
 
-Deliverables (week 1: data layer)
+Deliverables（week 1: data layer）
 
-- [x] SQLite migration for `installed_plugins`, `plugin_marketplaces`, `applied_plugin_snapshots` (including `expires_at INTEGER` per PB2). The `runs` table is in-memory in `apps/daemon/src/runs.ts`; the in-memory run carries the snapshot id today. `projects` and `conversations` get `applied_plugin_snapshot_id` ALTERs in `migratePlugins()`.
-- [x] `apps/daemon/src/app-config.ts` defines `OD_SNAPSHOT_UNREFERENCED_TTL_DAYS` (default `30`), `OD_SNAPSHOT_RETENTION_DAYS` (default unset), `OD_SNAPSHOT_GC_INTERVAL_MS`, and `OD_MAX_DEVLOOP_ITERATIONS` (F6) under `readPluginEnvKnobs()`. Apply path stamps `expires_at` on insert; GC worker lands Phase 5.
+- [x] 为 `installed_plugins`、`plugin_marketplaces`、`applied_plugin_snapshots` 添加 SQLite migration（按 PB2 包含 `expires_at INTEGER`）。`runs` table 目前在 `apps/daemon/src/runs.ts` 中是 in-memory；in-memory run 携带 snapshot id。`projects` 和 `conversations` 在 `migratePlugins()` 中获得 `applied_plugin_snapshot_id` ALTER。
+- [x] `apps/daemon/src/app-config.ts` 在 `readPluginEnvKnobs()` 下定义 `OD_SNAPSHOT_UNREFERENCED_TTL_DAYS`（默认 `30`）、`OD_SNAPSHOT_RETENTION_DAYS`（默认 unset）、`OD_SNAPSHOT_GC_INTERVAL_MS` 和 `OD_MAX_DEVLOOP_ITERATIONS`（F6）。Apply path 在 insert 时 stamp `expires_at`；GC worker 在 Phase 5 落地。
 - [x] `packages/plugin-runtime` parsers / adapters / merger / resolver / validator + digest.
 - [x] `apps/daemon/src/plugins/registry.ts` — install-root scan, sidecar + adapter merge, SQLite reader/writer. (Hot reload + project tier scan land Phase 2A.)
 - [x] `apps/daemon/src/plugins/installer.ts` — local folder install with path-traversal guard, 50 MiB size cap, symlink rejection. GitHub tarball / HTTPS sources land Phase 2A.
 - [x] `apps/daemon/src/plugins/apply.ts` — pure; emits `ApplyResult` with draft snapshot.
 - [x] `apps/daemon/src/plugins/snapshots.ts` — sole writer of `applied_plugin_snapshots`. (Repo-level `rg` guard wiring in `scripts/guard.ts` lands in the Phase 2A polish PR.)
-- [ ] Refactor `apps/daemon/src/{skills,design-systems,craft}.ts` to delegate to `registry.ts`. Phase 1 keeps the existing loaders independent so `/api/skills`, `/api/design-systems`, `/api/craft` endpoints remain byte-for-byte stable; Phase 2A folds them into the plugin registry.
+- [ ] 将 `apps/daemon/src/{skills,design-systems,craft}.ts` refactor 为委托给 `registry.ts`。Phase 1 保持现有 loaders 独立，以确保 `/api/skills`、`/api/design-systems`、`/api/craft` endpoints byte-for-byte 稳定；Phase 2A 再把它们折叠进 plugin registry。
 
-Deliverables (week 2: surface layer)
+Deliverables（week 2: surface layer）
 
-- [x] HTTP: `GET /api/plugins`, `GET /api/plugins/:id`, `POST /api/plugins/install` (SSE), `POST /api/plugins/:id/uninstall`, `POST /api/plugins/:id/apply`, `POST /api/plugins/:id/doctor`, `GET /api/atoms`, `GET /api/applied-plugins/:snapshotId`. `POST /api/projects` / `POST /api/runs` continue to accept their existing payloads; the explicit `pluginId` / `appliedPluginSnapshotId` plumbing lands as a follow-up Phase 1 PR once the `runs` SQL migration is in place.
-- [x] `composeSystemPrompt()` in `apps/daemon/src/prompts/system.ts` accepts a `pluginBlock` rendered from the snapshot via `pluginPromptBlock(snapshot)` and emits `## Active plugin` + `## Plugin inputs` sections. Shape: pure assembler + content table (per I5).
+- [x] HTTP: `GET /api/plugins`、`GET /api/plugins/:id`、`POST /api/plugins/install`（SSE）、`POST /api/plugins/:id/uninstall`、`POST /api/plugins/:id/apply`、`POST /api/plugins/:id/doctor`、`GET /api/atoms`、`GET /api/applied-plugins/:snapshotId`。`POST /api/projects` / `POST /api/runs` 继续接受现有 payloads；显式 `pluginId` / `appliedPluginSnapshotId` plumbing 会在 `runs` SQL migration 就位后，作为 follow-up Phase 1 PR 落地。
+- [x] `apps/daemon/src/prompts/system.ts` 中的 `composeSystemPrompt()` 接受通过 `pluginPromptBlock(snapshot)` 从 snapshot 渲染出的 `pluginBlock`，并发出 `## Active plugin` + `## Plugin inputs` sections。Shape：pure assembler + content table（按 I5）。
 - [x] CLI: `od plugin install/list/info/uninstall/apply/doctor`. `od project / run / files` subcommands stay scheduled for the Phase 1 follow-up PR.
-- [ ] Phase 1 `od plugin doctor` covers: schema validation, SKILL.md parse, atom id existence check, resolved-context ref check, digest drift detection. MCP dry-launch and connector existence (F7) land in the Phase 1 cleanup PR.
+- [ ] Phase 1 `od plugin doctor` 覆盖：schema validation、SKILL.md parse、atom id existence check、resolved-context ref check、digest drift detection。MCP dry-launch 和 connector existence（F7）在 Phase 1 cleanup PR 中落地。
 
 Validation
 
@@ -365,11 +365,11 @@ Validation
 
 Exit criterion
 
-- Phase 1 daemon-only walkthrough is green: `od plugin install --source <fixture>` → `od plugin list` → `od plugin apply <id>` produces a stable `AppliedPluginSnapshot`. The §12.5 web-driven walkthrough requires the Phase 1 follow-up PR + Phase 1.5 headless flag.
+- Phase 1 daemon-only walkthrough 通过：`od plugin install --source <fixture>` → `od plugin list` → `od plugin apply <id>` 会产生稳定的 `AppliedPluginSnapshot`。§12.5 web-driven walkthrough 需要 Phase 1 follow-up PR + Phase 1.5 headless flag。
 
 ### Phase 1.5 — Headless daemon lifecycle subset (1 d)
 
-Pulled out of spec §16 Phase 5 because Phase 1 e2e needs it. Avoids "Phase 1 looks green on macOS desktop, breaks on Linux CI" false positives.
+从 spec §16 Phase 5 中抽出，因为 Phase 1 e2e 需要它。避免出现 "Phase 1 looks green on macOS desktop, breaks on Linux CI" 这类 false positives。
 
 Deliverables
 
@@ -434,7 +434,7 @@ Deliverables
 
 Validation
 
-- [x] Web test: `apps/web/tests/components/GenUISurfaceRenderer.schema-form.test.tsx` covers the structured form path (string + select + integer + boolean), default-value seeding, single-enum choice routing through the existing button-group renderer, and the JSON-textarea fallback for unsupported leaves.
+- [x] Web test: `apps/web/tests/components/GenUISurfaceRenderer.schema-form.test.tsx` 覆盖 structured form path（string + select + integer + boolean）、default-value seeding、通过现有 button-group renderer 路由 single-enum choice，以及 unsupported leaves 的 JSON-textarea fallback。
 - [x] Daemon test: `apps/daemon/tests/plugins-genui-spec-enrichment.test.ts` boots the daemon, installs a fixture plugin with a form surface, creates a project + snapshot, drops a `genui_surfaces` row, and asserts the `GET /api/runs/:runId/genui/:surfaceId` response carries `spec.schema` exactly as declared in the manifest.
 - [ ] Daemon test (deferred): a `form` surface answered via `od ui respond --value-json '...'` and a UI answer both emit `genui_surface_response` with `respondedBy: 'user'` — kept open for the dedicated CLI ↔ UI parity sweep in Phase 4 e2e-9.
 
@@ -585,7 +585,7 @@ Plus repo-wide gates
 | Current phase | Phase 2A + 1 + 1.5 + 2B + 2C entry slice + 3 (full) + 4 (full incl. OD_BUNDLED_ATOM_PROMPTS default ON) + 5 (full incl. live S3 impl; postgres adapter still stubbed) + 6 (full incl. asset rasterisation) + 7 (all six atom impls) + 8 (full incl. GenUI \u2192 decision bridge) + scenarios bundle + bundled-scenario fallback resolver |
 | Next planned PR | (a) Phase 2C — `od files write/upload/delete/diff` + `od project import` + `od conversation new`. (b) Phase 3 — Trust UI on `PluginDetailView` + bundle plugin installer. (c) Phase 4 e2e-9 — UI ↔ CLI parity walkthrough (5 workflows). (d) postgres adapter wiring inside the DaemonDb resolver. (e) Scenario registry convergence so Home chips, plugin filters, composer tools, and `@search` project from the same manifest/scenario taxonomy. |
 | Open spec push-backs | none — PB1 / PB2 resolved (see §7) |
-| Last sync against `docs/plugins-spec.md` | 2026-05-13 (clarified default/no-plugin behavior, `od-default` routing, daemon system-prompt layering, plugin-assembled pipeline stages, OD-native controlled GenUI rendering, AG-UI adapter as interoperability only, and the current Home rail vs PluginsHome facet convergence gap) |
+| Last sync against `docs/plugins-spec.md` | 2026-05-13（澄清 default/no-plugin behavior、`od-default` routing、daemon system-prompt layering、plugin-assembled pipeline stages、OD-native controlled GenUI rendering、AG-UI adapter 仅作 interoperability，以及当前 Home rail 与 PluginsHome facet convergence gap） |
 
 Update this table on every plugin-system PR merge. When the value of "Current phase" advances, also flip the matching deliverables in §6 and the modules in §3.
 

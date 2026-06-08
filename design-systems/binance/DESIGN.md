@@ -1,78 +1,78 @@
-# Design System Inspired by Binance.US
+# Inspired by Binance.US 的 Design System
 
 > Category: Fintech & Crypto
-> Crypto exchange. Bold yellow accent on monochrome, trading-floor urgency.
+> Crypto exchange。粗粝的 yellow accent、monochrome 基底，以及 trading-floor urgency。
 
 ## 1. Visual Theme & Atmosphere
 
-Binance.US radiates the polished urgency of a digital trading floor — a space where money moves and decisions happen in seconds. The design is a two-tone composition that alternates between stark white trading surfaces and deep near-black panels (`#222126`), creating a visual rhythm that mirrors the bull-and-bear duality of crypto markets. Binance Yellow (`#F0B90B`) cuts through this monochrome foundation like a gold ingot on a steel desk — unmistakable, confident, and engineered to guide every eye toward the next action.
+Binance.US 散发出 digital trading floor 的精炼紧迫感：一个资金流动、决策在数秒内发生的空间。设计采用 two-tone composition，在 stark white trading surfaces 与 deep near-black panels（`#222126`）之间交替，创造出一种视觉节奏，呼应 crypto markets 的 bull-and-bear duality。Binance Yellow（`#F0B90B`）像钢桌上的金锭一样切入这套 monochrome foundation：明确、自信，并被设计成把所有视线导向下一步行动。
 
-The interface speaks the language of fintech trust. Custom BinancePlex typography gives every headline and data point a proprietary gravitas, while generous whitespace and restrained decoration keep the focus on numbers, charts, and call-to-action buttons. The design avoids visual complexity in favor of operational clarity — every element exists to either inform or convert. Product screenshots of the mobile trading app dominate the middle sections, presented on floating device mockups against golden gradients, reinforcing that this is a platform you carry with you.
+界面说的是 fintech trust 的语言。Custom BinancePlex typography 为每一个 headline 和 data point 带来 proprietary gravitas，而充足 whitespace 与克制装饰让焦点始终停留在 numbers、charts 和 call-to-action buttons 上。设计为了 operational clarity 而避免视觉复杂度：每个元素都必须用于告知或转化。Mobile trading app 的产品截图占据中部 sections，在 golden gradients 上以 floating device mockups 呈现，强化这是一个可以随身携带的平台。
 
-What makes Binance.US distinctive is the tension between warmth and precision. The golden yellow brand color — warm, optimistic, almost celebratory — lives inside a system of cold, clinical grey text and razor-sharp borders. This isn't a playful fintech like Robinhood or a corporate fortress like Fidelity — it's a crypto-native platform that wraps cutting-edge trading technology in the visual language of established finance.
+Binance.US 的独特性来自 warmth 与 precision 之间的张力。金黄色品牌色温暖、乐观，甚至带一点庆典感，却生活在 cold、clinical grey text 与 razor-sharp borders 构成的系统中。它不是 Robinhood 那样 playful fintech，也不是 Fidelity 那样 corporate fortress；它是 crypto-native platform，用 established finance 的视觉语言包裹 cutting-edge trading technology。
 
 **Key Characteristics:**
-- Two-tone light/dark section alternation — white surfaces for trust, dark panels for depth
-- Binance Yellow (`#F0B90B`) as the singular accent color driving all primary actions
-- BinancePlex custom typeface providing proprietary brand identity at every text level
-- Pill-shaped CTA buttons (50px radius) that demand attention
-- Floating device mockups on golden gradients for product showcasing
-- Crypto price tickers with real-time data prominently displayed
-- Shadow-light elevation with subtle 5% opacity card shadows
+- Two-tone light/dark section alternation：white surfaces 表示 trust，dark panels 表示 depth
+- Binance Yellow（`#F0B90B`）作为唯一 accent color，驱动所有 primary actions
+- BinancePlex custom typeface 在每个 text level 提供 proprietary brand identity
+- Pill-shaped CTA buttons（50px radius），强烈吸引注意
+- Golden gradients 上的 floating device mockups，用于 product showcasing
+- Crypto price tickers prominently displayed，展示 real-time data
+- Shadow-light elevation，card shadows 使用 subtle 5% opacity
 
 ## 2. Color Palette & Roles
 
 ### Primary
 
-- **Binance Yellow** (`#F0B90B`): The signature — primary CTA backgrounds, brand accent, active states, link color. The single most important color in the system
-- **Binance Gold** (`#FFD000`): Lighter gold variant used for pill button borders, secondary CTA fills, and golden gradient highlights
-- **Light Gold** (`#F8D12F`): Soft gold for gradient endpoints and hover-adjacent states
+- **Binance Yellow** (`#F0B90B`): signature color；primary CTA backgrounds、brand accent、active states、link color。系统中最重要的单一颜色。
+- **Binance Gold** (`#FFD000`): 更浅的 gold variant，用于 pill button borders、secondary CTA fills 和 golden gradient highlights。
+- **Light Gold** (`#F8D12F`): 用于 gradient endpoints 和 hover-adjacent states 的 soft gold。
 
 ### Secondary & Accent
 
-- **Active Yellow** (`#D0980B`): Darkened yellow for active/pressed button states — the "clicked" gold
-- **Focus Blue** (`#1EAEDB`): Accessibility focus state — appears on hover and focus for all interactive elements
+- **Active Yellow** (`#D0980B`): 用于 active/pressed button states 的 darkened yellow，也就是“clicked” gold。
+- **Focus Blue** (`#1EAEDB`): Accessibility focus state；所有 interactive elements 在 hover 和 focus 时出现。
 
 ### Surface & Background
 
-- **Pure White** (`#FFFFFF`): Primary page canvas, card surfaces, light section backgrounds
-- **Snow** (`#F5F5F5`): Subtle surface differentiation, input backgrounds, alternating row fills
-- **Binance Dark** (`#222126`): Dark section backgrounds, footer canvas, "Trusted by millions" panel — a near-black with a faint purple undertone
-- **Dark Card** (`#2B2F36`): Card surfaces within dark sections, elevated dark containers
-- **Ink** (`#1E2026`): Button text on yellow backgrounds, deepest text color on light surfaces
+- **Pure White** (`#FFFFFF`): Primary page canvas、card surfaces、light section backgrounds。
+- **Snow** (`#F5F5F5`): subtle surface differentiation、input backgrounds、alternating row fills。
+- **Binance Dark** (`#222126`): Dark section backgrounds、footer canvas、“Trusted by millions” panel；带轻微 purple undertone 的 near-black。
+- **Dark Card** (`#2B2F36`): Dark sections 中的 card surfaces 和 elevated dark containers。
+- **Ink** (`#1E2026`): Yellow backgrounds 上的 button text，以及 light surfaces 上最深的 text color。
 
 ### Neutrals & Text
 
-- **Primary Text** (`#1E2026`): Main body text, headings on light backgrounds — near-black with slight warmth
-- **Secondary Text** (`#32313A`): Navigation links, descriptive copy on light surfaces
-- **Slate** (`#848E9C`): Tertiary text, metadata, timestamps, footer links — the workhorse grey
-- **Steel** (`#686A6C`): Disabled-adjacent text, subtle labels
-- **Muted** (`#777E90`): Secondary navigation links, less prominent footer text
-- **Hover Dark** (`#1A1A1A`): Universal link hover color — text darkens on hover
+- **Primary Text** (`#1E2026`): Light backgrounds 上的 main body text 和 headings；带轻微暖意的 near-black。
+- **Secondary Text** (`#32313A`): Navigation links、light surfaces 上的 descriptive copy。
+- **Slate** (`#848E9C`): Tertiary text、metadata、timestamps、footer links；系统里的主力 grey。
+- **Steel** (`#686A6C`): Disabled-adjacent text、subtle labels。
+- **Muted** (`#777E90`): Secondary navigation links 和不那么突出的 footer text。
+- **Hover Dark** (`#1A1A1A`): Universal link hover color；hover 时文字变深。
 
 ### Semantic & Accent
 
-- **Crypto Green** (`#0ECB81`): Positive price movement, success states, "up" indicators
-- **Crypto Red** (`#F6465D`): Negative price movement, error states, "down" indicators
-- **Border Light** (`#E6E8EA`): Standard card and section borders on light backgrounds
-- **Border Gold** (`#FFD000`): Active/selected state borders, pill button outlines
+- **Crypto Green** (`#0ECB81`): Positive price movement、success states、“up” indicators。
+- **Crypto Red** (`#F6465D`): Negative price movement、error states、“down” indicators。
+- **Border Light** (`#E6E8EA`): Light backgrounds 上的 standard card 和 section borders。
+- **Border Gold** (`#FFD000`): Active/selected state borders、pill button outlines。
 
 ### Gradient System
 
-- **Golden Glow**: Radial gradient from `#F0B90B` center to `#F8D12F` edge — used behind product mockup screenshots
-- **Dark Fade**: Linear gradient from `#222126` to transparent — used for dark section transitions
-- **Hero Shimmer**: Subtle animated gold gradient on hero section accents
+- **Golden Glow**: 从 `#F0B90B` center 到 `#F8D12F` edge 的 radial gradient；用于 product mockup screenshots 背后。
+- **Dark Fade**: 从 `#222126` 到 transparent 的 linear gradient；用于 dark section transitions。
+- **Hero Shimmer**: Hero section accents 上 subtle animated gold gradient。
 
 ## 3. Typography Rules
 
 ### Font Family
 
-**Primary:** BinancePlex (custom proprietary typeface designed by Binance)
+**Primary:** BinancePlex（Binance 设计的 custom proprietary typeface）
 - Fallbacks: Arial, sans-serif
-- Replaced DIN Next to solve multi-language spacing issues
+- 取代 DIN Next，用于解决 multi-language spacing issues
 - Available in weights: 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold)
 
-**System:** system-ui stack for cookie banners and third-party UI
+**System:** 用于 cookie banners 和 third-party UI 的 system-ui stack
 - Fallbacks: Segoe UI, Roboto, Helvetica, Arial
 
 ### Hierarchy
@@ -98,7 +98,7 @@ What makes Binance.US distinctive is the tension between warmth and precision. T
 
 ### Principles
 
-BinancePlex is engineered for data-dense interfaces where numbers and text must coexist at multiple scales. The typeface has tabular numerals by default — critical for price columns and portfolio values that need perfect vertical alignment. Weights lean toward the heavier end (500-700), giving the interface a sense of authority and confidence that's essential for a financial platform. The tight line-heights (1.00-1.25) on headings create a stacked, compressed feel that mirrors the density of trading dashboards, while body text opens up to 1.50 for comfortable reading of educational and marketing content.
+BinancePlex 面向 data-dense interfaces 而设计，在这些界面里 numbers 与 text 必须在多种尺度上共存。Typeface 默认带 tabular numerals，这对 price columns 和 portfolio values 至关重要，因为它们需要完美 vertical alignment。Weights 偏重（500-700），让界面拥有 financial platform 所必需的 authority 和 confidence。Headings 上 tight line-heights（1.00-1.25）创造出 stacked、compressed feel，呼应 trading dashboards 的密度；body text 则放松到 1.50，方便阅读 educational 与 marketing content。
 
 ## 4. Component Stylings
 
@@ -110,8 +110,8 @@ BinancePlex is engineered for data-dense interfaces where numbers and text must 
 - Border: none
 - Border radius: slightly rounded (6px)
 - Padding: 6px 32px
-- Hover: shifts to Focus Blue (`#1EAEDB`) with white text
-- Active: darkens to Active Yellow (`#D0980B`)
+- Hover: 切换到 Focus Blue (`#1EAEDB`) 并使用 white text
+- Active: 变深为 Active Yellow (`#D0980B`)
 - Focus: Focus Blue (`#1EAEDB`) bg, 1px black border, 2px black outline, opacity 0.9
 - Transition: background 200ms ease
 
@@ -122,7 +122,7 @@ BinancePlex is engineered for data-dense interfaces where numbers and text must 
 - Border radius: full pill (50px)
 - Padding: 10px horizontal
 - Shadow: `rgb(153,153,153) 0px 2px 10px -3px`
-- Hover: shifts to Focus Blue (`#1EAEDB`) with white text
+- Hover: 切换到 Focus Blue (`#1EAEDB`) 并使用 white text
 
 **Secondary (White Outlined)**
 - Background: White (`#FFFFFF`)
@@ -131,7 +131,7 @@ BinancePlex is engineered for data-dense interfaces where numbers and text must 
 - Border radius: full pill (50px)
 - Padding: 10px horizontal
 - Shadow: `rgb(153,153,153) 0px 2px 10px -3px`
-- Hover: shifts to Focus Blue bg, white text
+- Hover: 切换到 Focus Blue bg，white text
 
 **Disabled**
 - Background: `#E6E8EA`
@@ -140,21 +140,21 @@ BinancePlex is engineered for data-dense interfaces where numbers and text must 
 
 ### Cards & Containers
 
-- Background: White (`#FFFFFF`) on light sections, Dark Card (`#2B2F36`) on dark sections
-- Border: 1px solid `#E6E8EA` on light cards
-- Border radius: medium rounded (12px) for content cards, tight (8px) for data cards
-- Shadow: `rgba(32, 32, 37, 0.05) 0px 3px 5px 0px` — barely visible, trust-building
-- Hover: shadow intensifies to `rgba(8, 8, 8, 0.05) 0px 3px 5px 5px`
+- Background: Light sections 上为 White (`#FFFFFF`)，dark sections 上为 Dark Card (`#2B2F36`)
+- Border: light cards 使用 1px solid `#E6E8EA`
+- Border radius: content cards 使用 medium rounded (12px)，data cards 使用 tight (8px)
+- Shadow: `rgba(32, 32, 37, 0.05) 0px 3px 5px 0px`，几乎不可见，用于建立 trust
+- Hover: shadow 增强为 `rgba(8, 8, 8, 0.05) 0px 3px 5px 5px`
 - Transition: box-shadow 200ms ease
 
 ### Inputs & Forms
 
-- Background: White (`#FFFFFF`) or Snow (`#F5F5F5`)
+- Background: White (`#FFFFFF`) 或 Snow (`#F5F5F5`)
 - Text: Ink (`#1E2026`)
 - Border: 1px solid `#E6E8EA`
 - Border radius: 8px
-- Padding: 0px 12px (compact for trading context)
-- Focus: border shifts to black (`#000000`), 1px outline
+- Padding: 0px 12px（为 trading context 保持 compact）
+- Focus: border 切换到 black (`#000000`)，1px outline
 - Placeholder: Slate (`#848E9C`)
 - Transition: border-color 200ms ease
 
@@ -162,27 +162,27 @@ BinancePlex is engineered for data-dense interfaces where numbers and text must 
 
 - Background: White (`#FFFFFF`), sticky
 - Height: ~64px
-- Left: Binance logo (SVG, yellow mark + dark wordmark)
-- Center/Right: navigation links in 14px/600 BinancePlex, color `#32313A`
-- CTA: Yellow pill button "Get Started" in nav right
-- Hover: links darken to `#1A1A1A`
+- Left: Binance logo（SVG，yellow mark + dark wordmark）
+- Center/Right: navigation links 使用 14px/600 BinancePlex，color `#32313A`
+- CTA: nav right 中的 Yellow pill button “Get Started”
+- Hover: links 加深到 `#1A1A1A`
 - Mobile: hamburger menu, full-height overlay
 - Top: optional promotional banner bar
 
 ### Image Treatment
 
-- Product mockups: device frames on golden gradient backgrounds, floating with subtle shadow
-- Hero images: full-width contained within card-like areas with rounded corners (24px)
-- Video sections: 24px radius with embedded player controls
-- App screenshots: dark-themed trading UI shown within phone/tablet bezels
-- Crypto icons: 48px circular with brand colors
+- Product mockups: device frames 放在 golden gradient backgrounds 上，floating with subtle shadow
+- Hero images: full-width，放在带 rounded corners（24px）的 card-like areas 内
+- Video sections: 24px radius，带 embedded player controls
+- App screenshots: dark-themed trading UI，置于 phone/tablet bezels 内
+- Crypto icons: 48px circular，使用 brand colors
 
 ### Trust Indicators
 
-- Real-time crypto price ticker (BTC, BNB, SOL with green/red price change)
-- "Trusted by millions" section with statistics on dark background
-- Security badges and regulatory compliance mentions
-- QR code for direct app download in footer
+- Real-time crypto price ticker（BTC、BNB、SOL，带 green/red price change）
+- Dark background 上的 “Trusted by millions” statistics section
+- Security badges 与 regulatory compliance mentions
+- Footer 中的 QR code，便于 direct app download
 
 ## 5. Layout Principles
 
@@ -206,15 +206,15 @@ Base unit: 8px
 ### Grid & Container
 
 - Max container width: 1200px (centered)
-- Hero area: single column with side-by-side text + image above 1024px
-- Feature grid: 3-column on desktop, single column on mobile
-- Product showcase: 2-column (text + device mockup)
-- Horizontal padding: 32px desktop, 16px mobile
-- Grid gap: 24px between feature cards
+- Hero area: 1024px 以上为 single column with side-by-side text + image
+- Feature grid: desktop 3-column，mobile single column
+- Product showcase: 2-column（text + device mockup）
+- Horizontal padding: desktop 32px，mobile 16px
+- Grid gap: feature cards 之间 24px
 
 ### Whitespace Philosophy
 
-Binance.US uses whitespace as a trust signal. Generous padding around the hero section and between content blocks creates a sense of spaciousness that counters the information density typically associated with crypto exchanges. The light sections breathe — wide margins around headlines and ample spacing between cards — while dark sections compress, packing features into tighter grids to convey capability and depth. The overall rhythm alternates between "inviting entry" (light, spacious) and "deep functionality" (dark, dense).
+Binance.US 把 whitespace 当作 trust signal。Hero section 周围和 content blocks 之间的 generous padding 创造出 spaciousness，抵消 crypto exchanges 常见的信息密度。Light sections 会呼吸：headlines 周围有宽阔 margins，cards 之间有充足 spacing；dark sections 则压缩，把 features 装入更紧的 grids，以传达 capability 和 depth。整体节奏在 “inviting entry”（light, spacious）与 “deep functionality”（dark, dense）之间交替。
 
 ### Border Radius Scale
 
@@ -239,39 +239,39 @@ Binance.US uses whitespace as a trust signal. Generous padding around the hero s
 | Pill Shadow | `rgb(153,153,153) 0px 2px 10px -3px` | Pill CTA buttons, floating actions |
 | Heavy | `rgba(0,0,0) 0px 32px 37px` | Modal overlays, dropdown menus |
 
-Binance.US uses a whisper-light shadow system. Card shadows are barely perceptible at 5% opacity — they exist not for dramatic depth but as subtle ground cues that keep cards from feeling pasted onto the surface. The pill button shadow is the exception: slightly more visible to give CTAs a "floating" quality that invites clicks. The philosophy is pragmatic — in a financial context, heavy shadows feel frivolous, while no shadows at all feel flat and untrustworthy. The 5% sweet spot communicates professionalism.
+Binance.US 使用 whisper-light shadow system。Card shadows 在 5% opacity 下几乎不可察觉；它们存在不是为了 dramatic depth，而是作为 subtle ground cues，避免 cards 像被贴在 surface 上。Pill button shadow 是例外：略微更明显，让 CTAs 有一种邀请点击的 “floating” quality。其哲学很务实：在 financial context 中，heavy shadows 显得轻浮；完全没有 shadows 又显得平面且不够可信。5% 的 sweet spot 传达 professionalism。
 
 ### Decorative Depth
 
-- **Golden gradient backgrounds**: Behind device mockup sections, radial golden glow centered on the product
-- **Dark-to-light section transitions**: Hard cut (no gradient blend) between white and `#222126` sections
-- **Price ticker strip**: Flat, borderless, reads as a data bar rather than a decorative element
+- **Golden gradient backgrounds**: Device mockup sections 背后，以 product 为中心的 radial golden glow
+- **Dark-to-light section transitions**: White 与 `#222126` sections 之间 hard cut（无 gradient blend）
+- **Price ticker strip**: Flat、borderless，读起来像 data bar，而不是 decorative element
 
 ## 7. Do's and Don'ts
 
 ### Do
 
-- Use Binance Yellow (`#F0B90B`) exclusively for primary CTAs and brand accents — it's the single point of color
-- Keep light and dark sections strictly alternating for visual rhythm
-- Use BinancePlex at weight 500+ for all interactive elements — this is a confidence-forward design
-- Apply 50px radius to all primary CTA pill buttons — the signature interactive shape
-- Maintain 12px radius on content cards for a polished but not overly rounded feel
-- Show real-time data prominently (prices, percentages, stats) — numbers build trust
-- Use Slate (`#848E9C`) for all secondary/metadata text — the universal quiet voice
-- Keep shadows at 5% opacity or less — barely there but present
+- 只把 Binance Yellow (`#F0B90B`) 用于 primary CTAs 和 brand accents；它是唯一色彩焦点
+- 保持 light 与 dark sections 严格交替，形成 visual rhythm
+- 所有 interactive elements 使用 weight 500+ 的 BinancePlex；这是 confidence-forward design
+- 所有 primary CTA pill buttons 使用 50px radius；这是 signature interactive shape
+- Content cards 保持 12px radius，精致但不过度圆润
+- 突出展示 real-time data（prices、percentages、stats）；numbers build trust
+- 所有 secondary/metadata text 使用 Slate (`#848E9C`)；这是 universal quiet voice
+- Shadows 保持 5% opacity 或更低；几乎不可见但仍存在
 
 ### Don't
 
-- Don't introduce additional brand colors — Binance Yellow is the only accent; all other color is data-driven (green up, red down)
-- Don't use rounded corners above 12px on content cards — only CTAs and video containers go higher
-- Don't add heavy shadows or hover lift effects — this is a restrained financial platform
-- Don't use BinancePlex below weight 500 for headings — lighter weights undermine authority
-- Don't place yellow text on yellow backgrounds — always ensure high contrast pairing
-- Don't mix pill (50px) and square (6px) button styles in the same row
-- Don't soften the dark sections — `#222126` should feel authoritative, not grey
-- Don't use decorative illustrations — imagery should be product screenshots or data visualizations
-- Don't add animation beyond subtle transitions (200ms ease) — financial platforms need stability
-- Don't use colored backgrounds for semantic states in cards — keep cards white or dark, use text color for semantic meaning
+- 不要引入额外 brand colors；Binance Yellow 是唯一 accent，其他颜色都应 data-driven（green up、red down）
+- Content cards 上不要使用超过 12px 的 rounded corners；只有 CTAs 和 video containers 可以更高
+- 不要添加 heavy shadows 或 hover lift effects；这是 restrained financial platform
+- Headings 不要使用低于 weight 500 的 BinancePlex；lighter weights 会削弱 authority
+- 不要把 yellow text 放在 yellow backgrounds 上；始终确保 high contrast pairing
+- 同一行里不要混用 pill（50px）和 square（6px）button styles
+- 不要柔化 dark sections；`#222126` 应该感觉 authoritative，而不是 grey
+- 不要使用 decorative illustrations；imagery 应该是 product screenshots 或 data visualizations
+- 不要添加超过 subtle transitions（200ms ease）的 animation；financial platforms 需要 stability
+- Cards 中的 semantic states 不要使用 colored backgrounds；cards 保持 white 或 dark，用 text color 表达 semantic meaning
 
 ## 8. Responsive Behavior
 
@@ -293,25 +293,25 @@ Binance.US uses a whisper-light shadow system. Card shadows are barely perceptib
 - Minimum touch target: 44x44px (WCAG AAA)
 - Pill CTA buttons: 48px height minimum
 - Nav links: 44px touch area
-- Crypto ticker items: full-width tappable rows on mobile
-- App download buttons: large tap zones (50px+)
+- Crypto ticker items: mobile 上为 full-width tappable rows
+- App download buttons: large tap zones（50px+）
 
 ### Collapsing Strategy
 
-- **Navigation**: Full horizontal links → hamburger menu below 897px; logo and "Get Started" CTA remain visible
-- **Hero section**: Side-by-side (text left, image right) → stacked (text top, image below) at 768px
-- **Feature grid**: 3-col → 2-col at 768px → 1-col at 600px
-- **Price ticker**: Horizontal row → wrapping or scrollable at 600px
-- **Section padding**: 64px → 48px → 32px → 16px as viewport narrows
-- **Device mockups**: Scale down proportionally, maintain centered positioning
-- **Footer**: Multi-column → stacked accordion sections on mobile
+- **Navigation**: 897px 以下从 full horizontal links → hamburger menu；logo 和 “Get Started” CTA 保持可见
+- **Hero section**: 768px 时从 side-by-side（text left, image right）→ stacked（text top, image below）
+- **Feature grid**: 768px 时 3-col → 2-col；600px 时 → 1-col
+- **Price ticker**: 600px 时从 horizontal row → wrapping 或 scrollable
+- **Section padding**: 随 viewport 变窄从 64px → 48px → 32px → 16px
+- **Device mockups**: 按比例缩小，保持 centered positioning
+- **Footer**: Multi-column → mobile 上的 stacked accordion sections
 
 ### Image Behavior
 
-- Device mockups: CSS-scaled with max-width constraints, maintain aspect ratio
-- Hero imagery: contained within rounded containers (24px), scale proportionally
+- Device mockups: 使用 CSS 按 max-width constraints 缩放，保持 aspect ratio
+- Hero imagery: 包含在 rounded containers（24px）内，按比例缩放
 - App screenshots: responsive width with fixed aspect ratio
-- QR code: fixed 120px square, hidden on mobile (replaced with direct app store links)
+- QR code: 固定 120px square，mobile 上隐藏（替换为 direct app store links）
 
 ## 9. Agent Prompt Guide
 
@@ -337,12 +337,12 @@ Binance.US uses a whisper-light shadow system. Card shadows are barely perceptib
 
 ### Iteration Guide
 
-When refining existing screens generated with this design system:
-1. Focus on ONE component at a time
-2. Reference specific color names and hex codes from this document
-3. Remember: Binance Yellow (#F0B90B) is the ONLY accent color — everything else is grey/dark/white
-4. Use the dark/light section alternation for visual pacing
-5. Numbers and data should be prominent — this is a financial platform
-6. Pill buttons (50px radius) for CTAs, regular buttons (6px radius) for form actions
-7. Keep shadows almost invisible (5% opacity) — trust comes from clarity, not depth
-8. BinancePlex at 600+ weight for any text that needs to feel authoritative
+使用此 design system 细化已生成 screens 时：
+1. 一次只聚焦一个 component
+2. 引用本文档中的 specific color names 和 hex codes
+3. 记住：Binance Yellow (#F0B90B) 是唯一 accent color；其他一切都是 grey/dark/white
+4. 使用 dark/light section alternation 控制 visual pacing
+5. Numbers 和 data 应该 prominent；这是 financial platform
+6. CTAs 使用 pill buttons（50px radius），form actions 使用 regular buttons（6px radius）
+7. Shadows 保持几乎不可见（5% opacity）；trust 来自 clarity，而不是 depth
+8. 任何需要显得 authoritative 的 text 都使用 600+ weight 的 BinancePlex

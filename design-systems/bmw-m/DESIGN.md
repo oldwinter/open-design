@@ -1,63 +1,63 @@
 # Design System Inspired by BMW M
 
 > Category: Automotive
-> Motorsport performance sub-brand. Near-black cockpit surfaces, BMW M tricolor accents, sharp engineering geometry.
+> Motorsport performance sub-brand。近黑 cockpit surfaces、BMW M tricolor accents、锐利工程几何。
 
 ## 1. Visual Theme & Atmosphere
-BMW M's analyzed editorial and marketing pages lean on a near-pure black canvas (`{colors.canvas}` — #000) holding white BMW Type Next Latin headlines in **confident UPPERCASE**. The system has no decorative voltage of its own; brand energy comes from **full-bleed automotive photography** — cars cornering at speed, carbon-fiber wheel detail, driver cockpit shots, motorsport pit lanes — placed as edge-to-edge content that fills entire bands. UI chrome around the photography stays minimal: thin sans-serif copy, dividers as 1px hairlines (`{colors.hairline}`), all-caps button labels with no fill until hovered.
+BMW M 已分析的 editorial 与 marketing pages 依赖近乎纯黑的 canvas（`{colors.canvas}` - #000），承载白色 BMW Type Next Latin headline，并以**自信的 UPPERCASE** 呈现。这个系统自身没有装饰性电压；品牌能量来自 **full-bleed automotive photography**，例如高速过弯的车辆、carbon-fiber 轮圈细节、驾驶舱镜头、motorsport pit lanes。这些图片作为 edge-to-edge 内容填满整个 band。Photography 周围的 UI chrome 保持极简：细 sans-serif 文案、1px hairline divider（`{colors.hairline}`），以及 hover 前无填充的 all-caps button labels。
 
-The **M tricolor stripe** — `{colors.m-blue-light}` (#0066b1) → `{colors.m-blue-dark}` (#1c69d4) → `{colors.m-red}` (#e22718) — appears sparingly as the brand's signature accent, used on the M wordmark, motorsport chrome, vehicle-tech callouts, and model badges. It is never a CTA color and never used as a background fill — the tricolor is exclusively a brand-identity marker.
+**M tricolor stripe**，即 `{colors.m-blue-light}` (#0066b1) -> `{colors.m-blue-dark}` (#1c69d4) -> `{colors.m-red}` (#e22718)，作为品牌 signature accent 克制出现，用于 M wordmark、motorsport chrome、vehicle-tech callouts 和 model badges。它绝不是 CTA color，也绝不用作 background fill。Tricolor 只作为 brand-identity marker。
 
-Type voice should stay aligned with the broader BMW family system: BMW Type Next Latin Light carries the large editorial display voice, while BMW Type Next Latin regular carries body and UI text. BMW M can use heavier uppercase weights for buttons, labels, cards, and emphasis, but agents should not treat a 700/300 split as a universal BMW M rule without page-specific evidence.
+Type voice 应与更广义的 BMW family system 对齐：BMW Type Next Latin Light 承载大型 editorial display voice，BMW Type Next Latin regular 承载 body 和 UI text。BMW M 可以在 buttons、labels、cards 和 emphasis 上使用更重的 uppercase weights，但 agent 不应在没有具体页面证据时，把 700/300 split 当成 BMW M 的通用规则。
 
 **Key Characteristics:**
-- Near-pure black canvas (`{colors.canvas}` — #000) with white type across the analyzed editorial and marketing pages. Configurator, account, checkout, and order-management flows are unresolved and may introduce light surfaces.
-- Display headlines use UPPERCASE BMW Type Next Latin Light when following the BMW family system. Heavier uppercase settings are reserved for labels, buttons, card titles, and observed M-specific emphasis.
-- M tricolor (`{colors.m-blue-light}` / `{colors.m-blue-dark}` / `{colors.m-red}`) used as 4px brand-stripe dividers, M-wordmark accents, and motorsport chrome — never as buttons or fills.
-- Photography fills entire bands edge-to-edge. Cars are always the visual subject; UI chrome backs off to small white labels overlaid on photography.
-- Buttons are flat with 0px corners and uppercase letterspaced labels. The "industrial precision" rectangular silhouette IS the brand.
-- Border radius is mostly zero across the system. The few exceptions are circular icon buttons such as carousel arrows and any confirmed small toggle pills.
-- Spacing is generous and grid-aligned: `{spacing.section}` (96px) between major bands; `{spacing.xxl}` (64px) inside hero photo bands; `{spacing.xl}` (40px) inside content cards.
+- 已分析的 editorial 与 marketing pages 使用近纯黑 canvas（`{colors.canvas}` - #000）配白色字体。Configurator、account、checkout 和 order-management flows 尚未解析，可能引入 light surfaces。
+- 遵循 BMW family system 时，Display headlines 使用 UPPERCASE BMW Type Next Latin Light。更重 uppercase 设置仅保留给 labels、buttons、card titles 和已观察到的 M-specific emphasis。
+- M tricolor（`{colors.m-blue-light}` / `{colors.m-blue-dark}` / `{colors.m-red}`）用于 4px brand-stripe dividers、M-wordmark accents 和 motorsport chrome，绝不用作 buttons 或 fills。
+- Photography 填满整个 band，edge-to-edge 展开。车辆始终是视觉主体；UI chrome 后退为叠在图片上的小型白色 labels。
+- Buttons 扁平、0px 圆角，并使用 uppercase letterspaced labels。“Industrial precision” 矩形轮廓就是这个品牌。
+- Border radius 在系统中大多为零。少数例外是 carousel arrows 等 circular icon buttons，以及任何已确认的小型 toggle pills。
+- Spacing 宽裕且 grid-aligned：主要 bands 之间使用 `{spacing.section}` (96px)；hero photo bands 内部使用 `{spacing.xxl}` (64px)；content cards 内部使用 `{spacing.xl}` (40px)。
 
 ## 2. Color Palette & Roles
 ### Brand & Accent
-- **Primary** (#ffffff): `{colors.primary}`. The system's primary type and CTA color. Used for h1/h2/h3 display, body text on dark, and primary button labels (the buttons themselves are transparent or canvas-colored — the white text + outline IS the button).
-- **M Blue Light** (#0066b1): `{colors.m-blue-light}`. The first stop in the M tricolor stripe. Used on M-badge accents and motorsport chrome.
-- **M Blue Dark** (#1c69d4): `{colors.m-blue-dark}`. The middle stop and BMW heritage blue value, repurposed as the middle band of the M stripe.
-- **M Red** (#e22718): `{colors.m-red}`. The third stop. The signature M-power red, used in the stripe and on motorsport-pace callouts.
-- **Electric Blue** (#0653b6): `{colors.electric-blue}`. A separate electric-vehicle accent used on M xDrive electric model pages. Distinct from the heritage blue — feels colder, more digital.
+- **Primary** (#ffffff): `{colors.primary}`。系统的 primary type 与 CTA color。用于 h1/h2/h3 display、dark 上的 body text，以及 primary button labels（按钮自身是 transparent 或 canvas-colored，white text + outline 才是按钮）。
+- **M Blue Light** (#0066b1): `{colors.m-blue-light}`。M tricolor stripe 的第一段。用于 M-badge accents 和 motorsport chrome。
+- **M Blue Dark** (#1c69d4): `{colors.m-blue-dark}`。中间段，也是 BMW heritage blue value，被复用为 M stripe 的中间 band。
+- **M Red** (#e22718): `{colors.m-red}`。第三段。Signature M-power red，用于 stripe 和 motorsport-pace callouts。
+- **Electric Blue** (#0653b6): `{colors.electric-blue}`。用于 M xDrive electric model pages 的独立 electric-vehicle accent。它与 heritage blue 不同，感觉更冷、更数字化。
 
 ### Surface
-- **Canvas** (#000000): `{colors.canvas}`. The default page floor across the analyzed editorial and marketing surfaces. True black.
-- **Surface Soft** (#0d0d0d): `{colors.surface-soft}`. A barely-different-from-black used for spec table cells and footer-adjacent strips.
-- **Surface Card** (#1a1a1a): `{colors.surface-card}`. Cards, secondary buttons, icon-button backgrounds.
-- **Surface Elevated** (#262626): `{colors.surface-elevated}`. One step lighter, used for nested cards inside dark bands.
-- **Carbon Gray** (#2b2b2b): `{colors.carbon-gray}`. Carbon-fiber-inspired surface tone used on technical-spec cards.
+- **Canvas** (#000000): `{colors.canvas}`。已分析 editorial 与 marketing surfaces 的默认 page floor。True black。
+- **Surface Soft** (#0d0d0d): `{colors.surface-soft}`。几乎与黑色无差别，用于 spec table cells 和 footer-adjacent strips。
+- **Surface Card** (#1a1a1a): `{colors.surface-card}`。Cards、secondary buttons、icon-button backgrounds。
+- **Surface Elevated** (#262626): `{colors.surface-elevated}`。更亮一档，用于 dark bands 内的 nested cards。
+- **Carbon Gray** (#2b2b2b): `{colors.carbon-gray}`。Carbon-fiber-inspired surface tone，用于 technical-spec cards。
 
 ### Hairlines & Borders
-- **Hairline** (#3c3c3c): `{colors.hairline}`. The 1px divider tone on dark surfaces. Used between body sections, between table rows, around card outlines.
-- **Hairline Strong** (#262626): `{colors.hairline-strong}`. Same hex as `{colors.surface-elevated}` — borders feel like one-step elevations rather than ink lines.
+- **Hairline** (#3c3c3c): `{colors.hairline}`。Dark surfaces 上的 1px divider tone。用于 body sections 之间、table rows 之间、card outlines 周围。
+- **Hairline Strong** (#262626): `{colors.hairline-strong}`。与 `{colors.surface-elevated}` 相同 hex；borders 感觉像 one-step elevations，而不是墨线。
 
 ### Text
-- **Ink / On Dark** (#ffffff): `{colors.on-dark}`. All headline and primary text on dark canvas.
-- **Body** (#bbbbbb): `{colors.body}`. Default running-text color (slightly cooler than pure white). Used for body paragraphs and secondary metadata.
-- **Body Strong** (#e6e6e6): `{colors.body-strong}`. Emphasized body / lead paragraph.
-- **Muted** (#7e7e7e): `{colors.muted}`. Footer links, breadcrumbs, captions.
+- **Ink / On Dark** (#ffffff): `{colors.on-dark}`。Dark canvas 上所有 headline 和 primary text。
+- **Body** (#bbbbbb): `{colors.body}`。默认 running-text color，比纯白稍冷。用于 body paragraphs 和 secondary metadata。
+- **Body Strong** (#e6e6e6): `{colors.body-strong}`。Emphasized body / lead paragraph。
+- **Muted** (#7e7e7e): `{colors.muted}`。Footer links、breadcrumbs、captions。
 
 ### Semantic
-- **Warning** (#f4b400): `{colors.warning}`. Used very sparingly on technical-warning callouts.
-- **Success** (#0fa336): `{colors.success}`. Order-confirmation states (rare on marketing surfaces).
+- **Warning** (#f4b400): `{colors.warning}`。极少用于 technical-warning callouts。
+- **Success** (#0fa336): `{colors.success}`。Order-confirmation states，marketing surfaces 中很少出现。
 
 ## 3. Typography Rules
 ### Font Family
-**BMW Type Next Latin** is BMW's licensed display + body typeface. Align fallback guidance with the existing BMW design system: use `BMWTypeNextLatin Light` for display when available, `BMWTypeNextLatin` for body/UI, then `Helvetica, Arial, Hiragino Kaku Gothic ProN, Hiragino Sans, Meiryo, sans-serif`.
+**BMW Type Next Latin** 是 BMW 授权的 display + body typeface。Fallback guidance 与现有 BMW design system 对齐：可用时 display 使用 `BMWTypeNextLatin Light`，body/UI 使用 `BMWTypeNextLatin`，再回退到 `Helvetica, Arial, Hiragino Kaku Gothic ProN, Hiragino Sans, Meiryo, sans-serif`。
 
-Observed BMW M examples can push uppercase labels, buttons, and card titles heavier for a motorsport "stamped" voice, but the family baseline remains:
-- Display: Light (300) for large h1/h2 editorial headlines unless a captured M page clearly uses a heavier static cut
-- Body/UI: regular (400) for paragraphs, descriptive copy, and persistent navigation
-- Emphasis: 700 for buttons, category labels, and card titles; 900 only where navigation emphasis is explicitly observed
+已观察到的 BMW M 示例可以让 uppercase labels、buttons 和 card titles 呈现更重的 motorsport “stamped” voice，但 family baseline 仍是：
+- Display：大型 h1/h2 editorial headlines 使用 Light (300)，除非捕获到的 M 页面明确使用更重的 static cut
+- Body/UI：paragraphs、descriptive copy 和 persistent navigation 使用 regular (400)
+- Emphasis：buttons、category labels 和 card titles 使用 700；只有在明确观察到 navigation emphasis 时才使用 900
 
-The important pattern is contrast and restraint, not a hard 700/300 split. Avoid medium-weight mush: use Light for large display, regular for reading text, and heavier weights only for short UI labels or M-specific emphasis.
+重要模式是对比和克制，而不是硬性的 700/300 split。避免 medium-weight mush：大型 display 使用 Light，阅读文本使用 regular，更重字重只用于短 UI labels 或 M-specific emphasis。
 
 ### Hierarchy
 
@@ -71,176 +71,176 @@ The important pattern is contrast and restraint, not a hard 700/300 split. Avoid
 | `{typography.title-md}` | 20px | 400 | 1.4 | 0 | Card sub-titles, lead paragraphs |
 | `{typography.title-sm}` | 18px | 400 | 1.4 | 0 | Spec callouts, intro paragraphs |
 | `{typography.label-uppercase}` | 14px | 700 | 1.3 | 1.5px | Category tabs, "VIEW MORE" inline labels |
-| `{typography.body-md}` | 16px | 400 | 1.5 | 0 | Default body — BMW Type Next Latin regular |
+| `{typography.body-md}` | 16px | 400 | 1.5 | 0 | Default body - BMW Type Next Latin regular |
 | `{typography.body-sm}` | 14px | 400 | 1.5 | 0 | Footer body, cookie consent, fine print |
 | `{typography.caption}` | 12px | 400 | 1.4 | 0.5px | Photo captions, image-credit lines |
-| `{typography.button}` | 14px | 700 | 1.0 | 1.5px | All button labels — uppercase, letterspaced |
+| `{typography.button}` | 14px | 700 | 1.0 | 1.5px | All button labels - uppercase, letterspaced |
 | `{typography.nav-link}` | 14px | 400 | 1.4 | 0.5px | Top-nav menu items |
 
 ### Principles
-The system contrasts light, architectural display type against crisp regular body text, then uses heavier weights only for short labels and action chrome. Letter-spacing is non-trivial: button labels and category labels carry 1.5px tracking that makes them feel "machined" rather than "typed." Display headlines stay at 0 letter-spacing — BMW Type's natural cap-height handles spacing on large sizes.
+系统用轻盈、建筑感的 display type 对比清晰 regular body text，然后只在短 labels 和 action chrome 上使用更重字重。Letter-spacing 不是可有可无：button labels 和 category labels 带 1.5px tracking，让它们感觉像 “machined” 而不是 “typed”。Display headlines 保持 0 letter-spacing，BMW Type 的自然 cap-height 会处理大字号 spacing。
 
-UPPERCASE display is the default voice for h1/h2 — sentence case appears on body and intro paragraphs but rarely on headlines. The all-caps treatment is a brand-voice signal, not a stylistic choice.
+UPPERCASE display 是 h1/h2 的默认声音；sentence case 出现在 body 和 intro paragraphs 中，但很少出现在 headlines 中。All-caps 处理是 brand-voice signal，不是单纯风格选择。
 
 ### Note on Font Substitutes
-If BMW Type Next Latin is unavailable, **Inter** (variable) at 300/400/700 is the closest open-source substitute. Keep display tracking at 0 unless the chosen fallback looks loose at large sizes. **Saira Condensed** is an alternative for short motorsport labels if a slightly more compressed feel is desired.
+如果 BMW Type Next Latin 不可用，**Inter** (variable) 的 300/400/700 是最接近的开源替代。除非所选 fallback 在大字号时显得松散，否则 display tracking 保持 0。若想要稍微更压缩的感觉，**Saira Condensed** 可作为短 motorsport labels 的替代。
 
 ## 4. Component Stylings
 ### Top Navigation
 
-**`top-nav`** — Black nav bar pinned to the top of every page. 64px tall, `{colors.canvas}` background. Carries the BMW M logo at left (M tricolor + BMW roundel + "M" wordmark), primary horizontal menu (Models, Topics, Magazine, Configurator, Fastlane), right-side cluster with language selector, search icon, account icon. Menu items render in `{typography.nav-link}` with sentence-case labels.
+**`top-nav`** - 固定在每页顶部的黑色 nav bar。高度 64px，背景 `{colors.canvas}`。左侧承载 BMW M logo（M tricolor + BMW roundel + "M" wordmark）、primary horizontal menu（Models、Topics、Magazine、Configurator、Fastlane），右侧 cluster 包含 language selector、search icon、account icon。Menu items 使用 `{typography.nav-link}` 和 sentence-case labels。
 
 ### Buttons
 
-**`button-primary`** — The signature primary CTA. Background `{colors.canvas}` (or transparent over photography), text `{colors.on-dark}` (white), 1px white border outline, 0px radius, padding 16px × 32px, height 48px. Type `{typography.button}` — uppercase 14px / 700 / 1.5px tracking. The rectangular silhouette and uppercase letterspaced label IS the brand button.
+**`button-primary`** - Signature primary CTA。背景 `{colors.canvas}`（或在 photography 上 transparent），文字 `{colors.on-dark}`（white），1px white border outline，0px radius，padding 16px x 32px，高 48px。Type 为 `{typography.button}`，uppercase 14px / 700 / 1.5px tracking。矩形轮廓和 uppercase letterspaced label 就是 brand button。
 
-**`button-primary-outline`** — Same shape as primary but with transparent background and white outline only. Used over photography where a filled button would clash with the image.
+**`button-primary-outline`** - 与 primary 形状相同，但只有 transparent background 和 white outline。用于 photography 上，因为 filled button 会与图像冲突。
 
-**`button-on-light`** — Tentative pattern for unresolved light-surface contexts such as configurator, account, checkout, or order dialogs. Background `{colors.canvas}`, text `{colors.on-dark}` — black button with white text, inverted from the dark-canvas default. Confirm against the specific flow before treating it as canonical.
+**`button-on-light`** - 未解析 light-surface contexts（如 configurator、account、checkout 或 order dialogs）的 tentative pattern。背景 `{colors.canvas}`，文字 `{colors.on-dark}`，即黑色按钮配白字，从 dark-canvas default 反转而来。将其视为 canonical 之前，需要针对具体 flow 确认。
 
-**`button-icon`** — Circular icon buttons (carousel controls, share, favorite). 48 × 48px, background `{colors.surface-card}`, white icon centered, full-circle radius. The only non-rectangular button shape in the system.
+**`button-icon`** - Circular icon buttons（carousel controls、share、favorite）。48 x 48px，背景 `{colors.surface-card}`，白色 icon 居中，full-circle radius。系统中唯一的非矩形按钮形状。
 
-**`carousel-arrow`** — Specific 48 × 48 circular arrow used in photo carousels. Same shape as `button-icon` with chevron glyph.
+**`carousel-arrow`** - Photo carousels 中使用的特定 48 x 48 circular arrow。形状与 `button-icon` 相同，使用 chevron glyph。
 
-**`text-link`** — Inline uppercase letterspaced links ("VIEW ALL MODELS", "READ MORE"). `{typography.label-uppercase}`, white on dark, no underline. The chevron arrow → glyph appears next to most link labels.
+**`text-link`** - Inline uppercase letterspaced links（"VIEW ALL MODELS", "READ MORE"）。`{typography.label-uppercase}`，dark 上白色，无 underline。大多数 link label 旁出现 chevron arrow -> glyph。
 
 ### Cards & Containers
 
-**`hero-photo-band`** — Full-width black band with full-bleed automotive photography filling most of the frame. The h1 uses `{typography.display-xl}` and sits left-aligned over the photo, often with a small subtitle in `{typography.body-md}` below. Vertical padding `{spacing.xxl}` (64px). No card frame — the photo IS the band.
+**`hero-photo-band`** - Full-width 黑色 band，full-bleed automotive photography 填满大部分 frame。h1 使用 `{typography.display-xl}` 并左对齐叠在照片上，下方常有 `{typography.body-md}` 的小 subtitle。Vertical padding `{spacing.xxl}` (64px)。没有 card frame，photo 本身就是 band。
 
-**`feature-photo-card`** — Used in 3-up grids for "MORE FROM BMW M MAGAZINE" and similar editorial sections. Background `{colors.surface-card}`, 0px radius, internal padding `{spacing.lg}` (24px). Top half of the card is a 16:9 photo (full-bleed within the card); below the photo, a category tag in `{typography.label-uppercase}`, a `{typography.title-lg}` title, and a short body description.
+**`feature-photo-card`** - 用于 “MORE FROM BMW M MAGAZINE” 等 editorial sections 的 3-up grids。背景 `{colors.surface-card}`，0px radius，内部 padding `{spacing.lg}` (24px)。卡片上半部分是 16:9 photo（在 card 内 full-bleed）；照片下方是 `{typography.label-uppercase}` category tag、`{typography.title-lg}` title 和短 body description。
 
-**`model-card`** — Used in the "MORE NEW M MODELS" 3-up grid. Background `{colors.canvas}` (no card surface — just photo on black), 0px radius. Top: 16:10 hero shot of the model. Below: model name in `{typography.display-md}`, short specs line in `{typography.body-sm}`, a `text-link` ("EXPLORE THIS MODEL").
+**`model-card`** - 用于 “MORE NEW M MODELS” 3-up grid。背景 `{colors.canvas}`（无 card surface，只是在黑色上放照片），0px radius。顶部是 model 的 16:10 hero shot。下方是 `{typography.display-md}` model name、`{typography.body-sm}` short specs line，以及 `text-link`（"EXPLORE THIS MODEL"）。
 
-**`magazine-article-card`** — A more text-forward card variant used on the magazine overview page. Background `{colors.canvas}` with hairline border, 0px radius. Carries a small thumbnail at top, a category label in `{typography.label-uppercase}`, headline in `{typography.title-lg}`, and a body excerpt.
+**`magazine-article-card`** - Magazine overview page 上更偏文本的 card variant。背景 `{colors.canvas}`，带 hairline border，0px radius。顶部有小 thumbnail、`{typography.label-uppercase}` category label、`{typography.title-lg}` headline 和 body excerpt。
 
-**`spec-cell`** — Technical specification cells used on model-detail pages (engine specs, weight, top speed, 0-100 time). Background `{colors.surface-soft}` (#0d0d0d), 0px radius, padding `{spacing.lg}` (24px). Each cell holds a value in `{typography.display-sm}` at top and a label in `{typography.label-uppercase}` below.
+**`spec-cell`** - Model-detail pages 中的 technical specification cells（engine specs、weight、top speed、0-100 time）。背景 `{colors.surface-soft}` (#0d0d0d)，0px radius，padding `{spacing.lg}` (24px)。每个 cell 顶部放 `{typography.display-sm}` value，下方放 `{typography.label-uppercase}` label。
 
-**`motorsport-photo-card`** — Edge-to-edge photo cards used in the racing-team / motorsport sections. No card surface — just a full-bleed photograph with a small overlay caption in white text at the bottom-left. The photography IS the brand here.
+**`motorsport-photo-card`** - Racing-team / motorsport sections 中使用的 edge-to-edge photo cards。没有 card surface，只是 full-bleed photograph，左下角叠一个白色小 overlay caption。Photography 就是这里的品牌。
 
-**`chatbot-launcher`** — A right-side card-style entry point ("BMW M CHATBOT") on the homepage. Background `{colors.surface-card}`, 0px radius, padding `{spacing.lg}` (24px). Carries an h3 title, a short prompt, and a `button-primary` to launch.
+**`chatbot-launcher`** - Homepage 上右侧的 card-style entry point（"BMW M CHATBOT"）。背景 `{colors.surface-card}`，0px radius，padding `{spacing.lg}` (24px)。包含 h3 title、短 prompt 和用于 launch 的 `button-primary`。
 
-**`category-tab`** + **`category-tab-active`** — The category selector tabs used on the magazine and topics pages (e.g., "ALL · MAGAZINE · MODELS · LIFESTYLE · MOTORSPORT"). Tabs render as text-only labels in `{typography.label-uppercase}`. Active state changes text color from `{colors.body}` to `{colors.on-dark}` and adds a 2px white underline below the label. No background fill, no rounded corners.
+**`category-tab`** + **`category-tab-active`** - Magazine 和 topics pages 上使用的 category selector tabs（例如 "ALL . MAGAZINE . MODELS . LIFESTYLE . MOTORSPORT"）。Tabs 以 `{typography.label-uppercase}` 渲染为 text-only labels。Active state 将 text color 从 `{colors.body}` 变为 `{colors.on-dark}`，并在 label 下方加 2px white underline。无 background fill，无 rounded corners。
 
 ### Inputs & Forms
 
-**`text-input`** — Standard text input on dark surfaces. Background `{colors.surface-card}`, text `{colors.on-dark}`, type `{typography.body-md}`, 0px radius, padding 12px × 16px, height 48px. 1px hairline border. Focus state thickens the border to white.
+**`text-input`** - Dark surfaces 上的标准 text input。背景 `{colors.surface-card}`，文字 `{colors.on-dark}`，type `{typography.body-md}`，0px radius，padding 12px x 16px，高 48px。1px hairline border。Focus state 将 border 加粗为 white。
 
-**`cookie-consent-card`** — A right-side cookie-banner card visible on the homepage. Background `{colors.canvas}` with 1px hairline, 0px radius, padding `{spacing.lg}` (24px). Body text in `{typography.body-sm}`. Two buttons stacked at bottom: primary outline + text-link.
+**`cookie-consent-card`** - Homepage 上可见的右侧 cookie-banner card。背景 `{colors.canvas}`，带 1px hairline，0px radius，padding `{spacing.lg}` (24px)。Body text 使用 `{typography.body-sm}`。底部堆叠两个 buttons：primary outline + text-link。
 
 ### Signature Components
 
-**`m-stripe-divider`** — The 4px horizontal stripe carrying the M tricolor (`{colors.m-blue-light}` → `{colors.m-blue-dark}` → `{colors.m-red}`). Used as a divider on motorsport chrome, between brand-identity sections, and as a hover-state indicator on category tabs. The most distinctive non-typographic element in the system.
+**`m-stripe-divider`** - 承载 M tricolor（`{colors.m-blue-light}` -> `{colors.m-blue-dark}` -> `{colors.m-red}`）的 4px horizontal stripe。用于 motorsport chrome 上的 divider、brand-identity sections 之间，以及 category tabs 的 hover-state indicator。它是系统中最有辨识度的非排版元素。
 
-**`cta-band-photo`** — A pre-footer "Drive an M" CTA band carrying full-bleed photography of a car cornering on a track, with a centered headline in `{typography.display-md}` and a `button-primary-outline` below. Vertical padding 80px. The CTA inherits the editorial gravity of the rest of the page through full-bleed photography rather than chrome.
+**`cta-band-photo`** - Pre-footer 的 “Drive an M” CTA band，承载一张汽车在赛道过弯的 full-bleed photography，中间有 `{typography.display-md}` headline，下方放 `button-primary-outline`。Vertical padding 80px。CTA 不是靠 chrome，而是通过 full-bleed photography 继承页面其余部分的 editorial gravity。
 
 ### Footer
 
-**`footer`** — Black footer observed on analyzed marketing pages. Background `{colors.canvas}`, text `{colors.body}`. 4-column link list at desktop covering BMW M Models / BMW M Lifestyle / Owners / Company. Vertical padding 64px. Bottom row carries the BMW corporate disclaimer in `{typography.caption}` and language selector. Treat black footer behavior as confirmed for editorial/marketing pages, not for unresolved account or checkout flows.
+**`footer`** - 已分析 marketing pages 中观察到的黑色 footer。背景 `{colors.canvas}`，文字 `{colors.body}`。Desktop 下有 4-column link list，覆盖 BMW M Models / BMW M Lifestyle / Owners / Company。Vertical padding 64px。底部 row 承载 `{typography.caption}` 的 BMW corporate disclaimer 和 language selector。将 black footer 行为视为 editorial/marketing pages 已确认，不要扩展到尚未解析的 account 或 checkout flows。
 
 ## 5. Layout Principles
 ### Spacing System
-- **Base unit:** 4px.
-- **Tokens:** `{spacing.xxs}` 4px · `{spacing.xs}` 8px · `{spacing.sm}` 12px · `{spacing.md}` 16px · `{spacing.lg}` 24px · `{spacing.xl}` 40px · `{spacing.xxl}` 64px · `{spacing.section}` 96px.
-- **Section padding (vertical):** `{spacing.section}` (96px) between major editorial bands.
-- **Hero photo bands:** `{spacing.xxl}` (64px) internal vertical padding around the hero h1 + sub-headline pair.
-- **Card internal padding:** `{spacing.lg}` (24px) for content and model cards; `{spacing.xl}` (40px) for spec-cell tables.
-- **Gutters:** `{spacing.lg}` (24px) between cards in 3-up grids; `{spacing.md}` (16px) inside footer columns.
+- **Base unit:** 4px。
+- **Tokens:** `{spacing.xxs}` 4px . `{spacing.xs}` 8px . `{spacing.sm}` 12px . `{spacing.md}` 16px . `{spacing.lg}` 24px . `{spacing.xl}` 40px . `{spacing.xxl}` 64px . `{spacing.section}` 96px。
+- **Section padding (vertical):** 主要 editorial bands 之间使用 `{spacing.section}` (96px)。
+- **Hero photo bands:** Hero h1 + sub-headline pair 周围使用 `{spacing.xxl}` (64px) 内部 vertical padding。
+- **Card internal padding:** Content 和 model cards 使用 `{spacing.lg}` (24px)；spec-cell tables 使用 `{spacing.xl}` (40px)。
+- **Gutters:** 3-up grids 中 cards 之间使用 `{spacing.lg}` (24px)；footer columns 内部使用 `{spacing.md}` (16px)。
 
 ### Grid & Container
-- **Max content width:** ~1440px centered on marketing pages — wider than typical SaaS to give photography breathing room.
-- **Editorial body:** Single 12-column grid; photo bands bleed full-bleed (no max-width).
-- **Card grids:** 3-up at desktop, 2-up at tablet, 1-up at mobile.
-- **Footer:** 4-column link list at desktop, 2-up at tablet, 1-up at mobile.
+- **Max content width:** Marketing pages 上约 1440px 居中，比典型 SaaS 更宽，让 photography 有呼吸空间。
+- **Editorial body:** 单一 12-column grid；photo bands full-bleed（无 max-width）。
+- **Card grids:** Desktop 3-up，tablet 2-up，mobile 1-up。
+- **Footer:** Desktop 为 4-column link list，tablet 2-up，mobile 1-up。
 
 ### Whitespace Philosophy
-BMW M trusts photography to do the visual work. Whitespace around photography is restrained — the cars fill the frame, and copy sits below or beside them in tightly-aligned columns. Where whitespace appears (between body sections, around CTAs), it's always uniform `{spacing.section}` (96px). The system should avoid decorative atmospheric backdrops and ornamental gradients; functional contrast scrims are allowed when photo crops would make white text fail contrast.
+BMW M 信任 photography 来完成视觉工作。Photography 周围的 whitespace 很克制：车辆填满画面，copy 位于下方或旁侧并紧密对齐。Whitespace 出现的地方（body sections 之间、CTAs 周围）始终统一为 `{spacing.section}` (96px)。系统应避免装饰性 atmospheric backdrops 和 ornamental gradients；当 photo crop 会导致 white text 对比失败时，允许使用功能性 contrast scrims。
 
 ## 6. Depth & Elevation
 | Level | Treatment | Use |
 |---|---|---|
 | Flat | No shadow, no border | Body sections, top nav, footer, photo bands |
 | Soft hairline | 1px `{colors.hairline}` border | Section dividers, card outlines, table rows |
-| Card surface | `{colors.surface-card}` background over canvas — no shadow | Feature photo cards, magazine cards, chatbot launcher |
-| Photographic depth | Full-bleed photography with edge-to-edge crop | Hero bands, motorsport features — depth via subject matter, not chrome |
+| Card surface | `{colors.surface-card}` background over canvas, no shadow | Feature photo cards, magazine cards, chatbot launcher |
+| Photographic depth | Full-bleed photography with edge-to-edge crop | Hero bands, motorsport features, depth via subject matter rather than chrome |
 
-The system uses no drop shadows and no layered chrome. Depth comes entirely from photography (subject + lens + lighting) and the contrast between black canvas and slightly-elevated `{colors.surface-card}`.
+系统不使用 drop shadows，也不使用 layered chrome。Depth 完全来自 photography（subject + lens + lighting），以及 black canvas 与略微 elevated 的 `{colors.surface-card}` 之间的对比。
 
 ### Decorative Depth
-- **M Stripe Divider** (`m-stripe-divider`): A 4px-tall horizontal divider carrying the M tricolor (`{colors.m-blue-light}` → `{colors.m-blue-dark}` → `{colors.m-red}`). Used on motorsport chrome, model-detail headers, and brand-identity moments. The stripe is the system's only true "decorative" element — used sparingly to mark significance.
-- **Carbon-fiber surfaces**: The technical-spec page uses `{colors.carbon-gray}` (#2b2b2b) cells with subtle texture overlay. This is a single-page treatment, not a system-wide pattern.
-- **Photographic depth**: Full-bleed cars are the depth. Lighting in the photography (track lights, sunset rim-light) does the elevation work that drop shadows would do in a SaaS system.
+- **M Stripe Divider** (`m-stripe-divider`): 4px-tall horizontal divider，承载 M tricolor（`{colors.m-blue-light}` -> `{colors.m-blue-dark}` -> `{colors.m-red}`）。用于 motorsport chrome、model-detail headers 和 brand-identity moments。Stripe 是系统唯一真正的“decorative”元素，只能克制使用来标记重要性。
+- **Carbon-fiber surfaces**: Technical-spec page 使用 `{colors.carbon-gray}` (#2b2b2b) cells，并带细微 texture overlay。这是单页处理，不是系统级 pattern。
+- **Photographic depth**: Full-bleed cars 就是 depth。Photography 中的 lighting（track lights、sunset rim-light）承担 SaaS system 中 drop shadows 会承担的 elevation 工作。
 
 ## 7. Do's and Don'ts
 ### Do
-- Anchor every page with full-bleed automotive photography. The cars are the brand voltage; chrome backs off.
-- Use UPPERCASE display headlines in `{typography.display-xl}` or `{typography.display-lg}`. Sentence-case display reads as off-brand.
-- Keep typography disciplined: Light display, regular body text, heavier weights only for short labels, buttons, card titles, or observed M-specific emphasis.
-- Reserve the M tricolor stripe for brand-identity moments — wordmark accents, motorsport chrome, model badges. Never as a button fill or surface.
-- Use 0px radius by default. Reserve full-circle geometry for circular icon buttons only.
-- Letter-space all-caps labels at 1.5px. The "machined" feel is non-negotiable.
-- Use `{spacing.section}` (96px) between major editorial bands for grid-aligned vertical rhythm.
+- 每一页都用 full-bleed automotive photography 锚定。Cars 是品牌电压，chrome 要后退。
+- 使用 `{typography.display-xl}` 或 `{typography.display-lg}` 的 UPPERCASE display headlines。Sentence-case display 会显得 off-brand。
+- 保持 typography disciplined：Light display、regular body text；更重字重只用于短 labels、buttons、card titles 或已观察到的 M-specific emphasis。
+- 将 M tricolor stripe 保留给 brand-identity moments，例如 wordmark accents、motorsport chrome、model badges。绝不用作 button fill 或 surface。
+- 默认使用 0px radius。Full-circle geometry 只保留给 circular icon buttons。
+- All-caps labels 使用 1.5px letter-spacing。“Machined” 手感不可协商。
+- 主要 editorial bands 之间使用 `{spacing.section}` (96px)，形成 grid-aligned vertical rhythm。
 
 ### Don't
-- Don't introduce a brand color outside the M tricolor (`{colors.m-blue-light}` / `{colors.m-blue-dark}` / `{colors.m-red}`) and the documented electric-blue accent.
-- Don't force body type into Light if readability suffers. Body should usually stay regular 400; reserve Light for large display and secondary editorial moments.
-- Don't use rounded buttons. The rectangular silhouette IS the brand. Rounded corners read as consumer-tech, not motorsport.
-- Don't put decorative gradient backdrops behind hero type. If a crop makes text fail contrast, add a functional black scrim, reposition the crop, or move the text into a solid black panel.
-- Don't repeat the same surface mode in two consecutive bands. Rhythm: photo band → spec table → photo band → magazine grid → photo band. Two text-only bands in a row read as a corporate site.
-- Don't use the M stripe as a button fill. The stripe is a divider / accent — never an action surface.
-- Don't bold uppercase tracking under 1.5px on button labels — the spacing is what makes them feel "machined."
+- 不要引入 M tricolor（`{colors.m-blue-light}` / `{colors.m-blue-dark}` / `{colors.m-red}`）和已记录 electric-blue accent 之外的 brand color。
+- 如果 readability 受损，不要强行让 body type 使用 Light。Body 通常应保持 regular 400；Light 留给大型 display 和 secondary editorial moments。
+- 不要使用 rounded buttons。矩形轮廓就是品牌。Rounded corners 会读成 consumer-tech，而不是 motorsport。
+- 不要在 hero type 背后放装饰性 gradient backdrops。如果 crop 让文本对比失败，添加功能性 black scrim、重新定位 crop，或把文本移进 solid black panel。
+- 不要连续两个 bands 重复同一种 surface mode。节奏应为：photo band -> spec table -> photo band -> magazine grid -> photo band。连续两个 text-only bands 会读成 corporate site。
+- 不要把 M stripe 用作 button fill。Stripe 是 divider / accent，绝不是 action surface。
+- Button labels 上的 bold uppercase tracking 不要低于 1.5px，spacing 正是让它们感觉 “machined” 的原因。
 
 ## 8. Responsive Behavior
 ### Breakpoints
 
 | Name | Width | Key Changes |
 |---|---|---|
-| Mobile | < 768px | Hamburger nav; hero h1 scales 80→48px; demo grid 1-up; photo cards stack full-width; footer 4 cols → 1 |
-| Tablet | 768–1024px | Top nav stays horizontal but tightens; 2-up card grids; spec tables 2-up |
-| Desktop | 1024–1440px | Full top-nav; 3-up card grids; spec tables 4-up |
+| Mobile | < 768px | Hamburger nav; hero h1 scales 80->48px; demo grid 1-up; photo cards stack full-width; footer 4 cols -> 1 |
+| Tablet | 768-1024px | Top nav stays horizontal but tightens; 2-up card grids; spec tables 2-up |
+| Desktop | 1024-1440px | Full top-nav; 3-up card grids; spec tables 4-up |
 | Wide | > 1440px | Same as desktop with more breathing room; max content 1440px |
 
 ### Touch Targets
-- `button-primary` renders at 48 × 48px minimum where possible; never go below a 44 × 44px pointer target.
-- `button-icon` and `carousel-arrow` are exactly 48 × 48px — comfortably above the 44 × 44px minimum.
-- `text-input` height is 48px.
-- Category tabs render as text-only labels with at least 12px vertical padding and enough horizontal spacing to create a 44px minimum effective tap area.
+- `button-primary` 尽可能渲染为最小 48 x 48px；pointer target 绝不要低于 44 x 44px。
+- `button-icon` 和 `carousel-arrow` 精确为 48 x 48px，舒服地高于 44 x 44px minimum。
+- `text-input` 高度为 48px。
+- Category tabs 渲染为 text-only labels，至少有 12px vertical padding 和足够 horizontal spacing，以形成 44px minimum effective tap area。
 
 ### Text Over Photography & Focus
-- White body text over photography must meet at least 4.5:1 contrast; large display text and icon strokes must meet at least 3:1.
-- First choice is crop discipline: place text over dark track, shadow, cockpit, or black bodywork regions. Avoid placing text over sky, headlights, white paint, concrete, or reflective highlights.
-- If crop discipline is not enough, use a functional black scrim (`rgba(0,0,0,0.45)` to `rgba(0,0,0,0.70)`) behind the text area. A left-to-right scrim is acceptable only as an accessibility layer, not as decoration.
-- If a scrim still fails contrast, move copy into a solid `{colors.canvas}` panel with 24px minimum padding.
-- Focus visibility on black or photo backgrounds must use a 2px white outline plus a 2px offset ring in `{colors.electric-blue}`. On light unresolved surfaces, invert to a 2px `{colors.electric-blue}` outline with visible offset.
+- Photography 上的 white body text 必须至少达到 4.5:1 contrast；大型 display text 和 icon strokes 至少达到 3:1。
+- 第一选择是 crop discipline：把文本放在 dark track、shadow、cockpit 或 black bodywork regions 上。避免把文本放在 sky、headlights、white paint、concrete 或 reflective highlights 上。
+- 如果 crop discipline 不够，在 text area 背后使用功能性 black scrim（`rgba(0,0,0,0.45)` 到 `rgba(0,0,0,0.70)`）。Left-to-right scrim 只可作为 accessibility layer，不可作为 decoration。
+- 如果 scrim 仍然无法满足 contrast，把 copy 移入 solid `{colors.canvas}` panel，padding 最少 24px。
+- 在黑色或 photo backgrounds 上，focus visibility 必须使用 2px white outline 加 2px offset ring，ring 色为 `{colors.electric-blue}`。在尚未解析的 light surfaces 上，反转为 2px `{colors.electric-blue}` outline，并带 visible offset。
 
 ### Collapsing Strategy
-- Top nav collapses to a hamburger sheet at < 768px; the menu opens as a full-screen black overlay with the M tricolor stripe at the top.
-- Photography stays full-bleed at every breakpoint — never collapses to a margin'd container.
-- Card grids reduce columns rather than scaling cards down; photography retains its native aspect ratio.
-- Spec tables collapse from 4-up to 2-up to 1-up; spec values stay at `{typography.display-sm}` regardless of column count.
-- The M-stripe divider stays at 4px height across all breakpoints.
+- Top nav 在 < 768px 折叠为 hamburger sheet；menu 打开为 full-screen black overlay，顶部带 M tricolor stripe。
+- Photography 在所有 breakpoint 都保持 full-bleed，绝不折叠到带 margin 的 container。
+- Card grids 通过减少 columns 来适配，而不是缩小 cards；photography 保持原生 aspect ratio。
+- Spec tables 从 4-up 折叠到 2-up 再到 1-up；无论 column count 如何，spec values 都保持 `{typography.display-sm}`。
+- M-stripe divider 在所有 breakpoint 上都保持 4px height。
 
 ### Image Behavior
-- Hero photography crops responsively — wider crops at desktop, vertical crops on mobile.
-- Lifestyle and motorsport photos retain native aspect ratios; the system never letterboxes or pillarboxes.
-- The M wordmark + tricolor logo scales proportionally with viewport width.
+- Hero photography 响应式裁切，desktop 使用更宽 crop，mobile 使用 vertical crop。
+- Lifestyle 和 motorsport photos 保持原生 aspect ratios；系统绝不 letterbox 或 pillarbox。
+- M wordmark + tricolor logo 随 viewport width 等比缩放。
 
 ## 9. Agent Prompt Guide
-1. Focus on ONE component at a time. Reference its component name (`hero-photo-band`, `spec-cell`).
-2. New components default to 0px radius. Only use full-circle geometry for circular icon buttons.
-3. Variants (`-active`, `-disabled`) live as separate prose entries next to the component name.
-4. Use `{token.refs}` everywhere — never inline hex.
-5. Never document hover states. Default and Active/Pressed only.
-6. Display headlines stay UPPERCASE and light/architectural by default; body stays sentence-case regular. Use 700 only for short emphasis and UI labels.
-7. The M tricolor is brand-identity-only — never extend it to system tokens for "primary action."
-8. White-on-photo text needs a contrast strategy every time: crop first, scrim second, solid panel if needed.
-9. When in doubt about emphasis: bigger photography before bigger type.
+1. 一次聚焦 ONE component。引用组件名（`hero-photo-band`、`spec-cell`）。
+2. New components 默认 0px radius。Full-circle geometry 只用于 circular icon buttons。
+3. Variants（`-active`、`-disabled`）作为独立 prose entries 放在 component name 旁边。
+4. 到处使用 `{token.refs}`，绝不要 inline hex。
+5. 绝不要记录 hover states。只记录 Default 和 Active/Pressed。
+6. Display headlines 默认保持 UPPERCASE、light/architectural；body 保持 sentence-case regular。700 只用于短 emphasis 和 UI labels。
+7. M tricolor 只用于 brand-identity，绝不要扩展到 “primary action” system tokens。
+8. White-on-photo text 每次都需要 contrast strategy：先 crop，再 scrim，需要时用 solid panel。
+9. 拿不准 emphasis 时：先放大 photography，再放大 type。
 
 ### Known Gaps
-- The dembrandt frequency analyzer captured the white text (count 955) as the highest-frequency token. The black canvas was inferred from screenshot — dembrandt's body-background sampling didn't surface it as a top palette entry, but the page is unambiguously black-on-white-text.
-- The exact M tricolor stops are documented from public BMW brand guidelines; the screenshots show the stripe as a small element but pixel-sampling at this resolution doesn't reliably distinguish #0066b1 from #1c69d4. Treat the documented stops as canonical based on BMW Design Works' published brand spec.
-- BMW Type Next Latin weight evidence is incomplete. The broader BMW design system documents Light (300) display and regular (400) body/UI; BMW M-specific heavier label usage should be treated as observed emphasis, not a global replacement for BMW family typography.
-- Animation and transition timings (photo carousel transitions, hover-reveal effects, configurator interactions) are not in scope.
-- Form validation states beyond `text-input` defaults are not extracted — error / success input variants would need a configurator or order flow to confirm.
-- The configurator surface (vehicle build pages with color / wheel / interior pickers) was not in the analyzed URL set; its swatch grid, comparison panels, and price-summary card are not documented here.
-- The cookie consent overlay obscured part of the homepage hero in the captured screenshot; secondary hero treatments (different car models cycling through the hero band) may carry variations not captured.
+- Dembrandt frequency analyzer 捕获到 white text（count 955）作为最高频 token。Black canvas 是从 screenshot 推断的，dembrandt 的 body-background sampling 没有把它作为 top palette entry 暴露出来，但页面明确是 black-on-white-text。
+- 精确 M tricolor stops 来自公开 BMW brand guidelines；screenshots 显示 stripe 是小元素，但在这个 resolution 下 pixel-sampling 不能可靠区分 #0066b1 与 #1c69d4。基于 BMW Design Works 发布的 brand spec，将已记录 stops 视为 canonical。
+- BMW Type Next Latin weight evidence 不完整。更广义的 BMW design system 记录了 Light (300) display 和 regular (400) body/UI；BMW M-specific 的更重 label 用法应视为 observed emphasis，而不是替代 BMW family typography 的全局规则。
+- Animation 和 transition timings（photo carousel transitions、hover-reveal effects、configurator interactions）不在 scope 内。
+- `text-input` defaults 之外的 form validation states 未提取，error / success input variants 需要 configurator 或 order flow 来确认。
+- Configurator surface（带 color / wheel / interior pickers 的 vehicle build pages）不在已分析 URL set 中，因此其 swatch grid、comparison panels 和 price-summary card 未在此记录。
+- Cookie consent overlay 遮挡了捕获 screenshot 中 homepage hero 的一部分；secondary hero treatments（不同 car models 轮播进入 hero band）可能有未捕获的变体。

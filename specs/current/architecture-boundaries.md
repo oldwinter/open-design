@@ -2,19 +2,19 @@
 
 ## Purpose
 
-This document defines the architectural boundaries for the local Open Design app. These boundaries are architectural constraints; some enforcement details can be implemented later through the relevant roadmap workstreams.
+本文定义本地 Open Design app 的架构边界。这些边界是架构约束；部分 enforcement 细节可以之后通过相关 roadmap workstreams 实现。
 
 ## Product Shape
 
-Open Design is a local-first application. The near-term Electron version is a shell around the same `apps/web` and `apps/daemon` architecture.
+Open Design 是 local-first 应用。近期的 Electron 版本是在同一套 `apps/web` 与 `apps/daemon` 架构外包一层 shell。
 
-Electron does not introduce a separate privileged application layer. The web layer and daemon keep the same responsibilities in browser and Electron modes.
+Electron 不引入独立的 privileged application layer。web layer 与 daemon 在 browser 和 Electron 模式下保持相同职责。
 
 ## Web Boundary
 
-`apps/web` owns UI, presentation state, and thin BFF/proxy behavior.
+`apps/web` 拥有 UI、presentation state，以及轻量 BFF/proxy 行为。
 
-`apps/web` must not directly access local privileged capabilities:
+`apps/web` 不得直接访问本地 privileged capabilities：
 
 - `.od` state
 - SQLite storage
@@ -23,11 +23,11 @@ Electron does not introduce a separate privileged application layer. The web lay
 - task process lifecycle
 - local logs and artifacts
 
-The web layer communicates with daemon-owned capabilities through API DTOs and streaming events.
+web layer 通过 API DTOs 和 streaming events 与 daemon-owned capabilities 通信。
 
 ## Daemon Boundary
 
-`apps/daemon` is the sole local capability server. It owns privileged local runtime behavior:
+`apps/daemon` 是唯一的 local capability server。它拥有 privileged local runtime 行为：
 
 - `.od` state
 - SQLite storage, schema, migrations, and storage layout
@@ -36,13 +36,13 @@ The web layer communicates with daemon-owned capabilities through API DTOs and s
 - task lifecycle and process cleanup
 - logs, artifacts, and diagnostic state
 
-Daemon capabilities should be isolated behind internal modules such as `db`, `fs`, `agents`, `tasks`, `logs`, and `artifacts`.
+Daemon capabilities 应隔离在 `db`、`fs`、`agents`、`tasks`、`logs`、`artifacts` 等 internal modules 之后。
 
 ## Shared Boundary
 
-Shared code must be pure JavaScript or TypeScript that can run in both web and daemon contexts.
+Shared code 必须是可同时运行在 web 和 daemon contexts 中的纯 JavaScript 或 TypeScript。
 
-Shared code may contain:
+Shared code 可以包含：
 
 - API DTO types
 - runtime schemas such as Zod or TypeBox schemas
@@ -53,54 +53,54 @@ Shared code may contain:
 - pure helper functions
 - path-related logical string helpers
 
-Shared code must not depend on framework or environment-specific APIs such as Next.js, Express, Node filesystem/process APIs, browser-only APIs, SQLite, or daemon internals.
+Shared code 不得依赖 framework 或 environment-specific APIs，例如 Next.js、Express、Node filesystem/process APIs、browser-only APIs、SQLite 或 daemon internals。
 
 ## API DTO Boundary
 
-The web layer should understand API DTOs, not daemon implementation details.
+web layer 应理解 API DTOs，而不是 daemon implementation details。
 
-API DTOs should prefer workspace-scoped logical or relative paths. Machine absolute paths should remain daemon-internal. Enforcement can be implemented later through a workspace path resolver and runtime validation layer.
+API DTOs 应优先使用 workspace-scoped logical paths 或 relative paths。机器绝对路径应保持 daemon-internal。Enforcement 可以之后通过 workspace path resolver 和 runtime validation layer 实现。
 
-SQLite schema names, table structure, migration details, and storage layout are daemon-private. The web layer sees API DTOs for display and interaction.
+SQLite schema names、table structure、migration details 和 storage layout 都是 daemon-private。web layer 只看到用于展示和交互的 API DTOs。
 
 ## Workspace Boundary
 
-The current architecture can assume one active workspace. Workspace root selection should come from explicit user choice or an explicit startup parameter.
+当前架构可以假设只有一个 active workspace。Workspace root selection 应来自明确的用户选择或明确的 startup parameter。
 
-Daemon filesystem access should be scoped to the active workspace root. Path normalization and root containment checks should be implemented in the daemon path resolver and validation layer.
+Daemon filesystem access 应限定在 active workspace root 内。Path normalization 和 root containment checks 应在 daemon path resolver 与 validation layer 中实现。
 
-Precise implementation priority for workspace enforcement can be deferred, but the boundary direction is fixed: web does not construct privileged filesystem paths, and daemon owns path resolution.
+Workspace enforcement 的精确实现优先级可以延后，但边界方向是固定的：web 不构造 privileged filesystem paths，daemon 拥有 path resolution。
 
 ## Agent Command Boundary
 
-Users cannot provide free-form shell commands for daemon execution.
+用户不能提供让 daemon 执行的 free-form shell commands。
 
-Agent invocations should use controlled command templates and argument construction. User-provided content may enter prompts, files, or configuration fields, while command structure remains daemon-controlled.
+Agent invocations 应使用受控 command templates 和 argument construction。用户提供的内容可以进入 prompts、files 或 configuration fields，但 command structure 必须保持 daemon-controlled。
 
-Plugin or custom-agent command extension is outside the current scope.
+Plugin 或 custom-agent command extension 不在当前 scope 内。
 
 ## Security Baseline
 
-The app is local-first. Daemon should bind locally, and local API authentication can be deferred.
+App 是 local-first。Daemon 应只在本地绑定，local API authentication 可以延后。
 
-Daemon output should redact sensitive values by default, including tokens, API keys, environment secrets, and Authorization-like headers.
+Daemon output 默认应 redact sensitive values，包括 tokens、API keys、environment secrets 和类似 Authorization 的 headers。
 
 ## Task Lifecycle Boundary
 
-Daemon owns the full task lifecycle. The web layer may create, subscribe to, query, and request cancellation for tasks through API DTOs and events.
+Daemon 拥有完整 task lifecycle。web layer 可以通过 API DTOs 和 events 创建、订阅、查询任务，并请求取消任务。
 
-Tasks belong to a workspace and an agent. Terminal states are:
+Tasks 属于某个 workspace 和某个 agent。Terminal states 包括：
 
 - `succeeded`
 - `failed`
 - `cancelled`
 - `interrupted`
 
-The web layer requests cancellation; daemon determines final task state and owns cleanup. Detailed concurrency, timeout, scheduling, and recovery policies can be defined in the process manager workstream.
+web layer 请求取消；daemon 决定最终 task state 并拥有 cleanup。详细的 concurrency、timeout、scheduling 和 recovery policies 可以在 process manager workstream 中定义。
 
 ## Deferred Policy Details
 
-The following policy details can be finalized in later workstreams:
+以下 policy details 可以在后续 workstreams 中定稿：
 
 - multiple workspace support
 - workspace registry location
@@ -112,4 +112,4 @@ The following policy details can be finalized in later workstreams:
 - restart recovery behavior
 - process-tree cleanup strategy
 
-These deferred choices should preserve the boundaries in this document.
+这些延后选择应保留本文档中的边界。

@@ -1288,11 +1288,9 @@ export function HomeView({
             projectMetadata: metadataForHomeMediaComposer(mediaSurface, composer.inputs, promptTemplates),
             editableInputNames: composer.editableFieldNames,
             preserveInputFields: true,
-            // Media chips are a mode switch, just like Prototype and
-            // Slide deck: they no longer surface inline model/ratio/duration
-            // settings (the agent asks for those during the run), and they
-            // leave the textarea alone until the user picks a concrete
-            // template/preset or types their own prompt.
+            // Media chips 和 Prototype、Slide deck 一样是模式切换：它们不再展示
+            // inline model/ratio/duration 设置（agent 会在 run 期间询问这些内容），
+            // 并且在用户选择具体 template/preset 或输入自己的 prompt 前，不改动 textarea。
             suppressPromptUpdate: true,
             replaceWithoutConfirmation: true,
           });
@@ -1368,9 +1366,8 @@ export function HomeView({
       designSystemOptions,
       trimmed,
     );
-    // Composer inputs with the design-system selection folded in. The deferred
-    // footer/media fields are stripped from this set just below to form the
-    // run-facing inputs.
+    // 已合入 design-system 选择的 composer inputs。下面会从这组 inputs 中剥离
+    // 延迟收集的 footer/media fields，形成面向 run 的 inputs。
     const submittedApplyInputs = submittedActive
       ? applyHomeDesignSystemSelectionToInputs(
           submittedActive.inputs,
@@ -1378,17 +1375,14 @@ export function HomeView({
           designSystemOptions,
         )
       : defaultInputs;
-    // Inputs forwarded to the run AND used to build the run-facing snapshot:
-    // drop every now-hidden footer/media setting so the first-turn
-    // AskUserQuestion flow collects them instead of inheriting a baked-in
-    // default (`ratio: 16:9`, `duration: 5`, `audioType: speech`, …). The
-    // snapshot is resolved from these stripped inputs too — the daemon renders
-    // `## Plugin inputs` from `snapshot.inputs` and tells the agent not to
-    // re-ask about anything listed there, so leaving the deferred defaults in
-    // the snapshot would suppress the discovery flow even though
-    // `onSubmit.pluginInputs` was stripped. Stripping only removes non-required
-    // fields (`subject`/`style`/`aspect`/`mediaKind` stay), so the
-    // od-media-generation apply still validates.
+    // 这些 inputs 会转发给 run，并用于构建面向 run 的 snapshot：删除所有现在隐藏的
+    // footer/media 设置，让首轮 AskUserQuestion flow 去收集它们，而不是继承内置默认值
+    //（`ratio: 16:9`、`duration: 5`、`audioType: speech` 等）。snapshot 也从这些
+    // 剥离后的 inputs 解析，因为 daemon 会从 `snapshot.inputs` 渲染 `## Plugin inputs`，
+    // 并告诉 agent 不要重复询问其中列出的内容；如果 deferred defaults 留在 snapshot 中，
+    // 即使 `onSubmit.pluginInputs` 已被剥离，也会压制 discovery flow。剥离只移除非必填
+    // fields（保留 `subject`/`style`/`aspect`/`mediaKind`），所以 od-media-generation
+    // apply 仍能通过验证。
     const submittedPluginInputs = submittedActive
       ? stripArtifactFooterInputs(submittedApplyInputs)
       : defaultInputs;
@@ -1763,25 +1757,23 @@ function homeHeroChipLabelForId(chipId: string, t: ReturnType<typeof useI18n>['t
   }
 }
 
-// Prototype/deck-specific settings (fidelity, slide count, speaker notes) are
-// no longer promoted into the home composer footer — the agent asks for those
-// via the first-turn discovery flow, so the prototype/deck footer keeps only
-// the design-system picker. Media surfaces (image/video/audio/hyperframes)
-// now defer the same way: image/video keep only the design-system picker and
-// audio/hyperframes keep nothing, with model / ratio / resolution / duration /
-// audio type collected by the agent via AskUserQuestion during the run instead
-// of inline pre-flight controls.
+// Prototype/deck 专属设置（fidelity、slide count、speaker notes）不再提升到
+// home composer footer；agent 会通过首轮 discovery flow 询问这些内容，因此
+// prototype/deck footer 只保留 design-system picker。Media surfaces
+//（image/video/audio/hyperframes）现在也采用同样的延迟方式：image/video 只保留
+// design-system picker，audio/hyperframes 不保留任何预检设置；model / ratio /
+// resolution / duration / audio type 改由 agent 在 run 期间通过 AskUserQuestion 收集，
+// 不再作为 inline pre-flight controls。
 const ARTIFACT_FOOTER_FIELD_NAMES = new Set([
   'fidelity',
   'slideCount',
   'speakerNotes',
-  // Media surfaces (image/video/audio/hyperframes) defer the same way. These
-  // were dropped from the footer but `buildHomeMediaComposer` still seeds them
-  // (`model: gpt-image-2`, `ratio: 16:9`, `duration: 5`, `audioType: speech`,
-  // …) so they must be stripped before submission — otherwise the run arrives
-  // with baked-in defaults and the first-turn AskUserQuestion flow has nothing
-  // left to ask. `subject` / `style` / `aspect` / `mediaKind` are intentionally
-  // NOT listed: the od-media-generation apply still validates against them.
+  // Media surfaces（image/video/audio/hyperframes）同样延迟收集。这些字段已从
+  // footer 移除，但 `buildHomeMediaComposer` 仍会 seed 它们（`model: gpt-image-2`、
+  // `ratio: 16:9`、`duration: 5`、`audioType: speech` 等），所以提交前必须剥离；
+  // 否则 run 会带着内置默认值到达，首轮 AskUserQuestion flow 就没有内容可问。
+  // `subject` / `style` / `aspect` / `mediaKind` 有意不列入：od-media-generation
+  // apply 仍会用它们验证。
   'model',
   'ratio',
   'resolution',
@@ -1811,8 +1803,8 @@ function stripArtifactFooterInputs(
 function footerInputNamesForChip(chipId: string | null): string[] {
   if (chipId === 'prototype' || chipId === 'deck') return ['designSystem'];
   if (chipId === 'image' || chipId === 'video') return ['designSystem'];
-  // hyperframes / audio surface no pre-flight settings — the agent asks for
-  // ratio / duration / model / audio kind via AskUserQuestion during the run.
+  // hyperframes / audio surface 没有 pre-flight settings；agent 会在 run 期间
+  // 通过 AskUserQuestion 询问 ratio / duration / model / audio kind。
   return [];
 }
 

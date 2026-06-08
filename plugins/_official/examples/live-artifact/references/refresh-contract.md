@@ -1,10 +1,10 @@
 # Refresh Contract Reference
 
-Refresh updates live artifact data without redesigning the presentation. The refresh runner updates `data.json`, provenance, and audit history; it does not allow arbitrary template rewrites.
+Refresh 会更新 live artifact data，而不重新设计 presentation。Refresh runner 会更新 `data.json`、provenance 和 audit history；它不允许任意重写 template。
 
 ## Refreshable source metadata
 
-Refreshable documents use `sourceJson`:
+Refreshable documents 使用 `sourceJson`：
 
 ```json
 {
@@ -38,41 +38,41 @@ Supported output transforms:
 
 ## Source execution model
 
-- `refreshPermission` is retained for backward compatibility with older artifacts, but the refresh runner does not require a separate connector approval step.
-- If a safe source descriptor exists, manual refresh executes it through daemon-owned local or connector wrappers.
-- Write, destructive, unknown, disabled, unconnected, or schema-drifted connector tools should not be authored as refresh sources.
+- `refreshPermission` 为兼容旧 artifacts 而保留，但 refresh runner 不需要单独的 connector approval step。
+- 如果存在 safe source descriptor，manual refresh 会通过 daemon-owned local 或 connector wrappers 执行它。
+- 不应把 write、destructive、unknown、disabled、unconnected 或 schema-drifted connector tools 编写为 refresh sources。
 
 ## Connector-backed refresh
 
-Connector-backed refresh sources use the same connector execution service as agent-initiated connector calls. Do not call provider APIs directly from refresh logic or from skill-authored scripts.
+Connector-backed refresh sources 使用与 agent-initiated connector calls 相同的 connector execution service。不要在 refresh logic 或 skill-authored scripts 中直接调用 provider APIs。
 
-Before creating a connector-backed refresh source:
+创建 connector-backed refresh source 前：
 
-1. List connectors with `"$OD_NODE_BIN" "$OD_BIN" tools connectors list --format compact`.
-2. If the user named a connector/source and it is connected, select that connector directly instead of asking where the source is. Then select a tool whose safety is `read` + `auto` and whose catalog metadata marks it refresh-eligible.
-3. Execute once with `"$OD_NODE_BIN" "$OD_BIN" tools connectors execute --connector <id> --tool <name> --input input.json` to produce compact normalized preview data.
-4. Store only non-sensitive connector references, the bounded input object, output mapping, and compatibility `refreshPermission` in `sourceJson`.
+1. 用 `"$OD_NODE_BIN" "$OD_BIN" tools connectors list --format compact` 列出 connectors。
+2. 如果用户点名了某个 connector/source 且它已 connected，直接选择该 connector，而不是询问 source 在哪里。然后选择一个 safety 为 `read` + `auto`，且 catalog metadata 标记为 refresh-eligible 的 tool。
+3. 用 `"$OD_NODE_BIN" "$OD_BIN" tools connectors execute --connector <id> --tool <name> --input input.json` 执行一次，生成 compact normalized preview data。
+4. 只在 `sourceJson` 中存储 non-sensitive connector references、bounded input object、output mapping 和兼容用 `refreshPermission`。
 
-On each refresh, the daemon must re-check connector status, account label, allowlist membership, input schema, and output protection. If any check fails or output protection rejects the result, refresh fails all-or-nothing and preserves the previous valid preview.
+每次 refresh 时，daemon 必须重新检查 connector status、account label、allowlist membership、input schema 和 output protection。如果任何检查失败，或 output protection 拒绝结果，refresh 必须 all-or-nothing 失败，并保留上一个 valid preview。
 
-Persisted connector refresh metadata may include `connectorId`, `toolName`, non-sensitive `accountLabel`, bounded `input`, `outputMapping`, and compatibility `refreshPermission`. It must not include credentials, auth/session material, raw provider envelopes, or unbounded provider responses.
+Persisted connector refresh metadata 可以包含 `connectorId`、`toolName`、non-sensitive `accountLabel`、bounded `input`、`outputMapping` 和兼容用 `refreshPermission`。它不得包含 credentials、auth/session material、raw provider envelopes 或 unbounded provider responses。
 
 ## Commit behavior
 
-Refresh is all-or-nothing:
+Refresh 是 all-or-nothing：
 
-1. Acquire one active refresh lock per artifact.
-2. Execute each refreshable source with timeouts and current safety checks.
-3. Build candidate `data.json`, provenance, and preview.
-4. Validate all candidates with the same schemas used for create/update.
-5. Commit only if every refreshable source succeeds.
-6. Preserve the previous valid preview if any step fails.
+1. 每个 artifact 获取一个 active refresh lock。
+2. 使用 timeouts 和当前 safety checks 执行每个 refreshable source。
+3. 构建 candidate `data.json`、provenance 和 preview。
+4. 使用 create/update 相同的 schemas 验证所有 candidates。
+5. 只有当每个 refreshable source 都成功时才 commit。
+6. 如果任何步骤失败，保留上一个 valid preview。
 
-Refresh IDs must be monotonic so stale runs cannot overwrite newer committed data.
+Refresh IDs 必须 monotonic，避免 stale runs 覆盖较新的 committed data。
 
 ## Audit storage
 
-- Append compact records to `refreshes.jsonl`.
-- Successful refresh snapshots live under `snapshots/<refreshId>/` and may include `data.json` and provenance.
-- Failed refreshes are summarized in `refreshes.jsonl` without leaking raw provider output or credentials.
-- On daemon startup, stale running refreshes should be marked failed or timed out while preserving the last valid preview.
+- 将 compact records 追加到 `refreshes.jsonl`。
+- Successful refresh snapshots 位于 `snapshots/<refreshId>/` 下，可以包含 `data.json` 和 provenance。
+- Failed refreshes 会汇总进 `refreshes.jsonl`，不得泄漏 raw provider output 或 credentials。
+- Daemon startup 时，应将 stale running refreshes 标记为 failed 或 timed out，同时保留最后一个 valid preview。

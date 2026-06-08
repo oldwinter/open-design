@@ -1,94 +1,94 @@
-# Design System Inspired by Mastercard
+# 受 Mastercard 启发的 Design System
 
 > Category: Fintech & Crypto
-> Global payments network. Warm cream canvas, orbital pill shapes, editorial warmth.
+> Global payments network. 温暖 cream canvas、orbital pill shapes、editorial warmth。
 
 ## 1. Visual Theme & Atmosphere
 
-Mastercard's experience reads like a warm, editorial magazine built from soft stone and signal orange. The canvas is a muted putty-cream (`#F3F0EE`) — not white, not gray, but a color that feels like the paper of a premium annual report. On top of that canvas, everything that matters is shaped like a stadium, a pill, or a perfect circle. The dominant visual gesture is the **oversized radius**: heroes carry 40-point corners, cards go fully pill-shaped, service images are cropped into circular orbits, and buttons either complete the pill or fit snugly at 20 points. There are almost no sharp corners anywhere on the page.
+Mastercard 的体验读起来像一本由 soft stone 与 signal orange 构成的温暖 editorial magazine。Canvas 是一种柔和的 putty-cream (`#F3F0EE`)：不是白色，也不是灰色，而是一种像高端年报纸张的颜色。在这层 canvas 上，所有重要元素都被塑造成 stadium、pill 或 perfect circle。主导性的视觉手势是 **oversized radius**：heroes 带 40-point corners，cards 变成完全的 pill shape，service images 被裁成 circular orbits，buttons 要么完成 pill，要么以 20 points 紧密贴合。页面上几乎没有 sharp corners。
 
-The second gesture is **orbit and trajectory**. Circular image masks don't sit still — they're connected by thin, hand-drawn-feeling orange arcs that span entire viewport widths, implying a constellation of services rather than a list. Each circle has a small attached "satellite" — a white micro-CTA holding an arrow icon — docked onto its perimeter like a moon. This is the most distinctive thing about Mastercard's current design language: the circles feel like they're in motion even though the page is still.
+第二个手势是 **orbit and trajectory**。Circular image masks 并不静止；它们由细薄、带手绘感的 orange arcs 连接，这些 arcs 横跨整个 viewport 宽度，暗示的是一组服务星座，而不是一个列表。每个 circle 都附着一个小小的 "satellite"：一个白色 micro-CTA，里面有 arrow icon，像月亮一样停靠在圆周边缘。这是 Mastercard 当前 design language 中最有辨识度的部分：即使页面静止，circles 也感觉在运动。
 
-Typography is rendered entirely in **MarkForMC**, Mastercard's proprietary geometric sans. Headlines are set at a medium weight (500) with tight negative letter-spacing (-2%), giving them confidence without shouting. Body copy runs at the same family in a slightly lighter weight (450) — a weight you rarely see on the web, chosen because it reads softer than regular 400 without feeling thin. The whole system — warm cream surfaces, pill shapes, circular portraits, traced-orange orbits, black CTAs — feels simultaneously institutional (a 60-year-old payments network) and editorial (a modern brand magazine), which is exactly the tension Mastercard wants to hold.
+Typography 完全由 **MarkForMC** 渲染，这是 Mastercard 的 proprietary geometric sans。Headlines 使用 medium weight (500) 和紧凑的 negative letter-spacing (-2%)，让它们有自信但不叫喊。Body copy 使用同一 family 中略轻的 weight (450)；这是 web 上少见的 weight，选择它是因为它比 regular 400 更柔和，又不显单薄。整个系统：warm cream surfaces、pill shapes、circular portraits、traced-orange orbits、black CTAs，同时显得 institutional（一个 60-year-old payments network）和 editorial（现代 brand magazine）；这正是 Mastercard 想保持的张力。
 
 **Key Characteristics:**
-- Warm cream canvas (`#F3F0EE`) replaces traditional white — every surface is tinted, never sterile
-- Extreme border-radius as design language: 40px, 99px, 1000px dominate; anything square is a cookie-banner third-party
-- Circular image portraits with attached white satellite-CTAs and traced-orange orbital paths
-- Ghost "watermark" headlines (cream-on-cream text at heading scale) layered behind circle portraits
-- Black primary CTAs with 20px radius in the body — the cookie-banner orange is kept to consent flows
-- Floating pill-shaped navigation that docks below the viewport top with rounded shoulders
-- Eyebrow labels with a tiny accent dot + uppercase bold tracking — used as the section-category signal
-- Dark warm-black footer (`#141413`) with four-column link layout and large conversational headline
+- Warm cream canvas (`#F3F0EE`) 替代传统 white：每个 surface 都带色调，绝不 sterile
+- Extreme border-radius 作为 design language：40px、99px、1000px 占主导；任何 square 都像 cookie-banner third-party
+- Circular image portraits 附带 white satellite-CTAs 和 traced-orange orbital paths
+- Ghost "watermark" headlines（heading scale 的 cream-on-cream text）叠在 circle portraits 后方
+- Body 中 primary CTAs 使用 20px radius 的 black；cookie-banner orange 只留给 consent flows
+- Floating pill-shaped navigation 停靠在 viewport top 下方，带 rounded shoulders
+- Eyebrow labels 使用 tiny accent dot + uppercase bold tracking，作为 section-category signal
+- Dark warm-black footer (`#141413`) 使用四栏 link layout 和大型 conversational headline
 
 ## 2. Color Palette & Roles
 
 ### Primary
-- **Mastercard Red** (`#EB001B`): The left circle of the Mastercard mark — used only in the brand logo, never as a UI color.
-- **Mastercard Yellow** (`#F79E1B`): The right circle of the Mastercard mark — used only in the brand logo, never as a UI color.
-- **Ink Black** (`#141413`): The warm near-black used for primary CTAs, headline text on cream, and the footer surface. Slightly warm (the `13` blue value pulls toward the cream) so it never feels jet-black on the warm canvas.
+- **Mastercard Red** (`#EB001B`)：Mastercard mark 的左侧圆形；只用于 brand logo，绝不作为 UI color。
+- **Mastercard Yellow** (`#F79E1B`)：Mastercard mark 的右侧圆形；只用于 brand logo，绝不作为 UI color。
+- **Ink Black** (`#141413`)：用于 primary CTAs、cream 上的 headline text 和 footer surface 的 warm near-black。它略微偏暖（`13` 的 blue value 朝 cream 靠拢），所以在 warm canvas 上不会感觉像 jet-black。
 
 ### Secondary & Accent
-- **Signal Orange** (`#CF4500`): The burnt/rust CTA orange used on consent actions and eyebrow dots. Deeper than the brand yellow, brighter than ink — it's the page's single aggressive color and must be used sparingly.
-- **Light Signal Orange** (`#F37338`): A lighter carroty orange used for carousel active indicators and decorative orbital arcs. Always acts as an attention cue, never as body color.
-- **Clay Brown** (`#9A3A0A`): The deep rust used for secondary link-style buttons (e.g., cookie details). Sits between ink and signal orange.
+- **Signal Orange** (`#CF4500`)：用于 consent actions 和 eyebrow dots 的 burnt/rust CTA orange。比 brand yellow 更深，比 ink 更亮；它是页面唯一激进的颜色，必须谨慎使用。
+- **Light Signal Orange** (`#F37338`)：更浅的 carroty orange，用于 carousel active indicators 和 decorative orbital arcs。它始终作为 attention cue，绝不作为 body color。
+- **Clay Brown** (`#9A3A0A`)：用于 secondary link-style buttons（例如 cookie details）的 deep rust。位于 ink 与 signal orange 之间。
 
 ### Surface & Background
-- **Canvas Cream** (`#F3F0EE`): The page canvas. Warm, putty-toned, the default body background. All editorial sections sit on this.
-- **Lifted Cream** (`#FCFBFA`): One step lighter than canvas — used for nested "raised" sections that want to feel like paper laid on paper.
-- **White** (`#FFFFFF`): Reserved for the floating navigation pill, modal cards, secondary button fills, and small satellite-CTA circles attached to image portraits.
-- **Soft Bone** (`#F4F4F4`): A cool-gray alternative surface used inside a handful of component subregions.
+- **Canvas Cream** (`#F3F0EE`)：页面 canvas。温暖、putty-toned，是默认 body background。所有 editorial sections 都位于其上。
+- **Lifted Cream** (`#FCFBFA`)：比 canvas 亮一级；用于希望像纸叠在纸上的 nested "raised" sections。
+- **White** (`#FFFFFF`)：保留给 floating navigation pill、modal cards、secondary button fills，以及附着在 image portraits 上的小 satellite-CTA circles。
+- **Soft Bone** (`#F4F4F4`)：少数组件子区域内部使用的 cool-gray alternative surface。
 
 ### Neutrals & Text
-- **Ink Black** (`#141413`): Primary headline and body text color.
-- **Charcoal** (`#262627`): A slightly softer black used for some text alternates.
-- **Slate Gray** (`#696969`): Muted secondary text — eyebrow label alternative, disabled states, "Privacy Choices" bottom-row text.
-- **Granite** (`#555555`) and **Graphite** (`#565656`): Deeper gray for inline body accents and link alternates.
-- **Dust Taupe** (`#D1CDC7`): Very muted cream-gray used for disabled or "whisper" text (e.g., placeholder-like empty state labels). Low contrast on cream; use only for subdued content.
+- **Ink Black** (`#141413`)：Primary headline 和 body text color。
+- **Charcoal** (`#262627`)：稍柔和的黑色，用于某些 text alternates。
+- **Slate Gray** (`#696969`)：Muted secondary text：eyebrow label alternative、disabled states、"Privacy Choices" bottom-row text。
+- **Granite** (`#555555`) 和 **Graphite** (`#565656`)：更深的 gray，用于 inline body accents 和 link alternates。
+- **Dust Taupe** (`#D1CDC7`)：非常 muted 的 cream-gray，用于 disabled 或 "whisper" text（例如 placeholder-like empty state labels）。在 cream 上 contrast 较低；只用于低调内容。
 
 ### Semantic & Accent
-- **Link Blue** (`#3860BE`): A deep, slightly dusty blue used for inline links and informational callouts. Saturated enough to read as a link without being neon.
-- **Priceless Red + Yellow**: The full-color Mastercard logo mark is the only place the brand's red and yellow appear together; they lock the identity to the page without acting as a UI palette.
+- **Link Blue** (`#3860BE`)：一种深而略 dusty 的 blue，用于 inline links 和 informational callouts。饱和度足以让它读作 link，但不 neon。
+- **Priceless Red + Yellow**：全彩 Mastercard logo mark 是 brand red 和 yellow 唯一共同出现的位置；它把 identity 固定到页面上，但不作为 UI palette。
 
 ### Gradient System
-Mastercard uses no programmatic gradients in the core UI. The visual impression of "gradient" comes from two places:
-- **Circular image portraits** where a warm-orange photo subject (a card, a sunflower, a beverage) fades to the cream canvas at its edge
-- **Deep card shadows** on elevated content (`rgba(0,0,0,0.08) 0px 24px 48px`) that create a soft halo beneath pill-shaped media
+Mastercard 在 core UI 中不使用 programmatic gradients。“gradient”的视觉印象来自两个地方：
+- **Circular image portraits**：warm-orange photo subject（card、sunflower、beverage）在边缘处渐隐到 cream canvas
+- **Deep card shadows**：elevated content 下方的 `rgba(0,0,0,0.08) 0px 24px 48px`，在 pill-shaped media 下创建柔和 halo
 
 ## 3. Typography Rules
 
 ### Font Family
-- **Primary**: `MarkForMC` — Mastercard's proprietary geometric sans. Every headline, body paragraph, button, nav link, and footer link on the page.
-- **Secondary**: `MarkOffcForMC` — an "Official" cut used in a minority of contexts (legal text, some forms).
-- **Fallback stack**: `SofiaSans, Arial, sans-serif` — Sofia Sans is a reasonable open-source stand-in; Arial is the final web-safe fallback.
+- **Primary**: `MarkForMC` — Mastercard 的 proprietary geometric sans。页面上的每个 headline、body paragraph、button、nav link 和 footer link 都使用它。
+- **Secondary**: `MarkOffcForMC` — 少数场景使用的 "Official" cut（legal text、部分 forms）。
+- **Fallback stack**: `SofiaSans, Arial, sans-serif` — Sofia Sans 是合理的开源替身；Arial 是最终 web-safe fallback。
 
 ### Hierarchy
 
 | Role | Size | Weight | Line Height | Letter Spacing | Notes |
 |------|------|--------|-------------|----------------|-------|
-| H1 (hero) | 64px | 500 | 64px | -1.28px (-2%) | Set to `1:1` line-height for very tight vertical rhythm on multi-line hero |
-| H2 (section) | 36px | 500 | 44px | -0.72px (-2%) | Used in ghost-watermark headline treatments and section titles |
-| H3 (card title) | 24px | 500 | 28.8px (1.2) | -0.48px (-2%) | Titles inside service/solution cards |
-| H4 (subhead) | 14px | 700 | 18.2px (1.3) | normal | Rarely used in marketing surfaces |
-| Eyebrow (H5) | 14px | 700 | 14px | 0.56px (+4%) | Uppercase, paired with a tiny accent dot (e.g., "• SERVICES") |
-| Body paragraph | 16px | 450 | 22.4px (1.4) | normal | The half-step 450 weight is MarkForMC's signature — softer than 500, firmer than 400 |
-| Nav link / Button label | 16px | 500 | 16px | -0.48px (-3%) | Tight, compact, no text-transform |
-| Footer link | 14px | 450 | ~20px | normal | Lighter weight on dark footer for airier density |
-| Footer column header | 12–14px | 700 | 14px | 0.56px (+4%) | Uppercase, muted gray, short tracking |
+| H1 (hero) | 64px | 500 | 64px | -1.28px (-2%) | 设置为 `1:1` line-height，让多行 hero 有非常紧的 vertical rhythm |
+| H2 (section) | 36px | 500 | 44px | -0.72px (-2%) | 用于 ghost-watermark headline treatments 和 section titles |
+| H3 (card title) | 24px | 500 | 28.8px (1.2) | -0.48px (-2%) | Service/solution cards 内部 titles |
+| H4 (subhead) | 14px | 700 | 18.2px (1.3) | normal | Marketing surfaces 中很少使用 |
+| Eyebrow (H5) | 14px | 700 | 14px | 0.56px (+4%) | Uppercase，搭配 tiny accent dot（例如 "• SERVICES"） |
+| Body paragraph | 16px | 450 | 22.4px (1.4) | normal | 半级 450 weight 是 MarkForMC 的 signature：比 500 更柔和，比 400 更坚定 |
+| Nav link / Button label | 16px | 500 | 16px | -0.48px (-3%) | 紧凑，无 text-transform |
+| Footer link | 14px | 450 | ~20px | normal | Dark footer 上的 lighter weight 让密度更透气 |
+| Footer column header | 12-14px | 700 | 14px | 0.56px (+4%) | Uppercase, muted gray, short tracking |
 
 ### Principles
-- **Weight 450 is load-bearing**. Most brands use 400/500/700; Mastercard uses 450 for body copy, which creates an unusually soft reading tone. Replacing it with 400 flattens the identity.
-- **Tight negative tracking on headlines** (-2%) gives display text its editorial density — the words lock together rather than breathe.
-- **Uppercase tracking only on the eyebrow scale** (14px / 700 / +4% tracking). Don't use uppercase anywhere else; no shouty section titles.
-- **One-font system**. Resist the urge to add a second typeface for contrast. The contrast comes from scale, weight, and letter-spacing, not from a serif or display accent.
-- **Line-height ratio drops with size**. H1 is 1:1, H3 is 1.2, body is 1.4. Tight display, comfortable reading.
+- **Weight 450 承重。** 大多数品牌使用 400/500/700；Mastercard 为 body copy 使用 450，制造出异常柔和的阅读 tone。换成 400 会抹平 identity。
+- **Headlines 上的 tight negative tracking** (-2%) 赋予 display text editorial density：词语彼此锁紧，而不是散开呼吸。
+- **Uppercase tracking 只用于 eyebrow scale**（14px / 700 / +4% tracking）。别在其他地方使用 uppercase；不要有 shouty section titles。
+- **One-font system。** 抵抗为 contrast 添加第二种 typeface 的冲动。Contrast 来自 scale、weight 和 letter-spacing，而不是 serif 或 display accent。
+- **Line-height ratio 随 size 下降。** H1 是 1:1，H3 是 1.2，body 是 1.4。Display 紧凑，阅读舒适。
 
 ### Note on Font Substitutes
-MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic without access to the original:
-- **Sofia Sans** (Google Fonts) is the closest open-source match — it's already in Mastercard's declared fallback stack.
-- **Inter** at weights 450/500/700 works as a generic stand-in; expect slightly taller x-height and looser letter shapes.
-- **Neue Haas Grotesk** or **Geist** can approximate the geometric feel for commercial projects.
-- Whichever substitute is used, preserve the **-2% letter-spacing on headlines** and the **450 body weight** (use `font-weight: 450` with variable fonts, or substitute `font-weight: 400` and tighten the letter-spacing by ~-0.5% to compensate).
+MarkForMC 是 proprietary 且 licensed。没有原字体访问权限时，要重建相近 aesthetic：
+- **Sofia Sans**（Google Fonts）是最接近的开源匹配；它已经在 Mastercard 声明的 fallback stack 中。
+- **Inter** 使用 weights 450/500/700 可作为通用替身；预期 x-height 略高，letter shapes 更松。
+- **Neue Haas Grotesk** 或 **Geist** 可为商业项目近似 geometric feel。
+- 无论使用哪种 substitute，都要保留 **headlines 上的 -2% letter-spacing** 和 **450 body weight**（variable fonts 可用 `font-weight: 450`；或用 `font-weight: 400` 并将 letter-spacing 额外收紧约 -0.5% 来补偿）。
 
 ## 4. Component Stylings
 
@@ -96,14 +96,14 @@ MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic with
 
 **Primary — Ink Pill**
 - Background: Ink Black (`#141413`)
-- Text: Canvas Cream (`#F3F0EE`) — not pure white
-- Border: 1.5px solid Ink Black (same as bg, creates crisp edge)
+- Text: Canvas Cream (`#F3F0EE`) — 不是 pure white
+- Border: 1.5px solid Ink Black（与 bg 相同，形成清晰 edge）
 - Radius: 20px
 - Padding: 6px 24px
 - Font: MarkForMC 16px / weight 500 / letter-spacing -0.32px
-- Default: as above; solid warm-black pill on cream canvas
-- Active / pressed: subtle inward-shrink or 2px offset (not a hover variant)
-- Use for: all marketing CTAs in the page body ("Learn more", "Explore", "Discover")
+- Default: 如上；cream canvas 上的 solid warm-black pill
+- Active / pressed: subtle inward-shrink 或 2px offset（不是 hover variant）
+- Use for: 页面 body 中所有 marketing CTAs（"Learn more"、"Explore"、"Discover"）
 
 **Secondary — Outlined Pill**
 - Background: White (`#FFFFFF`)
@@ -112,199 +112,199 @@ MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic with
 - Radius: 20px
 - Padding: 6px 24px
 - Font: MarkForMC 16px / weight 450 / line-height 20.8px
-- Default: white-on-cream pill with crisp ink outline
+- Default: cream 上的 white-on-cream pill，带清晰 ink outline
 - Active / pressed: subtle compression
-- Use for: secondary actions paired with a primary, or standalone utility CTAs
+- Use for: 与 primary 搭配的 secondary actions，或 standalone utility CTAs
 
 **Consent / Signal — Orange Pill**
 - Background: Signal Orange (`#CF4500`)
 - Text: White (`#FFFFFF`)
 - Border: 0
 - Radius: 24px
-- Padding: 1px 30px (very tight vertical, wide horizontal)
+- Padding: 1px 30px（vertical 很紧、horizontal 很宽）
 - Font: MarkForMC 13px / weight 400 / letter-spacing 0.13px
-- Default: as above; bright rust pill with white text
-- Use for: cookie consent, privacy preference, and other legally-distinct confirmations. **Do not** use this orange for marketing CTAs — it reads as a compliance color.
+- Default: 如上；bright rust pill，white text
+- Use for: cookie consent、privacy preference 以及其他 legally-distinct confirmations。**不要** 把这个 orange 用作 marketing CTAs；它读起来是 compliance color。
 
 **Satellite — Circular Micro-CTA**
 - Background: White (`#FFFFFF`)
 - Icon: Ink Black arrow (`→`) at ~20px
 - Border: none
-- Radius: 50% (perfect circle)
-- Size: ~50–60px diameter
-- Shadow: none or very subtle (the portrait's shadow carries the elevation)
-- Default: docks onto the bottom-right edge of a circular portrait, protruding partway outside the portrait's circle
-- Use for: the primary entry point into service/solution cards; always paired with a circular portrait
+- Radius: 50%（perfect circle）
+- Size: ~50-60px diameter
+- Shadow: none 或 very subtle（portrait 的 shadow 承载 elevation）
+- Default: 停靠在 circular portrait 的 bottom-right edge，部分突出到 portrait circle 外
+- Use for: service/solution cards 的 primary entry point；始终与 circular portrait 搭配
 
 **Icon-Only Circle Button (carousel, play/pause)**
 - Background: transparent or white
-- Icon: 10–20px centered
-- Border: 1px solid Ink Black (when on cream) or none (when over media)
+- Icon: 10-20px centered
+- Border: 1px solid Ink Black（在 cream 上）或 none（在 media 上）
 - Radius: 50%
-- Size: 40px diameter minimum for carousel controls; 80px for hero video play
-- Use for: carousel pagination/play-pause, hero video play, search toggle
+- Size: carousel controls 至少 40px diameter；hero video play 为 80px
+- Use for: carousel pagination/play-pause、hero video play、search toggle
 
 ### Cards & Containers
 
 **Hero Media Frame (Stadium)**
-- Background: Dark video or full-bleed imagery (typically black `#000000` or `#2B2B2B` behind video)
-- Radius: 40px all corners (creates a stadium shape on wide viewports)
-- Width: ~full viewport minus ~48px gutter on each side
-- Height: ~60–70% of viewport
-- Shadow: none (sits directly on canvas)
-- Corners: the extreme 40px radius on a media element is the most iconic Mastercard gesture — do not round less
+- Background: Dark video 或 full-bleed imagery（video 背后通常是 black `#000000` 或 `#2B2B2B`）
+- Radius: 40px all corners（在 wide viewports 上形成 stadium shape）
+- Width: 约 full viewport minus 每侧 ~48px gutter
+- Height: 约 viewport 的 60-70%
+- Shadow: none（直接位于 canvas 上）
+- Corners: media element 上极端的 40px radius 是最 iconic 的 Mastercard gesture；不要减少 rounding
 
 **Service / Solution Portrait Card**
-- Shape: Perfect circle (radius 50%) or ellipse (radius 999px / 1000px)
-- Diameter: 260–340px desktop; ~220px mobile
+- Shape: Perfect circle (radius 50%) 或 ellipse (radius 999px / 1000px)
+- Diameter: desktop 260-340px；mobile 约 220px
 - Image crop: square source, cropped to circle
-- Attached element: White satellite circular CTA (see above) docked bottom-right, ~40% outside the portrait
-- Eyebrow below: accent dot + uppercase label (e.g., "• SERVICES", "• SOLUTIONS")
-- Title below: H3 (24px / weight 500 / -2% tracking), 1–2 lines max
-- Decorative orbit: thin ~1px Light Signal Orange curved line spanning from this card outward to the next, implying connection
+- Attached element: White satellite circular CTA（见上）停靠在 bottom-right，约 40% 位于 portrait 外侧
+- Eyebrow below: accent dot + uppercase label（例如 "• SERVICES", "• SOLUTIONS"）
+- Title below: H3（24px / weight 500 / -2% tracking），最多 1-2 行
+- Decorative orbit: 细约 1px 的 Light Signal Orange curved line 从这张 card 向下一张延伸，暗示 connection
 
 **Pill Carousel Card**
-- Radius: 1000px (full pill) or 40px corners (rounded stadium)
-- Width: ~40–60% of viewport
-- Height: ~380–420px (portrait-pill orientation)
-- Content: full-bleed photography with small overlaid chip labels
-- Chip inside: White pill (~ 999px radius), Ink Black text, padding 8px 20px, used for category tags like "Story"
-- Large inline CTA inside: Ink Pill button, oversized (padding 16px 40px, radius 40px)
+- Radius: 1000px（full pill）或 40px corners（rounded stadium）
+- Width: 约 viewport 的 40-60%
+- Height: 约 380-420px（portrait-pill orientation）
+- Content: full-bleed photography，叠加 small chip labels
+- Chip inside: White pill（约 999px radius），Ink Black text，padding 8px 20px，用于 "Story" 等 category tags
+- Large inline CTA inside: Ink Pill button，oversized（padding 16px 40px，radius 40px）
 
 **Ghost Watermark Text Block**
-- Font: MarkForMC 72–128px / weight 500 / tight -2% tracking
-- Color: Canvas Cream slightly darkened (`#E8E2DA` or similar — cream-on-cream)
-- Position: layered behind portrait circles, bleeding off the viewport edge
-- Purpose: sets section theme without competing with foreground copy
+- Font: MarkForMC 72-128px / weight 500 / tight -2% tracking
+- Color: Canvas Cream 稍微变暗（`#E8E2DA` 或类似 cream-on-cream）
+- Position: layered behind portrait circles, bleeding off viewport edge
+- Purpose: 设置 section theme，但不与 foreground copy 竞争
 
 ### Inputs & Forms
-Minimal form surface on the marketing page. The search input in the nav header is:
-- Initial state: a 48px circular button with a magnifier icon
+Marketing page 上 form surface 很少。Nav header 中的 search input 是：
+- Initial state: 48px circular button with magnifier icon
 - Expanded state: horizontal input field, border `1px solid` Ink Black at ~50% opacity, radius 999px, padding 12px 24px, white background
 
 **Country/language selector (footer)**
-- Background: Ink Black (same as footer)
+- Background: Ink Black（与 footer 相同）
 - Text: White
 - Border: 1px solid `rgba(255,255,255,0.4)`
-- Radius: 999px (full pill)
-- Icon: downward chevron on the right
+- Radius: 999px（full pill）
+- Icon: 右侧 downward chevron
 
 ### Navigation
 
 **Floating Nav Pill (desktop)**
-- Container: white-to-translucent-white pill floating below the very top of the viewport with a ~24px top margin
-- Radius: 999px / 1000px (full pill)
-- Padding: ~16px 40px internal
-- Shadow: very soft (`rgba(0, 0, 0, 0.04) 0px 4px 24px 0px`) — just enough to lift it off the cream canvas
-- Content: Mastercard logo left, primary link group center ("For you", "For business", "For the world", "For innovators", "News and trends"), search icon right
-- Link spacing: ~48–56px gap between primary links
-- Link style: Ink Black, weight 500, 16px, no underline, no pill surround until active
+- Container: white-to-translucent-white pill，漂浮在 viewport 最顶部下方，top margin 约 24px
+- Radius: 999px / 1000px（full pill）
+- Padding: 内部约 16px 40px
+- Shadow: very soft (`rgba(0, 0, 0, 0.04) 0px 4px 24px 0px`)；只够让它从 cream canvas 上轻轻浮起
+- Content: Mastercard logo 左侧，primary link group 居中（"For you", "For business", "For the world", "For innovators", "News and trends"），search icon 右侧
+- Link spacing: primary links 之间约 48-56px gap
+- Link style: Ink Black, weight 500, 16px, no underline, active 前没有 pill surround
 
 **Mobile Nav**
-- The same pill shape but collapsed to: logo + hamburger menu button + search icon only
-- Menu opens into a full-screen overlay with the primary links stacked vertically
+- 同样的 pill shape，但折叠为：logo + hamburger menu button + search icon only
+- Menu 打开为 full-screen overlay，primary links 垂直堆叠
 
 ### Image Treatment
 
-- **Aspect ratios used**: 1:1 (all service portraits — cropped to circle), ~3:4 or ~4:5 (carousel pill cards), 16:9 or wider (hero video frame)
-- **Full-bleed vs padded**: Hero is viewport-wide with gutters; service portraits are always centered in their column with generous whitespace around; footer imagery is rare
-- **Masking**: Aggressive circular masking is the defining treatment — square source images are cropped to perfect circles of matching diameter. Never use rectangular service imagery.
-- **Lazy loading**: Standard `loading="lazy"` with a soft blur-up transition from a cream-tinted placeholder, preserving the warm palette during load
+- **Aspect ratios used**: 1:1（所有 service portraits：cropped to circle）、约 3:4 或 4:5（carousel pill cards）、16:9 或更宽（hero video frame）
+- **Full-bleed vs padded**: Hero 带 gutters 且接近 viewport-wide；service portraits 始终居中于其 column，并有充足 whitespace；footer imagery 很少
+- **Masking**: Aggressive circular masking 是 defining treatment：square source images 被裁成直径匹配的 perfect circles。不要使用 rectangular service imagery。
+- **Lazy loading**: 标准 `loading="lazy"`，从 cream-tinted placeholder 开始做 soft blur-up transition，在加载期间保持 warm palette
 
 ### Decorative Orbital Lines
 
-A signature motif: thin (~1–1.5px) single-weight curved lines in Light Signal Orange (`#F37338`) tracing arcs between circular portraits. These lines:
-- Imply connection between service cards without literal arrows
-- Span widths from ~200px up to full-viewport arcs
-- Feel hand-drawn (subtle irregularity) rather than perfect CSS curves
-- Appear only in sections with circular portrait content — never on pill sections, never in the footer
+一个 signature motif：Light Signal Orange (`#F37338`) 中细薄（约 1-1.5px）的 single-weight curved lines，在 circular portraits 之间描出 arcs。这些 lines：
+- 暗示 service cards 之间的 connection，而不是 literal arrows
+- 宽度从约 200px 到 full-viewport arcs
+- 感觉是 hand-drawn（轻微 irregularity），而不是完美 CSS curves
+- 只出现在包含 circular portrait content 的 sections；绝不出现在 pill sections，也不出现在 footer
 
 ### Footer
 
 - Background: Ink Black (`#141413`)
 - Text: White
-- Padding: 48px horizontal 100px / bottom 148px (very tall bottom space)
-- Structure: large conversational H2 ("We're always here when you need us") left-aligned, then a 4-column link grid below
+- Padding: 48px horizontal 100px / bottom 148px（bottom space 很高）
+- Structure: 大型 conversational H2（"We're always here when you need us"）左对齐，下方是 4-column link grid
 - Column headers: uppercase, muted, weight 700, letter-spacing +4%
-- Link rows: white, weight 450, 14px; entries prefixed with a small icon (support bubble, card, map pin, question mark) for the "NEED HELP?" column
-- External link marker: a small upper-right arrow (`↗`) after link text
-- Bottom row (below a 1px white-at-opacity divider): copyright + privacy small-print + country-language pill dropdown + four social icons (LinkedIn, Facebook, X, YouTube)
+- Link rows: white, weight 450, 14px；"NEED HELP?" column 的条目前缀 small icon（support bubble、card、map pin、question mark）
+- External link marker: link text 后的小 upper-right arrow (`↗`)
+- Bottom row（位于 1px white-at-opacity divider 下方）: copyright + privacy small-print + country-language pill dropdown + 四个 social icons（LinkedIn、Facebook、X、YouTube）
 
 ## 5. Layout Principles
 
 ### Spacing System
-- **Base unit**: 8px (confirmed by dembrandt extraction and computed styles)
-- **Scale**: 8 / 16 / 24 / 32 / 48 / 64 / 96 / 128 (powers of 8)
-- **Section vertical padding**: ~96–128px between major sections on desktop; ~48–64px on mobile
-- **Card internal padding**: 32–40px on desktop, ~24px on mobile
-- **Nav top margin**: ~24px from viewport top (the pill floats, doesn't touch)
+- **Base unit**: 8px（由 dembrandt extraction 和 computed styles 确认）
+- **Scale**: 8 / 16 / 24 / 32 / 48 / 64 / 96 / 128（powers of 8）
+- **Section vertical padding**: desktop 上 major sections 之间约 96-128px；mobile 上约 48-64px
+- **Card internal padding**: desktop 32-40px，mobile 约 24px
+- **Nav top margin**: 距 viewport top 约 24px（pill 漂浮，不贴边）
 
 ### Grid & Container
-- **Max content width**: ~1200–1280px centered, with ~48–100px horizontal gutter
-- **Column pattern**: 12-column implied, but practical layouts use 2-up asymmetric (large headline left, supporting text right), 1-up full-bleed (hero, video), or staggered single-portrait placement (service cards sit in varying grid positions creating the "constellation" feel)
-- **Footer grid**: 4 equal columns on desktop, collapses to single column accordion on mobile
+- **Max content width**: 居中约 1200-1280px，带约 48-100px horizontal gutter
+- **Column pattern**: 隐含 12-column，但实际 layouts 使用 2-up asymmetric（large headline left, supporting text right）、1-up full-bleed（hero, video），或 staggered single-portrait placement（service cards 位于不同 grid positions，形成 "constellation" feel）
+- **Footer grid**: desktop 上 4 equal columns，mobile 上折叠为 single column accordion
 
 ### Whitespace Philosophy
-Mastercard treats whitespace as structure, not absence. A typical service section has:
-- A ghost headline occupying the top ~40% of the section (mostly empty cream)
-- A single circular portrait positioned ~60% down, asymmetric to left or right
-- ~300–500px of blank canvas between the portrait and the next section
-This deliberate emptiness tells the eye "slow down, read one thing at a time" — the opposite of dense dashboard UIs.
+Mastercard 将 whitespace 视为结构，而不是缺席。典型 service section 包含：
+- 一个 ghost headline，占据 section 顶部约 40%（大部分是 empty cream）
+- 一个 single circular portrait，位于约 60% 深处，左右不对称
+- portrait 与下一 section 之间约 300-500px 的 blank canvas
+这种刻意的空白告诉眼睛：“慢下来，一次只读一件事”；这与 dense dashboard UIs 正好相反。
 
 ### Border Radius Scale
 
 | Radius | Use |
 |--------|-----|
-| 3–6px | Tiny decorative elements, cookie banner micro-chips |
-| 20px | Primary and secondary body CTAs (the signature button radius) |
+| 3-6px | Tiny decorative elements, cookie banner micro-chips |
+| 20px | Primary and secondary body CTAs（signature button radius） |
 | 24px | Consent/orange pill buttons, modal inner chips |
 | 40px | Hero media frames, large section container corners, H2 pill labels |
 | 50% | Circular portraits, icon-only buttons, satellite CTAs |
 | 99px / 999px / 1000px | Full pill shapes — navigation, carousel cards, footer country selector, primary inline chips |
 
-The scale is unusual: most systems use 4/8/12/16. Mastercard skips those and commits to **either small (≤6), medium-large (20–40), or full-pill (99+)**. The middle ground of 8–12 is absent, which is why the UI feels either "precise and utility" or "soft and editorial" with no in-between.
+这个 scale 很不寻常：大多数系统使用 4/8/12/16。Mastercard 跳过这些，承诺 **要么 small (≤6)，要么 medium-large (20-40)，要么 full-pill (99+)**。8-12 的中间地带不存在，因此 UI 要么感觉“precise and utility”，要么感觉“soft and editorial”，没有中间态。
 
 ## 6. Depth & Elevation
 
 | Level | Treatment | Use |
 |-------|-----------|-----|
-| 0 | No shadow | The default — 95% of surfaces sit directly on cream canvas |
-| 1 | `rgba(0, 0, 0, 0.04) 0px 4px 24px 0px` | Floating nav pill — barely-there lift |
-| 2 | `rgba(0, 0, 0, 0.08) 0px 24px 48px 0px` | Hero media frames, elevated cards — a soft large-radius halo rather than a hard drop |
-| 3 | `rgba(0, 0, 0, 0.25) 0px 70px 110px 0px` | Rare; dramatic elevation on a feature tile |
+| 0 | No shadow | Default：95% surfaces 直接位于 cream canvas 上 |
+| 1 | `rgba(0, 0, 0, 0.04) 0px 4px 24px 0px` | Floating nav pill：几乎不可见的 lift |
+| 2 | `rgba(0, 0, 0, 0.08) 0px 24px 48px 0px` | Hero media frames, elevated cards：soft large-radius halo，而不是 hard drop |
+| 3 | `rgba(0, 0, 0, 0.25) 0px 70px 110px 0px` | 少见；feature tile 上的 dramatic elevation |
 
 ### Shadow Philosophy
-Mastercard uses shadows as **atmospheric cushioning**, not directional light. The Level 2 shadow has a 48px spread and only 8% opacity — it barely exists as dark pixels but creates a "the card is breathing above the canvas" feel. There are almost no hard-edged, tight shadows anywhere in the system. Border lines are preferred over shadows for functional delineation (form inputs, footer divider).
+Mastercard 使用 shadows 作为 **atmospheric cushioning**，不是 directional light。Level 2 shadow 有 48px spread 且只有 8% opacity；它几乎不作为 dark pixels 存在，却创造出“card 正在 canvas 上方呼吸”的感觉。系统中几乎没有 hard-edged、tight shadows。功能性分隔（form inputs、footer divider）更偏好 border lines 而不是 shadows。
 
 ### Decorative Depth
-- **Orbital arcs** (Light Signal Orange, ~1px): trace connective paths across sections
-- **Ghost watermark headlines**: cream-on-cream text gives sections an almost-pressed-paper quality
-- **Circle-image fade**: warm-toned photography at the edge of circular portraits dissolves into the canvas, implying soft atmospheric depth
+- **Orbital arcs**（Light Signal Orange, ~1px）：跨 sections 描出 connective paths
+- **Ghost watermark headlines**：cream-on-cream text 让 sections 具有近似 pressed-paper 的质感
+- **Circle-image fade**：circular portraits 边缘的 warm-toned photography 溶入 canvas，暗示 soft atmospheric depth
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use Canvas Cream (`#F3F0EE`) as the default body background — never pure white
-- Mask service/feature imagery as perfect circles, not rectangles or rounded rectangles
-- Attach a white satellite CTA to the bottom-right of each circular portrait
-- Set headlines in MarkForMC weight 500 with -2% letter-spacing
-- Use weight 450 (not 400) for body paragraphs
-- Keep primary CTAs as Ink Black pills (20px radius) with cream text
-- Use Signal Orange only on consent, legal, or compliance actions
-- Float the nav as a rounded white pill below the viewport top, not flush at y=0
-- Build page rhythm from three surface tones: canvas cream → lifted cream → ink footer
-- Use thin Light Signal Orange arcs between service cards to imply connection
+- 使用 Canvas Cream (`#F3F0EE`) 作为默认 body background；绝不用 pure white
+- 将 service/feature imagery mask 为 perfect circles，而不是 rectangles 或 rounded rectangles
+- 在每个 circular portrait 的 bottom-right 附着一个 white satellite CTA
+- Headlines 使用 MarkForMC weight 500 和 -2% letter-spacing
+- Body paragraphs 使用 weight 450（不是 400）
+- Primary CTAs 保持为 Ink Black pills（20px radius）和 cream text
+- Signal Orange 只用于 consent、legal 或 compliance actions
+- 将 nav 做成 rounded white pill，漂浮在 viewport top 下方，而不是贴在 y=0
+- 用三种 surface tones 构建页面节奏：canvas cream -> lifted cream -> ink footer
+- 在 service cards 之间使用细 Light Signal Orange arcs 来暗示 connection
 
 ### Don't
-- Don't use pure white as a page background — it breaks the warm editorial tone
-- Don't round image frames at 8–16px — Mastercard either uses full-pill, 40px, or full-circle. In-between radii look generic
-- Don't use Signal Orange for marketing CTAs — it reads as cookie-consent orange and dilutes the legal color signal
-- Don't mix typefaces — no serif accent, no script, no secondary display font
-- Don't crowd the nav with more than six top-level links — the pill is meant to feel airy
-- Don't drop hard shadows — all elevation should use 48px+ spread and ≤10% opacity
-- Don't use uppercase for anything larger than the 14px eyebrow label
-- Don't omit the tiny accent dot before eyebrow labels — it's the identity
-- Don't place circular portraits on a grid — their magic comes from asymmetric placement
+- 不要使用 pure white 作为 page background；它会破坏 warm editorial tone
+- 不要把 image frames 圆角设为 8-16px；Mastercard 要么使用 full-pill、40px，要么 full-circle。中间 radii 会显得 generic
+- 不要将 Signal Orange 用于 marketing CTAs；它读起来像 cookie-consent orange，并会稀释 legal color signal
+- 不要混用 typefaces：不要 serif accent、不要 script、不要 secondary display font
+- 不要在 nav 中塞入超过六个 top-level links；pill 应该感觉 airy
+- 不要使用 hard shadows；所有 elevation 都应使用 48px+ spread 和 ≤10% opacity
+- 不要对大于 14px eyebrow label 的任何内容使用 uppercase
+- 不要省略 eyebrow labels 前的 tiny accent dot；它是 identity
+- 不要把 circular portraits 放在 grid 上；它们的 magic 来自 asymmetric placement
 
 ## 8. Responsive Behavior
 
@@ -312,23 +312,23 @@ Mastercard uses shadows as **atmospheric cushioning**, not directional light. Th
 
 | Name | Width | Key Changes |
 |------|-------|-------------|
-| Mobile | ≤ 767px | Nav pill shows logo + menu + search only; primary links hide behind hamburger; service portraits stack single-column centered; hero headline drops from 64px to ~40px; footer columns collapse into a vertical accordion |
-| Tablet | 768–1023px | Nav pill shows 2–3 primary links truncated; service portraits arrange 2-up; hero headline ~48px |
-| Desktop | ≥ 1024px | Full nav with 5 primary links centered; service portraits asymmetrically placed with decorative orbital lines; hero headline 64px |
-| Wide | ≥ 1440px | Content max-width caps at ~1280px; gutters grow symmetrically; orbital lines extend further |
+| Mobile | <= 767px | Nav pill shows logo + menu + search only; primary links hide behind hamburger; service portraits stack single-column centered; hero headline drops from 64px to ~40px; footer columns collapse into a vertical accordion |
+| Tablet | 768-1023px | Nav pill shows 2-3 primary links truncated; service portraits arrange 2-up; hero headline ~48px |
+| Desktop | >= 1024px | Full nav with 5 primary links centered; service portraits asymmetrically placed with decorative orbital lines; hero headline 64px |
+| Wide | >= 1440px | Content max-width caps at ~1280px; gutters grow symmetrically; orbital lines extend further |
 
 ### Touch Targets
-All interactive elements comfortably exceed 44×44px. The satellite CTA (circle + arrow) is ~50–60px. The nav pill buttons are ~48px tall. Mobile hamburger and search are 48×48px. No link or button drops below 40px in any breakpoint.
+所有 interactive elements 都舒适地超过 44x44px。Satellite CTA（circle + arrow）约 50-60px。Nav pill buttons 约 48px 高。Mobile hamburger 和 search 是 48x48px。任何 breakpoint 下都没有低于 40px 的 link 或 button。
 
 ### Collapsing Strategy
-- **Nav**: full pill → compact pill with hamburger. Pill shape is preserved across breakpoints — always rounded, always floating.
-- **Service grid**: asymmetric constellation → 2-up → 1-up stack. Orbital arcs are removed on mobile (they only work with asymmetric placement).
-- **Spacing**: section vertical padding compresses from 128px to 48px on mobile.
-- **Content**: two-column hero (headline left / supporting text right) becomes stacked (headline on top, supporting text below).
-- **Footer**: 4 columns → 1 column accordion with chevron toggles per section.
+- **Nav**: full pill -> compact pill with hamburger。Pill shape 在所有 breakpoints 中保留：始终 rounded、始终 floating。
+- **Service grid**: asymmetric constellation -> 2-up -> 1-up stack。Mobile 上移除 orbital arcs（它们只适用于 asymmetric placement）。
+- **Spacing**: mobile 上 section vertical padding 从 128px 压缩到 48px。
+- **Content**: two-column hero（headline left / supporting text right）变为 stacked（headline on top, supporting text below）。
+- **Footer**: 4 columns -> 1 column accordion，每个 section 带 chevron toggles。
 
 ### Image Behavior
-Circular portraits scale proportionally (maintaining the perfect circle at every size). Hero video frames maintain their 40px radius at every breakpoint, but the frame itself shrinks with the viewport. Lazy loading is standard with a cream-tinted blur-up placeholder, preserving the palette during load.
+Circular portraits 按比例缩放（在每个 size 下保持 perfect circle）。Hero video frames 在每个 breakpoint 保持 40px radius，但 frame 本身随 viewport 缩小。Lazy loading 标准化，使用 cream-tinted blur-up placeholder，在加载期间保持 palette。
 
 ## 9. Agent Prompt Guide
 
@@ -345,24 +345,24 @@ Circular portraits scale proportionally (maintaining the perfect circle at every
 - Footer: "Ink Black (`#141413`) with White text"
 
 ### Example Component Prompts
-- "Create a circular portrait card 300px in diameter, with a square photograph cropped to a perfect circle. Attach a 56px white satellite button with a dark arrow icon at the bottom-right, so it protrudes ~40% outside the portrait. Below the portrait, add an eyebrow label with a Light Signal Orange dot and uppercase 'SERVICES' text in MarkForMC weight 700 at 14px. Below the eyebrow, set a 24px / weight 500 title in Ink Black."
-- "Design a primary CTA button: Ink Black (`#141413`) background, Canvas Cream (`#F3F0EE`) text, 20px border-radius, 6px vertical and 24px horizontal padding, MarkForMC font at 16px weight 500 with -2% letter-spacing."
-- "Build a floating navigation pill: white background with `rgba(0, 0, 0, 0.04) 0px 4px 24px 0px` shadow, 999px border-radius, ~16px vertical and 40px horizontal internal padding. Position it 24px below the viewport top, centered, with the Mastercard logo at the left, five primary links centered with 48px gap, and a circular 48px search button at the right."
-- "Create a hero media frame: 40px border-radius on all corners, full viewport width minus 48px gutters, ~60% viewport height, dark background for video content. Place it directly on the cream canvas with no shadow."
-- "Design a footer: Ink Black (`#141413`) background, white text, 4-column link grid with uppercase muted column headers at 14px weight 700 +4% tracking. Include a large conversational H2 above the grid, a 1px white-at-30%-opacity horizontal divider below, and a bottom row with copyright, legal small-print links, a pill-shaped country selector, and four social icons."
+- "创建一个直径 300px 的 circular portrait card，将一张 square photograph 裁成 perfect circle。在 bottom-right 附着一个 56px white satellite button，内含 dark arrow icon，并让它约 40% 突出到 portrait 外侧。Portrait 下方添加一个 eyebrow label，包含 Light Signal Orange dot 和 uppercase 'SERVICES' text，使用 MarkForMC weight 700、14px。Eyebrow 下方设置一个 24px / weight 500 的 Ink Black title。"
+- "设计一个 primary CTA button：Ink Black (`#141413`) background、Canvas Cream (`#F3F0EE`) text、20px border-radius、6px vertical 和 24px horizontal padding，MarkForMC font，16px weight 500，带 -2% letter-spacing。"
+- "构建一个 floating navigation pill：white background，带 `rgba(0, 0, 0, 0.04) 0px 4px 24px 0px` shadow、999px border-radius、约 16px vertical 和 40px horizontal internal padding。将它居中定位在 viewport top 下方 24px，左侧放 Mastercard logo，中间放五个 primary links 且 gap 为 48px，右侧放一个 48px circular search button。"
+- "创建一个 hero media frame：所有 corners 使用 40px border-radius，宽度为 full viewport width minus 48px gutters，高度约为 viewport height 的 60%，video content 使用 dark background。将它直接放在 cream canvas 上，不加 shadow。"
+- "设计一个 footer：Ink Black (`#141413`) background、white text、4-column link grid，column headers 为 uppercase muted，14px weight 700，带 +4% tracking。Grid 上方包含一个大型 conversational H2，下方包含一条 1px white-at-30%-opacity horizontal divider，bottom row 包含 copyright、legal small-print links、pill-shaped country selector 和四个 social icons。"
 
 ### Iteration Guide
-When refining existing screens generated with this design system:
-1. Focus on ONE component at a time — don't redesign multiple surfaces in parallel
-2. Reference specific color names AND hex codes from this document
-3. Use natural language ("warm putty cream", "stadium pill", "circular portrait with satellite CTA") alongside technical values
-4. Describe the desired "feel" (editorial, soft, institutional) alongside specific measurements
-5. When in doubt, reach for one of three radii: 20px (buttons), 40px (hero/stadium), or 999px (pill/nav)
-6. Default backgrounds to Canvas Cream (`#F3F0EE`), not white — this single change shifts the entire mood toward Mastercard
+使用此 design system 优化已有生成 screens 时：
+1. 一次只关注 ONE component；不要并行 redesign 多个 surfaces
+2. 引用本文档中的 specific color names AND hex codes
+3. 在 technical values 旁配合使用 natural language（"warm putty cream"、"stadium pill"、"circular portrait with satellite CTA"）
+4. 在 specific measurements 旁描述期望的 "feel"（editorial、soft、institutional）
+5. 拿不准时，从三个 radii 中选择：20px（buttons）、40px（hero/stadium）或 999px（pill/nav）
+6. Default backgrounds 使用 Canvas Cream (`#F3F0EE`)，而不是 white；这一处改变会把整体 mood 推向 Mastercard
 
 ### Known Gaps
-- The live page uses MarkForMC, a proprietary licensed typeface. Sofia Sans is the closest open-source substitute and is listed in Mastercard's own fallback stack.
-- Tablet breakpoint specifics (768–1023px) were inferred from desktop and mobile captures; intermediate layouts may vary per section.
-- The exact "whisper" cream tone used for ghost-watermark headlines behind circular portraits reads between `#E8E2DA` and `#D1CDC7` in captures; the precise value varies per section.
-- Third-party consent orange (`#CF4500`) is Mastercard's documented consent signal and should not be confused with any marketing CTA color.
-- The Mastercard logo mark (red `#EB001B` + yellow `#F79E1B`) is a brand asset, not a UI palette entry.
+- Live page 使用 MarkForMC，一种 proprietary licensed typeface。Sofia Sans 是最接近的开源替代，并列在 Mastercard 自己的 fallback stack 中。
+- Tablet breakpoint specifics（768-1023px）是从 desktop 和 mobile captures 推断的；intermediate layouts 可能因 section 而异。
+- Circular portraits 后方 ghost-watermark headlines 使用的精确 "whisper" cream tone 在 captures 中读起来介于 `#E8E2DA` 与 `#D1CDC7` 之间；不同 section 的 precise value 会变化。
+- Third-party consent orange (`#CF4500`) 是 Mastercard 记录在案的 consent signal，不应与任何 marketing CTA color 混淆。
+- Mastercard logo mark（red `#EB001B` + yellow `#F79E1B`）是 brand asset，而不是 UI palette entry。

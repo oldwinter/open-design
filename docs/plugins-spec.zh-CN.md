@@ -1851,8 +1851,8 @@ Validation：从本地 mock marketplace.json 安装 plugin、rotate ref、uninst
   - Plugin manifest 升级允许 `od.genui.surfaces[].component`：相对路径指向 plugin 内 React 组件（capability gate `genui:custom-component`），由 desktop / web renderer 在 sandbox 中加载。
   - Open-Ended (MCP-Apps / Open-JSON) 模式：让 plugin 通过 MCP server 推送任意 JSON UI tree，desktop / web 以受限 schema 渲染。
 
-Validation：  
-(a) install a published plugin → export from a real project that used it → diff produced manifest against original。  
+Validation：
+(a) install a published plugin → export from a real project that used it → diff produced manifest against original。
 (b) 「UI vs CLI parity test」：挑 5 个 desktop-UI workflows，仅通过 `od …` 重放，byte-for-byte 比较 produced artifacts（对应 §12.6 implementation rule）。
 
 ### Phase 5 — Cloud deployment + pluggable storage（并行，可拆）

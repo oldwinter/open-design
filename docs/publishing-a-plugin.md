@@ -1,7 +1,6 @@
-# Publishing An Open Design Plugin
+# 发布 Open Design Plugin
 
-Open Design registry publishing is GitHub-backed in v1. The CLI remains the
-canonical workflow; the product UI and agent flows wrap these commands.
+Open Design registry publishing 在 v1 中由 GitHub 支撑。CLI 仍是 canonical workflow；产品 UI 和 agent flows 会包装这些命令。
 
 ## 1. Scaffold
 
@@ -9,10 +8,7 @@ canonical workflow; the product UI and agent flows wrap these commands.
 od plugin scaffold --id figma-workflow --title "Figma workflow" --out ./plugins/community
 ```
 
-The scaffold command creates `./plugins/community/figma-workflow/`. Plugin IDs
-must be lowercase, start with a letter, and use only `[a-z0-9._-]`; slash-
-separated registry paths are used by catalogs, not by `od plugin scaffold`.
-The generated `open-design.json` is the Open Design sidecar next to `SKILL.md`.
+Scaffold 命令会创建 `./plugins/community/figma-workflow/`。Plugin IDs 必须小写、以字母开头，并且只能使用 `[a-z0-9._-]`；slash-separated registry paths 用于 catalogs，不用于 `od plugin scaffold`。生成的 `open-design.json` 是与 `SKILL.md` 并列的 Open Design sidecar。
 
 ## 2. Validate And Pack
 
@@ -21,9 +17,7 @@ od plugin validate ./plugins/community/figma-workflow --no-daemon
 od plugin pack ./plugins/community/figma-workflow
 ```
 
-The registry accepts anything that validates and packs. The source repository
-does not need a special layout beyond `SKILL.md` plus `open-design.json`.
-`od plugin pack` writes the archive next to the plugin folder by default.
+Registry 接受任何能 validate 和 pack 的内容。Source repository 除了 `SKILL.md` 加 `open-design.json` 之外，不需要特殊布局。`od plugin pack` 默认把 archive 写到 plugin folder 旁边。
 
 ## 3. Authenticate
 
@@ -32,8 +26,7 @@ od plugin login
 od plugin whoami --json
 ```
 
-These commands wrap GitHub CLI. Tokens stay in `gh`; Open Design does not store
-GitHub credentials.
+这些命令会包装 GitHub CLI。Tokens 留在 `gh` 中；Open Design 不保存 GitHub credentials。
 
 ## 4. Publish
 
@@ -41,9 +34,7 @@ GitHub credentials.
 od plugin publish figma-workflow --to open-design --repo https://github.com/acme/figma-workflow
 ```
 
-v1 opens the GitHub registry review flow. The publish payload includes the
-plugin ID, version, repo, capability summary, and target registry entry path.
-After merge, CI regenerates `open-design-marketplace.json`.
+v1 会打开 GitHub registry review flow。Publish payload 包含 plugin ID、version、repo、capability summary 和目标 registry entry path。合并之后，CI 会重新生成 `open-design-marketplace.json`。
 
 ## 5. Install From The Registry
 
@@ -53,9 +44,7 @@ od plugin install figma-workflow
 od plugin info figma-workflow --json
 ```
 
-Installs preserve marketplace provenance, resolved source, manifest digest, and
-archive integrity. `official` and `trusted` sources install as trusted;
-`restricted` sources stay restricted until the user grants more trust.
+安装会保留 marketplace provenance、resolved source、manifest digest 和 archive integrity。`official` 与 `trusted` sources 会作为 trusted 安装；`restricted` sources 会保持 restricted，直到用户授予更多 trust。
 
 ## 6. Yank A Version
 
@@ -63,6 +52,4 @@ archive integrity. `official` and `trusted` sources install as trusted;
 od plugin yank figma-workflow@1.0.0 --reason "Security issue"
 ```
 
-Yanking never deletes metadata or bytes. New installs refuse yanked versions;
-existing exact lockfile replays can still warn and proceed if the archive
-remains reachable and integrity matches.
+Yank 绝不会删除 metadata 或 bytes。新安装会拒绝 yanked versions；已有的精确 lockfile replay 仍可在 archive 可访问且 integrity 匹配时发出警告并继续。

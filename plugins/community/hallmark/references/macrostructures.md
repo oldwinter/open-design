@@ -1,89 +1,89 @@
 # Macrostructures
 
-Twenty-one named landing-page shapes. **Pick one before you write code.** Each is a complete fingerprint — heading placement, body composition, divider language, button voice, image treatment, reveal pattern — bundled as a single named choice. Picking a macrostructure is faster, less error-prone, and *categorically more varied* than choosing six independent axes from `structure.md`.
+二十一个具名 landing-page 形状。**写代码前先选一个。**每个都是完整指纹：heading 放置、body 组合、divider 语言、button 声音、image 处理、reveal pattern，全部作为一个具名选择打包。选择 macrostructure 比从 `structure.md` 独立挑六个轴更快、更少出错，也**必然更有变化**。
 
-The Specimen macrostructure (left-margin numbered labels + huge serif + asymmetric spans + typographic CTA) is one of these twenty-one. **It is no longer a default.** Reach for it only when the brief is explicitly editorial, foundry-adjacent, or the user has named it.
+Specimen macrostructure（左边距编号标签 + 巨大 serif + 非对称 spans + typographic CTA）只是这二十一个之一。**它不再是默认值。**只有当 brief 明确偏 editorial、foundry-adjacent，或用户点名时才使用它。
 
-## Diversification rule (mandatory)
+## Diversification rule（强制）
 
-Before picking, check the target codebase for a `/* Hallmark · macrostructure: <name> · ... */` comment in any existing CSS file. If you find one, **your pick must be a different macrostructure.** No two consecutive Hallmark outputs in the same project share a macrostructure.
+选择前，检查目标 codebase 的任意现有 CSS 文件里是否有 `/* Hallmark · macrostructure: <name> · ... */` 注释。如果找到，**你的选择必须是不同的 macrostructure。**同一项目中连续两个 Hallmark 输出不得共享同一个 macrostructure。
 
-When the brief is vague (no theme, no tone), pick from the *first ten* below before reaching for anything in 11–21. The first ten are deliberately the strongest non-Specimen shapes; they cover ~80% of briefs.
+当 brief 很含糊（没有 theme、没有 tone）时，先从下面**前十个**里选择，再考虑 11–21。前十个刻意覆盖最强的非 Specimen 形状，能覆盖约 80% 的 briefs。
 
 ## Hero polish patterns
 
-The hero macrostructures (Marquee Hero · Stat-Led · Quote-Led · Letter · Photographic · Clipped) admit one optional **polish pattern** on top of their base shape — HP1 Vertical-rail · HP2 Marquee-overflow · HP3 Cursor-spotlight · HP4 Decorative-numeral. Polish patterns are *structural* (layout / type / motion), not decorative; they live alongside the hero macrostructure rather than replacing it. See [`hero-enrichment.md`](hero-enrichment.md) § Hero shape polish for the catalogue + when each one fits.
+Hero macrostructures（Marquee Hero · Stat-Led · Quote-Led · Letter · Photographic · Clipped）允许在基础形状之上叠加一个可选 **polish pattern**：HP1 Vertical-rail · HP2 Marquee-overflow · HP3 Cursor-spotlight · HP4 Decorative-numeral。Polish patterns 是**结构性**的（layout / type / motion），不是装饰；它们与 hero macrostructure 并列存在，而不是替代它。目录与适用条件见 [`hero-enrichment.md`](hero-enrichment.md) § Hero shape polish。
 
-A hero may carry one enrichment archetype (E1–E8) AND one polish pattern (HP1–HP4) — but never two polish patterns at once. The decision sequence is: macrostructure → enrichment? → polish? → space discipline.
+一个 hero 可以带一个 enrichment archetype（E1–E8）和一个 polish pattern（HP1–HP4），但绝不能同时带两个 polish patterns。决策顺序是：macrostructure → enrichment? → polish? → space discipline。
 
 ## Nav and footer voice
 
-Each macrostructure also implies a **nav archetype** (N1–N9) and a **footer archetype** (Ft1–Ft8). The defaults sit in the routing tables in [`component-cookbook.md`](component-cookbook.md) § Navigation and § Footers. Don't ship a hero macrostructure without picking nav + footer alongside — they are part of the page shape, not optional chrome.
+每个 macrostructure 也隐含一个 **nav archetype**（N1–N9）和一个 **footer archetype**（Ft1–Ft8）。默认值位于 [`component-cookbook.md`](component-cookbook.md) § Navigation 和 § Footers 的 routing tables。不要只交付 hero macrostructure 而不同时选择 nav + footer；它们是页面形状的一部分，不是可选 chrome。
 
 ---
 
 ## The 21 macrostructures — index
 
-**Pick one. Then read ONLY that one file** from `references/macrostructures/`. Do not load the whole catalogue. Slugs are stable; the diversification rule reads the `<name>` from the `/* Hallmark · macrostructure: <name> · ... */` stamp.
+**选一个。然后只读取 `references/macrostructures/` 中对应的那一个文件。**不要加载整个目录。Slugs 稳定；diversification rule 会从 `/* Hallmark · macrostructure: <name> · ... */` stamp 中读取 `<name>`。
 
-- **01 · Bento Grid** — Modular blocks of varying sizes laid out as an irregular grid. Each block is a feature, a quote, an image, a stat. Visual rhythm comes from size variation, not card uniformity. [`macrostructures/01-bento-grid.md`](macrostructures/01-bento-grid.md)
-- **02 · Long Document** — Reads like a memo, a letter, or a journal entry. No marketing structure. Continuous prose with inline section heads. The page is *literature* about the product. [`macrostructures/02-long-document.md`](macrostructures/02-long-document.md)
-- **03 · Marquee Hero** — The hero IS the page above the fold. A single bold statement or visual fills the viewport. No subhead, no CTA in fold. Below the fold the page becomes something else (a list, a grid, prose). [`macrostructures/03-marquee-hero.md`](macrostructures/03-marquee-hero.md)
-- **04 · Stat-Led** — The hero is a giant number — a metric, a count, a percentage. Everything that follows supports or qualifies it. Data is the narrative. [`macrostructures/04-stat-led.md`](macrostructures/04-stat-led.md)
-- **05 · Workbench** — Product screenshots in frames are the primary content. The page is a guided tour of the app in use. Less marketing copy, more "here's what you do with it." [`macrostructures/05-workbench.md`](macrostructures/05-workbench.md)
-- **06 · Conversational FAQ** — Bold questions, brief answers. The page reads like an honest interview with the product. Often each Q/A is a collapsible accordion. [`macrostructures/06-conversational-faq.md`](macrostructures/06-conversational-faq.md)
-- **07 · Manifesto** — Polemical large type. Declaration energy. The page tells the reader what to believe before it tells them what to buy. Often political-poster aesthetic. [`macrostructures/07-manifesto.md`](macrostructures/07-manifesto.md)
-- **08 · Photographic** — A single huge image dominates each fold. Text is small annotation, not headline. The design says *look* before it says *read*. [`macrostructures/08-photographic.md`](macrostructures/08-photographic.md)
-- **09 · Quote-Led** — The hero is a pull-quote with attribution. The headline is borrowed credibility, not the brand's voice. The page leads with social proof. [`macrostructures/09-quote-led.md`](macrostructures/09-quote-led.md)
-- **10 · Specimen** — Numbered left-margin labels, huge serif display, asymmetric column spans, hairline rules, typographic-only CTA, generous whitespace. Editorial / type-foundry energy. [`macrostructures/10-specimen.md`](macrostructures/10-specimen.md)
-- **11 · Catalogue** — Uniform grid of variations of the same thing — typefaces, colour palettes, product SKUs. The page is a visual index of inventory. [`macrostructures/11-catalogue.md`](macrostructures/11-catalogue.md)
-- **12 · Letter** — First-person, written, intimate. Opens with a greeting ("Dear friend,"). No buttons in the fold. Reads as a personal note from the founder. [`macrostructures/12-letter.md`](macrostructures/12-letter.md)
-- **13 · Index-First** — The page IS a list of links. No hero image, no narrative flow. Pure navigation as design. [`macrostructures/13-index-first.md`](macrostructures/13-index-first.md)
-- **14 · Narrative Workflow** — Numbered stages tell the story of how the user uses the product over time. Each section is a phase (1.0 → 2.0 → 3.0 → 4.0). The page is a process timeline. [`macrostructures/14-narrative-workflow.md`](macrostructures/14-narrative-workflow.md)
-- **15 · Split Studio** — Diptych. Every major content block divides the screen — text on one side, proof on the other. The pairing alternates direction down the page. [`macrostructures/15-split-studio.md`](macrostructures/15-split-studio.md)
-- **16 · Feature Stack** — Sticky left pane (label / description) + scroll-synced right pane (screenshots cycling through related details). Cinematic pacing. [`macrostructures/16-feature-stack.md`](macrostructures/16-feature-stack.md)
-- **17 · Type Specimen** — The typeface IS the design. Foundry homepage or design-system marketing where a custom typeface is the brand's proof. [`macrostructures/17-type-specimen.md`](macrostructures/17-type-specimen.md)
-- **18 · Portfolio Grid** — Filterable cards of projects. Studio or designer homepages where the work is the product. [`macrostructures/18-portfolio-grid.md`](macrostructures/18-portfolio-grid.md)
-- **19 · Map / Diagram** — A single large spatial diagram organises the page — flowchart, floor plan, network graph, system map. Information is laid out *spatially*, not linearly. [`macrostructures/19-map-diagram.md`](macrostructures/19-map-diagram.md)
-- **20 · Ecosystem Index** — Multiple discovery surfaces — featured / latest / by category / by people. The platform's value is emergence and browsing, not declaration. [`macrostructures/20-ecosystem-index.md`](macrostructures/20-ecosystem-index.md)
-- **21 · Component Playground** — Interactive code-and-preview blocks are the page's primary content. Each block previews a thing and shows how to copy-paste it. [`macrostructures/21-component-playground.md`](macrostructures/21-component-playground.md)
+- **01 · Bento Grid** — 不同尺寸的模块块组成不规则网格。每个块都是一个 feature、一段 quote、一张 image 或一个 stat。视觉节奏来自尺寸变化，而不是卡片统一。 [`macrostructures/01-bento-grid.md`](macrostructures/01-bento-grid.md)
+- **02 · Long Document** — 读起来像 memo、letter 或 journal entry。没有 marketing structure。连续 prose 搭配 inline section heads。页面是关于产品的*文学文本*。 [`macrostructures/02-long-document.md`](macrostructures/02-long-document.md)
+- **03 · Marquee Hero** — hero 就是首屏页面本身。一个大胆 statement 或 visual 填满 viewport。首屏没有 subhead，没有 CTA。首屏以下页面变成另一种形状（list、grid、prose）。 [`macrostructures/03-marquee-hero.md`](macrostructures/03-marquee-hero.md)
+- **04 · Stat-Led** — hero 是巨大数字：metric、count 或 percentage。后续所有内容都支撑或限定它。Data 就是 narrative。 [`macrostructures/04-stat-led.md`](macrostructures/04-stat-led.md)
+- **05 · Workbench** — frame 中的产品截图是主要内容。页面是对 app 使用过程的 guided tour。少一点 marketing copy，多一点“你会用它做这些事”。 [`macrostructures/05-workbench.md`](macrostructures/05-workbench.md)
+- **06 · Conversational FAQ** — 大胆 questions，简短 answers。页面读起来像产品的一场诚实访谈。通常每组 Q/A 是可折叠 accordion。 [`macrostructures/06-conversational-faq.md`](macrostructures/06-conversational-faq.md)
+- **07 · Manifesto** — 论战式大字。Declaration energy。页面先告诉读者该相信什么，再告诉他们该买什么。常带 political-poster aesthetic。 [`macrostructures/07-manifesto.md`](macrostructures/07-manifesto.md)
+- **08 · Photographic** — 单张巨大 image 主导每一屏。文字是小注释，不是 headline。设计先说 *look*，再说 *read*。 [`macrostructures/08-photographic.md`](macrostructures/08-photographic.md)
+- **09 · Quote-Led** — hero 是带 attribution 的 pull-quote。Headline 借用可信度，而不是品牌自己的声音。页面以 social proof 开场。 [`macrostructures/09-quote-led.md`](macrostructures/09-quote-led.md)
+- **10 · Specimen** — 左边距编号标签、巨大 serif display、非对称 column spans、hairline rules、typographic-only CTA、慷慨留白。Editorial / type-foundry energy。 [`macrostructures/10-specimen.md`](macrostructures/10-specimen.md)
+- **11 · Catalogue** — 同类事物变体的统一网格：typefaces、colour palettes、product SKUs。页面是 inventory 的 visual index。 [`macrostructures/11-catalogue.md`](macrostructures/11-catalogue.md)
+- **12 · Letter** — 第一人称、书面、亲密。以问候开头（“Dear friend,”）。首屏没有按钮。读起来像 founder 的私人便条。 [`macrostructures/12-letter.md`](macrostructures/12-letter.md)
+- **13 · Index-First** — 页面本身就是 link list。没有 hero image，没有 narrative flow。纯 navigation 即 design。 [`macrostructures/13-index-first.md`](macrostructures/13-index-first.md)
+- **14 · Narrative Workflow** — 用 numbered stages 讲述用户如何随时间使用产品。每个 section 是一个 phase（1.0 → 2.0 → 3.0 → 4.0）。页面是一条 process timeline。 [`macrostructures/14-narrative-workflow.md`](macrostructures/14-narrative-workflow.md)
+- **15 · Split Studio** — Diptych。每个主要 content block 都把屏幕分成两半：一边文字，一边 proof。配对方向沿页面交替。 [`macrostructures/15-split-studio.md`](macrostructures/15-split-studio.md)
+- **16 · Feature Stack** — Sticky left pane（label / description）+ scroll-synced right pane（截图循环展示相关细节）。Cinematic pacing。 [`macrostructures/16-feature-stack.md`](macrostructures/16-feature-stack.md)
+- **17 · Type Specimen** — Typeface 就是 design。适用于 foundry homepage 或把 custom typeface 当作品牌 proof 的 design-system marketing。 [`macrostructures/17-type-specimen.md`](macrostructures/17-type-specimen.md)
+- **18 · Portfolio Grid** — 可筛选 project cards。Studio 或 designer homepages，作品本身就是产品。 [`macrostructures/18-portfolio-grid.md`](macrostructures/18-portfolio-grid.md)
+- **19 · Map / Diagram** — 一个大型 spatial diagram 组织页面：flowchart、floor plan、network graph、system map。信息以*空间*方式布局，而不是线性方式。 [`macrostructures/19-map-diagram.md`](macrostructures/19-map-diagram.md)
+- **20 · Ecosystem Index** — 多种 discovery surfaces：featured / latest / by category / by people。平台价值来自 emergence 与 browsing，而不是 declaration。 [`macrostructures/20-ecosystem-index.md`](macrostructures/20-ecosystem-index.md)
+- **21 · Component Playground** — Interactive code-and-preview blocks 是页面主要内容。每个 block 预览一个东西并展示如何 copy-paste。 [`macrostructures/21-component-playground.md`](macrostructures/21-component-playground.md)
 
 ---
 
 ## SaaS page sequence
 
-When the macrostructure is **Bento Grid · Stat-Led · Workbench · Marquee Hero** and the brief is a B2B SaaS marketing page, ship these sections in roughly this order. None are mandatory — but skipping more than two reads as "the page is incomplete":
+当 macrostructure 是 **Bento Grid · Stat-Led · Workbench · Marquee Hero**，且 brief 是 B2B SaaS marketing page 时，大致按以下顺序交付 sections。没有一项是强制的，但跳过超过两项会显得“页面不完整”：
 
-1. **Hero** — macrostructure-specific (Bento, Stat, Workbench, Marquee). Two CTAs (primary action + secondary "Talk to sales").
-2. **Social proof / logo wall** — 6–8 customer logos in monochrome. (See [`assets.md` § Logo walls](assets.md).)
-3. **Features** — 3–6 feature cards, varies by macrostructure (Bento has them inline; Stat-Led usually puts them after the supporting-stats grid).
-4. **Testimonials** — 2–4 quote cards. Pull-quote + name + role + company. Photo optional. Avoid "We use [product] every day" language; the quote should be specific to a use case ("Foundry got us SOC2 in five weeks. We wrote zero policies ourselves.").
-5. **Pricing** — 2–3 tiers in a comparison table. Feature checklist per tier. Recommended-tier badge on the middle tier. Show the actual price; "Contact sales for pricing" on every tier is a tell that the brand doesn't trust the buyer.
-6. **FAQ** — 5–10 questions. Conversational FAQ archetype works here (see Macrostructure 9).
-7. **Final CTA strip** — single button + one-sentence prompt.
-8. **Footer** — index-style or tabular, theme-appropriate.
+1. **Hero** — macrostructure-specific（Bento、Stat、Workbench、Marquee）。两个 CTAs（primary action + secondary “Talk to sales”）。
+2. **Social proof / logo wall** — 6–8 个 monochrome customer logos。（见 [`assets.md` § Logo walls](assets.md)。）
+3. **Features** — 3–6 张 feature cards，随 macrostructure 变化（Bento 内联放入网格；Stat-Led 通常放在 supporting-stats grid 之后）。
+4. **Testimonials** — 2–4 张 quote cards。Pull-quote + name + role + company。Photo 可选。避免 “We use [product] every day” 这类语言；quote 应具体到 use case（“Foundry got us SOC2 in five weeks. We wrote zero policies ourselves.”）。
+5. **Pricing** — 2–3 个 tiers，放在 comparison table 中。每 tier 有 feature checklist。Middle tier 有 recommended-tier badge。展示实际价格；每个 tier 都写 “Contact sales for pricing” 是品牌不信任买家的信号。
+6. **FAQ** — 5–10 个 questions。Conversational FAQ archetype 在这里适用（见 Macrostructure 9）。
+7. **Final CTA strip** — 单个 button + 一句 prompt。
+8. **Footer** — index-style 或 tabular，并与 theme 匹配。
 
-Each section transition uses theme-appropriate vertical spacing — `--space-3xl` minimum between major sections. Don't subdivide sections into "rows" with sub-rules — the section break is the visual rhythm.
+每个 section transition 使用 theme-appropriate vertical spacing，主要 sections 之间至少 `--space-3xl`。不要把 sections 再拆成带 sub-rules 的“rows”；section break 本身就是视觉节奏。
 
-**Voice rules for SaaS sections:**
+**SaaS sections 的 voice rules：**
 
-- **Pricing:** show the actual price. Sales-led pricing on every tier ("Contact us") signals the brand doesn't trust the buyer.
-- **Testimonials:** include the quoted person's role *and* company. Abstract "Engineering Manager" testimonials are slop. If the brief is a real product, use real names. If the brief is a placeholder, use plausible names — never "Jane Doe" / "John Smith" (gate 20).
-- **FAQ:** answer like a person, not a sales doc. "Yes — Stripe and Adyen are both supported out of the box" beats "Our platform integrates with leading payment providers."
-- **CTA strip:** one button. Not two. The repetition is the call to action.
+- **Pricing：**展示实际价格。每个 tier 都 sales-led pricing（“Contact us”）表示品牌不信任买家。
+- **Testimonials：**包含被引用者的 role *和* company。抽象的 “Engineering Manager” testimonials 是 slop。如果 brief 是真实产品，用真实姓名；如果 brief 是 placeholder，用可信的姓名，绝不要用 “Jane Doe” / “John Smith”（gate 20）。
+- **FAQ：**像真人一样回答，而不是 sales doc。“Yes — Stripe and Adyen are both supported out of the box” 胜过 “Our platform integrates with leading payment providers.”
+- **CTA strip：**一个 button。不是两个。重复本身就是 call to action。
 
-This sequence is **not** a template you stamp out — it's a recipe of *what should be present*. The macrostructure determines *how* each section looks. A Bento Grid page interleaves features and proof inside the grid; a Stat-Led page sequences them top-to-bottom; a Marquee Hero page lets the marquee do the social-proof work.
+这个 sequence **不是**拿来硬套的 template，而是一份“应出现什么”的 recipe。Macrostructure 决定每个 section *如何*呈现。Bento Grid 页面把 features 和 proof 交织在网格里；Stat-Led 页面把它们自上而下排序；Marquee Hero 页面让 marquee 承担 social-proof 工作。
 
-For non-SaaS work (Editorial, Manifesto, Letter, Long Document, Quote-Led), this sequence does **not** apply. A bakery does not need a pricing tier comparison.
+对非 SaaS work（Editorial、Manifesto、Letter、Long Document、Quote-Led），这个 sequence **不适用**。Bakery 不需要 pricing tier comparison。
 
 ---
 
 ## How to pick
 
-1. **Read the brief.** Note any words that strongly signal one macrostructure ("data heavy", "tell a story", "a list of links", "many small features", "personal note").
-2. **Check the codebase** for an existing `/* Hallmark · macrostructure: <name> · ... */` stamp. If found, exclude that name from your choices.
-3. **Match brief energy to a macrostructure** using the "Reach for it" lines. Most briefs match 2–4 of these patterns; pick the one that's most categorically distant from any past output for this user.
-4. **State your pick** in plain text *before* writing code: "Macrostructure: Bento Grid." Then write the code, opening the CSS with the required stamp.
-5. If genuinely torn, offer the user three choices from *different categories* (e.g. Bento + Long Document + Manifesto) and let them pick.
+1. **阅读 brief。**记下强烈指向某个 macrostructure 的词（“data heavy”、“tell a story”、“a list of links”、“many small features”、“personal note”）。
+2. **检查 codebase** 是否已有 `/* Hallmark · macrostructure: <name> · ... */` stamp。如果有，从候选中排除该 name。
+3. **用 “Reach for it” lines** 将 brief energy 匹配到 macrostructure。多数 briefs 会匹配 2–4 种 patterns；选择一个与该用户过去输出在类别上距离最远的。
+4. **写代码前用 plain text 声明选择：**“Macrostructure: Bento Grid.” 然后写代码，并在 CSS 开头放置 required stamp。
+5. 如果真的难以取舍，给用户三个来自*不同类别*的选择（例如 Bento + Long Document + Manifesto），让用户选。
 
-The goal is not novelty for its own sake. The goal is that two pages Hallmark builds for two different briefs *look like different sites, not different colour-swaps of the same template*.
+目标不是为了新奇而新奇。目标是 Hallmark 为两个不同 briefs 构建的两个页面，看起来像不同 sites，而不是同一个 template 的不同 colour-swaps。

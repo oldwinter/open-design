@@ -1,90 +1,90 @@
-# Design System Inspired by Xiaohongshu
+# Inspired by Xiaohongshu 的 Design System
 
 > Category: Media & Consumer
-> Lifestyle UGC social platform. Singular brand red, generous radius, content-first.
+> Lifestyle UGC social platform。单一品牌红、慷慨圆角、content-first。
 
-## 1. Visual Theme & Atmosphere
+## 1. 视觉主题与氛围
 
-Xiaohongshu (小红书 / RED) is the visual opposite of a SaaS console. Open the app and you do not see "Xiaohongshu" — you see other people's breakfasts, hotel sofas, the lipstick they bought on the third try. That is by design. The entire UI tries to act as a transparent picture frame: white surfaces, low-noise components, no shadow stacks competing for attention. Everything yields to the user-uploaded image.
+Xiaohongshu（小红书 / RED）在视觉上是 SaaS console 的反面。打开 app，你看到的不是 "Xiaohongshu"，而是别人的早餐、酒店沙发、第三次才买对的口红。这正是设计意图。整个 UI 试图成为透明相框：白色 surface、低噪声 component、没有与注意力竞争的 shadow stack。一切都让位给用户上传的 image。
 
-The palette is brutally restrained. A near-white canvas (`#FFFFFF` / `#F5F5F5`) covers the majority of every page. Neutrals are built from translucent overlays (`rgba(48,48,52, 0.05~0.20)`) rather than discrete grey steps — the same fill drops onto white for hover, onto a card for divider, onto a button for disabled. The brand red `#FF2442` is the only saturated color the system permits, and it shows up only on tab indicators, the heart-active state, and primary CTAs. Semantic colors (success green, warning orange, info blue) exist as tokens but are nearly invisible in the consumer flow — danger is not a separate color, it just reuses brand red.
+Palette 极端克制。Near-white canvas（`#FFFFFF` / `#F5F5F5`）覆盖每个页面的大部分区域。Neutrals 不是由离散 grey step 构成，而是由 translucent overlay（`rgba(48,48,52, 0.05~0.20)`）构成；同一种 fill 可以落在白底上做 hover，落在 card 上做 divider，落在 button 上做 disabled。Brand red `#FF2442` 是系统允许的唯一饱和色，只出现在 tab indicator、heart-active state 和 primary CTA 上。Semantic colors（success green、warning orange、info blue）作为 token 存在，但在 consumer flow 中几乎不可见；danger 不是独立颜色，只是复用 brand red。
 
-Form is soft. Cards round at 12–16px. Buttons round all the way to pills (`border-radius: 9999px`). Shadows are essentially absent — depth comes from spacing and rounding, not elevation. The signature layout is a two-column (mobile) or 5-column (PC) waterfall masonry where rows do not align — image height drives card height, and that misalignment *is* the realism.
+Form 是柔软的。Card 圆角为 12-16px。Button 一路圆到 pill（`border-radius: 9999px`）。Shadow 基本不存在；深度来自 spacing 和 rounding，而不是 elevation。签名 layout 是两列（mobile）或五列（PC）的 waterfall masonry，行并不对齐：image height 决定 card height，而这种错位 *就是* 真实感。
 
-Type is PingFang SC at medium weight throughout. There is no thin-light heroic display, no all-caps Latin headline. Hierarchy is compact (`H1: 32/600`, body: `14-16/400`), tracking is `0`, and digits use a custom `RED Number` family so counts on like buttons line up. The voice of the writing matches the visual: second person, conversational, never enterprise. "你的生活兴趣社区" — *your* lifestyle interest community, not "the platform".
+Type 全程使用中等字重的 PingFang SC。没有 thin-light hero display，没有 all-caps Latin headline。层级紧凑（`H1: 32/600`、body: `14-16/400`），tracking 为 `0`，数字使用自定义 `RED Number` family，让 like button 上的计数对齐。写作声音与视觉一致：第二人称、对话式、绝不 enterprise。"你的生活兴趣社区" 是 *你的* lifestyle interest community，而不是 "the platform"。
 
-The result reads like a slightly worn lifestyle magazine with a few handwritten Post-its tucked between the pages. Not Apple-store cold-minimal. Not Lark efficiency-console. Definitely not any SaaS dashboard. The design baseline is *daily-ness* — the user should not feel they are using software, only flipping through someone else's life.
+结果读起来像一本略有使用痕迹的生活方式杂志，页间夹着几张手写 Post-it。不是 Apple-store 式冷 minimal，也不是 Lark efficiency-console，更不是任何 SaaS dashboard。Design baseline 是 *daily-ness*；用户不应感觉自己在使用软件，只是在翻看别人的生活。
 
-**Key Characteristics:**
-- Singular brand red (`#FF2442` token, `#FF2E4D` at the component layer) — never two saturated colors at once
-- Translucent neutrals (`rgba(48,48,52, .05/.10/.20)`) instead of discrete grey steps
-- Generous rounding everywhere: cards 12–16px, buttons fully pill, sheets 16px top-only
-- Near-zero shadow — flat by default
-- PingFang SC at 400/500/600 only; no thin display weights
-- Content (user photos) is the color source — UI yields
-- Bottom sheet for secondary actions on mobile, never modal
-- Voice: second person, lifestyle, never SaaS-enterprise
+**关键特征：**
+- 单一 brand red（`#FF2442` token，component layer 为 `#FF2E4D`），绝不同时出现两种饱和色
+- 使用 translucent neutrals（`rgba(48,48,52, .05/.10/.20)`），而不是离散 grey step
+- 到处慷慨圆角：card 12-16px，button 完整 pill，sheet 仅顶部 16px
+- 近乎零 shadow；默认 flat
+- PingFang SC 只用 400/500/600；没有 thin display weight
+- Content（用户照片）是色彩来源；UI 让位
+- Mobile 上 secondary action 使用 bottom sheet，绝不默认 modal
+- Voice: second person、lifestyle，绝不 SaaS-enterprise
 
-## 2. Color Palette & Roles
+## 2. 色彩 Palette 与角色
 
-All values below are sampled from production CSS at `https://www.xiaohongshu.com/explore` (inline `<style>` blocks for `:root, .force-light` and `:root[dark], .force-dark`).
+以下所有值均采样自 `https://www.xiaohongshu.com/explore` 的 production CSS（`:root, .force-light` 和 `:root[dark], .force-dark` 的 inline `<style>` blocks）。
 
 ### Primary Brand
-- **Brand Red — Token** (`#FF2442`): `--primary` and `--color-red`. The design-system source of truth. Use for accents, active tabs, hearts, primary CTAs.
-- **Brand Red — Component** (`#FF2E4D`): hard-coded on `.reds-button-new.primary`, `.active-bar`, outlined-button border. Slightly pinker and marginally lighter — same red channel (`FF`), with `+10` on green (`24` → `2E`) and `+11` on blue (`42` → `4D`). The lifted green/blue raises overall lightness while the proportionally larger blue lift nudges the hue a touch toward pink, the net effect of which likely reduces visual sting on large button fills. Whether this divergence from `--primary` is intentional (accessibility / large-fill ergonomics) or historical drift (a hard-coded override that should eventually merge back to the token) is undocumented upstream. Use when emitting actual buttons or active-bar UI; see §9 *Brand Red Disambiguation* for the per-surface rule.
-- **Star Yellow** (`#FDBC5F`): bookmark / collect-active icon fill (sampled from `<symbol id="collected">` SVG). Only place yellow is allowed.
+- **Brand Red — Token** (`#FF2442`): `--primary` 和 `--color-red`。Design-system source of truth。用于 accent、active tab、heart、primary CTA。
+- **Brand Red — Component** (`#FF2E4D`): 硬编码于 `.reds-button-new.primary`、`.active-bar`、outlined-button border。略偏粉且稍亮；red channel 相同（`FF`），green 从 `24` 抬到 `2E`（+10），blue 从 `42` 抬到 `4D`（+11）。green/blue 抬升会增加整体 lightness，而 blue 的比例提升更大，会让 hue 略微向粉色移动，净效果可能是降低大面积 button fill 的视觉刺痛。这个与 `--primary` 的分歧究竟是有意（accessibility / large-fill ergonomics）还是历史漂移（应最终回并到 token 的 hard-coded override），upstream 未记录。实际输出 button 或 active-bar UI 时使用它；per-surface rule 见 §9 *Brand Red Disambiguation*。
+- **Star Yellow** (`#FDBC5F`): bookmark / collect-active icon fill（采样自 `<symbol id="collected">` SVG）。这是 yellow 唯一允许出现的位置。
 
 ### Neutrals (translucent overlay system)
-- **Surface** (`#FFFFFF`) — `--bg`. Cards, modals.
-- **Canvas** (`#F5F5F5`) — `--bg0`. Page background behind cards.
-- **Subtle** (`#FAFAFA`) — `--bg0-lighter` / `--color-information-background`. Information backgrounds.
-- **Fill 1** (`rgba(48,48,52,0.05)`) — `--fill1`. Lightest hover, group lines.
-- **Fill 2** (`rgba(48,48,52,0.10)`) — `--fill2`. Hover surface, disabled button bg, the "following" follow-button state.
-- **Fill 3** (`rgba(48,48,52,0.20)`) — `--fill3`. Pressed.
-- **Separator** (`rgba(0,0,0,0.08)`) — `--separator`. Hairline border.
-- **Separator Strong** (`rgba(0,0,0,0.20)`) — `--separator2`.
-- **Opaque Separator** (`#EAEAEA`) — `--opaque-separator`. When a real solid border is needed.
+- **Surface** (`#FFFFFF`) — `--bg`。Cards、modals。
+- **Canvas** (`#F5F5F5`) — `--bg0`。Cards 背后的 page background。
+- **Subtle** (`#FAFAFA`) — `--bg0-lighter` / `--color-information-background`。Information backgrounds。
+- **Fill 1** (`rgba(48,48,52,0.05)`) — `--fill1`。最轻的 hover、group lines。
+- **Fill 2** (`rgba(48,48,52,0.10)`) — `--fill2`。Hover surface、disabled button bg、"following" follow-button state。
+- **Fill 3** (`rgba(48,48,52,0.20)`) — `--fill3`。Pressed。
+- **Separator** (`rgba(0,0,0,0.08)`) — `--separator`。Hairline border。
+- **Separator Strong** (`rgba(0,0,0,0.20)`) — `--separator2`。
+- **Opaque Separator** (`#EAEAEA`) — `--opaque-separator`。需要真实 solid border 时使用。
 
 ### Text
-- **Title / Primary** (`rgba(0,0,0,0.80)`) — `--title`. Headings and titles. Soft black, never pure black.
-- **Paragraph / Secondary** (`rgba(0,0,0,0.62)`) — `--paragraph`. Body, secondary text.
-- **Description** (`rgba(0,0,0,0.45)`) — `--description`. Auxiliary captions.
-- **Disabled / Placeholder** (`rgba(0,0,0,0.27)`) — `--disabled` / `--placeholder`.
+- **Title / Primary** (`rgba(0,0,0,0.80)`) — `--title`。Headings 和 titles。Soft black，绝不是 pure black。
+- **Paragraph / Secondary** (`rgba(0,0,0,0.62)`) — `--paragraph`。Body、secondary text。
+- **Description** (`rgba(0,0,0,0.45)`) — `--description`。Auxiliary captions。
+- **Disabled / Placeholder** (`rgba(0,0,0,0.27)`) — `--disabled` / `--placeholder`。
 
 ### Semantic (token-level only — rarely visible in consumer UI)
-- **Success** (`#02B940`) — `--success`. Background variant `#EAF8EF` (`--success2`).
-- **Warning** (`#FF7D03`) — `--warning`. Background variant `#FFF2E6` (`--warning2`).
-- **Info** (`#3D8AF5`) — `--info` / `--color-blue`. Almost never appears in consumer flow.
-- **Link** (`#133667`) — `--link`. Deep navy, not a typical link blue. In practice, brand red is used for emphasis instead.
-- **Danger / Error**: no independent token — danger reuses `--primary` (brand red). Heads-up for skill authors: an emitted destructive action and an emitted primary CTA will therefore be visually identical out of the box (a "Delete account" button reads exactly like a "Follow" button). RED's production destructive treatment is not directly observable in this snapshot, so as a defensive default, differentiate destructive intent via outline-style + brand-red text, or a leading destructive icon, when the difference matters.
+- **Success** (`#02B940`) — `--success`。Background variant 为 `#EAF8EF`（`--success2`）。
+- **Warning** (`#FF7D03`) — `--warning`。Background variant 为 `#FFF2E6`（`--warning2`）。
+- **Info** (`#3D8AF5`) — `--info` / `--color-blue`。Consumer flow 中几乎不出现。
+- **Link** (`#133667`) — `--link`。Deep navy，不是典型 link blue。实际中常用 brand red 做强调。
+- **Danger / Error**: 没有独立 token；danger 复用 `--primary`（brand red）。给 skill author 的提醒：默认情况下，emitted destructive action 与 emitted primary CTA 会视觉完全一致（"Delete account" button 读起来和 "Follow" button 一样）。这个 snapshot 里无法直接观察 RED production destructive treatment，所以在差异重要时，防御性默认做法是用 outline-style + brand-red text，或 leading destructive icon 来区分 destructive intent。
 
 ### Functional Gradients (the only gradients allowed)
-Brand red itself is **never gradient**. The only gradients in the system are functional:
-- **Search Hotspot Hint** (`linear-gradient(90deg, #FF2543 0%, #FF5225 100%)`) — `--search-hotspot-hint`. Trending-search badge only.
-- **Video Player Mask** (`linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0) 50%, rgba(0,0,0,0.75))`) — `--mask-video-player-mask`. Top + bottom gradient on video tiles.
+Brand red 本身 **绝不用 gradient**。系统中唯一允许的 gradients 都是功能性的：
+- **Search Hotspot Hint** (`linear-gradient(90deg, #FF2543 0%, #FF5225 100%)`) — `--search-hotspot-hint`。仅用于 trending-search badge。
+- **Video Player Mask** (`linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0) 50%, rgba(0,0,0,0.75))`) — `--mask-video-player-mask`。Video tile 顶部 + 底部 gradient。
 
 ### Dark Mode
 
-Dark mode follows `prefers-color-scheme: dark` with a manual override; both the `:root[dark]` attribute and the `.force-dark` class are honored in source.
+Dark mode 遵循 `prefers-color-scheme: dark`，并有手动 override；source 同时支持 `:root[dark]` attribute 和 `.force-dark` class。
 
-- **Surface** (`#19191E`) — purple-tinted near-black, not pure `#000`.
-- **Canvas** (`#0E0E11`) — deepest layer.
-- **Title** (`rgba(255,255,255,0.84)`).
-- **Paragraph** (`rgba(255,255,255,0.56)`).
-- **Brand Primary** (`#FF2E4D`) — slight pink shift vs. light mode (`#FF2442` → `#FF2E4D`) to lower visual sting in low light.
-- **Separator** (`rgba(255,255,255,0.07)`).
+- **Surface** (`#19191E`) — 带紫调的 near-black，不是纯 `#000`。
+- **Canvas** (`#0E0E11`) — 最深层。
+- **Title** (`rgba(255,255,255,0.84)`)。
+- **Paragraph** (`rgba(255,255,255,0.56)`)。
+- **Brand Primary** (`#FF2E4D`) — 相比 light mode（`#FF2442` → `#FF2E4D`）略偏粉，用于降低低光环境下的视觉刺痛。
+- **Separator** (`rgba(255,255,255,0.07)`)。
 
-## 3. Typography Rules
+## 3. 字体规则
 
-All values sampled from production CSS at `https://www.xiaohongshu.com/`.
+所有值均采样自 `https://www.xiaohongshu.com/` 的 production CSS。
 
 ### Font Family
 
-**Chinese (display + body, all levels):**
+**Chinese（display + body，全层级）:**
 ```
 PingFang SC
 ```
-Every `--Typography-FontFamily-*` variable resolves to `PingFang SC`. There is no separate display face.
+每个 `--Typography-FontFamily-*` variable 都解析为 `PingFang SC`。没有单独 display face。
 
 **Site-wide fallback chain:**
 ```
@@ -96,9 +96,9 @@ Every `--Typography-FontFamily-*` variable resolves to `PingFang SC`. There is n
 ```
 'RED Number' (Regular 400 / Medium 500 / Bold 700)
 ```
-Used for like counts, follower counts, stat displays. Solves PingFang's non-tabular digit problem.
+用于 like counts、follower counts、stat displays。解决 PingFang 非 tabular digit 的问题。
 
-**Mobile app embedded:** 方正悠黑 (`FZ YouHei`) ships in the iOS / Android app; users can fall back to system PingFang SC / Noto Sans CJK SC.
+**Mobile app embedded:** 方正悠黑 (`FZ YouHei`) 随 iOS / Android app 发布；用户可 fallback 到 system PingFang SC / Noto Sans CJK SC。
 
 ### Hierarchy (PC web tokens)
 
@@ -118,44 +118,44 @@ Used for like counts, follower counts, stat displays. Solves PingFang's non-tabu
 | `--c2` | 12px | 400 | 18px (150%) | Small caption |
 | `--c3` | 10px | 400 | 14px (140%) | Badge / smallest |
 
-`*-emphasized` variants (e.g. `--c1-emphasized`) bump the same size to weight 500.
+`*-emphasized` variants（例如 `--c1-emphasized`）保持相同 size，但提升到 weight 500。
 
 ### Principles
 
-- **Compact heading scale.** Max display is 32/600 — there is no 48px / 64px hero type. Density wins over visual jumps.
-- **Three weights only.** 400 (Regular), 500 (Medium), 600 (Semibold). Weight 700 is reserved exclusively for `--number-emphasized-font-weight`. No thin / light.
-- **Tracking is zero.** Every `--Typography-Spacing-*` token is `0`. Component-level overrides (cookie banner, category title) hand-tune `-0.3px`–`-0.64px`, but base tokens are flat.
-- **Soft black, not pure black.** Title text is `rgba(0,0,0,0.80)`. Pure `#000` is never used for body or title text.
-- **Dedicated digit face.** Counts, stats, and follow-numbers always use `RED Number` for tabular alignment.
+- **紧凑 heading scale。** 最大 display 为 32/600；没有 48px / 64px hero type。Density 胜过视觉跳跃。
+- **只有三种 weight。** 400（Regular）、500（Medium）、600（Semibold）。Weight 700 只保留给 `--number-emphasized-font-weight`。没有 thin / light。
+- **Tracking 为零。** 每个 `--Typography-Spacing-*` token 都是 `0`。Component-level override（cookie banner、category title）会手调 `-0.3px` 到 `-0.64px`，但 base token 是 flat。
+- **Soft black，不用 pure black。** Title text 是 `rgba(0,0,0,0.80)`。Body 或 title text 从不使用 pure `#000`。
+- **专用数字字体。** Counts、stats 和 follow-numbers 始终使用 `RED Number` 以获得 tabular alignment。
 
 ## 4. Component Stylings
 
 ### Buttons
 
 **Primary**
-- Background: `#FF2442` (or `#FF2E4D` when matching the live `.reds-button-new.primary` class)
-- Text: `#FFFFFF`, weight 500, 14px
+- Background: `#FF2442`（或匹配 live `.reds-button-new.primary` class 时使用 `#FF2E4D`）
+- Text: `#FFFFFF`，weight 500，14px
 - Radius: **pill — `border-radius: 9999px`**
-- Padding: `8px 20px` small / `12px 32px` large
+- Padding: small 为 `8px 20px` / large 为 `12px 32px`
 - No shadow
 
 **Secondary (filled)**
-- Background: `rgba(48,48,52,0.10)` (`--fill2`) — soft grey
-- Text: `rgba(0,0,0,0.80)` (`--title`)
-- Same pill radius
+- Background: `rgba(48,48,52,0.10)`（`--fill2`），soft grey
+- Text: `rgba(0,0,0,0.80)`（`--title`）
+- 同样使用 pill radius
 
 **Secondary (outlined)**
 - Background: `#FFFFFF`
 - Border: `1px solid #FF2E4D`
 - Text: `#FF2E4D`
-- Pill radius. Used for the unfollowed-state follow CTA on profile cards.
+- Pill radius。用于 profile card 上未关注状态的 follow CTA。
 
 **Icon button (like / collect / comment)**
-- Pure icon (24px) stacked over count (12px, `rgba(0,0,0,0.45)`)
-- No background plate
-- Active state: icon flips to `#FF2442` (heart) or `#FDBC5F` (star); count text matches
+- 纯 icon（24px）叠在 count 上方（12px，`rgba(0,0,0,0.45)`）
+- 没有 background plate
+- Active state: icon 切到 `#FF2442`（heart）或 `#FDBC5F`（star）；count text 跟随匹配
 
-### Follow Button — three-state (highest-recognition component)
+### Follow Button — three-state（最高识别度 component）
 
 | State | Background | Label (Chinese / English) | Text | Shape |
 |---|---|---|---|---|
@@ -163,206 +163,206 @@ Used for like counts, follower counts, stat displays. Solves PingFang's non-tabu
 | Following | `rgba(48,48,52,0.10)` | `已关注` (Following) | `rgba(0,0,0,0.45)` | pill |
 | Mutual | `rgba(48,48,52,0.10)` | `互相关注` (Mutual) | `rgba(0,0,0,0.62)` | pill |
 
-Feed-card variant: `6px 14px` padding, 12px text. Profile-page variant: `8px 20px`, 14px text.
+Feed-card variant: `6px 14px` padding，12px text。Profile-page variant: `8px 20px`，14px text。
 
 ### Cards (Feed / Note Card)
 
-- Radius **12px** (16px for larger feature cards)
-- **No box-shadow by default.** White card sits on `#F5F5F5` canvas — separation comes from the canvas color, not elevation.
-- Structure: image fills top edge-to-edge → title (1–2 lines, 12px padding) → footer (32px round avatar + nickname + heart + count)
-- Image clips to top corners only; bottom corners are square because the image fills to the bottom of the image region.
-- PC hover: subtle `translateY(-2px)` plus a very light shadow (`0 4px 12px rgba(0,0,0,0.08)`). Mobile: no hover state.
+- Radius **12px**（更大的 feature card 为 16px）
+- **默认无 box-shadow。** White card 位于 `#F5F5F5` canvas 上，分隔来自 canvas color，而不是 elevation。
+- Structure: image 从顶部 edge-to-edge 填充 → title（1-2 lines，12px padding）→ footer（32px round avatar + nickname + heart + count）
+- Image 只裁切 top corners；bottom corners 是方的，因为 image 填满 image region 的底部。
+- PC hover: 微妙 `translateY(-2px)` 加 very light shadow（`0 4px 12px rgba(0,0,0,0.08)`）。Mobile: 无 hover state。
 
 ### Inputs / Search
 
 - Background: `#F5F5F5`
-- Border: none (focus may add a `1px solid` of `--separator`)
-- Radius: pill (or 20px for taller fields)
-- Height: 36–40px
-- Inline magnifier icon at the leading edge
+- Border: none（focus 可添加 `--separator` 的 `1px solid`）
+- Radius: pill（或 taller fields 使用 20px）
+- Height: 36-40px
+- Leading edge 放 inline magnifier icon
 
 ### Tabs / Segmented Control
 
-- Text-only tabs with a **2px underline bar** — never pill background, never colored chip.
-- Active: text color shifts to `rgba(0,0,0,0.80)` and weight bumps to 600; underline bar uses `#FF2E4D`, width matches text width.
-- Inactive: text `rgba(0,0,0,0.45)`, weight 400.
-- Tab spacing: ~40px.
+- Text-only tabs，带 **2px underline bar**；绝不使用 pill background，绝不使用 colored chip。
+- Active: text color 切到 `rgba(0,0,0,0.80)`，weight 提升到 600；underline bar 使用 `#FF2E4D`，宽度匹配 text width。
+- Inactive: text 为 `rgba(0,0,0,0.45)`，weight 400。
+- Tab spacing: 约 40px。
 
 ### Tags / Topics
 
-- Pill rectangle, `padding: 4px 12px`, `font-size: 12px`
+- Pill rectangle，`padding: 4px 12px`，`font-size: 12px`
 - Default: `rgba(48,48,52,0.10)` bg + `rgba(0,0,0,0.62)` text
 - Trending / featured: `#FF2442` bg + white text
 
 ### Badges / Counts
 
-- Numeric badge: `#FF2442` bg + white digit, min 16×16, pill
-- Pure red dot: 8px diameter, offset `-4px / -4px` from icon corner
-- HOT marker: small pill, `#FF6B35` or brand red, 10px white text
+- Numeric badge: `#FF2442` bg + white digit，min 16×16，pill
+- Pure red dot: 8px diameter，从 icon corner 偏移 `-4px / -4px`
+- HOT marker: small pill，`#FF6B35` 或 brand red，10px white text
 
 ### Avatars
 
-- Always circular (`border-radius: 50%`)
-- Feed: 28–32px. Profile hero: 80–96px.
-- No white stroke.
-- Verification badges sit on the lower-right at ~25–30% of the avatar diameter:
-  - Red V (creator)
-  - Blue V (enterprise)
+- 始终 circular（`border-radius: 50%`）
+- Feed: 28-32px。Profile hero: 80-96px。
+- 无 white stroke。
+- Verification badge 位于 lower-right，约为 avatar diameter 的 25-30%：
+  - Red V（creator）
+  - Blue V（enterprise）
 
 ### Bottom Sheet (mobile only — replaces most modals)
 
-- Slides from screen bottom over a `rgba(0,0,0,0.5)` scrim
+- 从 screen bottom 滑出，覆盖在 `rgba(0,0,0,0.5)` scrim 上
 - **Top-only radius `16px 16px 0 0`**
-- Drag handle: `4px × 36px`, `#E0E0E0`, centered, ~6px below top edge
-- Dismiss: drag-down past threshold, or tap scrim
-- Used for: share, report, more-actions, comment-compose — almost everything that would be a modal on PC.
+- Drag handle: `4px × 36px`，`#E0E0E0`，居中，距 top edge 约 6px
+- Dismiss: 向下拖过 threshold，或 tap scrim
+- Used for: share、report、more-actions、comment-compose，几乎所有 PC 上会是 modal 的东西
 
 ### PC Modal
 
-- Centered, white background, 12px radius
-- Light shadow (`0 8px 32px rgba(0,0,0,0.12)`) — the only place shadow is conspicuous
+- 居中，white background，12px radius
+- Light shadow（`0 8px 32px rgba(0,0,0,0.12)`），这是唯一 shadow 明显的地方
 
-## 5. Layout Principles
+## 5. 布局原则
 
 ### Spacing System (8pt grid)
 
-Base unit 8px. Common stops: `4 / 8 / 12 / 16 / 20 / 24 / 32`. Section gaps jump to `48 / 64`.
+Base unit 8px。Common stops: `4 / 8 / 12 / 16 / 20 / 24 / 32`。Section gap 跳到 `48 / 64`。
 
 ### Responsive Waterfall (PC discover)
 
-Five-column masonry at the standard desktop width, stepping down on narrower viewports.
+标准 desktop 宽度下为 five-column masonry，窄 viewport 上逐级减少。
 
 | Viewport | Columns | Column gap |
 |---|---|---|
 | ≥ 960px | 5 | 10px |
-| 690–960px | 4 | 10px |
-| 500–690px | 3 | 10px |
+| 690-960px | 4 | 10px |
+| 500-690px | 3 | 10px |
 | < 500px | 2 | 10px |
 
-Implementation is JavaScript-positioned (`translate3d` + ResizeObserver), not CSS Grid, because card heights are unknown until images load. This also predates widespread CSS Masonry support (still behind flags in most browsers as of 2026); the JS approach buys cross-browser consistency at the cost of layout-shift risk on slow image loads. The masonry deliberately does not align rows — variable image height *is* the realism.
+实现方式是 JavaScript-positioned（`translate3d` + ResizeObserver），而不是 CSS Grid，因为 card height 要等 image load 后才知道。这也早于 CSS Masonry 的广泛支持（截至 2026 年，大多数浏览器仍在 flag 后）；JS 方案用 layout-shift risk 换取 cross-browser consistency。Masonry 刻意不对齐行；variable image height *就是* 真实感。
 
 ### Mobile Two-Column
 
-- Two columns, each ~48.2% of viewport width
-- Row gap ~7px
-- Outer side margin `12rpx` per side (≈ 6px @ 375px)
+- 两列，每列约占 viewport width 的 48.2%
+- Row gap 约 7px
+- 外侧 side margin 每边 `12rpx`（≈ 6px @ 375px）
 
 ### Note Detail (PC)
 
-- Two-pane: left ~500px image carousel / right ~500px metadata + comments, total ~1100px
-- Image aspect chosen at upload time — vertical 3:4 / square 1:1 / horizontal 4:3
-- The carousel is the dominant visual; comments scroll independently on the right
+- Two-pane: 左侧约 500px image carousel / 右侧约 500px metadata + comments，总宽约 1100px
+- Image aspect 由 upload time 决定：vertical 3:4 / square 1:1 / horizontal 4:3
+- Carousel 是主视觉；comments 在右侧独立滚动
 
 ### Profile
 
-- 16:9 banner image at top
-- Circular avatar (80–96px) overlaps banner / content edge
-- Three-stat horizontal row (following / followers / likes-and-collects)
-- Tab strip below: Notes / Saved / Liked (笔记 / 收藏 / 赞过)
+- 顶部 16:9 banner image
+- Circular avatar（80-96px）与 banner / content edge 重叠
+- Three-stat horizontal row（following / followers / likes-and-collects）
+- 下方 tab strip: Notes / Saved / Liked（笔记 / 收藏 / 赞过）
 
 ### Creator / Ad Console (B2B)
 
-Standard left-nav console: 200–240px sidebar + ~1000–1100px content area. Top of content is a row of stat cards (impressions, likes, follower delta), below is a list or chart region. **No left-border accent on cards.** Surfaces are white, separation is by spacing.
+标准 left-nav console：200-240px sidebar + 约 1000-1100px content area。Content 顶部是一行 stat cards（impressions、likes、follower delta），下方是 list 或 chart region。**Card 上没有 left-border accent。** Surface 是白色，通过 spacing 分隔。
 
 ### Whitespace
 
-- The discover grid is dense — *content* density is the value proposition.
-- Section padding sits *between* feeds, not within them.
-- Cards do not have internal vertical padding above the image — image is flush to the top of the card.
+- Discover grid 很密集；*content* density 是 value proposition。
+- Section padding 位于 feeds *之间*，而不是 feed 内部。
+- Card 在 image 上方没有 internal vertical padding；image 与 card 顶部 flush。
 
-## 6. Depth & Elevation
+## 6. 深度与 Elevation
 
-Three levels, used sparingly.
+三个层级，且少量使用。
 
 | Level | Treatment | Use |
 |---|---|---|
-| Flat (0) | No shadow | Default — feed cards, tags, buttons (both modes) |
-| Subtle (1) | `0 4px 12px rgba(0,0,0,0.08)` | PC card hover (light mode only) |
-| Modal (2) | `0 8px 32px rgba(0,0,0,0.12)` | Centered modal on PC (light mode only) |
-| Dark mode | Drop shadows or replace with a `1px` hairline (`rgba(255,255,255,0.07)`) | `rgba(0,0,0,*)` shadows are invisible on the `#19191E` canvas; the scrim alone provides modal separation, and the PC card-hover `translateY(-2px)` is dropped entirely (motion + shadow both read as no-ops against the dark surface) |
+| Flat (0) | No shadow | Default：feed cards、tags、buttons（both modes） |
+| Subtle (1) | `0 4px 12px rgba(0,0,0,0.08)` | PC card hover（light mode only） |
+| Modal (2) | `0 8px 32px rgba(0,0,0,0.12)` | PC 上的 centered modal（light mode only） |
+| Dark mode | Drop shadows 或替换为 `1px` hairline（`rgba(255,255,255,0.07)`） | `rgba(0,0,0,*)` shadow 在 `#19191E` canvas 上不可见；仅 scrim 就能提供 modal separation，PC card-hover 的 `translateY(-2px)` 也完全取消（motion + shadow 在 dark surface 上都像 no-op） |
 
-**Shadow is the exception, not the rule.** Depth comes from:
-1. Background color contrast (`#F5F5F5` canvas under `#FFFFFF` cards)
-2. Generous radius (cards visually float because corners are rounded)
-3. Whitespace between elements
+**Shadow 是例外，不是规则。** 深度来自：
+1. Background color contrast（`#F5F5F5` canvas 位于 `#FFFFFF` cards 下方）
+2. Generous radius（card 因圆角而视觉上浮起）
+3. 元素之间的 whitespace
 
-No neumorphism. No glassmorphism. No coloured shadows. Bottom sheet has no shadow at all — the scrim provides the separation. In dark mode, drop the PC card-hover effect (`translateY(-2px)` + alpha-on-black shadow) entirely; both motion and shadow read as no-ops against the dark canvas.
+没有 neumorphism。没有 glassmorphism。没有 coloured shadows。Bottom sheet 完全没有 shadow；scrim 提供分隔。在 dark mode 中，移除 PC card-hover effect（`translateY(-2px)` + alpha-on-black shadow）；motion 和 shadow 在 dark canvas 上都读成 no-op。
 
 ## 7. Do's and Don'ts
 
 ### Do
-- ✅ Treat brand red as singular. One CTA accent per screen, no second saturated color competing.
-- ✅ Use translucent fill overlays (`rgba(48,48,52,0.05/.10/.20)`) for hover / disabled / pressed — not separate grey shades.
-- ✅ Round generously: 12–16px on cards, full pill on buttons.
-- ✅ Set body text at `rgba(0,0,0,0.80)` for titles and `rgba(0,0,0,0.62)` for paragraphs — soft black always.
-- ✅ Use `RED Number` (or any tabular-numerals stack) for stats and counts.
-- ✅ Let user-uploaded images carry the color story. The UI is the picture frame.
-- ✅ Default to bottom-sheet for secondary actions on mobile; reserve centered modal for PC and confirmations only.
-- ✅ Tabs are text + 2px underline. Always.
-- ✅ Speak in second person, conversational. "what you just scrolled past" is more RED than "Discover trending content".
+- 将 brand red 视为单一色。每个 screen 一个 CTA accent，不要让第二个饱和色竞争。
+- 使用 translucent fill overlays（`rgba(48,48,52,0.05/.10/.20)`）处理 hover / disabled / pressed，而不是单独 grey shade。
+- 慷慨圆角：card 12-16px，button full pill。
+- Body text 中 title 用 `rgba(0,0,0,0.80)`，paragraph 用 `rgba(0,0,0,0.62)`；始终 soft black。
+- Stats 和 counts 使用 `RED Number`（或任何 tabular-numerals stack）。
+- 让用户上传的 image 承载色彩叙事。UI 是 picture frame。
+- Mobile 上 secondary action 默认使用 bottom-sheet；centered modal 只保留给 PC 和 confirmation。
+- Tabs 永远是 text + 2px underline。
+- 以第二人称、对话式说话。"what you just scrolled past" 比 "Discover trending content" 更 RED。
 
 ### Don't
-- ❌ Don't use purple, deep blue, or black-gold as a primary color. Tech / fintech / luxury vocabulary is the wrong genre — RED is lifestyle.
-- ❌ Don't gradient the brand red itself. The only gradients are functional (search-hotspot badge, video mask).
-- ❌ Don't fill an entire hero with a brand-color background. Brand red is accent-only; a red-bordered hero reads as a sale poster, not a feed.
-- ❌ Don't fabricate the `小红书` wordmark or the RED logotype as artifact output. Tokens are not protectable; the wordmark is — that is the part of the brand identity with actual IP risk. When a logo placeholder is needed, emit a labelled grey block (e.g. an empty pill with `LOGO` in `rgba(0,0,0,0.45)`) and let the user drop in a licensed asset.
-- ❌ Don't use Inter, Helvetica, or Roboto as the Chinese display face. PingFang SC is the system — Latin fallback chains use `-apple-system` first.
-- ❌ Don't reference the `RED Number` family standalone in generated CSS. End users do not have it installed; without the PingFang fallback chain it silently falls back to whatever the OS picks, which breaks digit alignment. Always emit it inside a stack, e.g. `font-family: 'RED Number', PingFang SC, -apple-system, 'Helvetica Neue', Arial, sans-serif;`.
-- ❌ Don't ship light / thin weights at body sizes. Notes carry dense Chinese text; light weights destroy mobile legibility.
-- ❌ Don't add a left-border colored accent stripe to cards (the SaaS / dashboard tell). Cards separate via canvas color and radius, not colored chrome.
-- ❌ Don't drop heavy shadows. Concrete threshold: avoid alpha darker than `rgba(0,0,0,0.15)` or spread greater than `16px`. If the shadow is visible at arm's length on a phone, it is too strong for this system.
-- ❌ Don't pile glassmorphism, neumorphism, or 2020-era trend effects. The visual era reference is "lifestyle magazine", not "tech demo".
-- ❌ Don't write a "Trusted by 10,000+ teams" enterprise social-proof block. UGC trust comes from real people, not logo walls.
-- ❌ Don't write hero CTAs in all-caps Latin. Sentence-case Chinese, sentence-case Latin, no exceptions.
-- ❌ Don't use stock business photography (handshakes, laptop close-ups, conference rooms). Use real-life UGC-style imagery.
-- ❌ Don't use 3D isometric / blob / abstract-network illustrations. They are SaaS-marketing tells. RED uses real photos or hand-drawn editorial illustrations.
-- ❌ Don't write copy in third person ("the platform provides…"). Always second person ("what you want to see").
-- ❌ Don't surface unverifiable stat claims ("10× faster", "save N hours"). RED's brand voice is emotional resonance, not metric promises.
-- ❌ Don't use orange / yellow as a Toast emphasis color. Emphasis in this system is brand red, period.
-- ❌ Don't hard-pin every card to the same height. Variable card height across columns is the realism — don't "fix" it.
+- 不要把 purple、deep blue 或 black-gold 当 primary color。Tech / fintech / luxury vocabulary 是错误 genre；RED 是 lifestyle。
+- 不要给 brand red 本身做 gradient。唯一 gradients 是功能性（search-hotspot badge、video mask）。
+- 不要用 brand-color background 填满整个 hero。Brand red 只作 accent；红色边框 hero 读起来像 sale poster，不像 feed。
+- 不要在 artifact output 中伪造 `小红书` wordmark 或 RED logotype。Tokens 不受保护；wordmark 才是有实际 IP risk 的品牌身份部分。需要 logo placeholder 时，输出 labelled grey block（例如一个空 pill，内部用 `rgba(0,0,0,0.45)` 写 `LOGO`），让用户放入授权 asset。
+- 不要使用 Inter、Helvetica 或 Roboto 作为中文 display face。PingFang SC 是系统；Latin fallback chain 首先使用 `-apple-system`。
+- 不要在 generated CSS 中单独引用 `RED Number` family。终端用户没有安装它；如果没有 PingFang fallback chain，它会静默 fallback 到 OS 自选字体，破坏 digit alignment。始终把它放在 stack 中输出，例如 `font-family: 'RED Number', PingFang SC, -apple-system, 'Helvetica Neue', Arial, sans-serif;`。
+- 不要在 body size 上使用 light / thin weights。Notes 承载密集中文文本；light weights 会破坏 mobile legibility。
+- 不要给 card 添加 left-border colored accent stripe（SaaS / dashboard tell）。Card 通过 canvas color 和 radius 分隔，而不是 colored chrome。
+- 不要使用 heavy shadows。具体阈值：避免比 `rgba(0,0,0,0.15)` 更深的 alpha，或超过 `16px` 的 spread。如果手机上隔一臂距离还能明显看到 shadow，那对这个系统来说太重。
+- 不要堆叠 glassmorphism、neumorphism 或 2020-era trend effects。视觉时代参考是 "lifestyle magazine"，不是 "tech demo"。
+- 不要写 "Trusted by 10,000+ teams" 这种 enterprise social-proof block。UGC trust 来自真实的人，不是 logo wall。
+- 不要用 all-caps Latin 写 hero CTA。中文 sentence-case，Latin sentence-case，没有例外。
+- 不要使用 stock business photography（handshake、laptop close-up、conference room）。使用真实生活的 UGC-style imagery。
+- 不要使用 3D isometric / blob / abstract-network illustration。它们是 SaaS-marketing tell。RED 使用 real photos 或 hand-drawn editorial illustrations。
+- 不要用第三人称写 copy（"the platform provides…"）。始终用第二人称（"what you want to see"）。
+- 不要展示不可验证的 stat claims（"10× faster"、"save N hours"）。RED 的 brand voice 是 emotional resonance，不是 metric promises。
+- 不要用 orange / yellow 作为 Toast emphasis color。这个系统里的 emphasis 就是 brand red，仅此而已。
+- 不要把每张 card 硬固定为同一高度。Column 之间 variable card height 就是真实感；不要“修复”它。
 
-## 8. Responsive Behavior
+## 8. 响应式行为
 
 ### Breakpoints
 
 | Name | Width | Discover columns | Notes |
 |---|---|---|---|
-| Mobile | < 500px | 2 | App-like density, edge-to-edge waterfall |
-| Tablet | 500–690px | 3 | Padding eases, tap targets stay 44px+ |
-| Small Desktop | 690–960px | 4 | Standard reading width |
-| Desktop | ≥ 960px | 5 | Full waterfall, sidebar visible |
+| Mobile | < 500px | 2 | App-like density，edge-to-edge waterfall |
+| Tablet | 500-690px | 3 | Padding 放松，tap target 保持 44px+ |
+| Small Desktop | 690-960px | 4 | Standard reading width |
+| Desktop | ≥ 960px | 5 | Full waterfall，sidebar visible |
 
 ### Collapsing Strategy
 
-- **Discover**: 5 → 4 → 3 → 2 columns; column gap stays at 10px throughout.
-- **Note detail**: two-pane PC layout collapses to single-column stack on mobile (image carousel on top, body + comments below).
-- **Profile**: stat row stays horizontal at 3 columns down to mobile; tab strip remains horizontal with overflow scroll.
-- **Console (creator / ad)**: sidebar collapses to a hamburger drawer below ~768px; stat-card row wraps to 2-up.
+- **Discover**: 5 → 4 → 3 → 2 columns；column gap 全程保持 10px。
+- **Note detail**: PC two-pane layout 在 mobile 上折叠为 single-column stack（image carousel 在上，body + comments 在下）。
+- **Profile**: Stat row 到 mobile 仍保持 horizontal 3 columns；tab strip 保持 horizontal，并允许 overflow scroll。
+- **Console (creator / ad)**: Sidebar 在约 768px 以下折叠为 hamburger drawer；stat-card row wrap 到 2-up。
 
 ### Touch Targets
 
-- Minimum tap target 44×44px on mobile. Icon buttons render at 24px icon inside a 44×44 hit zone.
-- Pill buttons keep 36–40px height on mobile to honor this without growing radius.
+- Mobile 上最小 tap target 为 44×44px。Icon button 渲染为 44×44 hit zone 内的 24px icon。
+- Pill button 在 mobile 上保持 36-40px height，不必增大 radius 也能满足这一点。
 
 ### Type at Mobile
 
-- Body sizes do not shrink below 14px. Small captions stay at 12px to preserve density without becoming illegible on Chinese characters.
+- Body size 不缩到 14px 以下。Small caption 保持 12px，在保留密度的同时避免中文字符不可读。
 
 ## 9. Agent Prompt Guide
 
 ### Brand Red Disambiguation
 
-Two reds ship in the live system. They split by **surface**, not by mood — the wrong surface choice is the most common artifact-level slop in this design system, so the rule is explicit:
+Live system 中有两个 red。它们按 **surface** 分工，而不是按 mood 分工；错误 surface choice 是这个 design system 最常见的 artifact-level slop，所以规则必须明确：
 
-- **Default — emit `#FF2442`** (`--primary` / `--color-red`) for everything that is *not* a pixel-for-pixel replica of an existing component: new CTAs, hearts, accent fills, tag-on-trending, page-token references.
-- **Pixel-replica — emit `#FF2E4D`** *only* when reproducing the live `.reds-button-new.primary` button fill, the `.active-bar` tab indicator, or the outlined follow-button border. Treat this as the production-fidelity value; do not generalize it to other components.
-- **Never mix the two on one component.** `background: #FF2442` next to `border: 1px solid #FF2E4D` on the same element is the failure mode this rule prevents — pick one surface category, then stay in it.
+- **Default — emit `#FF2442`**（`--primary` / `--color-red`）：用于所有 *不是* 现有 component 像素级复刻的东西：new CTAs、hearts、accent fills、tag-on-trending、page-token references。
+- **Pixel-replica — emit `#FF2E4D`**：*只* 在复现 live `.reds-button-new.primary` button fill、`.active-bar` tab indicator 或 outlined follow-button border 时使用。把它当作 production-fidelity value；不要泛化到其他 component。
+- **Never mix the two on one component.** 同一个 element 上 `background: #FF2442` 旁边再写 `border: 1px solid #FF2E4D`，正是这条规则要防止的 failure mode；选择一个 surface category，然后保持一致。
 
-The Component One-Liners block below is intentional: the primary CTA uses `#FF2442` (token red, default) while the tab indicator uses `#FF2E4D` (component red, pixel-replica). They are different surfaces, so they get different reds.
+下方 Component One-Liners block 是有意的：primary CTA 使用 `#FF2442`（token red，default），tab indicator 使用 `#FF2E4D`（component red，pixel-replica）。它们是不同 surface，所以使用不同 red。
 
 ### Quick Color Reference
 
-- Brand: `#FF2442` (token, default) / `#FF2E4D` (component layer, pixel-replica only — see disambiguation above)
+- Brand: `#FF2442`（token，default）/ `#FF2E4D`（component layer，仅 pixel-replica；见上方 disambiguation）
 - Star (collect): `#FDBC5F`
 - Surface: `#FFFFFF`
 - Canvas: `#F5F5F5`
@@ -376,27 +376,27 @@ The Component One-Liners block below is intentional: the primary CTA uses `#FF24
 
 - Family: `PingFang SC, -apple-system, 'Helvetica Neue', 'Hiragino Sans GB', 'Microsoft Yahei', Arial`
 - Stat / digit family: `RED Number`
-- Heading: 20–32px, weight 600, line-height 125–140%
-- Body: 14–16px, weight 400, line-height 143–150%
+- Heading: 20-32px，weight 600，line-height 125-140%
+- Body: 14-16px，weight 400，line-height 143-150%
 - Tracking: 0
 
 ### Component One-Liners
 
 - Primary CTA: `background: #FF2442; color: #FFF; border-radius: 9999px; padding: 8px 20px; font-weight: 500;`
-- Follow button (idle): same as primary CTA, label `+ 关注` (Follow)
+- Follow button (idle): same as primary CTA，label `+ 关注` (Follow)
 - Follow button (following): `background: rgba(48,48,52,0.10); color: rgba(0,0,0,0.45); border-radius: 9999px;` label `已关注` (Following)
 - Feed card: `background: #FFF; border-radius: 12px; box-shadow: none;` image flush to top
-- Tab indicator: 2px underline `#FF2E4D` matched to text width; active text `rgba(0,0,0,0.80)` weight 600
-- Search input: `background: #F5F5F5; border-radius: 9999px; padding: 8px 16px; height: 36–40px; border: none;`
+- Tab indicator: 2px underline `#FF2E4D` matched to text width；active text `rgba(0,0,0,0.80)` weight 600
+- Search input: `background: #F5F5F5; border-radius: 9999px; padding: 8px 16px; height: 36-40px; border: none;`
 - Bottom sheet: `border-radius: 16px 16px 0 0; background: #FFF;` 4×36px drag handle `#E0E0E0` centered
 
 ### Iteration Guide
 
-1. **Start from the picture, not the chrome.** Drop a generous photographic hero or pin grid first; build UI around it as quietly as possible.
-2. **One accent.** If you have used `#FF2442` once on a screen, you have used it enough.
-3. **Translucent neutrals.** Reach for `rgba(48,48,52, .10)` before reaching for a fresh grey hex.
-4. **Pill everything that's tappable.** If it looks like a square button, it is wrong.
-5. **No shadow until a hover or modal demands it.** Default elevation is flat.
-6. **Second person Chinese voice.** Even Latin copy should read like a friend talking, not a vendor pitching.
-7. **Variable card heights.** A 3:4 image next to a 4:5 image is the look — do not pad both to the same height.
-8. **Mobile-first density.** Two-column waterfall is the canonical layout; everything else is a response to a wider viewport.
+1. **Start from the picture, not the chrome.** 先放一个慷慨 photographic hero 或 pin grid；围绕它安静地搭 UI。
+2. **One accent.** 如果一个 screen 已经用过一次 `#FF2442`，就已经够了。
+3. **Translucent neutrals.** 先用 `rgba(48,48,52, .10)`，再考虑新的 grey hex。
+4. **Pill everything that's tappable.** 如果它看起来像 square button，那就是错的。
+5. **No shadow until a hover or modal demands it.** 默认 elevation 是 flat。
+6. **Second person Chinese voice.** 即使是 Latin copy，也应像朋友说话，而不是 vendor pitching。
+7. **Variable card heights.** 3:4 image 挨着 4:5 image 才是这个 look；不要把两者 padding 成同高。
+8. **Mobile-first density.** Two-column waterfall 是 canonical layout；其他一切都是对更宽 viewport 的响应。

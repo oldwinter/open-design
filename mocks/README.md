@@ -1,150 +1,106 @@
-# `mocks/` — replay-based mock CLIs for OD's supported agents
+# `mocks/` — 面向 OD supported agents 的 replay-based mock CLIs
 
-A drop-in replacement for the real agent CLIs (`claude`, `opencode`,
-`codex`, `gemini`, `cursor-agent`, `deepseek`, `qwen`, `grok`, the
-ACP family `devin` / `hermes` / `kilo` / `kimi` / `kiro` / `vibe`, and
-the AMR `vela` CLI) that replays pre-recorded sessions in each CLI's
-native protocol — stdout streaming for most, JSON-RPC over stdio for
-ACP and AMR. **Zero LLM tokens.**
+这里提供真实 agent CLIs 的 drop-in replacement：`claude`、`opencode`、`codex`、`gemini`、`cursor-agent`、`deepseek`、`qwen`、`grok`、ACP family `devin` / `hermes` / `kilo` / `kimi` / `kiro` / `vibe`，以及 AMR `vela` CLI。它会用每个 CLI 的 native protocol 回放预录 sessions：多数使用 stdout streaming，ACP 和 AMR 使用 JSON-RPC over stdio。**零 LLM tokens。**
 
-Used by:
+用途：
 
-- **E2E tests** in `apps/daemon/tests/` — run the full chat-server
-  pipeline against a known agent trace, assert UI events / artifacts.
-- **Local self-tests during development** — iterate on `chat-routes.ts`,
-  `claude-stream.ts`, `json-event-stream.ts` parser changes without
-  burning provider budget.
-- **Demo / onboarding** — show what a 17-tool `claude` editing session
-  looks like end-to-end, offline.
-- **Regression harness** — replay the same trace before and after a
-  charter / parser change; diff the events the daemon surfaces.
+- `apps/daemon/tests/` 中的 **E2E tests**：针对已知 agent trace 运行完整 chat-server pipeline，并断言 UI events / artifacts。
+- 开发期间的 **local self-tests**：在不消耗 provider budget 的情况下，迭代 `chat-routes.ts`、`claude-stream.ts`、`json-event-stream.ts` parser changes。
+- **Demo / onboarding**：离线展示一个带 17 个 tool 的 `claude` editing session 从头到尾是什么样。
+- **Regression harness**：在 charter / parser change 前后回放同一 trace；diff daemon 暴露的 events。
 
-The recordings are anonymized exports from open-design's Langfuse
-project (179 traces across 9 agents and 5+ skills as of this commit).
+Recordings 是 open-design Langfuse project 的 anonymized exports（截至此 commit，共 9 个 agents、5+ 个 skills、179 条 traces）。
 
 ---
 
 ## tl;dr
 
 ```bash
-# First-time setup — pull the recording corpus from R2 (~30s, 4.5MB):
+# 首次设置：从 R2 拉取 recording corpus（约 30s，4.5MB）：
 bash mocks/scripts/fetch-recordings.sh
-# Subsequent runs hit the local cache (sha256-verified, instant).
+# 后续运行命中本地 cache（sha256 verified，几乎即时）。
 
-# Make the mock CLIs override the real ones for this shell:
+# 让 mock CLIs 在当前 shell 中覆盖真实 CLIs：
 export PATH="$PWD/mocks/bin:$PATH"
 
-# Pick any recording to play back (8-char prefix OK):
+# 选择任意 recording 回放（8-char prefix 也可以）：
 export OD_MOCKS_TRACE=04097377
 
-# Speed up replay (skip inter-event sleeps):
+# 加速 replay（跳过 inter-event sleeps）：
 export OD_MOCKS_NO_DELAY=1
 
-# Now anything that spawns opencode/claude/codex gets the recording:
+# 现在任何 spawn opencode/claude/codex 的动作都会得到 recording：
 echo "any prompt body" | opencode run
 echo "any prompt"     | claude -p --output-format=stream-json
 echo "any prompt"     | codex exec
 ```
 
-The mock binaries are bash wrappers that exec
-`node mocks/mock-agent.mjs --as <agent>`. Anything fed to stdin is
-discarded by the renderer but used by the recording picker (see hash
-mode below).
+Mock binaries 是 bash wrappers，会 exec `node mocks/mock-agent.mjs --as <agent>`。传入 stdin 的内容会被 renderer 丢弃，但会被 recording picker 使用（见下方 hash mode）。
 
-## Recordings live on R2, not in this repo
+## Recordings 位于 R2，不在本 repo
 
-The 179-recording corpus (~4.5 MB) is hosted on Cloudflare R2 at
-`open-design-mocks` and fetched **on demand** — `pnpm install` does NOT
-pull them, and the repo stays small. Recordings only land in
-`mocks/recordings/` when:
+179 条 recording corpus（约 4.5 MB）托管在 Cloudflare R2 的 `open-design-mocks` 中，并且**按需**拉取；`pnpm install` 不会拉取它们，因此 repo 保持小巧。Recordings 只会在以下情况落到 `mocks/recordings/`：
 
-1. You run `bash mocks/scripts/fetch-recordings.sh` directly, OR
-2. `bash mocks/scripts/smoke-test.sh` runs and the dir is empty (auto-
-   fetch fallback), OR
-3. A mock binary spawn finds no data — it errors with a pointer at the
-   fetch script (no silent failure).
+1. 你直接运行 `bash mocks/scripts/fetch-recordings.sh`；或
+2. `bash mocks/scripts/smoke-test.sh` 运行且该目录为空（auto-fetch fallback）；或
+3. 某个 mock binary spawn 时发现没有数据，它会报错并指向 fetch script（不会静默失败）。
 
-This is by design: contributors who don't touch agent code don't pay
-the fetch cost. CI jobs that DO touch agent code (`apps/daemon/tests/`
-parser changes, etc.) run the fetch as a quick pre-step and cache
-`mocks/recordings/` between runs.
+这是有意设计：不触碰 agent code 的 contributors 不需要承担 fetch cost。确实触碰 agent code 的 CI jobs（`apps/daemon/tests/` parser changes 等）会把 fetch 作为快速 pre-step，并在 runs 之间缓存 `mocks/recordings/`。
 
 ```bash
-# Fetch everything (parallel, sha256-verified, idempotent):
+# 拉取全部内容（parallel、sha256-verified、idempotent）：
 bash mocks/scripts/fetch-recordings.sh
 
-# Fetch a subset:
+# 拉取子集：
 bash mocks/scripts/fetch-recordings.sh --agent claude       # 57 claude traces
 bash mocks/scripts/fetch-recordings.sh --outcome failed     # 35 failed-path traces
 bash mocks/scripts/fetch-recordings.sh --skill agent-browser
 
-# Override cache location (e.g. share across multiple OD checkouts):
+# 覆盖 cache location（例如在多个 OD checkouts 间共享）：
 OD_MOCKS_CACHE_DIR=~/.cache/od-mocks bash mocks/scripts/fetch-recordings.sh
 ```
 
-Manifest at `mocks/manifest.json` is the committed source of truth —
-it lists every recording's `trace_id`, `sha256`, `bytes`, `agent`,
-`outcome`, `skills`, `multi_turn`, plus histograms over the corpus.
-Tooling reads this; you don't have to.
+`mocks/manifest.json` 是已提交的 source of truth。它列出每条 recording 的 `trace_id`、`sha256`、`bytes`、`agent`、`outcome`、`skills`、`multi_turn`，以及 corpus 的 histograms。Tooling 会读取它；你通常不需要手动处理。
 
-### Provenance per recording
+### 每条 recording 的 provenance
 
-Beyond identity (`trace_id`, `sha256`), each manifest entry carries
-fixture-trust signals so consumers can decide whether the recording
-is still meaningful as the real CLIs evolve:
+除了 identity（`trace_id`、`sha256`）之外，每个 manifest entry 都携带 fixture-trust signals，方便 consumers 判断随着真实 CLIs 演进，该 recording 是否仍然有意义：
 
 | Field | Meaning |
 |---|---|
-| `captured_at` | ISO 8601 timestamp of the original session — populated for all 179 current entries |
-| `cli_version` | The CLI version the trace was captured against (e.g. `"claude-code 1.0.65"`) — populated only on traces the harvester writes it to, null otherwise |
-| `protocol_version` | Stream-format version (`"claude-stream-json/v1"`, `"opencode/json-event-stream"`) — populated by harvester |
-| `anonymization_version` | Which anonymizer pass scrubbed the recording — populated by harvester |
+| `captured_at` | 原始 session 的 ISO 8601 timestamp；当前 179 个 entries 都已填充 |
+| `cli_version` | 捕获 trace 时对应的 CLI version（例如 `"claude-code 1.0.65"`）；仅 harvester 写入的 traces 有值，否则为 null |
+| `protocol_version` | Stream-format version（`"claude-stream-json/v1"`、`"opencode/json-event-stream"`）；由 harvester 填充 |
+| `anonymization_version` | 哪个 anonymizer pass 清洗了 recording；由 harvester 填充 |
 
-For now most of these are null on the existing 179 — the harvester in
-[nexu-io/agent-pr-explore][harvester] is the next thing to teach to
-write them. Once a recording's `cli_version` falls behind the actual
-CLI by more than one minor version, treat it as a candidate for
-re-harvest.
+目前既有 179 条中，大多数这些字段仍为 null；下一步需要教 [nexu-io/agent-pr-explore][harvester] 中的 harvester 写入它们。一旦某条 recording 的 `cli_version` 落后实际 CLI 超过一个 minor version，就把它视为 re-harvest candidate。
 
 ### Golden daemon-event snapshots
 
-`mocks/golden/<trace>.events.json` holds the exact event sequence the
-OD daemon emits when fed each (mock CLI → handler) pipeline. Diffed
-on every `pnpm --filter @open-design/daemon test` run by
-`apps/daemon/tests/mocks-golden.test.ts`.
+`mocks/golden/<trace>.events.json` 保存 OD daemon 在输入每个（mock CLI → handler）pipeline 时发出的精确 event sequence。每次运行 `pnpm --filter @open-design/daemon test` 时，`apps/daemon/tests/mocks-golden.test.ts` 都会 diff 它。
 
-A parser refactor that semantically changes events (drops a field,
-renames `sessionId`, stops emitting `turn_end`) fails the diff loudly.
-After an intentional parser change, regenerate:
+任何语义改变 events 的 parser refactor（删除字段、重命名 `sessionId`、停止发出 `turn_end`）都会让 diff 明确失败。有意的 parser change 之后，请 regenerate：
 
 ```bash
 MOCKS_GOLDEN_UPDATE=1 pnpm --filter @open-design/daemon test mocks-golden
-git diff mocks/golden/    # eyeball the new shapes
+git diff mocks/golden/    # 人工检查 new shapes
 git add mocks/golden/ && git commit -m "mocks: refresh goldens for <parser change>"
 ```
 
-Per-spawn volatile fields (currently just claude's generated
-`sessionId`) are stripped to `"<normalized>"` so the snapshot stays
-stable. See `mocks/golden/README.md` for the coverage rationale.
+Per-spawn volatile fields（目前只有 claude 生成的 `sessionId`）会被剥离为 `"<normalized>"`，以保持 snapshot 稳定。Coverage rationale 见 `mocks/golden/README.md`。
 
 ### Real-CLI contract check
 
-The mocks catch parser regressions against the recordings; they do
-**not** catch the recordings themselves drifting away from the live
-agent CLIs. For that, `mocks/scripts/contract-check.sh` spawns a real
-CLI alongside the mock with a fixed prompt and prints a side-by-side
-event-type distribution.
+Mocks 可以捕获相对于 recordings 的 parser regressions；但它们**不能**捕获 recordings 本身与 live agent CLIs 漂移的问题。为此，`mocks/scripts/contract-check.sh` 会用固定 prompt 同时 spawn 真实 CLI 和 mock，并打印并排 event-type distribution。
 
-This is human-driven and costs real LLM tokens — run on a real-CLI
-release or before a parser refactor, not on a cron. Full doc:
+这是 human-driven 的，并且会消耗真实 LLM tokens；请在 real-CLI release 或 parser refactor 前运行，不要放在 cron 上。完整文档：
 [`docs/MOCKS-CONTRACT-CHECK.md`](../docs/MOCKS-CONTRACT-CHECK.md).
 
 ---
 
-## What gets emitted
+## 会发出什么
 
-Each renderer matches the EXACT event shapes the OD daemon expects, as
-verified line-by-line against the parsers in `apps/daemon/src/`:
+每个 renderer 都匹配 OD daemon 预期的**精确** event shapes，并已与 `apps/daemon/src/` 中的 parsers 逐行核对：
 
 | CLI | OD streamFormat | Parser source |
 |---|---|---|
@@ -157,79 +113,54 @@ verified line-by-line against the parsers in `apps/daemon/src/`:
 | `devin` `hermes` `kilo` `kimi` `kiro` `vibe` | `acp-json-rpc` | `acp.ts:attachAcpSession`                       |
 | `vela` (AMR) | `acp-json-rpc` + `login` / `models` subcommands | `runtimes/defs/amr.ts` + `apps/daemon/tests/fixtures/fake-vela.mjs` (sibling stub) |
 
-> **Note on `cursor-agent`**: OD's parser does NOT recognize tool-call
-> events — only init / assistant text / usage. The renderer therefore emits
-> only the final assistant text wrapped in the expected init/text/usage
-> envelope. Tool calls present in the source recording are silently dropped.
-> `gemini` recognizes the current Gemini CLI `stream-json` tool_use /
-> tool_result frames and replays recorded tool calls through that envelope.
+> **关于 `cursor-agent` 的说明**：OD 的 parser 不识别 tool-call events，只识别 init / assistant text / usage。因此 renderer 只会发出包在预期 init/text/usage envelope 中的最终 assistant text。Source recording 中存在的 tool calls 会被静默丢弃。`gemini` 可以识别当前 Gemini CLI `stream-json` 的 tool_use / tool_result frames，并通过该 envelope 回放 recorded tool calls。
 
-> **Note on ACP agents** (`devin` / `hermes` / `kilo` / `kimi` / `kiro` /
-> `vibe`): These do NOT stream stdout — they speak JSON-RPC v2 over stdio.
-> OD's daemon sends `initialize` → `session/new` → (optional `session/set_model`)
-> → `session/prompt`; the mock responds in order, streams text via
-> `session/update` notifications carrying `agent_message_chunk` parts,
-> then responds to the prompt request with usage stats. Tool calls
-> aren't part of the ACP protocol on this path (tools surface via MCP or
-> other side channels), so they're dropped from playback.
+> **关于 ACP agents 的说明**（`devin` / `hermes` / `kilo` / `kimi` / `kiro` / `vibe`）：它们不 stream stdout，而是通过 stdio 说 JSON-RPC v2。OD daemon 发送 `initialize` → `session/new` →（可选 `session/set_model`）→ `session/prompt`；mock 会按顺序响应，通过携带 `agent_message_chunk` parts 的 `session/update` notifications stream text，然后用 usage stats 响应 prompt request。Tool calls 不是这条路径上的 ACP protocol 一部分（tools 通过 MCP 或其他 side channels 暴露），因此会从 playback 中丢弃。
 
-> **Note on `vela` (AMR)**: vela is the bin OD's AMR runtime spawns. It
-> extends the generic ACP shape with `agentCapabilities` + `models`
-> blocks in `initialize` / `session/new`, plus a **strict set_model gate**
-> — `session/prompt` is rejected with -32602 until `session/set_model`
-> (or `session/set_config_option`) has been called for the current
-> sessionId, mirroring real vela 0.0.1 contract.
+> **关于 `vela` (AMR) 的说明**：vela 是 OD 的 AMR runtime spawn 的 bin。它用 `initialize` / `session/new` 中的 `agentCapabilities` + `models` blocks 扩展 generic ACP shape，并增加一个 **strict set_model gate**：在当前 sessionId 调用 `session/set_model`（或 `session/set_config_option`）前，`session/prompt` 会以 -32602 被拒绝，以镜像真实 vela 0.0.1 contract。
 >
-> vela also has two non-ACP subcommands:
+> vela 还有两个 non-ACP subcommands：
 >
-> - `vela login` → writes `~/.amr/config.json` with a fake profile so
->   OD's daemon login route + `AmrLoginPill` poller see the same on-disk
->   projection production produces.
-> - `vela models` → prints the production-shaped `public_model_*    vela`
->   catalog.
+> - `vela login` → 写入带 fake profile 的 `~/.amr/config.json`，使 OD 的 daemon login route + `AmrLoginPill` poller 看到与 production 相同的 on-disk projection。
+> - `vela models` → 打印 production-shaped `public_model_*    vela` catalog。
 >
-> Error injection envs (kept in sync with
-> `apps/daemon/tests/fixtures/fake-vela.mjs`):
+> Error injection envs（与 `apps/daemon/tests/fixtures/fake-vela.mjs` 保持同步）：
 > `FAKE_VELA_SESSION_NEW_ERROR` / `FAKE_VELA_SET_MODEL_ERROR` /
 > `FAKE_VELA_PROMPT_ERROR` / `FAKE_VELA_LOGIN_FAIL` /
 > `FAKE_VELA_REQUIRE_SET_MODEL=0`.
 
-Each tool call from the recording is rendered with the original input
-arguments and tool output. The agents' assistant text is rendered as
-the final message.
+Recording 中的每个 tool call 都会使用原始 input arguments 和 tool output 渲染。Agents 的 assistant text 会作为 final message 渲染。
 
 ---
 
 ## Recording selection
 
-Driven by env vars, in priority order:
+由 env vars 驱动，按优先级排序：
 
 | Env | Behavior |
 |---|---|
-| `OD_MOCKS_TRACE=<id>` | Always play this trace. 8-char prefix OK. |
-| `OD_MOCKS_BY_PROMPT_HASH=1` + stdin prompt | Deterministic by `sha256(prompt) % len(all)`. Same prompt → same trace. Useful for "stable answer per question" tests. |
-| `OD_MOCKS_POOL=<tag>` | Random within the tag pool. Examples: `agent:claude`, `skill:agent-browser`, `outcome:failed`. |
-| `OD_MOCKS_SEED=<str>` | Makes "random" picks reproducible across runs. |
-| `OD_MOCKS_NO_DELAY=1` | Skip inter-event waits. |
-| `OD_MOCKS_RECORDINGS_DIR=<path>` | Override the recordings dir. |
+| `OD_MOCKS_TRACE=<id>` | 始终播放这条 trace。8-char prefix 可以使用。 |
+| `OD_MOCKS_BY_PROMPT_HASH=1` + stdin prompt | 通过 `sha256(prompt) % len(all)` 确定性选择。同一 prompt → 同一 trace。适合 "stable answer per question" tests。 |
+| `OD_MOCKS_POOL=<tag>` | 在 tag pool 中随机选择。示例：`agent:claude`、`skill:agent-browser`、`outcome:failed`。 |
+| `OD_MOCKS_SEED=<str>` | 让 "random" picks 在多次运行间可复现。 |
+| `OD_MOCKS_NO_DELAY=1` | 跳过 inter-event waits。 |
+| `OD_MOCKS_RECORDINGS_DIR=<path>` | 覆盖 recordings dir。 |
 
-If none are set, a uniformly random recording is played each invocation.
+如果都没有设置，每次 invocation 都会播放一条均匀随机的 recording。
 
-The mock binary announces the picked trace id on stderr:
+Mock binary 会在 stderr 上告知选中的 trace id：
 
 ```
 [mock-opencode] picked 04097377… via fixed
 ```
 
-This line is invisible to OD's stdout parser but useful for "wait, why
-did my test get the FAQ-fix trace?" debugging.
+这一行对 OD 的 stdout parser 不可见，但对 “等等，为什么我的 test 拿到了 FAQ-fix trace？” 这类 debugging 很有用。
 
 ---
 
 ## Recording catalog
 
-The recordings live as one JSONL file per Langfuse trace under
-`recordings/`. Each file starts with a `meta` event carrying:
+Recordings 位于 `recordings/` 下，每条 Langfuse trace 对应一个 JSONL 文件。每个文件都以携带以下内容的 `meta` event 开头：
 
 ```json
 {
@@ -248,15 +179,11 @@ The recordings live as one JSONL file per Langfuse trace under
 }
 ```
 
-Subsequent events are `tool_call`, `tool_result`, and `report` (the
-final assistant text).
+后续 events 是 `tool_call`、`tool_result` 和 `report`（final assistant text）。
 
 ### Indexed metadata
 
-`mocks/manifest.json` is a flat manifest with one entry per recording
-plus histograms over all recordings, committed to the repo. It's also
-mirrored to R2 alongside the .jsonl files so consumers can fetch the
-current catalog without cloning. Query with `jq`:
+`mocks/manifest.json` 是 flat manifest，每条 recording 一个 entry，并包含所有 recordings 的 histograms，已提交到 repo。它也会和 .jsonl files 一起 mirror 到 R2，因此 consumers 可以不用 clone 就 fetch 当前 catalog。使用 `jq` 查询：
 
 ```bash
 # All multi-turn claude sessions about HTML editing
@@ -350,28 +277,26 @@ etc. The .jsonl itself stays in R2.
 - **Read stays public.** Anyone can fetch via the r2.dev URL — see
   [Recordings live on R2, not in this repo](#recordings-live-on-r2-not-in-this-repo).
 
-### Removing a recording
+### 移除 recording
 
 ```bash
-# 1. delete from R2
+# 1. 从 R2 删除
 export CLOUDFLARE_ACCOUNT_ID=64ad4569ffd912432d6b86d5656484c4
 wrangler r2 object delete open-design-mocks/recordings/v1/<trace-id>.jsonl --remote
-# 2. drop the entry from manifest.json (edit by hand, or use `jq`)
-# 3. re-upload manifest
+# 2. 从 manifest.json 删除 entry（手工编辑，或使用 `jq`）
+# 3. 重新上传 manifest
 wrangler r2 object put open-design-mocks/recordings/v1/manifest.json \
   --file mocks/manifest.json --remote
 # 4. git add mocks/manifest.json && git commit && git push
 ```
 
-There's no automation for delete because (a) it's rare and (b) you
-want a human to think about whether removing a recording would
-invalidate any test fixtures that pin it via `OD_MOCKS_TRACE=<id>`.
+删除没有 automation，因为（a）它很少发生，（b）需要有人判断移除某条 recording 是否会让通过 `OD_MOCKS_TRACE=<id>` 固定它的 test fixtures 失效。
 
 ---
 
-## Usage from OD's test code
+## 在 OD test code 中使用
 
-### From a test (Vitest / Jest)
+### 在 test 中使用（Vitest / Jest）
 
 ```ts
 import { spawn } from 'node:child_process';
@@ -395,10 +320,10 @@ it('parses an opencode session with 4 tool calls into 4 UI events', async () => 
 });
 ```
 
-### From a manual playback
+### 手动 playback
 
 ```bash
-# See what claude's 17-tool "delete v2" session emits to OD:
+# 查看 claude 的 17-tool "delete v2" session 会向 OD 发出什么：
 export PATH=$(git rev-parse --show-toplevel)/mocks/bin:$PATH
 export OD_MOCKS_TRACE=04097377
 export OD_MOCKS_NO_DELAY=1
@@ -445,31 +370,19 @@ mocks/
     └── .gitignore                ← recordings come via fetch
 ```
 
-No external dependencies. Pure node:`fs`/`crypto`/`child_process`. Works
-under any Node ≥18.
+没有外部依赖。纯 node:`fs`/`crypto`/`child_process`。可在任何 Node ≥18 下工作。
 
 ---
 
 ## Limitations
 
-- `copilot`, `qoder`, `pi` (the niche `copilot-stream-json` /
-  `qoder-stream-json` / `pi-rpc` formats) are recorded but not yet
-  rendered as their native protocols — they fall back to the plain
-  renderer for now. If you need them, add a `format-<agent>.mjs`
-  following the same pattern as `format-codex.mjs`; the parsers are
-  in `apps/daemon/src/{copilot-stream,qoder-stream}.ts` and the pi-rpc
-  handler inside `apps/daemon/src/server.ts`.
-- The mock does not honor CLI flags that change semantics (`--model`,
-  `--permission-mode`, `--allowed-tools`). They're silently ignored.
+- `copilot`、`qoder`、`pi`（较少见的 `copilot-stream-json` / `qoder-stream-json` / `pi-rpc` formats）已有 recordings，但尚未按它们的 native protocols 渲染；目前会 fallback 到 plain renderer。如果需要它们，请按 `format-codex.mjs` 的模式添加 `format-<agent>.mjs`；parsers 位于 `apps/daemon/src/{copilot-stream,qoder-stream}.ts`，pi-rpc handler 位于 `apps/daemon/src/server.ts`。
+- mock 不会遵守会改变语义的 CLI flags（`--model`、`--permission-mode`、`--allowed-tools`）。它们会被静默忽略。
 
 ---
 
 ## Provenance / safety
 
-All recordings come from open-design's own Langfuse project (the
-`open-design` project under the `powerformer` org). Users opted into
-telemetry when they installed the desktop client. The anonymizer
-removed user-identifying paths and project UUIDs before checking in.
+所有 recordings 都来自 open-design 自己的 Langfuse project（`powerformer` org 下的 `open-design` project）。用户安装 desktop client 时已 opt into telemetry。Anonymizer 在 check in 前移除了 user-identifying paths 和 project UUIDs。
 
-If you find a recording that includes content that should be redacted,
-follow the [Removing a recording](#removing-a-recording) flow above.
+如果发现某条 recording 包含应该 redact 的内容，请按上方 [移除 recording](#移除-recording) 流程处理。

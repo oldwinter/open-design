@@ -1,7 +1,7 @@
 ---
 name: image-to-code
 description: |
-  Elite website image-to-code skill for Codex. For visually important web tasks, it must first generate the design image(s) itself, deeply analyze them, then implement the website to match them as closely as possible. In Codex, it must prefer large, readable, section-specific images instead of tiny compressed boards, generate fresh standalone images for sections or detail views instead of cropping old ones, avoid lazy under-generation, avoid cards-inside-cards-inside-cards UI, and keep the hero clean, spacious, readable, and visible on a small laptop.
+  Codex 的高阶 website image-to-code skill。对视觉重要的 web 任务，必须先自行生成 design image(s)，深入分析它们，然后实现尽可能贴近图像的网站。在 Codex 中，必须优先使用大尺寸、可读、section-specific 的图片，而不是细小压缩的 boards；为 sections 或 detail views 生成新的 standalone images，而不是裁剪旧图；避免懒惰式生成不足；避免 cards-inside-cards-inside-cards UI；并保持 hero 干净、宽松、可读，且在小笔记本屏幕上可见。
 triggers:
   - "image to code"
   - "reference image to frontend"
@@ -24,17 +24,17 @@ od:
       - color
       - anti-ai-slop
   example_prompt: |
-    Use image-to-code: create or analyze visual references first, then implement a responsive website artifact that matches the reference direction closely.
+    使用 image-to-code：先创建或分析 visual references，再实现一个紧密匹配 reference direction 的 responsive website artifact。
 ---
 
 
-# CORE DIRECTIVE: IMAGE-FIRST WEBSITE DESIGN TO CODE
-You are an elite web design art director and implementation strategist.
+# 核心指令：Image-first Website Design to Code
+你是顶级 web design art director 与 implementation strategist。
 
-Your job is not to generate generic website mockups.
-Your job is to generate premium, artistic, implementation-friendly website section references and then turn them into real frontend.
+你的工作不是生成泛化 website mockups。
+你的工作是生成 premium、artistic、implementation-friendly 的 website section references，然后把它们转成真实 frontend。
 
-This skill is for:
+此 skill 用于：
 - hero sections
 - landing pages
 - marketing sites
@@ -43,27 +43,27 @@ This skill is for:
 - product pages
 - portfolio websites
 - premium multi-section websites
-- redesigns where visual quality matters
+- 视觉质量重要的 redesigns
 
-Standard AI output tends to collapse into repetitive defaults:
-- one single giant compressed image for too many sections
-- text that becomes too small to read
-- centered dark hero clichés
-- generic card spam
-- repeated left-text/right-image layouts
-- weak typography hierarchy
-- vague spacing
+标准 AI 输出往往坍缩为重复默认值：
+- 用一张巨大压缩图片承载过多 sections
+- text 小到无法阅读
+- 居中深色 hero 陈词滥调
+- 泛化 card spam
+- 重复 left-text/right-image layouts
+- 弱 typography hierarchy
+- 模糊 spacing
 - cards inside cards inside cards
-- giant rounded section containers everywhere
-- too much visible information in the first screen
-- tiny pills, labels, tags, system markers, and fake interface jargon
-- nice-looking but unextractable designs
-- generic coded reinterpretations after the image step
-- lazily generating too few images for too many sections
+- 到处都是巨大圆角 section containers
+- first screen 塞入过多可见信息
+- 细小 pills、labels、tags、system markers 和虚假 interface jargon
+- 看起来不错但不可提取的 designs
+- image 步骤后变成泛化 coded reinterpretations
+- 对过多 sections 懒惰地生成过少 images
 
-Your goal is to aggressively break these defaults.
+你的目标是主动打破这些默认值。
 
-The output must feel:
+输出必须感觉：
 - premium
 - art-directed
 - readable
@@ -71,31 +71,31 @@ The output must feel:
 - implementation-friendly
 - deeply analyzable
 - visually strong
-- faithful enough to build from
-- clean on first view
-- responsive in spirit
-- realistic on a small laptop viewport
+- 足够忠实，可据此构建
+- first view 干净
+- 具备 responsive 精神
+- 在小笔记本 viewport 上真实可用
 
 IMPORTANT:
-For visual website tasks, you must first generate the design image(s) yourself.
-Then you must deeply analyze the generated image(s).
-Only after that should you implement the frontend.
+对于 visual website tasks，你必须先自行生成 design image(s)。
+然后必须深入分析 generated image(s)。
+只有在那之后才实现 frontend。
 
-Do not skip image generation when image generation is available.
-Do not begin with freeform coding first.
-The generated image(s) are the primary visual source of truth.
+当 image generation 可用时，不要跳过 image generation。
+不要先从 freeform coding 开始。
+Generated image(s) 是 primary visual source of truth。
 
-The required workflow is:
+必需 workflow 是：
 
 image generation first
 deep image analysis second
 implementation third
 
-If the task is mainly visual, this order is mandatory.
+如果任务主要是视觉任务，此顺序是强制的。
 
 ---
 
-## 1. ACTIVE BASELINE CONFIGURATION
+## 1. Active Baseline Configuration
 
 - DESIGN_VARIANCE: 8
   `(1 = rigid / conventional, 10 = highly art-directed / asymmetric)`
@@ -116,52 +116,52 @@ If the task is mainly visual, this order is mandatory.
 - UI_SIMPLICITY_DISCIPLINE: 9
   `(1 = willing to add many micro-elements, 10 = aggressively reduce clutter and unnecessary UI chrome)`
 
-AI Instruction:
-Use these as defaults unless the user clearly wants something else.
-Adapt them to the prompt.
+AI Instruction：
+除非用户明确想要其他方向，否则把这些作为默认值。
+根据 prompt 调整它们。
 
-Interpretation:
-- If the user says “clean”, reduce density and increase clarity.
-- If the user says “crazy creative”, increase variance and art direction.
-- If the user says “premium SaaS”, keep clarity high and art direction controlled.
-- If the user says “editorial”, allow stronger type and more asymmetry.
-- Keep sections breathable.
-- Prefer readability over squeezing too much into one image.
-- In Codex, bias strongly toward larger, more analyzable section images.
-- If more images would improve extraction quality, generate more images.
-- Do not be lazy with image count.
-- Default away from nested containers, excessive pills, tiny labels, and dashboard clutter.
-
----
-
-## 2. MANDATORY IMAGE-FIRST RULE
-
-For website design requests where visual quality matters, image generation is mandatory first.
-
-This means:
-1. generate the design image or image set yourself first
-2. deeply inspect and analyze the generated image(s)
-3. extract the design system from them
-4. implement the frontend only after that
-
-Do not:
-- start with freeform coding
-- skip straight to implementation
-- describe a website without first generating the visual reference when generation is available
-- rely on memory of “good frontend taste” instead of producing the actual reference
-
-The image is the design source.
-The code is the translation layer.
+Interpretation：
+- 如果用户说 “clean”，降低 density 并提高 clarity。
+- 如果用户说 “crazy creative”，提高 variance 和 art direction。
+- 如果用户说 “premium SaaS”，保持 clarity 高、art direction 受控。
+- 如果用户说 “editorial”，允许更强 type 和更多 asymmetry。
+- 保持 sections breathable。
+- 优先保证 readability，不要把过多内容挤进一张 image。
+- 在 Codex 中，强烈偏向更大、更可分析的 section images。
+- 如果更多 images 能改善 extraction quality，就生成更多 images。
+- 不要在 image count 上偷懒。
+- 默认避开 nested containers、过量 pills、tiny labels 和 dashboard clutter。
 
 ---
 
-## 3. GENERATE ENOUGH IMAGES RULE
+## 2. Mandatory Image-first Rule
 
-Generate enough images to make the design truly readable and extractable.
+对于视觉质量重要的 website design requests，必须先进行 image generation。
 
-Do not be lazy with image count.
+这意味着：
+1. 先自行生成 design image 或 image set
+2. 深入 inspect 和 analyze generated image(s)
+3. 从中提取 design system
+4. 之后才实现 frontend
 
-If more images would improve:
+不要：
+- 从 freeform coding 开始
+- 直接跳到 implementation
+- 在 generation 可用时，不先生成 visual reference 就描述网站
+- 依赖对 “good frontend taste” 的记忆，而不是产出实际 reference
+
+Image 是 design source。
+Code 是 translation layer。
+
+---
+
+## 3. Generate Enough Images Rule
+
+生成足够 images，让 design 真正 readable 且 extractable。
+
+不要在 image count 上偷懒。
+
+如果更多 images 能改善：
 - text readability
 - typography extraction
 - spacing analysis
@@ -173,76 +173,76 @@ If more images would improve:
 - responsive understanding
 - section clarity
 
-then generate more images.
+那就生成更多 images。
 
-Strong rule:
-- it is better to generate too many clear images than too few compressed images
-- it is better to generate one clear image per section than one unreadable board for the whole site
-- it is better to create an extra detail image than to guess details later
+强规则：
+- 生成偏多的清晰 images，胜过生成偏少的压缩 images
+- 每个 section 生成一张清晰 image，胜过为整站生成一张不可读 board
+- 创建额外 detail image，胜过稍后猜测细节
 
-Never reduce image count just for convenience if that harms quality.
-
----
-
-## 4. CODEX-SPECIFIC SECTION IMAGE RULE
-
-Inside Codex, do not compress too many website sections into one single image if that would make the text, spacing, buttons, or layout details too small to analyze properly.
-
-In Codex, prefer separate large images per section.
-
-Default rule inside Codex:
-- 1 section requested → generate 1 image
-- 2 sections requested → generate 2 images
-- 3 sections requested → generate 3 images
-- 4 sections requested → generate 4 images
-- 5 sections requested → generate 5 images
-- 6 sections requested → generate 6 images
-- 7 sections requested → generate 7 images
-- 8 sections requested → generate 8 images
-- 9 sections requested → generate 9 images
-- 10 sections requested → generate 10 images
-- and so on when reasonable
-
-This is preferred because:
-- text stays readable
-- typography becomes analyzable
-- spacing stays visible
-- button details stay visible
-- layout proportions stay visible
-- extraction quality becomes much better
-- implementation becomes more faithful
-
-Do not default to:
-- one giant multi-column collage
-- one long compressed board with tiny unreadable text
-- one image containing many sections if that reduces extraction quality
-
-If necessary, generate more images rather than shrinking everything.
-
-Outside Codex, this skill may still allow more compact multi-section composition when appropriate.
-Inside Codex, prioritize section clarity and extraction accuracy.
+如果会损害质量，不要为了方便而减少 image count。
 
 ---
 
-## 5. DO NOT CROP OLD IMAGES RULE
+## 4. Codex-specific Section Image Rule
 
-When a section needs a dedicated image or a closer detail view, do not simply crop, cut out, zoom into, or slice it from a previously generated larger image.
+在 Codex 内，如果把过多 website sections 压进单张 image 会让 text、spacing、buttons 或 layout details 小到无法正确分析，就不要这样做。
 
-Do not:
-- crop a hero out of a full-page board
-- crop a pricing area out of a larger composition
-- crop tiny cards out of a multi-section image
-- rely on rough cutouts from existing images
-- use extracted image fragments as the main source for implementation if they distort spacing, proportions, or typography
+在 Codex 中，优先为每个 section 生成单独的大图。
 
-Instead:
-- generate a fresh new image for that section
-- generate a fresh new detail image for that section
-- keep the same design language, palette, typography mood, and component family
-- make the new image specifically optimized for readability and extraction
+Codex 内的默认规则：
+- 请求 1 个 section → 生成 1 张 image
+- 请求 2 个 sections → 生成 2 张 images
+- 请求 3 个 sections → 生成 3 张 images
+- 请求 4 个 sections → 生成 4 张 images
+- 请求 5 个 sections → 生成 5 张 images
+- 请求 6 个 sections → 生成 6 张 images
+- 请求 7 个 sections → 生成 7 张 images
+- 请求 8 个 sections → 生成 8 张 images
+- 请求 9 个 sections → 生成 9 张 images
+- 请求 10 个 sections → 生成 10 张 images
+- 合理时以此类推
 
-Reason:
-cropped images often destroy:
+这样做更好，因为：
+- text 保持 readable
+- typography 变得 analyzable
+- spacing 保持 visible
+- button details 保持 visible
+- layout proportions 保持 visible
+- extraction quality 显著提升
+- implementation 更 faithful
+
+不要默认使用：
+- 一张巨大的 multi-column collage
+- 一张带有细小不可读 text 的长压缩 board
+- 一张包含许多 sections、但会降低 extraction quality 的 image
+
+必要时生成更多 images，而不是把所有东西缩小。
+
+在 Codex 之外，此 skill 在适当时仍可允许更紧凑的 multi-section composition。
+在 Codex 内，优先 section clarity 和 extraction accuracy。
+
+---
+
+## 5. Do Not Crop Old Images Rule
+
+当某个 section 需要 dedicated image 或 closer detail view 时，不要简单地从先前生成的大图中 crop、cut out、zoom into 或 slice。
+
+不要：
+- 从 full-page board 中 crop 出 hero
+- 从更大的 composition 中 crop 出 pricing area
+- 从 multi-section image 中 crop 出 tiny cards
+- 依赖 existing images 的粗糙 cutouts
+- 如果 extracted image fragments 会扭曲 spacing、proportions 或 typography，不要把它们作为 implementation 的 main source
+
+改为：
+- 为该 section 生成一张 fresh new image
+- 为该 section 生成一张 fresh new detail image
+- 保持相同 design language、palette、typography mood 和 component family
+- 让新 image 专门为 readability 和 extraction 优化
+
+原因：
+cropped images 往往会破坏：
 - spacing accuracy
 - type scale relationships
 - clean margins
@@ -251,88 +251,88 @@ cropped images often destroy:
 - section balance
 - overall implementation fidelity
 
-Fresh section-specific generation is strongly preferred over cropping.
+强烈优先 fresh section-specific generation，而不是 cropping。
 
 ---
 
-## 6. FRESH RE-GENERATION RULE
+## 6. Fresh Re-generation Rule
 
-If a section or detail is not clear enough, generate it again as a new standalone image.
+如果某个 section 或 detail 不够清晰，就再次生成，作为新的 standalone image。
 
-This standalone regeneration should:
-- preserve the same visual language as the original overall design
-- keep the same palette
-- keep the same typography mood
-- keep the same button style
-- keep the same radius logic
-- keep the same image treatment
-- keep the same overall brand world
+这个 standalone regeneration 应该：
+- 保留与原 overall design 相同的 visual language
+- 保持相同 palette
+- 保持相同 typography mood
+- 保持相同 button style
+- 保持相同 radius logic
+- 保持相同 image treatment
+- 保持相同 overall brand world
 
-But it should also:
-- make text larger and more readable
-- make spacing more visible
-- make buttons easier to inspect
-- make component structure easier to analyze
-- make layout proportions clearer
-- make the section cleaner if the previous render was too busy
+但它也应该：
+- 让 text 更大、更 readable
+- 让 spacing 更 visible
+- 让 buttons 更容易 inspect
+- 让 component structure 更容易 analyze
+- 让 layout proportions 更清晰
+- 如果上一次 render 太 busy，让 section 更 clean
 
-This is not a different design.
-It is a cleaner, more analyzable section-specific render of the same design system.
+这不是另一个 design。
+它是同一 design system 下更 clean、更 analyzable 的 section-specific render。
 
 ---
 
-## 7. OPTIONAL DETAIL / EXTRACTION IMAGE RULE
+## 7. Optional Detail / Extraction Image Rule
 
-If a section image still does not expose the necessary detail clearly enough, generate an additional detail image for that same section.
+如果某个 section image 仍未足够清晰地暴露必要 detail，就为同一 section 生成额外 detail image。
 
-Examples of useful secondary images:
-- a closer hero render to read headline, subheadline, CTA, and typography
-- a detail image for pricing cards
-- a closer render for testimonials
-- a closer render for navbar / header treatment
-- a closer render for feature cards or UI panels
-- a closer render for footer or CTA section
-- a refined variation of the first generated image that makes the section more extractable
-- a cleaner re-generation of the same section with larger text for extraction
-- an image focused mainly on typography and spacing instead of the full composition
+有用 secondary images 的例子：
+- 更近的 hero render，用于读取 headline、subheadline、CTA 和 typography
+- pricing cards 的 detail image
+- testimonials 的 closer render
+- navbar / header treatment 的 closer render
+- feature cards 或 UI panels 的 closer render
+- footer 或 CTA section 的 closer render
+- 第一次 generated image 的 refined variation，让 section 更 extractable
+- 同一 section 的 cleaner re-generation，使用更大 text 以便 extraction
+- 主要聚焦 typography 和 spacing，而非 full composition 的 image
 
-These additional images exist to improve analysis and extraction quality.
+这些 additional images 用于改善 analysis 和 extraction quality。
 
-Use them when needed for:
+在需要以下能力时使用它们：
 - readable text
-- clearer button states
-- tighter spacing analysis
-- card and component inspection
-- clearer color extraction
-- better typography observation
-- more precise implementation
+- 更清晰的 button states
+- 更精确的 spacing analysis
+- card 和 component inspection
+- 更清晰的 color extraction
+- 更好的 typography observation
+- 更精确的 implementation
 
-Do not hesitate to create a second or third extraction-oriented image for a section if the first image is too broad.
+如果第一张 image 太宽泛，不要犹豫，为该 section 创建第二张或第三张 extraction-oriented image。
 
 ---
 
-## 8. CLEAN ANALYSIS STANDARD
+## 8. Clean Analysis Standard
 
-Analyze cleanly and systematically.
+干净、系统地 analyze。
 
-Do not do vague vibe-only analysis.
-Do not jump too fast from image to code.
+不要只做模糊的 vibe-only analysis。
+不要太快从 image 跳到 code。
 
-For every generated section image, inspect cleanly:
-- what the section is
-- what the visual priority is
-- what text is readable
-- what typography relationships are visible
-- what spacing relationships are visible
-- what buttons and controls are visible
-- what card or block logic is visible
-- what colors dominate
-- what structural rhythm is visible
-- what details are still unclear
+对每张 generated section image，干净地 inspect：
+- section 是什么
+- visual priority 是什么
+- 哪些 text readable
+- 哪些 typography relationships 可见
+- 哪些 spacing relationships 可见
+- 哪些 buttons 和 controls 可见
+- 哪些 card 或 block logic 可见
+- 哪些 colors 占主导
+- 哪些 structural rhythm 可见
+- 哪些 details 仍不清楚
 
-If something is unclear, generate another image before coding.
+如果某些内容不清楚，在 coding 前先生成另一张 image。
 
-The analysis should feel:
+analysis 应该感觉：
 - calm
 - structured
 - exact
@@ -342,15 +342,15 @@ The analysis should feel:
 
 ---
 
-## 9. DEEP IMAGE ANALYSIS REQUIREMENT
+## 9. Deep Image Analysis Requirement
 
-Before implementing anything, deeply analyze the generated image(s).
+在实现任何东西之前，深入分析 generated image(s)。
 
-Do not just glance at them.
-Treat them like a design specification.
+不要只是扫一眼。
+把它们当作 design specification。
 
-Carefully inspect and extract:
-- exact visible text where readable
+仔细 inspect 并 extract：
+- readable 处的 exact visible text
 - hero headline wording
 - subheadline wording
 - CTA wording
@@ -363,14 +363,14 @@ Carefully inspect and extract:
 - alignment logic
 - section spacing
 - internal spacing
-- padding and gutters
-- card dimensions and rhythm
+- padding 和 gutters
+- card dimensions 和 rhythm
 - border radius logic
 - stroke / divider usage
 - button shapes
 - button hierarchy
 - button padding
-- hover-implied styling if visually suggested
+- 如果视觉上有暗示，提取 hover-implied styling
 - color palette
 - accent colors
 - background treatment
@@ -382,84 +382,84 @@ Carefully inspect and extract:
 - section ordering
 - section density
 - visual rhythm
-- repeated motifs that define the design language
+- 定义 design language 的 repeated motifs
 
-Your goal is to understand exactly why the generated website looks strong.
+你的目标是精确理解 generated website 为什么显得强。
 
-Only after this deep analysis should you implement the frontend.
-
----
-
-## 10. IMAGE-FIRST CODEX WEBSITE WORKFLOW
-
-When this skill is used inside Codex or any environment that supports image generation plus implementation, default to an image-first workflow for website design tasks.
-
-Preferred execution order:
-1. infer the section count
-2. generate section reference images first
-3. generate extra detail/extraction images where needed
-4. if needed, regenerate unclear sections as fresh standalone images
-5. deeply inspect all generated images
-6. extract text, typography, spacing, colors, layout, buttons, and component logic
-7. implement the website to match the generated design as closely as reasonably possible
-8. only invent missing details when the images leave something ambiguous
-
-For visually important frontend tasks, do not begin by freely designing in code.
-Begin by creating the visual references first whenever image generation is available.
-
-The images are the primary art-direction source.
-The code is the implementation layer.
+只有在完成这种 deep analysis 后，才实现 frontend。
 
 ---
 
-## 11. WHEN TO TRIGGER IMAGE GENERATION FIRST
+## 10. Image-first Codex Website Workflow
 
-If image generation is available, strongly prefer generating image references first when the request is mainly about visual frontend quality.
+当此 skill 在 Codex 或任何支持 image generation + implementation 的环境中使用时，website design tasks 默认采用 image-first workflow。
 
-Trigger image-first workflow when the user asks for:
-- a beautiful hero section
-- a premium landing page
-- a creative website
-- a redesign
-- a more modern website
-- a more aesthetic interface
-- a polished marketing page
-- a portfolio site
-- a startup site where visual taste matters heavily
-- a multi-section website concept
-- anything described mainly in visual terms
+首选执行顺序：
+1. 推断 section count
+2. 先生成 section reference images
+3. 在需要处生成额外 detail/extraction images
+4. 如有需要，把不清晰 sections 重新生成为 fresh standalone images
+5. 深入 inspect 所有 generated images
+6. 提取 text、typography、spacing、colors、layout、buttons 和 component logic
+7. 实现网站，使其在合理范围内尽量匹配 generated design
+8. 只有当 images 留下模糊处时，才补足缺失细节
 
-Direct-code first is more acceptable only when:
-- the task is mostly technical
-- the user wants a bug fix
-- the user already provides a precise design system
-- the task is mainly structural rather than visual
+对视觉重要的 frontend tasks，不要从 code 中自由设计开始。
+只要 image generation 可用，就先创建 visual references。
+
+Images 是 primary art-direction source。
+Code 是 implementation layer。
 
 ---
 
-## 12. THE COMBINATORIAL VARIATION ENGINE
+## 11. When to Trigger Image Generation First
 
-To avoid repetitive AI-looking output, internally choose a strong combination and commit to it consistently.
+如果 image generation 可用，当请求主要关于 visual frontend quality 时，强烈优先先生成 image references。
 
-Do not mash everything into chaos.
-Pick a coherent visual direction and execute it clearly.
+当用户要求以下内容时，触发 image-first workflow：
+- beautiful hero section
+- premium landing page
+- creative website
+- redesign
+- more modern website
+- more aesthetic interface
+- polished marketing page
+- portfolio site
+- visual taste 很重要的 startup site
+- multi-section website concept
+- 任何主要以视觉术语描述的内容
+
+只有在以下情况中，direct-code first 才更可接受：
+- 任务主要是 technical
+- 用户想要 bug fix
+- 用户已经提供 precise design system
+- 任务主要是 structural，而不是 visual
+
+---
+
+## 12. The Combinatorial Variation Engine
+
+为避免重复的 AI-looking output，在内部选择一组强组合，并持续一致地执行它。
+
+不要把所有东西混成混乱。
+选择一个 coherent visual direction，并清晰执行。
 
 ### Theme Paradigm
-Choose 1:
+选择 1 个：
 1. Pristine Light Mode
 2. Deep Dark Mode
 3. Bold Studio Solid
 4. Quiet Premium Neutral
 
 ### Background Character
-Choose 1:
+选择 1 个：
 1. subtle technical grid / dotted field
 2. pure solid field with soft ambient gradient depth
 3. full-bleed cinematic imagery
 4. tactile textured surface feel
 
 ### Typography Character
-Choose 1:
+选择 1 个：
 1. clean grotesk
 2. refined grotesk
 3. expressive display
@@ -468,7 +468,7 @@ Choose 1:
 6. Swiss rational hierarchy
 
 ### Hero Architecture
-Choose 1:
+选择 1 个：
 1. cinematic centered minimalist
 2. asymmetric split hero
 3. floating polaroid scatter
@@ -477,7 +477,7 @@ Choose 1:
 6. massive image-first hero with restrained text
 
 ### Section System
-Choose 1:
+选择 1 个：
 1. modular bento rhythm
 2. alternating editorial blocks
 3. poster-like stacked storytelling
@@ -486,7 +486,7 @@ Choose 1:
 6. asymmetric premium marketing flow
 
 ### Signature Component Set
-Choose exactly 4 unique components:
+准确选择 4 个 unique components：
 - diagonal staggered square masonry
 - 3D cascading card deck
 - hover-accordion slice layout
@@ -500,7 +500,7 @@ Choose exactly 4 unique components:
 - layered image crop frames
 
 ### Motion-Implied Language
-Choose exactly 2:
+准确选择 2 个：
 - scrubbing text reveal energy
 - pinned narrative section energy
 - staggered float-up energy
@@ -508,14 +508,14 @@ Choose exactly 2:
 - smooth accordion expansion energy
 - cinematic fade-through energy
 
-These are not coding instructions.
-They are visual-direction cues the design should imply.
+这些不是 coding instructions。
+它们是 design 应该暗示出的 visual-direction cues。
 
 ---
 
-## 13. WEBSITE REFERENCE RULE
+## 13. Website Reference Rule
 
-Every generated website section image must clearly communicate:
+每张 generated website section image 都必须清晰传达：
 - layout
 - hierarchy
 - spacing
@@ -525,174 +525,174 @@ Every generated website section image must clearly communicate:
 - image treatment
 - overall design system
 
-A developer or coding model should be able to look at the image(s) and understand how to build the website.
+developer 或 coding model 应能看着这些 image(s)，理解如何构建网站。
 
-Do not produce vague abstract artwork when the request is for frontend.
-Default to real section comps.
+当请求是 frontend 时，不要产出模糊 abstract artwork。
+默认产出真实 section comps。
 
 ---
 
-## 14. HERO MINIMALISM RULES
+## 14. Hero Minimalism Rules
 
-The hero must feel cinematic, clear, and intentional.
+hero 必须感觉 cinematic、clear、intentional。
 
 ### Absolute Hero Rules
-- the hero must feel like a strong opening scene
-- keep the hero composition very clean
-- do not overcrowd the first viewport
-- the main headline must feel short and powerful
-- the hero headline should ideally stay within 1–3 lines
-- do not allow long wrapped hero headlines
-- if the headline starts becoming too long, reduce words instead of forcing more lines
-- keep supporting text concise
-- prioritize negative space and contrast
-- avoid stuffing the hero with pills, fake stats, badges, tiny logos, and nonsense detail
-- avoid extra micro-labels, control tags, system markers, or decorative utility text that does not meaningfully help the hero
-- keep the first screen readable on a small laptop without feeling overfilled
+- hero 必须像强有力的 opening scene
+- 保持 hero composition 非常干净
+- 不要让 first viewport 过度拥挤
+- main headline 必须短而有力
+- hero headline 理想情况下保持在 1-3 行内
+- 不允许冗长换行的 hero headlines
+- 如果 headline 开始变得太长，减少文字，而不是强行增加行数
+- supporting text 保持 concise
+- 优先 negative space 和 contrast
+- 避免把 pills、fake stats、badges、tiny logos 和无意义 detail 塞进 hero
+- 避免额外 micro-labels、control tags、system markers，或对 hero 没有实质帮助的 decorative utility text
+- first screen 在小笔记本上保持 readable，且不要感觉过满
 
 ### Hero Cleanliness Rule
-The hero should feel calm, premium, and immediately readable.
+hero 应该感觉 calm、premium，并且立即 readable。
 
 Do:
-- use a strong single focal point
-- keep the hierarchy obvious
-- let the hero breathe
-- keep the visual system tight and controlled
-- make the first screen feel polished and deliberate
-- keep the amount of visible content restrained enough that the hero still feels elegant on a smaller desktop viewport
+- 使用强 single focal point
+- 保持 hierarchy obvious
+- 让 hero breathe
+- 保持 visual system 紧凑且受控
+- 让 first screen 感觉 polished 且 deliberate
+- 控制 visible content 数量，让 hero 在较小 desktop viewport 上依然 elegant
 
 Do not:
-- clutter the hero
-- create multiple competing focal points
-- overfill the hero with cards or micro-details
-- make the hero noisy or busy
-- add unnecessary labels like “00 orchestration layer” or similar pseudo-system text if it does not add real value
+- clutter hero
+- 创建多个 competing focal points
+- 用 cards 或 micro-details 填满 hero
+- 让 hero 变得 noisy 或 busy
+- 如果没有真实价值，不要添加 “00 orchestration layer” 这类不必要 labels 或类似 pseudo-system text
 
 ### Headline Rule
-Strong preference:
-- 1 line if possible
-- 2 lines very good
-- 3 lines maximum in normal cases
+强偏好：
+- 能 1 行则 1 行
+- 2 行很好
+- 常规情况下最多 3 行
 
-Avoid:
-- 4+ line hero headlines
+避免：
+- 4+ 行 hero headlines
 - paragraph-like hero copy
-- weak headline-to-subheadline contrast
+- 弱 headline-to-subheadline contrast
 
 ---
 
-## 15. RESPONSIVE FIRST-VIEW RULE
+## 15. Responsive First-view Rule
 
-The first visible website screen must feel usable and clean on a small laptop.
+第一个可见 website screen 在小笔记本上必须感觉 usable 且 clean。
 
-This means:
-- do not overload the above-the-fold area
-- do not force too many content blocks into the hero viewport
-- do not rely on giant nested panels that consume space without improving clarity
-- make the first section feel intentionally composed, not overstuffed
+这意味着：
+- 不要 overload above-the-fold area
+- 不要把过多 content blocks 强塞进 hero viewport
+- 不要依赖消耗空间却不提升 clarity 的巨大 nested panels
+- 让 first section 感觉 intentionally composed，而不是 overstuffed
 
-The hero and immediate first-view area should:
-- show the main message clearly
-- show the primary CTA clearly
-- show the key visual clearly
-- avoid trying to expose the entire product in one crowded first view
+hero 和 immediate first-view area 应该：
+- 清晰展示 main message
+- 清晰展示 primary CTA
+- 清晰展示 key visual
+- 避免试图在一个拥挤 first view 中暴露整个 product
 
-A smaller laptop should still see:
-- a clear headline
+较小笔记本上仍应看见：
+- 清晰 headline
 - readable supporting text
 - clean spacing
-- a visible CTA
-- a believable, balanced visual focal point
+- visible CTA
+- believable、balanced 的 visual focal point
 
 ---
 
-## 16. ANTI-NESTED-BOX RULE
+## 16. Anti-nested-box Rule
 
-Do not default to box-in-box-in-box layouts.
+不要默认使用 box-in-box-in-box layouts。
 
-Avoid:
-- giant rounded section containers wrapping everything
-- cards inside larger cards inside outer cards
-- dashboard-like compartment stacking for no reason
-- nested boxed UI that makes the layout feel trapped
-- sections that are just one big bordered panel containing more bordered panels containing more bordered panels
+避免：
+- 包住一切的巨大 rounded section containers
+- larger cards 里的 cards，再放进 outer cards
+- 没有理由的 dashboard-like compartment stacking
+- 让 layout 感觉被困住的 nested boxed UI
+- 只是一个 big bordered panel，里面又包含更多 bordered panels 的 sections
 
-Use boxes only when they have a clear purpose.
+只有当 boxes 有明确目的时才使用它们。
 
-Prefer:
+优先：
 - open layouts
-- clearer whitespace
-- fewer but stronger containers
-- flatter hierarchy where appropriate
-- direct alignment and spacing instead of excessive enclosure
-- one primary framing move rather than many layered frames
+- 更清晰的 whitespace
+- 更少但更强的 containers
+- 在适当处使用 flatter hierarchy
+- 用 direct alignment 和 spacing，而不是 excessive enclosure
+- 一个 primary framing move，而不是许多 layered frames
 
-A section should not feel like a prison of containers.
-It should feel designed, open, and intentional.
+section 不应感觉像 containers 的牢笼。
+它应该感觉 designed、open、intentional。
 
 ---
 
-## 17. REDUCE MICRO-UI CLUTTER RULE
+## 17. Reduce Micro-UI Clutter Rule
 
-Do not clutter the design with tiny UI extras that do not materially improve clarity.
+不要用无法实质改善 clarity 的 tiny UI extras 污染 design。
 
-Avoid:
-- unnecessary pills
+避免：
+- 不必要的 pills
 - pseudo-system markers
 - fake control labels
 - decorative code-like tags
-- meaningless small metadata rows
+- 无意义的小 metadata rows
 - filler chips
-- tiny badges everywhere
+- 到处都是 tiny badges
 - fake dashboard jargon
-- overdesigned labels that distract from the main layout
+- 分散 main layout 注意力的 overdesigned labels
 
-Examples of things to avoid unless they are truly necessary:
+除非真正必要，否则避免这些东西：
 - “00 orchestration layer”
 - tiny technical status pills
 - decorative runtime markers
 - overly specific pseudo-enterprise microcopy
 - filler operator/control-room labels that exist only to look complex
 
-Prefer:
-- cleaner headings
-- fewer labels
-- real hierarchy
-- clearer spacing
-- simpler supporting text
-- stronger typography instead of decorative clutter
+优先：
+- 更 clean 的 headings
+- 更少 labels
+- 真实 hierarchy
+- 更清晰 spacing
+- 更简单 supporting text
+- 用更强 typography 取代 decorative clutter
 
 ---
 
-## 18. SECTION IMAGE GENERATION RULE
+## 18. Section Image Generation Rule
 
-Inside Codex, treat each section as its own analyzable unit.
+在 Codex 内，把每个 section 都视为独立的 analyzable unit。
 
-If the user asks for:
-- a hero only → generate 1 hero image
-- 4 sections → generate 4 section images
-- 8 sections → generate 8 section images
-- 12 sections → generate 12 section images when reasonable
+如果用户要求：
+- 只有 hero → 生成 1 张 hero image
+- 4 个 sections → 生成 4 张 section images
+- 8 个 sections → 生成 8 张 section images
+- 12 个 sections → 合理时生成 12 张 section images
 
-General preference:
-- one section = one primary image
-- one complex section = one primary image + one or more optional detail images
-- one unclear section = regenerate it again as a fresh clean standalone image
+一般偏好：
+- 一个 section = 一张 primary image
+- 一个 complex section = 一张 primary image + 一个或多个 optional detail images
+- 一个 unclear section = 重新生成为 fresh clean standalone image
 
-This section-first generation rule exists to prevent:
+此 section-first generation rule 用于防止：
 - tiny unreadable text
 - tiny buttons
 - unclear spacing
 - weak extraction quality
-- lossy design-to-code translation
+- 有损 design-to-code translation
 
 ---
 
-## 19. WEBSITE IMAGE SYSTEM RULE
+## 19. Website Image System Rule
 
-When generating a website design, think not only about the overall site but also about the internal image system used inside the website itself.
+生成 website design 时，不只考虑 overall site，也要考虑网站内部使用的 internal image system。
 
-This may include:
+这可能包括：
 - hero media
 - section images
 - editorial crops
@@ -702,52 +702,52 @@ This may include:
 - gallery-like blocks
 - supporting visual panels
 
-If the site benefits from multiple images, include multiple image moments across the website.
+如果网站能从 multiple images 中受益，就在全站包含多个 image moments。
 
-Rules:
-- image usage must feel deliberate
-- image count should match the complexity of the site
-- do not rely on one single hero image if many sections need visual support
-- keep image usage balanced and clean
-- all image moments must still feel like one coherent design world
+规则：
+- image usage 必须感觉 deliberate
+- image count 应匹配网站复杂度
+- 如果许多 sections 需要 visual support，不要依赖单一 hero image
+- 保持 image usage balanced 且 clean
+- 所有 image moments 仍必须感觉属于同一个 coherent design world
 
 ---
 
-## 20. FIXED MEDIA FRAME RULE
+## 20. Fixed Media Frame Rule
 
-Images inside the website should usually sit inside clear, controlled, implementation-friendly frames.
+网站内的 images 通常应放在清晰、受控、implementation-friendly 的 frames 中。
 
-Prefer:
+优先：
 - fixed-aspect media blocks
 - clearly framed image areas
 - repeatable media modules
 - consistent corner radius logic
-- stable visual proportions across similar sections
+- similar sections 之间稳定的 visual proportions
 
-Examples:
-- hero image in a clearly bounded large frame
-- editorial crops using repeatable portrait or landscape ratios
-- card images with consistent proportions
-- gallery blocks with controlled aspect ratios
-- product images placed in stable intentional containers
+示例：
+- 放在 clearly bounded large frame 中的 hero image
+- 使用 repeatable portrait 或 landscape ratios 的 editorial crops
+- proportions 一致的 card images
+- aspect ratios 受控的 gallery blocks
+- 放在 stable intentional containers 中的 product images
 
-Avoid:
-- random image sizes with no system
-- inconsistent proportions across similar modules
+避免：
+- 没有系统的 random image sizes
+- similar modules 之间 inconsistent proportions
 - messy scaling
-- uncontrolled collage chaos unless explicitly requested
+- 除非明确要求，否则避免 uncontrolled collage chaos
 
-The goal is:
+目标是：
 - visually strong images
-- inside a system a frontend model can realistically rebuild
+- 同时处在 frontend model 能实际 rebuild 的系统内
 
 ---
 
-## 21. TEXT EXTRACTION RULE
+## 21. Text Extraction Rule
 
-When text is readable in the generated section image, extract it and use it.
+当 generated section image 中的 text readable 时，提取并使用它。
 
-Especially inspect and extract:
+尤其 inspect 并 extract：
 - hero headline
 - hero subheadline
 - CTA labels
@@ -758,21 +758,21 @@ Especially inspect and extract:
 - navbar labels
 - footer labels if relevant
 
-If the text is too small to extract reliably:
-- generate a closer extraction image
-- or generate a second clearer version of that section
+如果 text 太小，无法可靠 extract：
+- 生成 closer extraction image
+- 或生成该 section 的第二个更清晰版本
 
-Do not ignore text extraction.
-The visible text is part of the design system and should influence implementation.
+不要忽略 text extraction。
+visible text 是 design system 的一部分，应该影响 implementation。
 
 ---
 
-## 22. TYPOGRAPHY EXTRACTION RULE
+## 22. Typography Extraction Rule
 
-Do not only notice that typography “looks nice”.
-Analyze it properly.
+不要只注意到 typography “looks nice”。
+要正确 analyze 它。
 
-Extract and observe:
+Extract 并 observe：
 - size relationships
 - weight relationships
 - line count
@@ -782,41 +782,41 @@ Extract and observe:
 - display vs body contrast
 - section heading rhythm
 - CTA text scale
-- whether the design uses calm or aggressive type
+- design 使用 calm 还是 aggressive type
 
-Use these findings during implementation.
-Do not flatten typography into a generic coded hierarchy.
+在 implementation 中使用这些 findings。
+不要把 typography 压平成 generic coded hierarchy。
 
 ---
 
-## 23. SPACING EXTRACTION RULE
+## 23. Spacing Extraction Rule
 
-Analyze spacing deliberately.
+有意识地 analyze spacing。
 
-Inspect:
-- distance between headline and subheadline
-- distance between text and buttons
-- distance between cards
-- section top and bottom spacing
+检查：
+- headline 和 subheadline 之间的距离
+- text 和 buttons 之间的距离
+- cards 之间的距离
+- section top 和 bottom spacing
 - side gutters
 - card padding
 - image-to-text distance
 - navbar spacing
 - CTA block spacing
-- overall cadence across sections
+- sections 之间的 overall cadence
 
-The goal is not exact pixel OCR.
-The goal is faithful spacing logic.
+目标不是 exact pixel OCR。
+目标是 faithful spacing logic。
 
-Do not collapse the implementation into generic tight spacing if the generated design is more generous.
+如果 generated design 更 generous，不要把 implementation 压缩成 generic tight spacing。
 
 ---
 
-## 24. BUTTON / COMPONENT EXTRACTION RULE
+## 24. Button / Component Extraction Rule
 
-Buttons and components must be analyzed, not guessed.
+Buttons 和 components 必须被 analyzed，而不是 guessed。
 
-Inspect:
+检查：
 - button size
 - button shape
 - button radius
@@ -832,15 +832,15 @@ Inspect:
 - pill logic
 - input styling if present
 
-If button or card detail is too small, generate a closer image.
+如果 button 或 card detail 太小，就生成 closer image。
 
 ---
 
-## 25. COLOR EXTRACTION RULE
+## 25. Color Extraction Rule
 
-Actively analyze and extract colors from the generated image(s).
+主动从 generated image(s) 中 analyze 并 extract colors。
 
-Inspect:
+检查：
 - background color
 - panel colors
 - accent colors
@@ -851,18 +851,18 @@ Inspect:
 - image tint / grade
 - gradient restraint or intensity
 
-The implemented website should preserve the original color logic as closely as reasonably possible.
+implemented website 应在合理范围内尽可能保留 original color logic。
 
-Do not replace a carefully designed palette with generic default web colors.
+不要用 generic default web colors 替换精心设计的 palette。
 
 ---
 
-## 26. DESIGN-TO-CODE COPY DISCIPLINE
+## 26. Design-to-code Copy Discipline
 
-After generating and analyzing the reference image(s), implement the website in a copy-oriented way.
+生成并分析 reference image(s) 后，以 copy-oriented 方式实现网站。
 
-This means:
-- follow the references closely
+这意味着：
+- closely follow references
 - preserve layout logic
 - preserve spacing rhythm
 - preserve section ordering
@@ -871,86 +871,86 @@ This means:
 - preserve component style
 - preserve overall visual cleanliness
 
-Do not drift into a different design direction during implementation.
-Do not “improve” the design by replacing it with a generic coded layout.
+implementation 期间不要漂移到不同 design direction。
+不要用 generic coded layout 替换它来“改进” design。
 
-The goal is not:
+目标不是：
 - inspired by the image
 
-The goal is:
+目标是：
 - visually faithful to the image, translated into real frontend
 
 ---
 
-## 27. ANTI-DRIFT IMPLEMENTATION RULE
+## 27. Anti-drift Implementation Rule
 
-A common failure mode is design drift:
-the generated images look strong, but the coded result becomes generic.
+常见失败模式是 design drift：
+generated images 看起来很强，但 coded result 变得 generic。
 
-Strictly avoid that.
+严格避免这种情况。
 
-During implementation:
-- do not simplify into default templates
-- do not replace distinctive sections with generic rows
-- do not compress generous spacing into dense layout
-- do not replace strong typography with plain hierarchy
-- do not remove the page’s visual identity for convenience
-- do not merge section logic into repetitive patterns that were not present in the source images
-- do not reintroduce nested-box complexity that was intentionally removed during analysis
+implementation 期间：
+- 不要简化成 default templates
+- 不要用 generic rows 替换 distinctive sections
+- 不要把 generous spacing 压缩成 dense layout
+- 不要用 plain hierarchy 替换 strong typography
+- 不要为了方便移除页面的 visual identity
+- 不要把 section logic 合并成 source images 中不存在的 repetitive patterns
+- 不要重新引入 analysis 中刻意移除的 nested-box complexity
 
-The final coded result should still feel like the same website as the generated references.
+final coded result 仍应感觉与 generated references 是同一个网站。
 
 ---
 
-## 28. MISSING DETAIL RESOLUTION
+## 28. Missing Detail Resolution
 
-When implementing from images, some details may still be unclear.
+基于 images 实现时，某些 details 可能仍不清晰。
 
-Resolve ambiguity by following this order:
-1. preserve the visible design language
+按以下顺序解决 ambiguity：
+1. preserve visible design language
 2. preserve layout and spacing logic
 3. preserve component family
 4. preserve mood and polish level
-5. generate an extra detail image if needed
-6. regenerate the section as a fresh standalone image if needed
-7. only then choose the most implementation-friendly faithful version
+5. 如有需要，生成 extra detail image
+6. 如有需要，将该 section 重新生成为 fresh standalone image
+7. 只有在这之后，才选择最 implementation-friendly 的 faithful version
 
-Do not fill ambiguity with generic defaults too quickly.
+不要过快用 generic defaults 填补 ambiguity。
 
 ---
 
-## 29. ANTI-AI-SLOP RULES
+## 29. Anti-AI-Slop Rules
 
-Strictly avoid these patterns unless explicitly requested.
+除非明确要求，否则严格避免这些 patterns。
 
 ### Layout slop
-- one giant unreadable collage
-- endless centered sections
-- identical card rows repeated section after section
-- cloned left-text/right-image blocks
-- fake complexity without hierarchy
-- decorative empty space with no purpose
+- 一张巨大且不可读的 collage
+- 无尽 centered sections
+- section 接 section 重复 identical card rows
+- 克隆式 left-text/right-image blocks
+- 没有 hierarchy 的 fake complexity
+- 没有目的的 decorative empty space
 - cards-inside-cards-inside-cards
-- giant rounded wrapper sections around everything
-- overcompartmentalized dashboard framing
+- 包住一切的 giant rounded wrapper sections
+- 过度 compartmentalized 的 dashboard framing
 
 ### Visual slop
-- default purple/blue AI gradients
-- too many glowing edges
-- floating blobs everywhere
-- glassmorphism stacked without reason
-- random futuristic details with no structure
-- over-rendered noise that hides the layout
+- 默认 purple/blue AI gradients
+- 过多 glowing edges
+- 到处都是 floating blobs
+- 无理由堆叠 glassmorphism
+- 没有结构的 random futuristic details
+- 隐藏 layout 的 over-rendered noise
 
 ### Typography slop
 - giant heading + weak tiny subcopy
-- too many font moods
+- 过多 font moods
 - awkward line breaks
-- lazy all-caps everywhere
+- 到处 lazy all-caps
 - generic gradient headline tricks
 
 ### Content slop
-Avoid generic filler vibes like:
+避免这类 generic filler vibes：
 - unleash
 - elevate
 - revolutionize
@@ -958,52 +958,52 @@ Avoid generic filler vibes like:
 - seamless
 - transformative platform
 
-Avoid fake brand slop:
+避免 fake brand slop：
 - Acme
 - Nexus
 - Flowbit
 - Quantumly
 - NovaCore
 
-Avoid fake complexity slop:
+避免 fake complexity slop：
 - pseudo-enterprise control labels
 - decorative system markers
 - filler status microcopy
-- fake operator / runtime / orchestration jargon unless truly central to the brand
+- fake operator / runtime / orchestration jargon，除非它们确实是 brand 核心
 
 ### Density slop
 - over-packed sections
 - card overload
-- tiny spacing between major sections
+- major sections 之间 spacing 太小
 - visually exhausting walls of content
 
 ---
 
-## 30. TYPOGRAPHY-FIRST DISCIPLINE
+## 30. Typography-first Discipline
 
-Typography is a primary design material.
+Typography 是 primary design material。
 
-Always ensure:
+始终确保：
 - clear size contrast
 - obvious reading order
 - strong display moments
 - readable body text
 - concise copy
-- section headings that reinforce structure
+- 能强化 structure 的 section headings
 
-For editorial directions:
-- let typography shape composition
+对 editorial directions：
+- 让 typography shape composition
 
-For tech/product directions:
-- let typography communicate trust and precision
+对 tech/product directions：
+- 让 typography 传达 trust 和 precision
 
 ---
 
-## 31. SECTION RHYTHM RULE
+## 31. Section Rhythm Rule
 
-A high-end site does not feel like the same block repeated forever.
+high-end site 不应感觉像同一个 block 永远重复。
 
-Vary section rhythm across the page by changing:
+通过改变以下内容，让页面上的 section rhythm 有变化：
 - density
 - image-to-text ratio
 - alignment
@@ -1014,30 +1014,31 @@ Vary section rhythm across the page by changing:
 - visual tempo
 
 But:
-- keep the page coherent
-- keep spacing controlled
-- avoid random jumps
-- keep each section clean enough to analyze well
+- 保持 page coherent
+- 保持 spacing controlled
+- 避免 random jumps
+- 保持每个 section 足够 clean，以便良好 analyze
 
 ---
 
-## 32. DENSITY & SPACING DISCIPLINE
+## 32. Density & Spacing Discipline
 
-Do not make the website too dense.
+不要让 website 太 dense。
 
-The page should breathe.
+页面应该 breathe。
 
-Rules:
-- use even section spacing
-- keep major section gaps controlled and intentional
-- allow negative space to create calmness
-- avoid one section feeling cramped while the next feels empty
-- smaller sections should still have enough surrounding space
-- prefer analyzable generous spacing over compressed compositions
-- do not fill every available area with extra UI
-- let simplicity do part of the design work
+规则：
+规则：
+- 使用 even section spacing
+- 保持 major section gaps controlled 且 intentional
+- 允许 negative space 创造 calmness
+- 避免一个 section cramped、下一个 section empty
+- 较小 sections 也应有足够 surrounding space
+- 优先 analyzable generous spacing，而不是 compressed compositions
+- 不要用 extra UI 填满每个可用区域
+- 让 simplicity 承担部分 design work
 
-A premium website should feel:
+premium website 应该感觉：
 - open
 - composed
 - balanced
@@ -1053,7 +1054,7 @@ Not:
 
 ---
 
-## 33. DEFAULT SECTION PACKS
+## 33. Default Section Packs
 
 ### 4-section pack
 1. Hero
@@ -1085,13 +1086,13 @@ Not:
 11. FAQ
 12. CTA + footer
 
-In Codex, these should usually become section-by-section images, not one compressed sheet.
+在 Codex 中，它们通常应变成 section-by-section images，而不是一张 compressed sheet。
 
 ---
 
-## 34. MULTI-IMAGE CONSISTENCY RULE
+## 34. Multi-image Consistency Rule
 
-For multi-image websites, enforce:
+对 multi-image websites，强制：
 - same brand world
 - same type scale logic
 - same spacing discipline
@@ -1101,122 +1102,122 @@ For multi-image websites, enforce:
 - same tonal language
 - same component family
 
-Image 2, 3, or 8 must not drift into a different website.
+Image 2、3 或 8 不得漂移成另一个 website。
 
 ---
 
-## 35. CLARITY CHECK
+## 35. Clarity Check
 
-Before finalizing, verify internally:
+finalizing 前，在内部验证：
 
-1. Has the design been generated first?
-2. Have all generated images been deeply analyzed?
-3. Is the text readable enough?
-4. If not, were extra detail images created?
-5. Were enough images generated, or was the image count too lazy?
-6. Were unclear sections regenerated as fresh standalone images instead of being cropped?
-7. Is the hierarchy obvious?
-8. Is the hero clean enough?
-9. Is typography analyzed properly?
-10. Are spacing relationships understood properly?
-11. Are buttons and components extracted properly?
-12. Are colors analyzed properly?
-13. Is the design visually distinctive?
-14. Is it free of obvious AI tells?
-15. Can someone code from this faithfully?
-16. If multiple images exist, do they clearly belong together?
-17. Has Codex avoided compressing too many sections into one tiny image?
-18. Was the analysis clean, structured, and specific?
-19. Has unnecessary nested boxing been removed?
-20. Is the first screen still clean and readable on a small laptop?
-21. Have useless pills, labels, and fake technical micro-elements been reduced?
+1. design 是否已先生成？
+2. 所有 generated images 是否已被 deeply analyzed？
+3. text 是否足够 readable？
+4. 如果不是，是否创建了 extra detail images？
+5. 是否生成了足够 images，还是 image count 太 lazy？
+6. unclear sections 是否已重新生成为 fresh standalone images，而不是被 cropped？
+7. hierarchy 是否 obvious？
+8. hero 是否足够 clean？
+9. typography 是否已正确 analyze？
+10. spacing relationships 是否已正确理解？
+11. buttons 和 components 是否已正确 extract？
+12. colors 是否已正确 analyze？
+13. design 是否 visually distinctive？
+14. 是否没有明显 AI tells？
+15. 是否能据此 faithfully code？
+16. 如果存在 multiple images，它们是否明显属于同一套系统？
+17. Codex 是否避免把过多 sections 压缩进一张 tiny image？
+18. analysis 是否 clean、structured 且 specific？
+19. unnecessary nested boxing 是否已移除？
+20. first screen 在小笔记本上是否依然 clean 且 readable？
+21. useless pills、labels 和 fake technical micro-elements 是否已减少？
 
-If not, refine internally before output.
+如果不是，输出前先在内部 refine。
 
 ---
 
-## 36. RESPONSE BEHAVIOR
+## 36. Response Behavior
 
-When the user asks for a website design in an image-to-code workflow:
+当用户在 image-to-code workflow 中要求 website design 时：
 1. infer site type
 2. infer number of sections
-3. if image generation is available and visual quality is central, generate the design image(s) first
-4. inside Codex, prefer one large image per section
-5. generate additional detail/extraction images if text or components are too small
-6. generate more images whenever that improves readability or extraction quality
-7. do not be lazy with image count
-8. do not crop old images for section extraction
-9. regenerate sections as fresh standalone images when needed
-10. choose a strong visual combination
-11. choose 4 signature components
-12. choose 2 motion-implied cues
-13. enforce hero cleanliness and short hero line count
-14. reduce unnecessary pills, labels, and micro-UI clutter
-15. avoid cards-inside-cards-inside-cards and giant boxed section wrappers
-16. keep the first screen readable and balanced on a small laptop
-17. enforce strong image usage where appropriate
-18. keep spacing generous, even, and analyzable
-19. deeply and cleanly analyze all generated images
-20. extract text, typography, spacing, buttons, colors, components, and layout logic
-21. implement the website to match the generated references as closely as reasonably possible
-22. create the final files only after the full analysis pass
+3. 如果 image generation 可用且 visual quality 是核心，先生成 design image(s)
+4. 在 Codex 内，优先每个 section 一张 large image
+5. 如果 text 或 components 太小，生成 additional detail/extraction images
+6. 只要能改善 readability 或 extraction quality，就生成更多 images
+7. 不要在 image count 上偷懒
+8. 不要为了 section extraction 裁剪 old images
+9. 需要时，把 sections 重新生成为 fresh standalone images
+10. 选择 strong visual combination
+11. 选择 4 个 signature components
+12. 选择 2 个 motion-implied cues
+13. 强制 hero cleanliness 和短 hero line count
+14. 减少 unnecessary pills、labels 和 micro-UI clutter
+15. 避免 cards-inside-cards-inside-cards 和 giant boxed section wrappers
+16. 保持 first screen 在小笔记本上 readable 且 balanced
+17. 在适当处强制 strong image usage
+18. 保持 spacing generous、even 且 analyzable
+19. 深入、干净地 analyze 所有 generated images
+20. extract text、typography、spacing、buttons、colors、components 和 layout logic
+21. 实现网站，使其在合理范围内尽可能匹配 generated references
+22. 只有完成 full analysis pass 后，才创建 final files
 
-Do not ask unnecessary follow-up questions if a strong interpretation is possible.
-Do not start with freeform coding when the visual problem should clearly be solved with image generation first.
-Do not compress many sections into one unreadable image in Codex.
-Do not crop previously generated large images when a fresh cleaner section-specific image should be generated instead.
+如果可以给出 strong interpretation，不要问不必要 follow-up questions。
+当 visual problem 明显应先用 image generation 解决时，不要从 freeform coding 开始。
+在 Codex 中，不要把许多 sections 压缩进一张 unreadable image。
+当应生成 fresh cleaner section-specific image 时，不要裁剪 previously generated large images。
 
 ---
 
-## 37. EXAMPLE INTERPRETATIONS
+## 37. Example Interpretations
 
 ### Example 1
-User:
+用户：
 “make me one hero section for an AI startup”
 
-Interpretation:
-- generate 1 hero image
-- if needed, generate 1 closer extraction image for text/buttons
-- do not crop a small region out of a larger board
-- if more clarity is needed, regenerate the hero as a fresh cleaner standalone image
-- keep the hero calm and readable
-- avoid fake utility labels and nested cards
-- analyze headline, subheadline, CTA, spacing, colors, hero media
-- then implement the hero
+解释：
+- 生成 1 张 hero image
+- 如有需要，为 text/buttons 生成 1 张 closer extraction image
+- 不要从更大的 board 中裁剪小区域
+- 如果需要更多 clarity，把 hero 重新生成为 fresh cleaner standalone image
+- 保持 hero calm 且 readable
+- 避免 fake utility labels 和 nested cards
+- analyze headline、subheadline、CTA、spacing、colors、hero media
+- 然后实现 hero
 
 ### Example 2
-User:
+用户：
 “design me an 8-section landing page”
 
-Interpretation:
-- generate 8 separate section images in Codex
-- one per section
-- generate extra detail images where necessary
-- deeply analyze all 8 sections
-- extract text, typography, spacing, buttons, colors, cards, structure
-- if one section is still unclear, regenerate that section again cleanly instead of cropping
-- keep sections open and not overboxed
-- then implement the full site from those references
+解释：
+- 在 Codex 中生成 8 张独立 section images
+- 每个 section 一张
+- 在必要处生成 extra detail images
+- 深入 analyze 全部 8 个 sections
+- extract text、typography、spacing、buttons、colors、cards、structure
+- 如果某个 section 仍不清楚，干净地重新生成该 section，而不是 cropping
+- 保持 sections open，避免 overboxed
+- 然后基于这些 references 实现 full site
 
 ### Example 3
-User:
+用户：
 “make a premium creative agency website with 4 sections”
 
-Interpretation:
-- generate 4 separate section images in Codex
-- keep the hero very clean
-- ensure text remains readable
-- deeply analyze each section
-- do not use rough cutouts from the first renders
-- regenerate clearer section images if needed
-- avoid over-pilled microcopy and container overload
-- then implement the site from those 4 references
+解释：
+- 在 Codex 中生成 4 张独立 section images
+- 保持 hero 非常 clean
+- 确保 text 仍然 readable
+- 深入 analyze 每个 section
+- 不要使用 first renders 的粗糙 cutouts
+- 需要时重新生成更清晰 section images
+- 避免 over-pilled microcopy 和 container overload
+- 然后基于这 4 个 references 实现 site
 
 ---
 
-## 38. FINAL GOAL
+## 38. Final Goal
 
-Generate website reference images that feel:
+生成 website reference images，使其感觉：
 - premium
 - art-directed
 - clear
@@ -1227,27 +1228,27 @@ Generate website reference images that feel:
 - anti-generic
 - implementation-friendly
 
-For visual website work, the skill must first generate the image(s) itself, then deeply and cleanly analyze those generated image(s), then use them as the primary visual source, then build the frontend to match them closely.
+对 visual website work，此 skill 必须先自行生成 image(s)，然后深入、干净地 analyze 那些 generated image(s)，再把它们作为 primary visual source，并构建 frontend 以贴近匹配它们。
 
-Inside Codex, if the user wants multiple sections, prefer separate large section images instead of one compressed multi-section board, so text, spacing, typography, buttons, and colors can be extracted properly.
+在 Codex 内，如果用户想要 multiple sections，优先使用独立 large section images，而不是一张 compressed multi-section board，以便正确 extract text、spacing、typography、buttons 和 colors。
 
-If a section still needs more clarity, generate an additional extraction-oriented image for that section.
+如果某个 section 仍需要更多 clarity，就为该 section 生成 additional extraction-oriented image。
 
-If more images would improve quality, generate more images.
-Do not be lazy with image count.
+如果更多 images 能改善质量，就生成更多 images。
+不要在 image count 上偷懒。
 
-Do not crop previously generated images when a fresh section-specific image would preserve spacing, layout, and readability better.
-Generate a new clean image instead.
+当 fresh section-specific image 能更好保留 spacing、layout 和 readability 时，不要裁剪 previously generated images。
+改为生成新的 clean image。
 
-Avoid cards-inside-cards-inside-cards.
-Avoid giant boxed wrappers around every section.
-Avoid fake technical pills and decorative micro-labels.
-Keep the hero especially clean, spacious, restrained, and readable on a small laptop.
+避免 cards-inside-cards-inside-cards。
+避免每个 section 周围都有 giant boxed wrappers。
+避免 fake technical pills 和 decorative micro-labels。
+保持 hero 尤其 clean、spacious、restrained，并在小笔记本上 readable。
 
-The result should be:
-- strong as section images
-- strong as a design system
-- strong under deep analysis
-- and strong as implemented frontend
+结果应该：
+- 作为 section images 很强
+- 作为 design system 很强
+- 在 deep analysis 下很强
+- 作为 implemented frontend 也很强
 
-The final outcome should look like a top-tier website concept translated faithfully into real code, not a tiny unreadable design board and not a generic coded reinterpretation.
+final outcome 应该像一个 top-tier website concept 被忠实翻译成真实 code，而不是 tiny unreadable design board，也不是 generic coded reinterpretation。

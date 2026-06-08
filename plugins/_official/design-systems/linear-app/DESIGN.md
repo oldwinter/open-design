@@ -1,77 +1,77 @@
-# Design System Inspired by Linear
+# Inspired by Linear 的 Design System
 
 > Category: Productivity & SaaS
-> Project management. Ultra-minimal, precise, purple accent.
+> Project management。Ultra-minimal、precise，并以 purple accent 点睛。
 
 ## 1. Visual Theme & Atmosphere
 
-Linear's website is a masterclass in dark-mode-first product design — a near-black canvas (`#08090a`) where content emerges from darkness like starlight. The overall impression is one of extreme precision engineering: every element exists in a carefully calibrated hierarchy of luminance, from barely-visible borders (`rgba(255,255,255,0.05)`) to soft, luminous text (`#f7f8f8`). This is not a dark theme applied to a light design — it is darkness as the native medium, where information density is managed through subtle gradations of white opacity rather than color variation.
+Linear 的网站是 dark-mode-first product design 的范本：一个 near-black canvas（`#08090a`），内容像星光一样从黑暗里浮现。整体印象是极致 precision engineering：每个元素都处在精密校准过的 luminance hierarchy 中，从 barely-visible borders（`rgba(255,255,255,0.05)`）到 soft、luminous text（`#f7f8f8`）。这不是把 dark theme 套到 light design 上；darkness 是 native medium，信息密度通过 white opacity 的细微层级管理，而不是靠颜色变化。
 
-The typography system is built entirely on Inter Variable with OpenType features `"cv01"` and `"ss03"` enabled globally, giving the typeface a cleaner, more geometric character. Inter is used at a remarkable range of weights — from 300 (light body) through 510 (medium, Linear's signature weight) to 590 (semibold emphasis). The 510 weight is particularly distinctive: it sits between regular and medium, creating a subtle emphasis that doesn't shout. At display sizes (72px, 64px, 48px), Inter uses aggressive negative letter-spacing (-1.584px to -1.056px), creating compressed, authoritative headlines that feel engineered rather than designed. Berkeley Mono serves as the monospace companion for code and technical labels, with fallbacks to ui-monospace, SF Mono, and Menlo.
+Typography system 完全建立在 Inter Variable 之上，并全局启用 OpenType features `"cv01"` 与 `"ss03"`，让 typeface 更干净、更 geometric。Inter 使用了非常丰富的 weight range：从 300（light body）、510（medium，Linear 的 signature weight）到 590（semibold emphasis）。510 特别有辨识度：它介于 regular 与 medium 之间，形成不吵闹的 subtle emphasis。Display sizes（72px、64px、48px）使用 aggressive negative letter-spacing（-1.584px 到 -1.056px），让 headlines 变得 compressed、authoritative，感觉像被工程化而不是被装饰。Berkeley Mono 是 code 与 technical labels 的 monospace companion，fallbacks 为 ui-monospace、SF Mono 和 Menlo。
 
-The color system is almost entirely achromatic — dark backgrounds with white/gray text — punctuated by a single brand accent: Linear's signature indigo-violet (`#5e6ad2` for backgrounds, `#7170ff` for interactive accents). This accent color is used sparingly and intentionally, appearing only on CTAs, active states, and brand elements. The border system uses ultra-thin, semi-transparent white borders (`rgba(255,255,255,0.05)` to `rgba(255,255,255,0.08)`) that create structure without visual noise, like wireframes drawn in moonlight.
+Color system 几乎完全 achromatic：dark backgrounds 加 white/gray text，只由一个 brand accent 点亮：Linear 标志性的 indigo-violet（background 用 `#5e6ad2`，interactive accents 用 `#7170ff`）。这个 accent color 用得很克制，只出现在 CTAs、active states 和 brand elements 上。Border system 使用 ultra-thin、semi-transparent white borders（`rgba(255,255,255,0.05)` 到 `rgba(255,255,255,0.08)`），像月光里的线框一样建立结构，却不制造 visual noise。
 
 **Key Characteristics:**
-- Dark-mode-native: `#08090a` marketing background, `#0f1011` panel background, `#191a1b` elevated surfaces
-- Inter Variable with `"cv01", "ss03"` globally — geometric alternates for a cleaner aesthetic
-- Signature weight 510 (between regular and medium) for most UI text
-- Aggressive negative letter-spacing at display sizes (-1.584px at 72px, -1.056px at 48px)
-- Brand indigo-violet: `#5e6ad2` (bg) / `#7170ff` (accent) / `#828fff` (hover) — the only chromatic color in the system
-- Semi-transparent white borders throughout: `rgba(255,255,255,0.05)` to `rgba(255,255,255,0.08)`
-- Button backgrounds at near-zero opacity: `rgba(255,255,255,0.02)` to `rgba(255,255,255,0.05)`
-- Multi-layered shadows with inset variants for depth on dark surfaces
-- Radix UI primitives as the component foundation (6 detected primitives)
-- Success green (`#27a644`, `#10b981`) used only for status indicators
+- Dark-mode-native：marketing background `#08090a`，panel background `#0f1011`，elevated surfaces `#191a1b`
+- Inter Variable 全局启用 `"cv01", "ss03"`，用 geometric alternates 塑造更干净的 aesthetic
+- Signature weight 510（介于 regular 与 medium 之间），用于多数 UI text
+- Display sizes 使用 aggressive negative letter-spacing（72px 时 -1.584px，48px 时 -1.056px）
+- Brand indigo-violet：`#5e6ad2`（bg）/ `#7170ff`（accent）/ `#828fff`（hover），是系统唯一 chromatic color
+- 全系统使用 semi-transparent white borders：`rgba(255,255,255,0.05)` 到 `rgba(255,255,255,0.08)`
+- Button backgrounds 几乎透明：`rgba(255,255,255,0.02)` 到 `rgba(255,255,255,0.05)`
+- Multi-layered shadows 带 inset variants，用于 dark surfaces 上的 depth
+- Radix UI primitives 是 component foundation（检测到 6 个 primitives）
+- Success green（`#27a644`、`#10b981`）只用于 status indicators
 
 ## 2. Color Palette & Roles
 
 ### Background Surfaces
-- **Marketing Black** (`#010102` / `#08090a`): The deepest background — the canvas for hero sections and marketing pages. Near-pure black with an imperceptible blue-cool undertone.
-- **Panel Dark** (`#0f1011`): Sidebar and panel backgrounds. One step up from the marketing black.
-- **Level 3 Surface** (`#191a1b`): Elevated surface areas, card backgrounds, dropdowns.
-- **Secondary Surface** (`#28282c`): The lightest dark surface — used for hover states and slightly elevated components.
+- **Marketing Black** (`#010102` / `#08090a`): 最深背景，是 hero sections 和 marketing pages 的 canvas。接近 pure black，带几乎不可察觉的 blue-cool undertone。
+- **Panel Dark** (`#0f1011`): Sidebar 与 panel backgrounds，比 marketing black 高一层。
+- **Level 3 Surface** (`#191a1b`): Elevated surface areas、card backgrounds、dropdowns。
+- **Secondary Surface** (`#28282c`): 最浅的 dark surface；用于 hover states 和略微 elevated 的 components。
 
 ### Text & Content
-- **Primary Text** (`#f7f8f8`): Near-white with a barely-warm cast. The default text color — not pure white, preventing eye strain on dark backgrounds.
-- **Secondary Text** (`#d0d6e0`): Cool silver-gray for body text, descriptions, and secondary content.
-- **Tertiary Text** (`#8a8f98`): Muted gray for placeholders, metadata, and de-emphasized content.
-- **Quaternary Text** (`#62666d`): The most subdued text — timestamps, disabled states, subtle labels.
+- **Primary Text** (`#f7f8f8`): 带轻微暖意的 near-white。默认 text color；不是 pure white，避免 dark backgrounds 上的 eye strain。
+- **Secondary Text** (`#d0d6e0`): Cool silver-gray，用于 body text、descriptions 和 secondary content。
+- **Tertiary Text** (`#8a8f98`): Muted gray，用于 placeholders、metadata 和 de-emphasized content。
+- **Quaternary Text** (`#62666d`): 最低调的 text；用于 timestamps、disabled states、subtle labels。
 
 ### Brand & Accent
-- **Brand Indigo** (`#5e6ad2`): Primary brand color — used for CTA button backgrounds, brand marks, and key interactive surfaces.
-- **Accent Violet** (`#7170ff`): Brighter variant for interactive elements — links, active states, selected items.
-- **Accent Hover** (`#828fff`): Lighter, more saturated variant for hover states on accent elements.
-- **Security Lavender** (`#7a7fad`): Muted indigo used specifically for security-related UI elements.
+- **Brand Indigo** (`#5e6ad2`): Primary brand color；用于 CTA button backgrounds、brand marks 和关键 interactive surfaces。
+- **Accent Violet** (`#7170ff`): 更亮的 variant，用于 links、active states、selected items。
+- **Accent Hover** (`#828fff`): hover states 上更浅、更 saturated 的 accent variant。
+- **Security Lavender** (`#7a7fad`): 专用于 security-related UI elements 的 muted indigo。
 
 ### Status Colors
-- **Green** (`#27a644`): Primary success/active status. Used for "in progress" indicators.
-- **Emerald** (`#10b981`): Secondary success — pill badges, completion states.
+- **Green** (`#27a644`): Primary success/active status，用于 “in progress” indicators。
+- **Emerald** (`#10b981`): Secondary success；用于 pill badges、completion states。
 
 ### Border & Divider
-- **Border Primary** (`#23252a`): Solid dark border for prominent separations.
-- **Border Secondary** (`#34343a`): Slightly lighter solid border.
-- **Border Tertiary** (`#3e3e44`): Lightest solid border variant.
-- **Border Subtle** (`rgba(255,255,255,0.05)`): Ultra-subtle semi-transparent border — the default.
-- **Border Standard** (`rgba(255,255,255,0.08)`): Standard semi-transparent border for cards, inputs, code blocks.
-- **Line Tint** (`#141516`): Nearly invisible line for the subtlest divisions.
-- **Line Tertiary** (`#18191a`): Slightly more visible divider line.
+- **Border Primary** (`#23252a`): 用于 prominent separations 的 solid dark border。
+- **Border Secondary** (`#34343a`): 稍亮的 solid border。
+- **Border Tertiary** (`#3e3e44`): 最亮的 solid border variant。
+- **Border Subtle** (`rgba(255,255,255,0.05)`): Ultra-subtle semi-transparent border；默认使用。
+- **Border Standard** (`rgba(255,255,255,0.08)`): Cards、inputs、code blocks 的 standard semi-transparent border。
+- **Line Tint** (`#141516`): 几乎不可见的 line，用于最细微 divisions。
+- **Line Tertiary** (`#18191a`): 稍微更可见的 divider line。
 
 ### Light Mode Neutrals (for light theme contexts)
-- **Light Background** (`#f7f8f8`): Page background in light mode.
-- **Light Surface** (`#f3f4f5` / `#f5f6f7`): Subtle surface tinting.
-- **Light Border** (`#d0d6e0`): Visible border in light contexts.
-- **Light Border Alt** (`#e6e6e6`): Alternative lighter border.
-- **Pure White** (`#ffffff`): Card surfaces, highlights.
+- **Light Background** (`#f7f8f8`): Light mode 中的 page background。
+- **Light Surface** (`#f3f4f5` / `#f5f6f7`): Subtle surface tinting。
+- **Light Border** (`#d0d6e0`): Light contexts 中可见的 border。
+- **Light Border Alt** (`#e6e6e6`): Alternative lighter border。
+- **Pure White** (`#ffffff`): Card surfaces、highlights。
 
 ### Overlay
-- **Overlay Primary** (`rgba(0,0,0,0.85)`): Modal/dialog backdrop — extremely dark for focus isolation.
+- **Overlay Primary** (`rgba(0,0,0,0.85)`): Modal/dialog backdrop；极暗，用于 focus isolation。
 
 ## 3. Typography Rules
 
 ### Font Family
 - **Primary**: `Inter Variable`, with fallbacks: `SF Pro Display, -apple-system, system-ui, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue`
 - **Monospace**: `Berkeley Mono`, with fallbacks: `ui-monospace, SF Mono, Menlo`
-- **OpenType Features**: `"cv01", "ss03"` enabled globally — cv01 provides an alternate lowercase 'a' (single-story), ss03 adjusts specific letterforms for a cleaner geometric appearance.
+- **OpenType Features**: 全局启用 `"cv01", "ss03"`；cv01 提供 alternate lowercase 'a'（single-story），ss03 调整特定 letterforms，让整体更 clean geometric。
 
 ### Hierarchy
 
@@ -106,10 +106,10 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 | Mono Label | Berkeley Mono | 12px (0.75rem) | 400 | 1.40 | normal | Code metadata, sometimes uppercase |
 
 ### Principles
-- **510 is the signature weight**: Linear uses Inter Variable's 510 weight (between regular 400 and medium 500) as its default emphasis weight. This creates a subtly bolded feel without the heaviness of traditional medium or semibold.
-- **Compression at scale**: Display sizes use progressively tighter letter-spacing — -1.584px at 72px, -1.408px at 64px, -1.056px at 48px, -0.704px at 32px. Below 24px, spacing relaxes toward normal.
-- **OpenType as identity**: `"cv01", "ss03"` aren't decorative — they transform Inter into Linear's distinctive typeface, giving it a more geometric, purposeful character.
-- **Three-tier weight system**: 400 (reading), 510 (emphasis/UI), 590 (strong emphasis). The 300 weight appears only in deliberately de-emphasized contexts.
+- **510 is the signature weight**: Linear 使用 Inter Variable 的 510 weight（介于 regular 400 与 medium 500 之间）作为默认 emphasis weight。它产生 subtle bolded feel，却没有传统 medium 或 semibold 的厚重。
+- **Compression at scale**: Display sizes 使用逐步收紧的 letter-spacing：72px 为 -1.584px，64px 为 -1.408px，48px 为 -1.056px，32px 为 -0.704px。24px 以下逐渐回到 normal。
+- **OpenType as identity**: `"cv01", "ss03"` 不是装饰；它们把 Inter 转化为 Linear 独特的 typeface，让它更 geometric、更 purposeful。
+- **Three-tier weight system**: 400（reading）、510（emphasis/UI）、590（strong emphasis）。300 weight 只出现在刻意 de-emphasized 的上下文中。
 
 ## 4. Component Stylings
 
@@ -137,12 +137,12 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 - Text: `#ffffff`
 - Padding: 8px 16px
 - Radius: 6px
-- Hover: `#828fff` shift
+- Hover: shift 到 `#828fff`
 - Use: Primary CTAs ("Start building", "Sign up")
 
 **Icon Button (Circle)**
-- Background: `rgba(255,255,255,0.03)` or `rgba(255,255,255,0.05)`
-- Text: `#f7f8f8` or `#ffffff`
+- Background: `rgba(255,255,255,0.03)` 或 `rgba(255,255,255,0.05)`
+- Text: `#f7f8f8` 或 `#ffffff`
 - Radius: 50%
 - Border: `1px solid rgba(255,255,255,0.08)`
 - Use: Close, menu toggle, icon-only actions
@@ -165,10 +165,10 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 - Use: Toolbar actions, quick-access controls
 
 ### Cards & Containers
-- Background: `rgba(255,255,255,0.02)` to `rgba(255,255,255,0.05)` (never solid — always translucent)
-- Border: `1px solid rgba(255,255,255,0.08)` (standard) or `1px solid rgba(255,255,255,0.05)` (subtle)
-- Radius: 8px (standard), 12px (featured), 22px (large panels)
-- Shadow: `rgba(0,0,0,0.2) 0px 0px 0px 1px` or layered multi-shadow stacks
+- Background: `rgba(255,255,255,0.02)` 到 `rgba(255,255,255,0.05)`（从不 solid；始终 translucent）
+- Border: standard 为 `1px solid rgba(255,255,255,0.08)`，subtle 为 `1px solid rgba(255,255,255,0.05)`
+- Radius: 8px（standard）、12px（featured）、22px（large panels）
+- Shadow: `rgba(0,0,0,0.2) 0px 0px 0px 1px` 或 layered multi-shadow stacks
 - Hover: subtle background opacity increase
 
 ### Inputs & Forms
@@ -183,7 +183,7 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 **Search Input**
 - Background: transparent
 - Text: `#f7f8f8`
-- Padding: 1px 32px (icon-aware)
+- Padding: 1px 32px（icon-aware）
 
 **Button-style Input**
 - Text: `#8a8f98`
@@ -219,39 +219,39 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 - Use: Inline labels, version tags
 
 ### Navigation
-- Dark sticky header on near-black background
-- Linear logomark left-aligned (SVG icon)
-- Links: Inter Variable 13–14px weight 510, `#d0d6e0` text
-- Active/hover: text lightens to `#f7f8f8`
-- CTA: Brand indigo button or ghost button
+- Near-black background 上的 dark sticky header
+- Linear logomark left-aligned（SVG icon）
+- Links: Inter Variable 13–14px weight 510，`#d0d6e0` text
+- Active/hover: text 变亮为 `#f7f8f8`
+- CTA: Brand indigo button 或 ghost button
 - Mobile: hamburger collapse
-- Search: command palette trigger (`/` or `Cmd+K`)
+- Search: command palette trigger（`/` 或 `Cmd+K`）
 
 ### Image Treatment
-- Product screenshots on dark backgrounds with subtle border (`rgba(255,255,255,0.08)`)
+- Product screenshots 放在 dark backgrounds 上，带 subtle border（`rgba(255,255,255,0.08)`）
 - Top-rounded images: `12px 12px 0px 0px` radius
-- Dashboard/issue previews dominate feature sections
-- Subtle shadow beneath screenshots: `rgba(0,0,0,0.4) 0px 2px 4px`
+- Dashboard/issue previews 主导 feature sections
+- Screenshots 下方有 subtle shadow：`rgba(0,0,0,0.4) 0px 2px 4px`
 
 ## 5. Layout Principles
 
 ### Spacing System
 - Base unit: 8px
 - Scale: 1px, 4px, 7px, 8px, 11px, 12px, 16px, 19px, 20px, 22px, 24px, 28px, 32px, 35px
-- The 7px and 11px values suggest micro-adjustments for optical alignment
-- Primary rhythm: 8px, 16px, 24px, 32px (standard 8px grid)
+- 7px 和 11px values 暗示用于 optical alignment 的 micro-adjustments
+- Primary rhythm: 8px, 16px, 24px, 32px（standard 8px grid）
 
 ### Grid & Container
 - Max content width: approximately 1200px
-- Hero: centered single-column with generous vertical padding
-- Feature sections: 2–3 column grids for feature cards
-- Full-width dark sections with internal max-width constraints
+- Hero: centered single-column，带 generous vertical padding
+- Feature sections: feature cards 使用 2–3 column grids
+- Full-width dark sections，内部受 max-width constraints 限制
 - Changelog: single-column timeline layout
 
 ### Whitespace Philosophy
-- **Darkness as space**: On Linear's dark canvas, empty space isn't white — it's absence. The near-black background IS the whitespace, and content emerges from it.
-- **Compressed headlines, expanded surroundings**: Display text at 72px with -1.584px tracking is dense and compressed, but sits within vast dark padding. The contrast between typographic density and spatial generosity creates tension.
-- **Section isolation**: Each feature section is separated by generous vertical padding (80px+) with no visible dividers — the dark background provides natural separation.
+- **Darkness as space**: 在 Linear 的 dark canvas 上，empty space 不是 white，而是 absence。Near-black background 本身就是 whitespace，content 从其中浮现。
+- **Compressed headlines, expanded surroundings**: 72px、-1.584px tracking 的 display text 很 dense、compressed，但它坐落在 vast dark padding 中。Typographic density 与 spatial generosity 的对比创造张力。
+- **Section isolation**: 每个 feature section 都用 generous vertical padding（80px+）分隔，没有 visible dividers；dark background 提供自然分离。
 
 ### Border Radius Scale
 - Micro (2px): Inline badges, toolbar buttons, subtle tags
@@ -276,31 +276,31 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 | Dialog (Level 5) | Multi-layer stack: `rgba(0,0,0,0) 0px 8px 2px, rgba(0,0,0,0.01) 0px 5px 2px, rgba(0,0,0,0.04) 0px 3px 2px, rgba(0,0,0,0.07) 0px 1px 1px, rgba(0,0,0,0.08) 0px 0px 1px` | Popovers, command palette, modals |
 | Focus | `rgba(0,0,0,0.1) 0px 4px 12px` + additional layers | Keyboard focus on interactive elements |
 
-**Shadow Philosophy**: On dark surfaces, traditional shadows (dark on dark) are nearly invisible. Linear solves this by using semi-transparent white borders as the primary depth indicator. Elevation isn't communicated through shadow darkness but through background luminance steps — each level slightly increases the white opacity of the surface background (`0.02` → `0.04` → `0.05`), creating a subtle stacking effect. The inset shadow technique (`rgba(0,0,0,0.2) 0px 0px 12px 0px inset`) creates a unique "sunken" effect for recessed panels, adding dimensional depth that traditional dark themes lack.
+**Shadow Philosophy**: 在 dark surfaces 上，traditional shadows（dark on dark）几乎不可见。Linear 通过 semi-transparent white borders 作为 primary depth indicator 来解决这个问题。Elevation 不是通过 shadow darkness 传达，而是通过 background luminance steps：每一层 surface background 的 white opacity 稍微增加（`0.02` → `0.04` → `0.05`），形成 subtle stacking effect。Inset shadow technique（`rgba(0,0,0,0.2) 0px 0px 12px 0px inset`）为 recessed panels 创造独特的 “sunken” effect，补足 traditional dark themes 缺少的 dimensional depth。
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use Inter Variable with `"cv01", "ss03"` on ALL text — these features are fundamental to Linear's typeface identity
-- Use weight 510 as your default emphasis weight — it's Linear's signature between-weight
-- Apply aggressive negative letter-spacing at display sizes (-1.584px at 72px, -1.056px at 48px)
-- Build on near-black backgrounds: `#08090a` for marketing, `#0f1011` for panels, `#191a1b` for elevated surfaces
-- Use semi-transparent white borders (`rgba(255,255,255,0.05)` to `rgba(255,255,255,0.08)`) instead of solid dark borders
-- Keep button backgrounds nearly transparent: `rgba(255,255,255,0.02)` to `rgba(255,255,255,0.05)`
-- Reserve brand indigo (`#5e6ad2` / `#7170ff`) for primary CTAs and interactive accents only
-- Use `#f7f8f8` for primary text — not pure `#ffffff`, which would be too harsh
-- Apply the luminance stacking model: deeper = darker bg, elevated = slightly lighter bg
+- 所有 text 都使用带 `"cv01", "ss03"` 的 Inter Variable；这些 features 是 Linear typeface identity 的基础
+- 默认 emphasis weight 使用 510；这是 Linear 标志性的 between-weight
+- Display sizes 使用 aggressive negative letter-spacing（72px 时 -1.584px，48px 时 -1.056px）
+- 建立在 near-black backgrounds 上：marketing 用 `#08090a`，panels 用 `#0f1011`，elevated surfaces 用 `#191a1b`
+- 使用 semi-transparent white borders（`rgba(255,255,255,0.05)` 到 `rgba(255,255,255,0.08)`），不要使用 solid dark borders
+- Button backgrounds 保持近乎透明：`rgba(255,255,255,0.02)` 到 `rgba(255,255,255,0.05)`
+- Brand indigo（`#5e6ad2` / `#7170ff`）只保留给 primary CTAs 和 interactive accents
+- Primary text 使用 `#f7f8f8`；不要用过于刺眼的 pure `#ffffff`
+- 应用 luminance stacking model：deeper = darker bg，elevated = slightly lighter bg
 
 ### Don't
-- Don't use pure white (`#ffffff`) as primary text — `#f7f8f8` prevents eye strain
-- Don't use solid colored backgrounds for buttons — transparency is the system (rgba white at 0.02–0.05)
-- Don't apply the brand indigo decoratively — it's reserved for interactive/CTA elements only
-- Don't use positive letter-spacing on display text — Inter at large sizes always runs negative
-- Don't use visible/opaque borders on dark backgrounds — borders should be whisper-thin semi-transparent white
-- Don't skip the OpenType features (`"cv01", "ss03"`) — without them, it's generic Inter, not Linear's Inter
-- Don't use weight 700 (bold) — Linear's maximum weight is 590, with 510 as the workhorse
-- Don't introduce warm colors into the UI chrome — the palette is cool gray with blue-violet accent only
-- Don't use drop shadows for elevation on dark surfaces — use background luminance stepping instead
+- 不要把 pure white（`#ffffff`）作为 primary text；`#f7f8f8` 能防止 eye strain
+- 不要给 buttons 使用 solid colored backgrounds；transparency 才是系统（rgba white at 0.02–0.05）
+- 不要装饰性地使用 brand indigo；它只属于 interactive/CTA elements
+- Display text 不要使用 positive letter-spacing；大尺寸 Inter 始终使用 negative
+- Dark backgrounds 上不要用 visible/opaque borders；borders 应该 whisper-thin、semi-transparent white
+- 不要跳过 OpenType features（`"cv01", "ss03"`）；没有它们就是 generic Inter，而不是 Linear 的 Inter
+- 不要使用 weight 700 (bold)；Linear 最大 weight 是 590，510 是 workhorse
+- UI chrome 中不要引入 warm colors；palette 是 cool gray 加 blue-violet accent
+- Dark surfaces 上不要用 drop shadows 表达 elevation；改用 background luminance stepping
 
 ## 8. Responsive Behavior
 
@@ -315,26 +315,26 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 | Large Desktop | >1280px | Full layout, generous margins |
 
 ### Touch Targets
-- Buttons use comfortable padding with 6px radius minimum
-- Navigation links at 13–14px with adequate spacing
-- Pill tags have 10px horizontal padding for touch accessibility
-- Icon buttons at 50% radius ensure circular, easy-to-tap targets
-- Search trigger is prominently placed with generous hit area
+- Buttons 使用 comfortable padding，radius minimum 为 6px
+- Navigation links 为 13–14px，并保留 adequate spacing
+- Pill tags 有 10px horizontal padding，以保证 touch accessibility
+- Icon buttons 使用 50% radius，形成 circular、easy-to-tap targets
+- Search trigger 位置醒目，并有 generous hit area
 
 ### Collapsing Strategy
-- Hero: 72px → 48px → 32px display text, tracking adjusts proportionally
-- Navigation: horizontal links + CTAs → hamburger menu at 768px
+- Hero: 72px → 48px → 32px display text，tracking 按比例调整
+- Navigation: horizontal links + CTAs → 768px 时 hamburger menu
 - Feature cards: 3-column → 2-column → single column stacked
-- Product screenshots: maintain aspect ratio, may reduce padding
-- Changelog: timeline maintains single-column through all sizes
+- Product screenshots: 保持 aspect ratio，padding 可减少
+- Changelog: timeline 在所有尺寸保持 single-column
 - Footer: multi-column → stacked single column
-- Section spacing: 80px+ → 48px on mobile
+- Section spacing: 80px+ → mobile 上 48px
 
 ### Image Behavior
-- Dashboard screenshots maintain border treatment at all sizes
-- Hero visuals simplify on mobile (fewer floating UI elements)
-- Product screenshots use responsive sizing with consistent radius
-- Dark background ensures screenshots blend naturally at any viewport
+- Dashboard screenshots 在所有尺寸保持 border treatment
+- Hero visuals 在 mobile 上简化（减少 floating UI elements）
+- Product screenshots 使用 responsive sizing，并保持 consistent radius
+- Dark background 确保 screenshots 在任何 viewport 中自然融合
 
 ## 9. Agent Prompt Guide
 
@@ -361,10 +361,10 @@ The color system is almost entirely achromatic — dark backgrounds with white/g
 - "Design a command palette: `#191a1b` background, `1px solid rgba(255,255,255,0.08)` border, 12px radius, multi-layer shadow stack. Input at 16px Inter Variable weight 400, `#f7f8f8` text. Results list with 13px weight 510 labels in `#d0d6e0` and 12px metadata in `#62666d`."
 
 ### Iteration Guide
-1. Always set font-feature-settings `"cv01", "ss03"` on all Inter text — this is non-negotiable for Linear's look
-2. Letter-spacing scales with font size: -1.584px at 72px, -1.056px at 48px, -0.704px at 32px, normal below 16px
-3. Three weights: 400 (read), 510 (emphasize/navigate), 590 (announce)
-4. Surface elevation via background opacity: `rgba(255,255,255, 0.02 → 0.04 → 0.05)` — never solid backgrounds on dark
-5. Brand indigo (`#5e6ad2` / `#7170ff`) is the only chromatic color — everything else is grayscale
-6. Borders are always semi-transparent white, never solid dark colors on dark backgrounds
-7. Berkeley Mono for any code or technical content, Inter Variable for everything else
+1. 始终在所有 Inter text 上设置 font-feature-settings `"cv01", "ss03"`；这是 Linear look 的硬要求
+2. Letter-spacing 随 font size 缩放：72px 为 -1.584px，48px 为 -1.056px，32px 为 -0.704px，16px 以下为 normal
+3. 三个 weights：400（read）、510（emphasize/navigate）、590（announce）
+4. Surface elevation 通过 background opacity 表达：`rgba(255,255,255, 0.02 → 0.04 → 0.05)`；dark 上永远不要用 solid backgrounds
+5. Brand indigo（`#5e6ad2` / `#7170ff`）是唯一 chromatic color；其他一切都是 grayscale
+6. Borders 始终是 semi-transparent white；dark backgrounds 上不要使用 solid dark colors
+7. 任何 code 或 technical content 使用 Berkeley Mono，其余全部使用 Inter Variable

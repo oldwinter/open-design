@@ -161,8 +161,8 @@ The shape language is rounded but not balloon-soft: 8px radii on cards, 4px on i
 - **Easing**: `cubic-bezier(0.215, 0.61, 0.355, 1)` for the avatar morph (snappy then settle).
 - **Notification pulse**: 1.4s ease-in-out infinite on unread mention indicator.
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Preserve the dark shell, compact density, and blurple action hierarchy together; using blurple on a light marketing-style layout breaks the Discord product feel.
-- Keep navigation-heavy surfaces structured around rails, sidebars, and chat columns rather than isolated decorative cards.
-- Use the rounded-square avatar and status-dot language when representing people, servers, or active presence.
+- 同时保留 dark shell、compact density 和 blurple action hierarchy；在 light marketing-style layout 上只使用 blurple 会破坏 Discord product feel。
+- Navigation-heavy surfaces 应围绕 rails、sidebars 和 chat columns 组织，而不是孤立 decorative cards。
+- 表示 people、servers 或 active presence 时，使用 rounded-square avatar 和 status-dot language。

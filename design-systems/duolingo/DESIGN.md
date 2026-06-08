@@ -153,8 +153,8 @@ Shape language is friendly: 16–20px radii on cards, 12px on buttons, 9999px on
 - **Easing**: `cubic-bezier(0.34, 1.56, 0.64, 1)` (back-out, slight overshoot) for unlocks.
 - **Mascot**: Duo blinks every 4–6s, jumps on streak milestones (480ms ease-out spring).
 
-## 7. Usage Guardrails
+## 7. 使用护栏
 
-- Keep the high-saturation owl green, chunky bottom shadows, and rounded lesson geometry together; flat green buttons alone do not read as Duolingo.
-- Reserve oversized bold type for lesson, streak, and progress moments where the product needs encouragement or feedback.
-- Use playful motion sparingly around progress state changes, avoiding generic bouncy animation on every control.
+- 同时保留 high-saturation owl green、chunky bottom shadows 和 rounded lesson geometry；单独的 flat green buttons 不会读起来像 Duolingo。
+- Oversized bold type 应保留给 lesson、streak 和 progress moments，也就是产品需要鼓励或反馈的场景。
+- Playful motion 只在 progress state changes 附近克制使用，避免给每个 control 都加 generic bouncy animation。

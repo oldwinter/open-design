@@ -1,290 +1,290 @@
-# Design System Inspired by Ferrari
+# Inspired by Ferrari 的 Design System
 
 > Category: Automotive
-> Luxury automotive. Chiaroscuro editorial, Ferrari Red accents, cinematic black.
+> 豪华汽车。Chiaroscuro editorial，Ferrari Red accent，cinematic black。
 
-## 1. Visual Theme & Atmosphere
+## 1. 视觉主题与氛围
 
-Ferrari's website is a digital editorial — a curated magazine where the Prancing Horse brand is presented with the gravitas of an art institution and the precision of Italian coachwork. The page opens onto an expanse of absolute black, broken only by the iconic Prancing Horse emblem floating alone in its own atmosphere. Below, the content unfolds in dramatic alternations between inky-dark cinematic sections and crisp white editorial panels. This chiaroscuro rhythm — darkness yielding to light, machinery yielding to human story — feels more like paging through a Ferrari yearbook than scrolling a commercial website. Every section is a curated vignette: a concept car dissolving from shadow, two F1 drivers posed with sculptural stillness, a lineup of production models arranged in a jewel-toned parade.
+Ferrari 的网站是一份数字 editorial：一本经过策展的杂志，以艺术机构的庄重和意大利 coachwork 的精度呈现 Prancing Horse 品牌。页面打开是一片 absolute black，只被标志性的 Prancing Horse emblem 打破；它独自漂浮在自己的氛围中。下方内容在 inky-dark cinematic section 与 crisp white editorial panel 之间戏剧性交替展开。这种 chiaroscuro rhythm（黑暗让位给光，机械让位给人的故事）更像翻阅一本 Ferrari yearbook，而不是滚动一个商业网站。每个 section 都是一段经过策展的 vignette：从阴影中溶出的 concept car、以雕塑般静止姿态并列的两位 F1 driver、像宝石色 parade 一样排列的量产车型。
 
-The color language is monastically restrained for a brand built on speed and emotion. Ferrari Red (`#DA291C`) appears with almost surgical sparseness — reserved for the Subscribe CTA and accent moments that need to command immediate attention. The vast majority of the interface lives in black, white, and a carefully calibrated gray scale (from `#303030` dark surfaces through `#8F8F8F` mid-tones to `#D2D2D2` light borders). Two yellows — Racing Yellow (`#FFF200`) and the deeper Modena Yellow (`#F6E500`) — exist in the token system as heritage accents for special contexts, honoring Ferrari's racing provenance. The restraint means that when red does appear, it carries the weight of the entire brand.
+对于一个建立在速度和情绪上的品牌来说，色彩语言近乎修道院式克制。Ferrari Red (`#DA291C`) 以近乎外科手术般稀少的方式出现，只保留给 Subscribe CTA 和需要立即占领注意力的 accent moment。Interface 的绝大多数都生活在黑、白和精心校准的灰阶中（从 `#303030` dark surface，到 `#8F8F8F` mid-tone，再到 `#D2D2D2` light border）。两个黄色（Racing Yellow `#FFF200` 和更深的 Modena Yellow `#F6E500`）作为 heritage accent 存在于 token system 中，用于特殊 context，以致敬 Ferrari 的 racing provenance。这种克制意味着当 red 出现时，它承载着整个品牌的重量。
 
-Typography relies on FerrariSans — a proprietary sans-serif family with medium-weight headings (500–700) and compact proportions. Display text runs at 24–26px for section titles, while the UI chrome lives at 12–16px in weights ranging from regular to bold. A secondary "Body-Font" custom typeface handles captions and utility text, rendered in uppercase with wide letter-spacing (1px) to create a label-like editorial quality. This two-font system — FerrariSans for narrative authority, Body-Font for structural annotation — gives the site a print-magazine hierarchy. No text decoration is gratuitous. Letter-spacing is tight for headlines and deliberately expanded for labels, creating a visual rhythm that alternates between urgency and composure.
+Typography 依赖 FerrariSans：一套专有 sans-serif family，heading 采用 medium-weight（500-700）和紧凑比例。Display text 在 section title 上运行于 24-26px，而 UI chrome 在 12-16px、regular 到 bold 的 weight 范围内工作。Secondary "Body-Font" custom typeface 负责 caption 和 utility text，常以 uppercase 和宽 letter-spacing（1px）渲染，制造 label-like editorial quality。这套双字体系统（FerrariSans 负责叙事权威，Body-Font 负责结构标注）让站点拥有 print-magazine hierarchy。没有任何 text decoration 是随意的。Headline 的 letter-spacing 紧凑，label 则刻意放宽，形成一种在紧迫与沉着之间交替的视觉节奏。
 
-**Key Characteristics:**
-- Chiaroscuro layout alternating between deep black sections and clean white editorial panels
-- Ferrari Red (`#DA291C`) used with extreme sparseness — accent, not atmosphere
-- Prancing Horse emblem as isolated hero element on a void-black field
-- FerrariSans proprietary typeface with compact proportions and medium weights
-- Photo-journalism imagery: concept renders, driver portraits, lineup parades — each section is a story
-- Uppercase Body-Font labels with wide letter-spacing (1px) for editorial annotation
-- Nearly zero border-radius (2px default) reflecting precision engineering aesthetics
-- Dual-framework architecture (PrimeReact + Element Plus) powering 32+ interactive components
-- Carousel-driven hero with editorial slides and arrow/dot navigation
+**关键特征：**
+- Chiaroscuro layout，在 deep black section 与 clean white editorial panel 之间交替
+- Ferrari Red (`#DA291C`) 极度克制地使用，是 accent，不是 atmosphere
+- Prancing Horse emblem 作为 void-black field 上孤立的 hero element
+- FerrariSans 专有字体，紧凑比例和 medium weights
+- Photo-journalism imagery：concept render、driver portrait、lineup parade，每个 section 都是一个 story
+- Uppercase Body-Font label 使用宽 letter-spacing（1px）做 editorial annotation
+- 几乎为零的 border-radius（默认 2px），反映 precision engineering aesthetic
+- Dual-framework architecture（PrimeReact + Element Plus）驱动 32+ interactive components
+- Carousel-driven hero，带 editorial slide 和 arrow/dot navigation
 
-## 2. Color Palette & Roles
+## 2. 色彩 Palette 与角色
 
 ### Primary
-- **Ferrari Red** (`#DA291C`): The iconic Rosso Corsa — primary accent and CTA color. Used for the Subscribe button, key action triggers, and brand moments where maximum visual authority is needed. The single most important color in the system (--f-color-accent-100)
-- **Pure White** (`#FFFFFF`): Primary surface for editorial content panels, navigation text on dark backgrounds, and button fills. The canvas that provides breathing room between dark cinematic sections (--f-color-ui-0)
+- **Ferrari Red** (`#DA291C`): 标志性的 Rosso Corsa；primary accent 和 CTA color。用于 Subscribe button、key action trigger，以及需要最大视觉权威的品牌时刻。系统中最重要的单一颜色（--f-color-accent-100）。
+- **Pure White** (`#FFFFFF`): Editorial content panel 的 primary surface、暗色背景上的 navigation text，以及 button fill。它是 dark cinematic section 之间提供 breathing room 的 canvas（--f-color-ui-0）。
 
 ### Secondary & Accent
-- **Dark Red** (`#B01E0A`): Deeper variant of Ferrari Red for hover/pressed states and high-contrast contexts — adds dimensionality to the brand color without introducing a new hue (--f-color-accent-90)
-- **Deep Red** (`#9D2211`): The most saturated dark red — used for active states and extra emphasis where even Dark Red needs more weight (--f-color-accent-80)
-- **Racing Yellow** (`#FFF200`): Heritage accent from Ferrari's racing livery — reserved for special highlights and motorsport-related contexts (--f-color-yellow-hypersail)
-- **Modena Yellow** (`#F6E500`): Slightly warmer and more golden than Racing Yellow — used for secondary heritage accents and category markers (--f-color-yellow)
+- **Dark Red** (`#B01E0A`): Ferrari Red 的更深变体，用于 hover/pressed state 和 high-contrast context；在不引入新 hue 的情况下为品牌色增加维度（--f-color-accent-90）。
+- **Deep Red** (`#9D2211`): 最饱和的 dark red，用于 active state，以及 Dark Red 仍需更多重量的额外强调（--f-color-accent-80）。
+- **Racing Yellow** (`#FFF200`): 来自 Ferrari racing livery 的 heritage accent，只保留给 special highlight 和 motorsport-related context（--f-color-yellow-hypersail）。
+- **Modena Yellow** (`#F6E500`): 比 Racing Yellow 略暖、更金色，用于 secondary heritage accent 和 category marker（--f-color-yellow）。
 
 ### Surface & Background
-- **Absolute Black** (`#000000`): Hero sections, cinematic backgrounds, and the dominant dark surface — the void that makes imagery and the Prancing Horse emblem float
-- **Dark Surface** (`#303030`): Secondary dark surface for footer regions, newsletter sections, and layered dark panels — slightly lifted from pure black for depth differentiation (--f-color-ui-90)
-- **Light Gray Surface** (`#D2D2D2`): Subtle alternate surface for dividers and border treatments on white panels (--f-color-ui-20)
-- **Overlay Dark** (`hsla(0, 0%, 7%, 0.8)`): Semi-transparent near-black for modal overlays and image caption backgrounds (--f-color-overlay-darker)
+- **Absolute Black** (`#000000`): Hero section、cinematic background 和主导 dark surface；这个 void 让 imagery 和 Prancing Horse emblem 像漂浮一样出现。
+- **Dark Surface** (`#303030`): Footer region、newsletter section 和 layered dark panel 的 secondary dark surface；比纯黑略抬起，用于 depth differentiation（--f-color-ui-90）。
+- **Light Gray Surface** (`#D2D2D2`): White panel 上 divider 和 border treatment 的 subtle alternate surface（--f-color-ui-20）。
+- **Overlay Dark** (`hsla(0, 0%, 7%, 0.8)`): Modal overlay 和 image caption background 使用的 semi-transparent near-black（--f-color-overlay-darker）。
 
 ### Neutrals & Text
-- **Near Black** (`#181818`): Primary body text color on light surfaces — slightly softened from absolute black for better readability (link default color)
-- **Dark Gray** (`#666666`): Secondary text and subdued UI labels — used where text needs to recede from the primary hierarchy (--f-color-black-60)
-- **Mid Gray** (`#8F8F8F`): Tertiary text for metadata, timestamps, and supportive content (--f-color-black-50)
-- **Silver Gray** (`#969696`): Placeholder text and disabled state indicators (--f-color-black-55)
+- **Near Black** (`#181818`): 浅色 surface 上的 primary body text，比 absolute black 略软，以提升可读性（link default color）。
+- **Dark Gray** (`#666666`): Secondary text 和 subdued UI label；用于需要从 primary hierarchy 中后退的文字（--f-color-black-60）。
+- **Mid Gray** (`#8F8F8F`): Metadata、timestamp 和 supportive content 的 tertiary text（--f-color-black-50）。
+- **Silver Gray** (`#969696`): Placeholder text 和 disabled state indicator（--f-color-black-55）。
 
 ### Semantic & Accent
-- **Warning Red** (`#F13A2C`): Accessible warning state — brighter and more orange-shifted than Ferrari Red to differentiate semantic alerts from brand expression (--f-color-accessible-warning)
-- **Success Green** (`#03904A`): Confirmation and positive status indicators (--f-color-accessible-success)
-- **Info Blue** (`#4C98B9`): Informational callouts, tooltips, and neutral status messaging (--f-color-accessible-info)
-- **Link Hover Blue** (`#3860BE`): Interactive hover state for text links — a dignified navy-blue that signals interactivity without competing with Ferrari Red
+- **Warning Red** (`#F13A2C`): Accessible warning state；比 Ferrari Red 更亮、更偏橙，用于区分 semantic alert 与 brand expression（--f-color-accessible-warning）。
+- **Success Green** (`#03904A`): Confirmation 和 positive status indicator（--f-color-accessible-success）。
+- **Info Blue** (`#4C98B9`): Informational callout、tooltip 和 neutral status messaging（--f-color-accessible-info）。
+- **Link Hover Blue** (`#3860BE`): Text link 的 interactive hover state；一种庄重的 navy-blue，传达交互性但不与 Ferrari Red 竞争。
 
 ### Gradient System
-- No explicit gradients in the token system
-- Depth is achieved through photography and the binary contrast between black and white surfaces
-- The overlay darker color (`hsla(0, 0%, 7%, 0.8)`) creates depth through transparency layering over imagery
-- Occasional photographic gradients (light falloff in studio shots) provide atmospheric depth within image content
+- Token system 中没有显式 gradient。
+- 深度通过摄影，以及 black 与 white surface 之间的二元对比实现。
+- Overlay darker color（`hsla(0, 0%, 7%, 0.8)`）通过覆盖 imagery 的透明层叠创造深度。
+- 偶发的 photographic gradients（studio shot 中的光线衰减）在 image content 内提供氛围深度。
 
-## 3. Typography Rules
+## 3. 字体规则
 
 ### Font Family
-- **FerrariSans**: Primary typeface for headings, navigation, buttons, and editorial content. A proprietary sans-serif with medium weight as the default (500), compact x-height, and precise letter-spacing control. Fallbacks: Arial, Helvetica, sans-serif
-- **Body-Font**: Secondary typeface for captions, labels, and utility text. Frequently rendered in uppercase with expanded letter-spacing (1px) for an editorial label aesthetic. Used for category tags and small annotation text
-- **Arial / Helvetica**: System fallback fonts used in cookie consent modals, form elements, and third-party component frameworks
+- **FerrariSans**: Heading、navigation、button 和 editorial content 的 primary typeface。一套专有 sans-serif，默认 medium weight（500），compact x-height，并可精确控制 letter-spacing。Fallbacks: Arial, Helvetica, sans-serif。
+- **Body-Font**: Caption、label 和 utility text 的 secondary typeface。常以 uppercase 和 expanded letter-spacing（1px）渲染，形成 editorial label aesthetic。用于 category tag 和小型 annotation text。
+- **Arial / Helvetica**: Cookie consent modal、form element 和第三方 component framework 中使用的 system fallback font。
 
 ### Hierarchy
 
 | Role | Size | Weight | Line Height | Letter Spacing | Notes |
 |------|------|--------|-------------|----------------|-------|
-| Section Title | 26px (1.63rem) | 500 | 1.20 | normal | FerrariSans, primary editorial headings on white backgrounds |
-| Card Heading | 24px (1.50rem) | 400 | normal | normal | FerrariSans, content card titles |
-| Subheading | 18px (1.13rem) | 700 | 1.20 (tight) | normal | FerrariSans, bold subsection labels |
-| UI Heading | 16px (1.00rem) | 500 | 1.40 | 0.08px | FerrariSans, component headings and nav items |
-| Body Bold | 16px (1.00rem) | 700 | 1.30 (tight) | normal | FerrariSans, emphasized inline text |
-| Button Label | 16px (1.00rem) | 400 | normal | 1.28px | FerrariSans, primary button text with wide tracking |
-| Small Button | 14.4px (0.90rem) | 700 | 1.00 (tight) | normal | FerrariSans, compact action buttons |
-| Nav Link | 13px (0.81rem) | 600 | 1.20 (tight) | 0.13px | FerrariSans, navigation and footer links |
-| Caption | 13px (0.81rem) | 400 | 1.50 | 0.195px | FerrariSans/Body-Font, metadata and descriptions |
-| Micro Button | 12px (0.75rem) | 700 | 1.00 (tight) | 0.96px | FerrariSans, small CTA with wide tracking |
-| Label Upper | 12px (0.75rem) | 400 | 1.27 (tight) | 1px | Body-Font, uppercase labels and category tags |
-| Micro Label | 11px (0.69rem) | 400 | 1.27 (tight) | 1px | Body-Font, uppercase smallest annotation text |
-| Cookie Text | 45px (2.81rem) | 400 | 1.50 | 0.195px | Arial, consent dialog oversized button text |
+| Section Title | 26px (1.63rem) | 500 | 1.20 | normal | FerrariSans，white background 上的 primary editorial heading |
+| Card Heading | 24px (1.50rem) | 400 | normal | normal | FerrariSans，content card title |
+| Subheading | 18px (1.13rem) | 700 | 1.20 (tight) | normal | FerrariSans，bold subsection label |
+| UI Heading | 16px (1.00rem) | 500 | 1.40 | 0.08px | FerrariSans，component heading 和 nav item |
+| Body Bold | 16px (1.00rem) | 700 | 1.30 (tight) | normal | FerrariSans，emphasized inline text |
+| Button Label | 16px (1.00rem) | 400 | normal | 1.28px | FerrariSans，带宽 tracking 的 primary button text |
+| Small Button | 14.4px (0.90rem) | 700 | 1.00 (tight) | normal | FerrariSans，compact action button |
+| Nav Link | 13px (0.81rem) | 600 | 1.20 (tight) | 0.13px | FerrariSans，navigation 和 footer link |
+| Caption | 13px (0.81rem) | 400 | 1.50 | 0.195px | FerrariSans/Body-Font，metadata 和 description |
+| Micro Button | 12px (0.75rem) | 700 | 1.00 (tight) | 0.96px | FerrariSans，带宽 tracking 的 small CTA |
+| Label Upper | 12px (0.75rem) | 400 | 1.27 (tight) | 1px | Body-Font，uppercase label 和 category tag |
+| Micro Label | 11px (0.69rem) | 400 | 1.27 (tight) | 1px | Body-Font，uppercase smallest annotation text |
+| Cookie Text | 45px (2.81rem) | 400 | 1.50 | 0.195px | Arial，consent dialog oversized button text |
 
 ### Principles
-- **Proprietary identity**: FerrariSans is exclusive to Ferrari — it cannot be substituted without losing brand recognition. The font's compact proportions and medium weight default (500) convey engineering precision
-- **Two-register system**: FerrariSans handles narrative voice (headings, content, buttons) while Body-Font handles structural annotation (labels, tags, micro-captions) — this mirrors print magazine conventions of editorial text vs. technical labels
-- **Uppercase as emphasis tool**: Body-Font captions use `text-transform: uppercase` with expanded letter-spacing (1px) to create a visually distinct label layer that reads as "informational overlay" rather than primary content
-- **Compact line-heights**: Headlines use tight line-heights (1.00–1.30) creating dense, impactful text blocks, while body text opens to 1.50 for comfortable reading — the contrast between compressed headers and relaxed body text creates visual tension
-- **Weight range 400–700**: Four weights active in the system (400, 500, 600, 700) — significantly more range than Tesla but still controlled. 500 is the default "voice," 700 is for emphasis, 400 for body, 600 for navigation
+- **专有身份**：FerrariSans 是 Ferrari 专属；替换它会损失品牌识别度。字体紧凑比例和 medium weight default（500）传达工程精度。
+- **Two-register system**：FerrariSans 负责 narrative voice（heading、content、button），Body-Font 负责 structural annotation（label、tag、micro-caption），这呼应印刷杂志中的 editorial text 与 technical label 分工。
+- **Uppercase 作为强调工具**：Body-Font caption 使用 `text-transform: uppercase` 和 expanded letter-spacing（1px），形成视觉上独立的 label layer，读起来像 "informational overlay" 而不是 primary content。
+- **Compact line-heights**：Headline 使用 tight line-height（1.00-1.30），形成密集、有冲击力的 text block；body text 打开到 1.50 以舒适阅读。压缩 header 与放松 body 的对比创造视觉张力。
+- **Weight range 400-700**：系统中活跃四种 weight（400、500、600、700），比 Tesla 更宽但仍受控。500 是默认“声音”，700 用于强调，400 用于 body，600 用于 navigation。
 
 ## 4. Component Stylings
 
 ### Buttons
-Ferrari's buttons are minimal white rectangles with near-zero radius — the CTA philosophy is "architecture, not decoration."
+Ferrari 的 button 是极简白色矩形，几乎没有 radius；CTA 哲学是“architecture, not decoration”。
 
-**Primary CTA (White)** — The default action button:
-- Default: bg `#FFFFFF`, text `#000000`, fontSize 16px (FerrariSans), letterSpacing 1.28px, padding 12px 10px, borderRadius 2px, border 1px solid `#000000`
-- Hover: bg `#1EAEDB` (Teal), text `#FFFFFF`, opacity 0.9
-- Focus: bg `#1EAEDB`, text `#FFFFFF`, border 1px solid `#FFFFFF`, outline 2px solid `#000000`, opacity 0.9
-- Used for: "Configure" actions, secondary calls to action on light backgrounds
+**Primary CTA (White)** — 默认 action button:
+- Default: bg `#FFFFFF`，text `#000000`，fontSize 16px（FerrariSans），letterSpacing 1.28px，padding 12px 10px，borderRadius 2px，border 1px solid `#000000`
+- Hover: bg `#1EAEDB` (Teal)，text `#FFFFFF`，opacity 0.9
+- Focus: bg `#1EAEDB`，text `#FFFFFF`，border 1px solid `#FFFFFF`，outline 2px solid `#000000`，opacity 0.9
+- Used for: "Configure" actions，浅色背景上的 secondary calls to action
 
-**Subscribe CTA (Red)** — The high-emphasis action button:
-- Default: bg `#DA291C` (Ferrari Red), text `#FFFFFF`, borderRadius 2px, padding 12px 10px
-- Used for: Newsletter subscribe, primary conversion actions on dark backgrounds
-- The only button that uses Ferrari Red — reserved for maximum visual priority
+**Subscribe CTA (Red)** — 高强调 action button:
+- Default: bg `#DA291C` (Ferrari Red)，text `#FFFFFF`，borderRadius 2px，padding 12px 10px
+- Used for: Newsletter subscribe、暗色背景上的 primary conversion actions
+- 唯一使用 Ferrari Red 的 button；只保留给最高视觉优先级
 
-**Ghost Button (White Border)** — For dark backgrounds:
-- Default: bg transparent, text `#FFFFFF`, border 1px solid `#FFFFFF`, borderRadius 2px, padding 12px 10px
-- Hover: bg `#1EAEDB` (Teal), text `#FFFFFF`, opacity 0.9
-- Focus: same as Primary CTA focus state
-- Used for: Actions overlaid on dark imagery and cinematic sections
+**Ghost Button (White Border)** — 用于暗色背景:
+- Default: bg transparent，text `#FFFFFF`，border 1px solid `#FFFFFF`，borderRadius 2px，padding 12px 10px
+- Hover: bg `#1EAEDB` (Teal)，text `#FFFFFF`，opacity 0.9
+- Focus: 与 Primary CTA focus state 相同
+- Used for: 叠在 dark imagery 和 cinematic section 上的 action
 
 **Text Link** — Inline navigation:
-- Default: text `#181818` (on light surfaces) or `#FFFFFF` (on dark), no border, no background
-- Hover: color shifts to `#3860BE` (Link Hover Blue), decoration removes underline
-- White variant on dark surfaces uses underline decoration by default
-- FerrariSans or Body-Font depending on context (Body-Font for uppercase label links)
+- Default: 浅色 surface 上 text 为 `#181818`，暗色 surface 上为 `#FFFFFF`，无 border、无 background
+- Hover: color 切到 `#3860BE` (Link Hover Blue)，decoration 移除 underline
+- 暗色 surface 上的 white variant 默认使用 underline decoration
+- 根据 context 使用 FerrariSans 或 Body-Font（uppercase label link 使用 Body-Font）
 
 ### Cards & Containers
 
-**Editorial Card** (Content sections):
+**Editorial Card**（Content sections）:
 - Background: white
 - Border: none
 - Shadow: none
-- Layout: image above, heading + caption below
-- Image treatment: full-width within card, no rounded corners on image
-- Text: FerrariSans heading (16–24px) + Body-Font caption (12–13px uppercase)
+- Layout: image above，heading + caption below
+- Image treatment: card 内 full-width，image 无 rounded corner
+- Text: FerrariSans heading（16-24px）+ Body-Font caption（12-13px uppercase）
 
-**Dark Cinematic Card** (Hero/feature sections):
+**Dark Cinematic Card**（Hero/feature sections）:
 - Background: `#000000` (Absolute Black)
 - Full-bleed imagery with text overlay
-- No border, no shadow — the darkness IS the container
-- Text: white, positioned with careful negative space
+- No border, no shadow；darkness IS the container
+- Text: white，以精心留出的 negative space 定位
 
-**Vehicle Lineup** (Model carousel):
+**Vehicle Lineup**（Model carousel）:
 - Horizontal scrollable row of vehicle thumbnails
-- Each vehicle on a neutral/white background
+- 每辆车位于 neutral/white background 上
 - Navigation: arrow buttons + dot indicators
-- Background shifts to showcase the selected model's color context
+- Background 切换以展示 selected model 的 color context
 
 ### Inputs & Forms
 
-**Newsletter Input** (Footer section):
-- Background: transparent on dark surface
+**Newsletter Input**（Footer section）:
+- Background: 暗色 surface 上 transparent
 - Text: white
 - Border: 1px solid `#CCCCCC`
 - Placeholder: `#969696` (Silver Gray)
-- Focus: border color transitions (standard browser focus ring)
-- Label: Body-Font uppercase, 12px, 1px letter-spacing
+- Focus: border color transition（standard browser focus ring）
+- Label: Body-Font uppercase，12px，1px letter-spacing
 
-**Cookie Consent** (Modal):
+**Cookie Consent**（Modal）:
 - Background: white
-- Border radius: 8px (dialog)
+- Border radius: 8px（dialog）
 - Shadow: `rgb(153, 153, 153) 1px 1px 1px 0px`
-- Buttons: oversized (45px Arial), white bg with black border
-- Uses standard PrimeReact/Element Plus modal framework
+- Buttons: oversized（45px Arial），white bg with black border
+- 使用标准 PrimeReact/Element Plus modal framework
 
 ### Navigation
-- **Desktop**: Prancing Horse logo centered at top of page, primary navigation below — not a traditional horizontal nav bar but a full-width header block on black background
-- **Logo**: Centered Prancing Horse emblem (44×42px) on absolute black — the single most prominent UI element
-- **Links**: FerrariSans, 13px, weight 600, white text on dark backgrounds
-- **Mobile**: Hamburger collapse to vertical navigation drawer
-- **Footer**: Multi-column layout on `#303030` (Dark Surface) with category links in Body-Font uppercase
-- **No sticky nav behavior** observed — the page scrolls naturally with the header moving off-screen
+- **Desktop**: Prancing Horse logo 位于页面顶部居中，primary navigation 在其下方；这不是传统 horizontal nav bar，而是黑色背景上的 full-width header block
+- **Logo**: Absolute black 上居中的 Prancing Horse emblem（44×42px），是最突出的单一 UI element
+- **Links**: FerrariSans，13px，weight 600，dark background 上 white text
+- **Mobile**: Hamburger collapse 到 vertical navigation drawer
+- **Footer**: `#303030` (Dark Surface) 上的 multi-column layout，category link 使用 Body-Font uppercase
+- 未观察到 **sticky nav behavior**；页面自然滚动，header 会移出屏幕
 
 ### Image Treatment
-- **Hero**: Full-width editorial photography on black backgrounds — concept cars in atmospheric studio lighting, editorial portraits with cinematic composition
-- **Aspect ratios**: Mixed — landscape (16:9) for hero sections, near-square for portrait/driver imagery, wide panoramic for vehicle lineups
-- **Full-bleed vs padded**: Hero images are full-bleed edge-to-edge; editorial content images are padded within white containers
-- **Lazy loading**: Below-fold sections use progressive loading (PrimeReact framework handles this)
-- **Image quality**: High-resolution photography with studio lighting — no user-generated or lifestyle imagery. Every image is art-directed
+- **Hero**: 黑色背景上的 full-width editorial photography；concept car 置于氛围化 studio lighting 中，editorial portrait 采用 cinematic composition
+- **Aspect ratios**: Mixed；hero section 使用 landscape（16:9），portrait/driver imagery 接近 square，vehicle lineup 使用 wide panoramic
+- **Full-bleed vs padded**: Hero image 是 full-bleed edge-to-edge；editorial content image 位于 white container 内并带 padding
+- **Lazy loading**: Below-fold section 使用 progressive loading（由 PrimeReact framework 处理）
+- **Image quality**: 高分辨率、studio lighting 摄影；没有 user-generated 或 lifestyle imagery。每张图都经过 art-directed
 
 ### Carousel Component
-- Editorial carousel with multiple slides
-- Dot indicators for slide position
-- Arrow navigation (left/right) at slide edges
-- Auto-advancing with manual override
-- Content: mixed editorial — event recaps, model launches, racing highlights
+- Editorial carousel，包含多个 slide
+- Dot indicator 表示 slide position
+- Slide edge 上有 arrow navigation（left/right）
+- Auto-advancing，并允许 manual override
+- Content: mixed editorial，包括 event recap、model launch、racing highlight
 
-## 5. Layout Principles
+## 5. 布局原则
 
 ### Spacing System
-- **Base unit**: 8px (detected system base)
+- **Base unit**: 8px（检测到的 system base）
 - **Scale**: 1px, 2px, 4px, 5px, 6px, 9px, 10px, 11.2px, 12px, 13px, 15px, 16px, 19px, 20px, 25px
-- **Button padding**: 12px vertical, 10px horizontal — compact and precise
-- **Section padding**: Generous vertical spacing (40–80px estimated) between major content blocks
-- **Card gaps**: 16–20px between grid items
-- **Footer padding**: 25px horizontal sections within the dark footer block
+- **Button padding**: 12px vertical，10px horizontal；紧凑且精确
+- **Section padding**: Major content block 之间有慷慨 vertical spacing（估计 40-80px）
+- **Card gaps**: Grid item 之间 16-20px
+- **Footer padding**: Dark footer block 内横向 section 为 25px
 
 ### Grid & Container
-- **Max width**: 1920px (largest breakpoint) with content constraining at narrower widths
-- **Hero**: Full-bleed on black, content centered
-- **Editorial sections**: 2-column layouts with image + text, alternating sides
-- **Vehicle lineup**: Horizontal scroll/carousel, 5–6 models visible at desktop width
-- **Footer**: 4-column grid for link categories
+- **Max width**: 1920px（最大 breakpoint），更窄宽度下 content 受约束
+- **Hero**: 黑底 full-bleed，content 居中
+- **Editorial sections**: 2-column layout，image + text，左右交替
+- **Vehicle lineup**: Horizontal scroll/carousel，desktop 宽度下可见 5-6 个 model
+- **Footer**: Link category 使用 4-column grid
 
 ### Whitespace Philosophy
-Ferrari treats white space as a gallery wall. Each section — whether a concept car render on black void or a pair of F1 drivers on neutral gray — is given its own "room" of breathing space. The alternating black/white sections create a pacing rhythm: dark = immersive moment, white = editorial content, dark = immersive moment. This cadence makes scrolling feel like turning pages in a luxury publication. White space between editorial cards is moderate (not Tesla-extreme) because Ferrari is telling stories, not exhibiting single objects.
+Ferrari 把 white space 视为 gallery wall。每个 section，无论是黑色 void 上的 concept car render，还是中性灰上的一对 F1 driver，都被给予自己的 breathing space “房间”。黑/白 section 的交替创造 pacing rhythm：dark = immersive moment，white = editorial content，dark = immersive moment。这种 cadence 让滚动感觉像在翻阅一本 luxury publication。Editorial card 之间的 white space 适中（不像 Tesla 那样极端），因为 Ferrari 在讲故事，而不是展示单个物件。
 
 ### Border Radius Scale
 | Value | Context |
 |-------|---------|
-| 1px | Subtle softening on small inline elements (spans) |
-| 2px | Default for buttons, inputs, and interactive elements — barely perceptible, razor-precision |
-| 8px | Modal dialogs and overlay containers — the "softest" structural radius |
-| 50% | Circular elements: carousel dots, avatar thumbnails, slider handles |
+| 1px | Small inline element（span）的 subtle softening |
+| 2px | Button、input 和 interactive element 的默认值；几乎不可察觉，razor-precision |
+| 8px | Modal dialog 和 overlay container，是“最软”的结构 radius |
+| 50% | Circular element：carousel dot、avatar thumbnail、slider handle |
 
-## 6. Depth & Elevation
+## 6. 深度与 Elevation
 
 | Level | Treatment | Use |
 |-------|-----------|-----|
-| Level 0 (Flat) | No shadow, no border | Default state for all content sections and cards |
-| Level 1 (Subtle) | `rgb(153, 153, 153) 1px 1px 1px 0px` | Rare — cookie consent dialogs and dropdown menus |
-| Level 2 (Overlay) | `hsla(0, 0%, 7%, 0.8)` backdrop | Modal overlays and image caption backgrounds |
-| Level 3 (Border) | `1px solid #CCCCCC` | Input fields, form containers — depth through delineation not shadow |
+| Level 0 (Flat) | No shadow, no border | 所有 content section 和 card 的默认状态 |
+| Level 1 (Subtle) | `rgb(153, 153, 153) 1px 1px 1px 0px` | 少量使用于 cookie consent dialog 和 dropdown menu |
+| Level 2 (Overlay) | `hsla(0, 0%, 7%, 0.8)` backdrop | Modal overlay 和 image caption background |
+| Level 3 (Border) | `1px solid #CCCCCC` | Input field、form container；通过 delineation 而不是 shadow 表达深度 |
 
 ### Shadow Philosophy
-Ferrari's approach to elevation is nearly as flat as Tesla's, but with a different rationale. Where Tesla avoids shadows for minimalism, Ferrari avoids them because the editorial photography provides all the visual depth needed. The single shadow token (`rgb(153, 153, 153) 1px 1px 1px 0px`) is extremely subtle — a 1-pixel whisper used only in utilitarian contexts like consent dialogs. The site communicates hierarchy through three strategies:
-1. **Surface color contrast**: Black sections vs. white sections create unmistakable layering
-2. **Overlay transparency**: The `--f-color-overlay-darker` at 80% opacity creates depth without shadow
-3. **Photographic depth**: Studio-lit car imagery with reflections, ground shadows, and atmospheric haze provides all the visual dimensionality
+Ferrari 的 elevation 方法几乎和 Tesla 一样扁平，但理由不同。Tesla 为极简主义避免 shadow，而 Ferrari 避免 shadow，是因为 editorial photography 已提供全部视觉深度。唯一的 shadow token（`rgb(153, 153, 153) 1px 1px 1px 0px`）极其微妙，是 1-pixel whisper，只用于 consent dialog 这类 utility context。站点通过三种策略传达层级：
+1. **Surface color contrast**: Black section 与 white section 创造明确层叠
+2. **Overlay transparency**: 80% opacity 的 `--f-color-overlay-darker` 不依靠 shadow 也能创造深度
+3. **Photographic depth**: Studio-lit car imagery 中的反射、ground shadow 和 atmospheric haze 提供全部视觉维度
 
 ### Decorative Depth
-- No UI gradients, no glows, no blur effects on interface elements
-- The Prancing Horse logo on black creates a "floating in void" effect through pure contrast — no glow or shadow needed
-- Dark-to-light section transitions are hard cuts, not gradient blends — reinforcing the editorial page-turn metaphor
+- UI gradient、glow 或 interface element blur effect 都不存在
+- 黑底 Prancing Horse logo 通过纯对比制造 "floating in void" effect；不需要 glow 或 shadow
+- Dark-to-light section transition 是 hard cut，不是 gradient blend；强化 editorial page-turn metaphor
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use Ferrari Red (`#DA291C`) sparingly — only for primary CTAs and brand-critical moments. Its power comes from restraint
-- Alternate between black cinematic sections and white editorial sections to create the signature chiaroscuro rhythm
-- Use FerrariSans at weight 500 as the default heading voice — it's the typographic equivalent of the engine note
-- Apply Body-Font in uppercase with 1px letter-spacing for all labels, category tags, and structural annotations
-- Keep border-radius at 2px for all interactive elements — razor precision, not rounded friendliness
-- Let photography carry the emotional weight — every image should be art-directed studio quality
-- Use the Prancing Horse emblem as a standalone hero element on black — never crowd it with adjacent content
-- Maintain the 12px/10px button padding ratio — compact, purposeful, no excess
-- Use `#181818` (Near Black) for body text instead of pure `#000000` — the subtle warmth improves readability
-- Reserve the yellow accents (`#FFF200`, `#F6E500`) strictly for motorsport and racing heritage contexts
+- 克制使用 Ferrari Red (`#DA291C`)；只用于 primary CTA 和 brand-critical moment。它的力量来自 restraint
+- 在 black cinematic section 与 white editorial section 之间交替，创造签名 chiaroscuro rhythm
+- 使用 FerrariSans weight 500 作为默认 heading voice；它是 typography 里的 engine note
+- 为所有 label、category tag 和 structural annotation 使用 uppercase、1px letter-spacing 的 Body-Font
+- 所有 interactive element 保持 2px border-radius；razor precision，而不是 rounded friendliness
+- 让 photography 承载情绪重量；每张 image 都应达到 art-directed studio quality
+- 将 Prancing Horse emblem 作为黑底 standalone hero element；不要让相邻 content 拥挤它
+- 保持 12px/10px button padding ratio；紧凑、有目的、无多余
+- Body text 使用 `#181818` (Near Black)，而不是 pure `#000000`；微妙暖度提升可读性
+- 将 yellow accents（`#FFF200`、`#F6E500`）严格保留给 motorsport 和 racing heritage context
 
 ### Don't
-- Scatter Ferrari Red across the interface as decoration — it's a CTA signal, not a theme color
-- Use rounded-pill buttons or large border-radii — the 2px precision is non-negotiable
-- Add box-shadows to cards or content containers — depth comes from surface color contrast and photography
-- Mix FerrariSans and Body-Font within the same text block — they serve separate hierarchical functions
-- Use colorful backgrounds (blue, green, etc.) for sections — the palette is exclusively black/white/gray with red and yellow accents
-- Apply text transforms to FerrariSans headings — uppercase is reserved for Body-Font labels only
-- Display low-quality or user-generated imagery — every photograph must meet editorial standards
-- Use the Link Hover Blue (`#3860BE`) for anything other than interactive hover states — it's not a brand color
-- Create busy layouts with multiple competing focal points — each section should have one clear story
-- Override the semantic color system (warning, success, info) with brand colors — `#F13A2C` warning is deliberately different from `#DA291C` brand red
+- 不要把 Ferrari Red 分散到 interface 各处作为装饰；它是 CTA signal，不是 theme color
+- 不要使用 rounded-pill button 或大 border-radii；2px precision 不可协商
+- 不要给 card 或 content container 添加 box-shadow；深度来自 surface color contrast 和 photography
+- 不要在同一 text block 内混用 FerrariSans 和 Body-Font；它们服务于不同 hierarchy function
+- 不要为 section 使用彩色背景（blue、green 等）；palette 仅限 black/white/gray，并辅以 red 和 yellow accent
+- 不要给 FerrariSans heading 应用 text transform；uppercase 只保留给 Body-Font label
+- 不要展示低质量或 user-generated imagery；每张照片都必须满足 editorial standard
+- 不要把 Link Hover Blue (`#3860BE`) 用于 interactive hover state 以外的用途；它不是 brand color
+- 不要创建多个 focal point 互相竞争的繁忙 layout；每个 section 应只有一个清楚 story
+- 不要用品牌色覆盖 semantic color system（warning、success、info）；`#F13A2C` warning 有意不同于 `#DA291C` brand red
 
-## 8. Responsive Behavior
+## 8. 响应式行为
 
 ### Breakpoints
 | Name | Width | Key Changes |
 |------|-------|-------------|
-| Mobile Small | ≤375px | Single-column, minimal padding (12px), stacked navigation, hero text scales to ~18px, full-width CTAs |
-| Mobile | 376–600px | Single-column, slightly larger padding (16px), hamburger nav, body text at 13px |
-| Tablet Small | 601–768px | 2-column editorial grid begins, hero images maintain full-width, footer switches to 2-column |
-| Tablet | 769–960px | Full 2-column layout, carousel shows 3 vehicles, padding increases to 20px |
-| Desktop | 961–1280px | Full navigation, 2-column editorial with larger imagery, vehicle lineup shows 5 models |
-| Large Desktop | 1281–1920px | Maximum content width, generous whitespace, hero photography at full cinematic scale |
+| Mobile Small | ≤375px | Single-column，minimal padding（12px），stacked navigation，hero text 缩到约 18px，full-width CTA |
+| Mobile | 376-600px | Single-column，padding 略增（16px），hamburger nav，body text 为 13px |
+| Tablet Small | 601-768px | 2-column editorial grid 开始出现，hero image 保持 full-width，footer 切到 2-column |
+| Tablet | 769-960px | Full 2-column layout，carousel 显示 3 辆车，padding 增至 20px |
+| Desktop | 961-1280px | Full navigation，2-column editorial 与更大 imagery，vehicle lineup 显示 5 个 model |
+| Large Desktop | 1281-1920px | Maximum content width，慷慨 whitespace，hero photography 达到 full cinematic scale |
 
 ### Touch Targets
-- Primary CTA buttons: minimum 44px height with 12px vertical padding (meets WCAG AAA 44×44px target)
-- Navigation links: 13px text with 1.50 line-height and adequate spacing between items
-- Carousel arrows: 44px+ touch targets at viewport edges
-- Footer links: grouped with sufficient vertical spacing (16–20px) for touch accuracy
+- Primary CTA button: 最小 44px height，12px vertical padding（满足 WCAG AAA 44×44px target）
+- Navigation link: 13px text，1.50 line-height，item 之间有充足 spacing
+- Carousel arrow: viewport edge 上 44px+ touch target
+- Footer link: 以 16-20px 的充分 vertical spacing 分组，保证触摸准确性
 
 ### Collapsing Strategy
-- **Navigation**: Full horizontal nav collapses to centered Prancing Horse logo + hamburger menu on mobile
-- **Editorial sections**: 2-column image+text layouts collapse to single-column with image stacking above text
-- **Vehicle lineup**: Horizontal carousel maintains scroll behavior but reduces visible models from 5 to 2–3
-- **Footer**: 4-column link grid collapses to 2-column on tablet, single-column accordion on mobile
-- **Hero carousel**: Full-width at all breakpoints, dot indicators and arrows scale proportionally
-- **Spacing reduction**: Section padding reduces from 40–80px (desktop) to 20–40px (mobile), maintaining proportional breathing room
+- **Navigation**: Full horizontal nav 在 mobile 上折叠为居中的 Prancing Horse logo + hamburger menu
+- **Editorial sections**: 2-column image+text layout 折叠为 single-column，image 堆叠在 text 上方
+- **Vehicle lineup**: Horizontal carousel 保持 scroll behavior，但可见 model 从 5 个降到 2-3 个
+- **Footer**: 4-column link grid 在 tablet 折叠到 2-column，在 mobile 折叠为 single-column accordion
+- **Hero carousel**: 所有 breakpoint 上保持 full-width，dot indicator 和 arrow 按比例缩放
+- **Spacing reduction**: Section padding 从 desktop 的 40-80px 降到 mobile 的 20-40px，同时保持成比例 breathing room
 
 ### Image Behavior
-- Hero images: full-bleed at all breakpoints, using `object-fit: cover` to maintain cinematic composition
-- Editorial images: responsive within their containers, maintaining aspect ratio
-- Vehicle lineup: thumbnail size scales but maintains consistent car-to-frame proportions
-- Art direction: mobile crops may tighten on vehicle subjects, reducing environmental context
-- Lazy loading: PrimeReact handles progressive image loading for below-fold content
+- Hero image: 所有 breakpoint 上 full-bleed，并使用 `object-fit: cover` 保持 cinematic composition
+- Editorial image: 在 container 内响应式缩放，并保持 aspect ratio
+- Vehicle lineup: Thumbnail size 缩放，但保持一致的 car-to-frame proportion
+- Art direction: Mobile crop 可能收紧到 vehicle subject，减少 environmental context
+- Lazy loading: PrimeReact 为 below-fold content 处理 progressive image loading
 
 ## 9. Agent Prompt Guide
 
@@ -301,17 +301,17 @@ Ferrari's approach to elevation is nearly as flat as Tesla's, but with a differe
 - Link Hover: "Link Blue (#3860BE)"
 
 ### Example Component Prompts
-- "Create a hero section on Absolute Black (#000000) background with a centered logo emblem at the top, generous vertical spacing (80px+), and a single editorial headline in FerrariSans at 26px weight 500 in white, with a small Body-Font uppercase caption (12px, 1px letter-spacing) in Silver Gray (#969696) below"
-- "Design a Subscribe section on Dark Surface (#303030) with a left-aligned headline in white FerrariSans (24px/500), a subtitle in Mid Gray (#8F8F8F, 13px), an email input with transparent background and 1px #CCCCCC border, and a Ferrari Red (#DA291C) Subscribe button with white text, 2px border-radius, and 12px 10px padding"
-- "Build an editorial card on white background with a full-width image (16:9 ratio) above, a FerrariSans heading (16px/700, Near Black #181818) below, and a Body-Font uppercase label (11px, 1px letter-spacing, Mid Gray #8F8F8F) as the category tag — no border, no shadow, no border-radius"
-- "Create a vehicle lineup carousel showing 5 car thumbnails in a horizontal scroll on white background, with left/right arrow navigation, dot indicators below, and a FerrariSans model name (16px/500) beneath each vehicle"
-- "Design a dark cinematic section with full-bleed studio photography of a concept car on Absolute Black, a white FerrariSans headline (26px/500) positioned in the lower-left with generous padding (40px), and a Ghost Button (transparent bg, 1px white border, white text, 2px radius) as the CTA"
+- "创建 hero section：Absolute Black (#000000) background，顶部居中 logo emblem，慷慨 vertical spacing（80px+），一个 FerrariSans 26px weight 500 white 的 editorial headline，下方是 Silver Gray (#969696) 的小型 Body-Font uppercase caption（12px，1px letter-spacing）"
+- "设计 Subscribe section：Dark Surface (#303030)，左对齐 white FerrariSans headline（24px/500），Mid Gray (#8F8F8F, 13px) subtitle，transparent background 且 1px #CCCCCC border 的 email input，以及 Ferrari Red (#DA291C) Subscribe button，white text、2px border-radius、12px 10px padding"
+- "构建 editorial card：white background，上方 full-width image（16:9 ratio），下方 FerrariSans heading（16px/700，Near Black #181818），并用 Body-Font uppercase label（11px，1px letter-spacing，Mid Gray #8F8F8F）作为 category tag；no border, no shadow, no border-radius"
+- "创建 vehicle lineup carousel：white background 上展示 5 个 car thumbnails 的 horizontal scroll，带 left/right arrow navigation、下方 dot indicators，以及每辆车下方的 FerrariSans model name（16px/500）"
+- "设计 dark cinematic section：Absolute Black 上的 full-bleed studio photography，主题为 concept car；将 white FerrariSans headline（26px/500）以慷慨 padding（40px）放在 lower-left，并使用 Ghost Button（transparent bg、1px white border、white text、2px radius）作为 CTA"
 
 ### Iteration Guide
-When refining existing screens generated with this design system:
-1. Focus on ONE component at a time — Ferrari's editorial rhythm means each section is a self-contained vignette
-2. Reference specific color names and hex codes from this document — the palette is small but each color has a precise role
-3. Use natural language descriptions, not CSS values — "razor-sharp 2px corners" conveys intent better than "border-radius: 2px"
-4. Describe the desired "feel" alongside specific measurements — "editorial magazine page-turn between sections" communicates the layout philosophy better than "margin-bottom: 80px"
-5. Always maintain the chiaroscuro contrast — if a section feels flat, check whether it needs to be on black or white to maintain the alternating rhythm
-6. Reserve Ferrari Red for ONE element per screen — if red appears in more than one place, it loses its authority
+在细化用此 design system 生成的现有 screen 时：
+1. 一次只关注一个 component；Ferrari 的 editorial rhythm 意味着每个 section 都是自洽的 vignette
+2. 引用本文档中的具体 color name 和 hex code；palette 很小，但每个颜色都有精确角色
+3. 使用自然语言描述，而不是 CSS 值；"razor-sharp 2px corners" 比 "border-radius: 2px" 更能传达意图
+4. 把期望的“feel”和具体 measurement 放在一起描述；"editorial magazine page-turn between sections" 比 "margin-bottom: 80px" 更能传达 layout philosophy
+5. 始终保持 chiaroscuro contrast；如果某个 section 感觉 flat，检查它是否需要放在 black 或 white 上以维持交替 rhythm
+6. 每个 screen 只为一个 element 保留 Ferrari Red；如果 red 出现在多个地方，就会失去权威

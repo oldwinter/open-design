@@ -288,18 +288,18 @@ function queryTemplateForSurface(surface: HomeComposerMediaSurface, inputs: Reco
   // No ratio / duration / model / resolution / voice slots — those are asked
   // for by the agent during the run rather than baked into the prompt body.
   if (surface === 'image') {
-    return 'Create a premium product-studio image using {{designSystem}}: elegant composition, refined lighting, restrained color, rich material detail, and commercial campaign-level polish.';
+    return '使用 {{designSystem}} 创建一张高级产品棚拍图片：构图优雅、光线精致、色彩克制、材质细节丰富，并达到商业 Campaign 级别的完成度。';
   }
   if (surface === 'video') {
-    return 'Create a premium product-studio video using {{designSystem}}: cinematic product pacing, elegant motion, refined lighting, and a polished launch-film feel.';
+    return '使用 {{designSystem}} 创建一支高级产品棚拍视频：具备电影感的产品节奏、优雅动效、精致光线，以及成熟发布片的质感。';
   }
   if (surface === 'hyperframes') {
-    return 'Create a premium product-studio HyperFrames video: refined kinetic typography, elegant transitions, restrained motion language, and studio-grade timing.';
+    return '创建一支高级产品棚拍 HyperFrames 视频：精致的动态排版、优雅转场、克制的运动语言，以及棚拍级节奏控制。';
   }
   if (stringValue(inputs.audioType) === 'sfx') {
-    return 'Create premium product-studio audio from {{prompt}}: crisp, elegant, memorable, and brand-ready.';
+    return '基于 {{prompt}} 创建高级产品棚拍音频：清脆、优雅、易记，并可直接用于品牌场景。';
   }
-  return 'Create premium product-studio audio from {{text}}: polished, restrained, clear, and brand-ready.';
+  return '基于 {{text}} 创建高级产品棚拍音频：成熟、克制、清晰，并可直接用于品牌场景。';
 }
 
 function defaultInputsForSurface(

@@ -87,8 +87,8 @@ describe('composeSystemPrompt — metadata.promptTemplate', () => {
     });
 
     // The composer no longer seeds imageModel/imageAspect — the agent must ask.
-    expect(out).toContain('**imageModel**: (unknown — ask: which image model/provider to use)');
-    expect(out).toContain('**aspectRatio**: (unknown — ask: 1:1, 16:9 for landscape, 9:16 for portrait)');
+    expect(out).toContain('**imageModel**: (未知 — 询问：使用哪个 image model/provider)');
+    expect(out).toContain('**aspectRatio**: (未知 — 询问：1:1、横向 16:9、竖向 9:16)');
     expect(out).not.toContain('gpt-image-2 (default');
     expect(out).not.toContain('1:1 (default');
   });

@@ -1,7 +1,7 @@
 ---
 name: copywriting
 description: |
-  Write and rewrite marketing copy for landing pages, homepages, and ads. Useful as a copy chief partner during launches.
+  为 landing pages、homepages 和 ads 撰写或重写 marketing copy。适合在 launch 期间作为 copy chief partner 使用。
 triggers:
   - "copywriting"
   - "landing copy"
@@ -16,28 +16,24 @@ od:
 
 # copywriting
 
-> Curated from Corey Haines.
+> Curated from Corey Haines。
 
-## What it does
+## 功能
 
-Write and rewrite marketing copy for landing pages, homepages, and ads. Useful as a copy chief partner during launches.
+为 landing pages、homepages 和 ads 撰写或重写 marketing copy。适合在 launch 期间作为 copy chief partner 使用。
 
-## Source
+## 来源
 
 - Upstream: https://github.com/coreyhaines31/marketingskills
 - Category: `marketing-creative`
 
-## How to use
+## 使用方法
 
-This catalogue entry advertises the skill in Open Design so the agent
-discovers it during planning. To run the full upstream workflow with
-its original assets, scripts, and references, install the upstream
-bundle into your active agent's skills directory:
+此 catalogue entry 会在 Open Design 中展示该 skill，让 agent 在 planning 阶段发现它。若要运行包含原始 assets、scripts 和 references 的完整 upstream workflow，请把 upstream bundle 安装到当前 active agent 的 skills directory：
 
 ```bash
-# Inspect the upstream README for exact paths
+# 查看 upstream README 以确认准确路径
 open https://github.com/coreyhaines31/marketingskills
 ```
 
-Then ask the agent to invoke this skill by name (`copywriting`) or with
-one of the trigger phrases listed in this skill's frontmatter.
+然后让 agent 通过名称（`copywriting`）或本 skill frontmatter 中列出的 trigger phrases 调用它。

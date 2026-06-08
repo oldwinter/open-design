@@ -1,58 +1,58 @@
-# Design System Inspired by Cisco
+# Inspired by Cisco 的 Design System
 
 > Category: Backend & Data
-> Enterprise infrastructure brand. Dark trust surfaces, Cisco Blue signal, technical clarity.
+> Enterprise infrastructure brand。Dark trust surfaces、Cisco Blue signal、technical clarity。
 
 ## 1. Visual Theme & Atmosphere
 
-Cisco's current public web presence is enterprise infrastructure rendered with cinematic restraint. The canvas is dark but not pure black: layered navy-charcoal surfaces create depth without resorting to glossy startup gradients. Bright Cisco Blue is used as a precise signal color rather than a wash across the page. The overall impression is "serious global platform" rather than "friendly SaaS app" — large high-confidence headlines, quiet chrome, and product imagery that emphasizes scale, networking, observability, and resilience.
+Cisco 当前的公开 web presence，是以电影化克制呈现的 enterprise infrastructure。画布是深色，但不是 pure black：层叠的 navy-charcoal surfaces 创造深度，同时避免落入 glossy startup gradients。明亮的 Cisco Blue 被用作精确 signal color，而不是铺满页面的色彩 wash。整体印象是“serious global platform”，而不是“friendly SaaS app”：大号高信心 headlines、安静 chrome，以及强调 scale、networking、observability 和 resilience 的 product imagery。
 
-Typography is disciplined and corporate. Cisco's internal and presentation ecosystem points to `CiscoSansTT` as the preferred brand face, while the web experience remains compatible with modern grotesk fallbacks. Headings should feel concise and engineered. Body copy should read clearly and directly, not editorially. Geometrically, the system prefers soft pills for calls to action, rounded-but-not-playful cards, and glass-dark navigation shells floating over large atmospheric sections.
+Typography 克制且 corporate。Cisco 的内部与 presentation ecosystem 指向 `CiscoSansTT` 作为首选 brand face，而 web experience 仍兼容现代 grotesk fallbacks。Headings 应该简洁、工程化。Body copy 应该清楚直接，而不是 editorial。几何上，系统偏好用于 calls to action 的 soft pills、rounded-but-not-playful cards，以及漂浮在大型 atmospheric sections 上方的 glass-dark navigation shells。
 
-What makes Cisco distinct is the combination of **deep infrastructure darkness** with a **single electric trust signal**. Use blue for the moment that matters: primary action, focus, active tab, chart highlight, or key data edge. Let the rest of the interface stay disciplined.
+Cisco 的独特之处在于 **deep infrastructure darkness** 与 **single electric trust signal** 的结合。把 blue 用在真正重要的时刻：primary action、focus、active tab、chart highlight 或 key data edge。其余界面保持克制。
 
 **Key Characteristics:**
-- Dark navy-charcoal surfaces instead of flat black
-- Cisco Blue (`#049fd9`) as the primary signal color
-- Restrained neutral system built from grays and pale technical whites
-- Enterprise-scale headlines with compact, factual body copy
-- Pill CTAs and rounded control shells, but never toy-like UI
-- Product and platform imagery should suggest networks, telemetry, and systems at scale
-- Motion should feel controlled and infrastructural, not playful
+- 使用 dark navy-charcoal surfaces，而不是 flat black
+- Cisco Blue (`#049fd9`) 作为 primary signal color
+- 由 grays 和 pale technical whites 构成的 restrained neutral system
+- Enterprise-scale headlines，搭配 compact、factual body copy
+- Pill CTAs 和 rounded control shells，但绝不变成玩具感 UI
+- Product 和 platform imagery 应暗示 networks、telemetry 和大规模 systems
+- Motion 应该 controlled、infrastructural，而不是 playful
 
 ## 2. Color Palette & Roles
 
 ### Primary
-- **Cisco Blue** (`#049fd9`): High-signal accent, outline CTA, active state, key link.
-- **Status Blue** (`#64bbe3`): Focus halo, secondary emphasis, lightweight chart signal.
-- **Cisco Indigo** (`#005073`): Filled primary CTA, dense accent, deeper data emphasis.
-- **Dark Blue** (`#2b5592`): Secondary brand accent for graphics, charts, and layered blue compositions.
+- **Cisco Blue** (`#049fd9`): High-signal accent、outline CTA、active state、key link。
+- **Status Blue** (`#64bbe3`): Focus halo、secondary emphasis、lightweight chart signal。
+- **Cisco Indigo** (`#005073`): Filled primary CTA、dense accent、deeper data emphasis。
+- **Dark Blue** (`#2b5592`): 用于 graphics、charts 和 layered blue compositions 的 secondary brand accent。
 
 ### Neutral / Surface
-- **Dark Gray 1** (`#39393b`): Mid-dark container surface, panel base, dense modules.
-- **Dark Gray 2** (`#58585b`): Borders, separators, secondary shells.
-- **Medium Gray 2** (`#9e9ea2`): Muted labels and low-emphasis metadata.
-- **Pale Gray 1** (`#e8ebf1`): Light text support, cool technical background tint, separators on dark.
-- **Core White** (`#ffffff`): Primary inverse text, bright UI foreground, light surface content.
+- **Dark Gray 1** (`#39393b`): Mid-dark container surface、panel base、dense modules。
+- **Dark Gray 2** (`#58585b`): Borders、separators、secondary shells。
+- **Medium Gray 2** (`#9e9ea2`): Muted labels 和 low-emphasis metadata。
+- **Pale Gray 1** (`#e8ebf1`): Light text support、cool technical background tint、dark 上的 separators。
+- **Core White** (`#ffffff`): Primary inverse text、bright UI foreground、light surface content。
 
 ### Support
-- **Sage Green** (`#abc233`): Positive outcome or infrastructure-health accent.
-- **Status Green** (`#6cc04a`): Success state.
-- **Status Yellow** (`#ffcc00`): Warning or caution state.
-- **Status Orange** (`#ff7300`): Alert or escalation state.
-- **Status Red** (`#cf2030`): Error or critical state.
+- **Sage Green** (`#abc233`): Positive outcome 或 infrastructure-health accent。
+- **Status Green** (`#6cc04a`): Success state。
+- **Status Yellow** (`#ffcc00`): Warning 或 caution state。
+- **Status Orange** (`#ff7300`): Alert 或 escalation state。
+- **Status Red** (`#cf2030`): Error 或 critical state。
 
 ### Recommended Surface Roles
-- **Primary canvas**: a blue-black or charcoal blend built around `#0f1720` to `#1b2530` using the Cisco palette as anchor.
-- **Elevated card**: Dark Gray 1 (`#39393b`) or a slightly bluer variant.
-- **Border / outline**: Dark Gray 2 (`#58585b`) with subtle transparency when needed.
-- **Primary text on dark**: Core White (`#ffffff`) or Pale Gray 1 (`#e8ebf1`).
+- **Primary canvas**: 基于 `#0f1720` 到 `#1b2530` 的 blue-black 或 charcoal blend，并以 Cisco palette 为锚点。
+- **Elevated card**: Dark Gray 1 (`#39393b`) 或稍偏蓝的变体。
+- **Border / outline**: Dark Gray 2 (`#58585b`)，需要时带 subtle transparency。
+- **Primary text on dark**: Core White (`#ffffff`) 或 Pale Gray 1 (`#e8ebf1`)。
 
 ## 3. Typography Rules
 
 ### Font Family
 - **Primary**: `CiscoSansTT`, fallbacks: `Inter, Arial, Helvetica Neue, Helvetica, sans-serif`
-- **Mono / Technical**: `IBM Plex Mono`, `SF Mono`, or `ui-monospace` if a code-supporting mono face is needed for metrics and IDs
+- **Mono / Technical**: 如需支持 metrics 和 IDs 的 mono face，使用 `IBM Plex Mono`、`SF Mono` 或 `ui-monospace`
 
 ### Hierarchy
 
@@ -68,10 +68,10 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 | Button | CiscoSansTT | 16px | 500 | 1.20 | normal | CTA labels |
 
 ### Principles
-- Keep display typography decisive and compressed, but not ultra-light or editorial.
-- Body copy should be practical and highly legible, with no clever type effects.
-- Use bold weight mainly for short labels, status tags, and compact emphasis.
-- Favor one-family coherence over showy font mixing.
+- Display typography 要 decisive 且 compressed，但不要 ultra-light 或 editorial。
+- Body copy 应 practical 且高度 legible，不使用 clever type effects。
+- Bold weight 主要用于 short labels、status tags 和 compact emphasis。
+- 相比炫技式 font mixing，更偏好 one-family coherence。
 
 ## 4. Component Stylings
 
@@ -83,107 +83,107 @@ What makes Cisco distinct is the combination of **deep infrastructure darkness**
 - Radius: full pill
 - Padding: generous horizontal padding, medium vertical height
 - Hover: Dark Blue (`#2b5592`)
-- Active: a darker indigo tone around `#00364d`
-- Focus ring: 2px outer halo in Status Blue (`#64bbe3`) with a 1px white inner keyline on dark surfaces
-- Use case: high-priority submit, deploy, or "learn more" action on dark Cisco surfaces
+- Active: 接近 `#00364d` 的 darker indigo tone
+- Focus ring: Status Blue (`#64bbe3`) 2px outer halo，深色 surfaces 上再配 1px white inner keyline
+- Use case: dark Cisco surfaces 上的 high-priority submit、deploy 或 "learn more" action
 
 **Signal Outline Pill**
 - Background: transparent
-- Text: Cisco Blue (`#049fd9`) on dark surfaces, Cisco Indigo (`#005073`) on light surfaces
+- Text: 深色 surfaces 上使用 Cisco Blue (`#049fd9`)，浅色 surfaces 上使用 Cisco Indigo (`#005073`)
 - Border: 1.5px Cisco Blue (`#049fd9`)
 - Radius: full pill
-- Hover: blue-tinted surface fill with the text color preserved
-- Focus ring: same visible halo pairing as the primary button
-- Use case: brand-forward secondary action that keeps Cisco Blue prominent without sacrificing contrast
+- Hover: blue-tinted surface fill，同时保留 text color
+- Focus ring: 与 primary button 相同的可见 halo pairing
+- Use case: Brand-forward secondary action，让 Cisco Blue 保持突出，同时不牺牲 contrast
 
 **Secondary Dark Pill**
-- Background: transparent or dark surface
-- Text: White or Pale Gray 1
+- Background: transparent 或 dark surface
+- Text: White 或 Pale Gray 1
 - Border: Dark Gray 2 (`#58585b`)
 - Radius: full pill
 - Purpose: low-noise secondary CTA
 
 ### Cards & Containers
-- Background: layered dark surface based on `#39393b` or a cooler navy-charcoal adaptation
-- Border: 1px subtle border using `#58585b`
-- Radius: 16px to 20px
-- Shadow: minimal; depth should come mostly from surface contrast and spacing
+- Background: 基于 `#39393b` 或更冷 navy-charcoal adaptation 的 layered dark surface
+- Border: 使用 `#58585b` 的 1px subtle border
+- Radius: 16px 到 20px
+- Shadow: minimal；depth 主要来自 surface contrast 和 spacing
 
 ### Navigation
-- Dark glass-like masthead or shell over a dark hero
+- Dark hero 上方的 dark glass-like masthead 或 shell
 - Text: White / Pale Gray 1
-- Active state: Cisco Blue underline, chip, or glow
-- Navigation should feel like product chrome, not marketing candy
+- Active state: Cisco Blue underline、chip 或 glow
+- Navigation 应该像 product chrome，而不是 marketing candy
 
 ### Data / Product Modules
-- Charts and diagrams should use Cisco Blue as primary highlight and keep supporting colors minimal
-- Use green/yellow/red only for actual operational meaning
-- Dense technical blocks should still preserve breathing room and hierarchy
+- Charts 和 diagrams 应把 Cisco Blue 作为 primary highlight，并让 supporting colors 保持最少
+- Green/yellow/red 只用于真实 operational meaning
+- Dense technical blocks 仍要保留 breathing room 和 hierarchy
 
 ### Brand-Specific Recipes
 
 **Network Telemetry Card**
-- Anatomy: eyebrow label, large metric, delta chip, 12-24h sparkline, quiet footer metadata
-- Density: compact but not cramped; 16px-24px padding with clear alignment to chart axes
-- States: normal, selected, degraded, critical, loading skeleton
-- Brand behavior: use Cisco Blue for the selected edge or sparkline, and semantic colors only for health state
+- Anatomy: eyebrow label、large metric、delta chip、12-24h sparkline、quiet footer metadata
+- Density: compact 但不拥挤；16px-24px padding，并清楚对齐 chart axes
+- States: normal、selected、degraded、critical、loading skeleton
+- Brand behavior: Cisco Blue 用于 selected edge 或 sparkline，semantic colors 只用于 health state
 
 **Topology / Product Diagram Module**
-- Anatomy: title, system canvas, node chips, connection lines, side legend
-- Visual rule: dark field first, blue path highlight second, all other nodes muted until active
-- States: idle overview, hovered path, selected node, degraded route
+- Anatomy: title、system canvas、node chips、connection lines、side legend
+- Visual rule: dark field first、blue path highlight second，其他 nodes 在 active 前保持 muted
+- States: idle overview、hovered path、selected node、degraded route
 
 **Dense Control Panel**
-- Anatomy: left nav rail, filter bar, split metric region, log/event table, contextual right rail
-- Control sizing: compact 36px inputs are acceptable on desktop, but action buttons remain 44px minimum height
-- States: quiet default, blue active filter, clear warning/error escalation
+- Anatomy: left nav rail、filter bar、split metric region、log/event table、contextual right rail
+- Control sizing: desktop 上 compact 36px inputs 可以接受，但 action buttons 仍保持 44px minimum height
+- States: quiet default、blue active filter、clear warning/error escalation
 
 ## 5. Layout Principles
 
 ### Spacing & Grid
 - Base rhythm: 8px
 - Common scale: 8px, 12px, 16px, 24px, 32px, 48px, 64px, 96px
-- Prefer wide desktop containers and large sectional spacing
-- 12-column desktop layout with generous gutters works well for the brand
-- Breakpoints: mobile up to 767px, tablet 768px-1199px, desktop 1200px and above
+- 偏好 wide desktop containers 和 large sectional spacing
+- 12-column desktop layout 加 generous gutters 很适合这个品牌
+- Breakpoints: mobile up to 767px、tablet 768px-1199px、desktop 1200px and above
 
 ### Composition
-- Alternate expansive hero/outcome sections with denser information bands
-- Use asymmetry where it serves product imagery or system diagrams
-- Large dark fields with one blue focal point are more on-brand than many small colorful fragments
-- On tablet, reduce wide split layouts to 2-column modules and keep telemetry cards in pairs
-- On mobile, collapse hero side-by-sides to a single column, stack data panels vertically, and convert dense control rows into progressive disclosure panels
-- Navigation should collapse from a full masthead to a compact menu button plus one primary CTA on tablet/mobile
+- 在 expansive hero/outcome sections 与 denser information bands 之间交替
+- 当 asymmetry 服务于 product imagery 或 system diagrams 时使用它
+- Large dark fields 加一个 blue focal point，比许多小而彩色的 fragments 更符合品牌
+- Tablet 上把 wide split layouts 降为 2-column modules，并让 telemetry cards 成对展示
+- Mobile 上把 hero side-by-sides 折叠为 single column，data panels 垂直堆叠，并把 dense control rows 转为 progressive disclosure panels
+- Navigation 在 tablet/mobile 上应从 full masthead 折叠为 compact menu button + 一个 primary CTA
 
 ### Accessibility & Responsiveness
-- Minimum touch target: 44px by 44px for any tappable control
-- Keyboard focus must remain visible on every interactive element via the blue outer halo plus white inner keyline pairing
-- Do not rely on hover-only disclosure; show essential state and actions on focus and touch
-- Preserve readable line lengths on desktop and avoid more than 3 cards per row on tablet or 1 card per row on small phones
+- 任何 tappable control 的 minimum touch target: 44px by 44px
+- Keyboard focus 必须在每个 interactive element 上保持可见，使用 blue outer halo + white inner keyline pairing
+- 不要依赖 hover-only disclosure；在 focus 和 touch 上也展示 essential state 与 actions
+- Desktop 上保持 readable line lengths；tablet 不超过每行 3 cards，小手机每行 1 card
 
 ## 6. Motion & Interaction
 
-- Motion should be controlled, smooth, and systems-like
-- Use fade, rise, subtle slide, and restrained glow
-- Interaction timing: roughly 160ms–260ms for control response, 320ms–500ms for larger section reveals
-- Avoid bouncy springs, elastic easing, or playful overshoot
-- Respect `prefers-reduced-motion`: remove parallax and staged reveals, keep only instant state swaps or short opacity transitions under 120ms
+- Motion 应 controlled、smooth、systems-like
+- 使用 fade、rise、subtle slide 和 restrained glow
+- Interaction timing: control response 约 160ms-260ms，大型 section reveals 约 320ms-500ms
+- 避免 bouncy springs、elastic easing 或 playful overshoot
+- 尊重 `prefers-reduced-motion`：移除 parallax 和 staged reveals，只保留 instant state swaps 或 120ms 以下的短 opacity transitions
 
 ## 7. Voice & Brand
 
-- Voice is confident, technical, and outcome-oriented
-- Headlines should sound like platform positioning or systems value, not consumer lifestyle copy
-- Use language that suggests trust, resilience, infrastructure, AI readiness, and operational scale
-- The brand should feel global, mission-critical, and composed under pressure
+- Voice confident、technical、outcome-oriented
+- Headlines 应听起来像 platform positioning 或 systems value，而不是 consumer lifestyle copy
+- 使用暗示 trust、resilience、infrastructure、AI readiness 和 operational scale 的语言
+- Brand 应感觉 global、mission-critical，并且在压力下保持 composed
 
 ## 8. Anti-patterns
 
-- Do not turn Cisco into a generic gradient startup site
-- Do not flood the page with many equally loud accent colors
-- Do not use pastel palettes or lifestyle-illustration aesthetics
-- Do not use overly rounded, bubbly controls
-- Do not rely on pure black alone; use layered charcoals and deep blue-blacks instead
-- Do not make body copy feel whimsical, editorial, or ironic
+- 不要把 Cisco 做成 generic gradient startup site
+- 不要用许多同样响亮的 accent colors 淹没页面
+- 不要使用 pastel palettes 或 lifestyle-illustration aesthetics
+- 不要使用过度圆润、bubbly 的 controls
+- 不要只依赖 pure black；改用 layered charcoals 和 deep blue-blacks
+- 不要让 body copy 显得 whimsical、editorial 或 ironic
 
 ## 9. Agent Prompt Guide
 

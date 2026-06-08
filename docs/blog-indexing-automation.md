@@ -1,71 +1,38 @@
 # Blog indexing automation
 
-The Open Design landing page automates the parts of search-engine
-indexing that Google officially supports for normal blog content. It
-does NOT pretend to "submit" or "request indexing" for blog posts via
-unsupported APIs or browser automation.
+Open Design landing page 自动化了 Google 官方支持的普通 blog 内容搜索引擎索引环节。它不会假装通过不受支持的 API 或 browser automation 为 blog posts 执行 "submit" 或 "request indexing"。
 
-This file is the operating manual. The skill that defines the rules
-lives at `~/.codex/skills/blog-indexing-automation/SKILL.md`; this
-doc is its concrete implementation in `nexu-io/open-design`.
+本文是运行手册。定义规则的 skill 位于 `~/.codex/skills/blog-indexing-automation/SKILL.md`；本文档是它在 `nexu-io/open-design` 中的具体实现。
 
-## What is automated
+## 自动化内容
 
 | Trigger | Job | Outcome |
 |---|---|---|
-| `landing-page-ci` | `lint-blog-seo.ts` + `check-blog-url-changes.ts` | Changed posts are checked for frontmatter, internal/external links, rendered canonical/JSON-LD/OG metadata, and slug delete/rename redirects before they can merge. |
-| `landing-page-production` promotion finishes successfully | `blog-indexing-on-deploy.yml` | New blog URLs are detected, verified ready, submitted to IndexNow, the sitemap-index is re-submitted to GSC, baseline URL Inspection is captured, and baseline Search Analytics is queried. Staging deploys (`landing-page-staging`) never trigger this. |
-| Daily `cron: 0 2 * * *` | `blog-indexing-monitor.yml` | Every blog post in the T+1 / T+3 / T+7 / T+14 window is re-inspected; GSC Search Analytics is refreshed; stall and low-traffic issues are opened/refreshed when needed. |
-| Daily `cron: 0 2 * * *` (10:00 Asia/Shanghai) | `blog-3day-report.yml` | T-3 cohort + 30-day rolling cohort traffic digest written to `docs/blog-traffic-digest.md` via the `automation/blog-traffic-digest` PR, with an optional Feishu group push. Read-only against GSC. |
-| Manual `workflow_dispatch` | `blog-indexing-monitor.yml` | Maintainers can dry-run or explicitly publish a token-gated dev.to/Hashnode cross-post with canonical URL pointing back to Open Design. |
+| `landing-page-ci` | `lint-blog-seo.ts` + `check-blog-url-changes.ts` | Changed posts 在可 merge 前会检查 frontmatter、internal/external links、渲染后的 canonical/JSON-LD/OG metadata，以及 slug 删除/重命名 redirects。 |
+| `landing-page-production` promotion 成功完成 | `blog-indexing-on-deploy.yml` | 检测 new blog URLs、验证 ready、提交到 IndexNow、重新向 GSC 提交 sitemap-index、捕获 baseline URL Inspection，并查询 baseline Search Analytics。Staging deploys（`landing-page-staging`）绝不会触发它。 |
+| Daily `cron: 0 2 * * *` | `blog-indexing-monitor.yml` | 重新检查 T+1 / T+3 / T+7 / T+14 window 中的每篇 blog post；刷新 GSC Search Analytics；需要时打开/刷新 stall 和 low-traffic issues。 |
+| Daily `cron: 0 2 * * *`（Asia/Shanghai 10:00） | `blog-3day-report.yml` | 通过 `automation/blog-traffic-digest` PR 将 T-3 cohort + 30-day rolling cohort traffic digest 写入 `docs/blog-traffic-digest.md`，并可选推送到 Feishu group。对 GSC 只读。 |
+| Manual `workflow_dispatch` | `blog-indexing-monitor.yml` | Maintainers 可以 dry-run，或显式发布受 token gate 保护的 dev.to/Hashnode cross-post，其 canonical URL 指回 Open Design。 |
 
-The monitor and 3-day digest workflows commit their durable outputs
-back via the `open-design-bot` GitHub App. The monitor opens or
-refreshes the `automation/blog-indexing-status` PR; the traffic digest
-opens or refreshes the `automation/blog-traffic-digest` PR. The
-human-readable indexing view is `docs/blog-indexing-status.md`; the
-canonical indexing state is the sidecar
-`docs/blog-indexing-status.json`. The human-readable traffic view is
-`docs/blog-traffic-digest.md`.
-Before each run renders a new report, it restores the latest files from
-the pending `automation/blog-indexing-status` branch when that branch
-exists. That keeps inspection history continuous even if the previous
-status PR has not been merged yet. If that branch exists but the status
-files cannot be restored, the workflow fails and records the restore
-failure in the job summary instead of silently starting from stale state.
+Monitor 和 3-day digest workflows 会通过 `open-design-bot` GitHub App 把 durable outputs 提交回仓库。Monitor 会打开或刷新 `automation/blog-indexing-status` PR；traffic digest 会打开或刷新 `automation/blog-traffic-digest` PR。人类可读的 indexing view 是 `docs/blog-indexing-status.md`；canonical indexing state 是 sidecar `docs/blog-indexing-status.json`。人类可读的 traffic view 是 `docs/blog-traffic-digest.md`。
 
-## What is deliberately NOT automated
+每次 run 渲染新 report 前，如果 pending 的 `automation/blog-indexing-status` branch 存在，会先从中恢复最新文件。这样即使上一次 status PR 尚未 merge，也能保持 inspection history 连续。如果该 branch 存在但 status files 无法恢复，workflow 会失败，并在 job summary 中记录 restore failure，而不是静默从 stale state 开始。
 
-Per the `blog-indexing-automation` skill:
+## 有意不自动化的内容
 
-- We do not call Google's Indexing API. It officially supports only
-  Job Postings and Livestreams; using it for blog posts risks policy
-  flags and provides no real benefit.
-- We do not automate clicks against the Search Console UI to "Request
-  Indexing." The skill labels that as a brittle last resort.
-- We do not ping the legacy `https://www.google.com/ping?sitemap=`
-  endpoint. Google deprecated it in 2023.
-- We do not attempt to inspect every URL on the site every day. We
-  only inspect changed URLs after deploy and posts in the
-  T+1/T+3/T+7/T+14 window.
-- We do not auto-publish cross-posts. The cross-post scaffold is dry-run
-  by default and requires both platform tokens and `publish_crosspost=true`.
+按照 `blog-indexing-automation` skill：
 
-When automation cannot solve an indexing problem (e.g. Google has the
-URL but refuses to index it), the monitor opens a GitHub issue
-describing the likely failure mode so a human can fix the underlying
-content / SEO issue.
+- 我们不调用 Google 的 Indexing API。它官方仅支持 Job Postings 和 Livestreams；将它用于 blog posts 有 policy flags 风险，而且没有真实收益。
+- 我们不自动点击 Search Console UI 来执行 "Request Indexing"。该 skill 将这种做法标记为脆弱的最后手段。
+- 我们不 ping 旧版 `https://www.google.com/ping?sitemap=` endpoint。Google 已在 2023 年弃用它。
+- 我们不尝试每天检查站点上的每个 URL。我们只检查 deploy 后 changed URLs，以及 T+1/T+3/T+7/T+14 window 中的 posts。
+- 我们不自动发布 cross-posts。Cross-post scaffold 默认是 dry-run，并且要求同时具备 platform tokens 和 `publish_crosspost=true`。
+
+当 automation 无法解决 indexing 问题时（例如 Google 已有 URL 但拒绝索引），monitor 会打开 GitHub issue，描述可能的 failure mode，便于人类修复底层 content / SEO issue。
 
 ## Architecture
 
-Because production is a manual promotion that can bundle several merged
-posts, `detect-changed-urls` diffs from the `blog-indexed-prod` git tag (the
-last commit this workflow successfully indexed) rather than `HEAD^`. The tag
-is force-advanced to the deployed commit at the end of a successful run, so
-the next promotion picks up exactly the posts merged in between. On the very
-first run the tag does not exist yet and the workflow bootstraps from `HEAD^`
-— create the tag manually (`git tag blog-indexed-prod <sha>; git push origin
-blog-indexed-prod`) if an initial multi-commit backfill is needed.
+由于 production 是手工 promotion，可能一次包含多篇已 merge 的 posts，`detect-changed-urls` 会从 `blog-indexed-prod` git tag（该 workflow 上一次成功索引的 commit）开始 diff，而不是从 `HEAD^` 开始。成功 run 结束时，该 tag 会被 force-advance 到已部署 commit，因此下一次 promotion 会精确拾取两者之间 merge 的 posts。首次 run 时该 tag 尚不存在，workflow 会从 `HEAD^` bootstrap；如果需要初始 multi-commit backfill，请手动创建 tag（`git tag blog-indexed-prod <sha>; git push origin blog-indexed-prod`）。
 
 ```
 landing-page-production ──success──▶ blog-indexing-on-deploy
@@ -117,34 +84,25 @@ cron 02:00 UTC ──▶ blog-3day-report
                      bot PR (automation/blog-traffic-digest)
 ```
 
-All scripts live in `apps/landing-page/scripts/blog-indexing/` and run
-under `tsx` directly — no compile step. Most scripts depend only on
-Node 24 built-ins (`crypto`, `fetch`, `child_process`). RSS uses
-`@astrojs/rss`.
+所有 scripts 都位于 `apps/landing-page/scripts/blog-indexing/`，并直接在 `tsx` 下运行，不需要 compile step。大多数 scripts 只依赖 Node 24 built-ins（`crypto`、`fetch`、`child_process`）。RSS 使用 `@astrojs/rss`。
 
-## One-time setup
+## 一次性设置
 
-Done once per environment by a maintainer. Repeating this is harmless
-but unnecessary.
+每个环境由 maintainer 执行一次即可。重复执行没有坏处，但没有必要。
 
-### 1. Configure Google Search Console auth
+### 1. 配置 Google Search Console auth
 
-Preferred path: OAuth user refresh token. This avoids the Google Search
-Console UI bug where newly-created service account emails sometimes
-fail with `email not found`.
+首选路径：OAuth user refresh token。这可以避开 Google Search Console UI 中新创建 service account email 有时会因 `email not found` 失败的 bug。
 
-1. Go to <https://console.cloud.google.com/projectcreate> and create a
-   project named `open-design-blog-indexing` (or reuse an existing
-   project the team owns).
-2. Enable the **Search Console API** under
-   <https://console.cloud.google.com/apis/library/searchconsole.googleapis.com>.
-3. Create an OAuth client under
+1. 前往 <https://console.cloud.google.com/projectcreate>，创建名为 `open-design-blog-indexing` 的 project（或复用团队已有 project）。
+2. 在 <https://console.cloud.google.com/apis/library/searchconsole.googleapis.com> 下启用 **Search Console API**。
+3. 在
    <https://console.cloud.google.com/apis/credentials>:
    - Application type: **Desktop app**
    - Name: `open-design-gsc-local`
-4. In the OAuth consent screen, keep the app in Testing and add every
-   Google account that may grant access under **Audience → Test users**.
-5. Run the local helper:
+   创建 OAuth client。
+4. 在 OAuth consent screen 中，让 app 保持 Testing，并在 **Audience → Test users** 下添加每个可能授予访问权限的 Google account。
+5. 运行本地 helper：
 
    ```bash
    GSC_OAUTH_CLIENT_ID='<client-id>' \
@@ -154,55 +112,37 @@ fail with `email not found`.
      --out /tmp/open-design-gsc-refresh-token.txt
    ```
 
-6. Open the printed Google URL and authorize with an account that is an
-   Owner of the `open-design.ai` Search Console property.
+6. 打开打印出的 Google URL，并使用 `open-design.ai` Search Console property 的 Owner 账户授权。
 
-Fallback path: service account. Create `gsc-indexing-bot`, download a
-JSON key, then try adding the `client_email` as an Owner in Search
-Console. If Search Console shows `email not found`, use OAuth instead.
+Fallback path：service account。创建 `gsc-indexing-bot`，下载 JSON key，然后尝试在 Search Console 中把 `client_email` 添加为 Owner。如果 Search Console 显示 `email not found`，改用 OAuth。
 
-### 2. Add auth secrets to GitHub
+### 2. 将 auth secrets 添加到 GitHub
 
-1. Open <https://github.com/nexu-io/open-design/settings/secrets/actions>.
-2. Preferred OAuth secrets:
+1. 打开 <https://github.com/nexu-io/open-design/settings/secrets/actions>。
+2. 首选 OAuth secrets：
    - `GSC_OAUTH_CLIENT_ID`
    - `GSC_OAUTH_CLIENT_SECRET`
    - `GSC_OAUTH_REFRESH_TOKEN`
-3. Optional service-account fallback:
+3. 可选 service-account fallback：
    - `GSC_SERVICE_ACCOUNT_KEY`
-4. Confirm the existing `BOT_APP_ID` and `BOT_APP_PRIVATE_KEY` secrets
-   already exist — they are reused from the `refresh-contributors-wall`
-   automation. The bot needs `contents:write`, `pull-requests:write`,
-   and `issues:write` for `nexu-io/open-design` (already configured).
+4. 确认现有 `BOT_APP_ID` 和 `BOT_APP_PRIVATE_KEY` secrets 已存在；它们复用自 `refresh-contributors-wall` automation。该 bot 需要对 `nexu-io/open-design` 拥有 `contents:write`、`pull-requests:write` 和 `issues:write`（已配置）。
 
-If these secrets are not present yet, the workflows do not fail the
-main deploy path. They record the missing configuration in the job
-summary, emit a GitHub Actions warning, and skip the GSC / bot-write
-steps until the secrets are added.
+如果这些 secrets 尚不存在，workflows 不会让 main deploy path 失败。它们会在 job summary 中记录缺失配置，发出 GitHub Actions warning，并在 secrets 添加前跳过 GSC / bot-write steps。
 
-### 3. Optional platform secrets
+### 3. 可选 platform secrets
 
-These are not required for indexing.
+这些不是 indexing 必需项。
 
-- `DEVTO_API_KEY` — only needed if a maintainer wants
-  `blog-indexing-monitor.yml` to publish a dev.to cross-post.
-- `HASHNODE_TOKEN` and `HASHNODE_PUBLICATION_ID` — only needed for
-  Hashnode cross-posts.
-- `FEISHU_BLOG_DIGEST_WEBHOOK` — optional Feishu custom bot webhook for
-  the daily `blog-3day-report.yml` digest push. Missing this secret does
-  not fail the workflow; the digest still lands in
-  `docs/blog-traffic-digest.md` and as an Actions artifact.
-- `CLOUDFLARE_ZONE_ID` — optional future optimization if we choose to
-  purge cache directly. Current automation polls the live sitemap until
-  the new URLs appear, so this secret is not required.
+- `DEVTO_API_KEY` — 仅当 maintainer 希望 `blog-indexing-monitor.yml` 发布 dev.to cross-post 时需要。
+- `HASHNODE_TOKEN` 和 `HASHNODE_PUBLICATION_ID` — 仅 Hashnode cross-posts 需要。
+- `FEISHU_BLOG_DIGEST_WEBHOOK` — 每日 `blog-3day-report.yml` digest push 的可选 Feishu custom bot webhook。缺少这个 secret 不会让 workflow 失败；digest 仍会落到 `docs/blog-traffic-digest.md`，并作为 Actions artifact 保存。
+- `CLOUDFLARE_ZONE_ID` — 如果未来选择直接 purge cache，可作为可选优化。当前 automation 会 polling live sitemap 直到 new URLs 出现，因此不需要这个 secret。
 
-IndexNow does not need a secret. The public verification key is committed
-at `apps/landing-page/public/96b0928121e24fd7b4ef85ae0f8bf1d8.txt`.
+IndexNow 不需要 secret。Public verification key 已提交在 `apps/landing-page/public/96b0928121e24fd7b4ef85ae0f8bf1d8.txt`。
 
 ### 4. Smoke test
 
-Trigger `blog-indexing-on-deploy.yml` manually with the SHA of any
-recent commit that added a blog post:
+用任意最近添加 blog post 的 commit SHA 手动触发 `blog-indexing-on-deploy.yml`：
 
 ```bash
 gh workflow run blog-indexing-on-deploy.yml \
@@ -210,105 +150,55 @@ gh workflow run blog-indexing-on-deploy.yml \
   -f head_sha=<sha>
 ```
 
-A successful run produces:
+成功 run 会产生：
 
-- a green check on the workflow
-- the `automation/blog-indexing-status` PR refreshed with new rows in
-  `docs/blog-indexing-status.md`
-- the artifact `blog-indexing-<run-id>` containing the raw JSON
-  outputs
-- an `indexnow.json` artifact with the IndexNow submission result
+- workflow 上的绿色 check
+- 刷新后的 `automation/blog-indexing-status` PR，其中 `docs/blog-indexing-status.md` 有新 rows
+- 包含 raw JSON outputs 的 `blog-indexing-<run-id>` artifact
+- 带有 IndexNow submission result 的 `indexnow.json` artifact
 
-If the run fails on the **Submit sitemap** step with a 403, the
-service account is not yet an Owner on the GSC property (Step 2).
+如果 run 在 **Submit sitemap** step 以 403 失败，说明 service account 尚未成为 GSC property 的 Owner（Step 2）。
 
-## Operating
+## 日常运行
 
-The expected steady state:
+预期 steady state：
 
-- PR opens → `landing-page-ci` runs SEO lint and URL-change guards. A
-  post cannot merge if it deletes/renames a live slug without an
-  explicit redirect, or if the rendered HTML loses canonical/JSON-LD/OG
-  metadata.
-- Renames are handled as both a redirect requirement for the old slug
-  and a newly deployed URL for the destination slug, so the new page is
-  included in the post-deploy readiness and baseline inspection flow.
-- New post ships → `landing-page-production` promotion runs → `blog-indexing-on-deploy`
-  runs → IndexNow is called, GSC sitemap is submitted, and the bot PR
-  opens with the baseline verdict plus any available 7d/28d traffic
-  metrics.
-- Daily monitor runs → at T+1 the post usually moves to
-  `Crawled - currently not indexed`. By T+3–T+7 a healthy post is
-  `Submitted and indexed`. The status table reflects this.
-- If T+7 passes and the post is still not indexed, the monitor opens
-  a `Blog indexing — URLs stalled in Search Console` issue listing the
-  affected URLs, re-submits them to IndexNow, and records a history
-  comment on every refresh. Triage manually using the URL Inspection
-  live test if the issue stays open.
-- If T+14 passes, a post is indexed, and GSC still reports zero
-  impressions, the monitor opens `Blog traffic — indexed posts with zero
-  impressions`. Treat that as a distribution/query-fit issue, not an
-  indexing issue.
-- Daily traffic digest runs at 10:00 Asia/Shanghai. It writes
-  `docs/blog-traffic-digest.md`, uploads the Markdown plus compact JSON
-  summary as an artifact, optionally sends a compact Feishu card, and
-  opens or refreshes `automation/blog-traffic-digest`. The Feishu card is
-  delivery-only; the Markdown file and bot PR remain the source of truth.
+- PR opens → `landing-page-ci` 运行 SEO lint 和 URL-change guards。如果 post 删除/重命名 live slug 但没有明确 redirect，或渲染后的 HTML 丢失 canonical/JSON-LD/OG metadata，则不能 merge。
+- Renames 会同时被处理为 old slug 的 redirect requirement，以及 destination slug 的 newly deployed URL，因此新页面会进入 post-deploy readiness 和 baseline inspection flow。
+- New post ships → `landing-page-production` promotion 运行 → `blog-indexing-on-deploy` 运行 → 调用 IndexNow、提交 GSC sitemap，并由 bot PR 打开 baseline verdict 以及任何可用的 7d/28d traffic metrics。
+- Daily monitor runs → T+1 时 post 通常移动到 `Crawled - currently not indexed`。到 T+3–T+7，健康的 post 应为 `Submitted and indexed`。Status table 会反映这个状态。
+- 如果 T+7 已过而 post 仍未 indexed，monitor 会打开 `Blog indexing — URLs stalled in Search Console` issue，列出受影响 URLs，重新提交到 IndexNow，并在每次 refresh 时记录 history comment。如果 issue 持续打开，请使用 URL Inspection live test 手工 triage。
+- 如果 T+14 已过，post 已 indexed，而 GSC 仍报告零 impressions，monitor 会打开 `Blog traffic — indexed posts with zero impressions`。请把它视为 distribution/query-fit issue，而不是 indexing issue。
+- Daily traffic digest 在 Asia/Shanghai 10:00 运行。它写入 `docs/blog-traffic-digest.md`，上传 Markdown 和 compact JSON summary 作为 artifact，可选发送 compact Feishu card，并打开或刷新 `automation/blog-traffic-digest`。Feishu card 只用于投递；Markdown file 和 bot PR 仍是 source of truth。
 
-The status PR is intentionally **not** auto-merged. A maintainer
-reviews each refresh so the daily diff is part of the team's
-awareness of search-side health.
+Status PR 有意 **不** auto-merge。Maintainer 会 review 每次 refresh，让 daily diff 成为团队了解 search-side health 的一部分。
 
-## Files
+## 文件
 
-- `apps/landing-page/scripts/blog-indexing/lib.ts` — GSC auth, URL
-  Inspection helper, Search Analytics helper, sitemap helper, retry
-  wrapper, type defs.
-- `apps/landing-page/scripts/blog-indexing/detect-changed-urls.ts` —
-  diff a deploy commit against its parent for added / modified blog
-  files.
-- `apps/landing-page/scripts/blog-indexing/verify-readiness.ts` —
-  HTTP, canonical, noindex, and sitemap presence checks; polls until
-  Cloudflare propagation completes.
-- `apps/landing-page/scripts/blog-indexing/lint-blog-seo.ts` —
-  source/rendered SEO lint for changed posts in CI.
-- `apps/landing-page/scripts/blog-indexing/check-blog-url-changes.ts` —
-  prevents slug deletes/renames without redirects.
-- `apps/landing-page/scripts/blog-indexing/submit-indexnow.ts` —
-  submits changed/stalled blog URLs to IndexNow-compatible engines.
-- `apps/landing-page/scripts/blog-indexing/submit-sitemap.ts` — PUT
-  the sitemap to Search Console (one call per deploy).
-- `apps/landing-page/scripts/blog-indexing/inspect-urls.ts` — call
-  URL Inspection API per URL; emit `InspectionRecord[]`.
-- `apps/landing-page/scripts/blog-indexing/query-search-analytics.ts` —
-  query URL-level 7d/28d impressions, clicks, CTR, and position.
-- `apps/landing-page/scripts/blog-indexing/render-status.ts` —
-  rewrite `docs/blog-indexing-status.md` from the JSON sidecar.
-- `apps/landing-page/scripts/blog-indexing/scheduled-window.ts` —
-  emit URLs in today's T+1 / T+3 / T+7 / T+14 buckets.
-- `apps/landing-page/scripts/blog-indexing/escalate-stalls.ts` —
-  decide whether the stall issue needs to open / refresh / close.
-- `apps/landing-page/scripts/blog-indexing/escalate-low-traffic.ts` —
-  decide whether indexed-but-zero-impression posts need a traffic issue.
-- `apps/landing-page/scripts/blog-indexing/crosspost.ts` —
-  dry-run/token-gated dev.to or Hashnode cross-post scaffold.
-- `apps/landing-page/scripts/blog-indexing/report-3day.ts` —
-  daily T-3 cohort + 30-day rolling cohort digest written to
-  `docs/blog-traffic-digest.md`.
-- `apps/landing-page/scripts/blog-indexing/post-feishu-digest.ts` —
-  send the compact 3-day digest summary to the optional Feishu custom
-  bot webhook.
+- `apps/landing-page/scripts/blog-indexing/lib.ts` — GSC auth、URL Inspection helper、Search Analytics helper、sitemap helper、retry wrapper、type defs。
+- `apps/landing-page/scripts/blog-indexing/detect-changed-urls.ts` — 将 deploy commit 与其 parent 做 diff，找出 added / modified blog files。
+- `apps/landing-page/scripts/blog-indexing/verify-readiness.ts` — HTTP、canonical、noindex 和 sitemap presence checks；poll 直到 Cloudflare propagation 完成。
+- `apps/landing-page/scripts/blog-indexing/lint-blog-seo.ts` — CI 中针对 changed posts 的 source/rendered SEO lint。
+- `apps/landing-page/scripts/blog-indexing/check-blog-url-changes.ts` — 防止没有 redirects 的 slug 删除/重命名。
+- `apps/landing-page/scripts/blog-indexing/submit-indexnow.ts` — 将 changed/stalled blog URLs 提交给 IndexNow-compatible engines。
+- `apps/landing-page/scripts/blog-indexing/submit-sitemap.ts` — 将 sitemap PUT 到 Search Console（每次 deploy 一次调用）。
+- `apps/landing-page/scripts/blog-indexing/inspect-urls.ts` — 对每个 URL 调用 URL Inspection API；发出 `InspectionRecord[]`。
+- `apps/landing-page/scripts/blog-indexing/query-search-analytics.ts` — 查询 URL-level 7d/28d impressions、clicks、CTR 和 position。
+- `apps/landing-page/scripts/blog-indexing/render-status.ts` — 从 JSON sidecar 重写 `docs/blog-indexing-status.md`。
+- `apps/landing-page/scripts/blog-indexing/scheduled-window.ts` — 发出今天 T+1 / T+3 / T+7 / T+14 buckets 中的 URLs。
+- `apps/landing-page/scripts/blog-indexing/escalate-stalls.ts` — 判断 stall issue 是否需要 open / refresh / close。
+- `apps/landing-page/scripts/blog-indexing/escalate-low-traffic.ts` — 判断 indexed-but-zero-impression posts 是否需要 traffic issue。
+- `apps/landing-page/scripts/blog-indexing/crosspost.ts` — dry-run/token-gated dev.to 或 Hashnode cross-post scaffold。
+- `apps/landing-page/scripts/blog-indexing/report-3day.ts` — 每日 T-3 cohort + 30-day rolling cohort digest，写入 `docs/blog-traffic-digest.md`。
+- `apps/landing-page/scripts/blog-indexing/post-feishu-digest.ts` — 将 compact 3-day digest summary 发送到可选 Feishu custom bot webhook。
 - `apps/landing-page/app/pages/rss.xml.ts`
 - `apps/landing-page/public/llms.txt`
 - `apps/landing-page/public/_redirects`
 - `.github/workflows/blog-indexing-on-deploy.yml`
 - `.github/workflows/blog-indexing-monitor.yml`
 - `.github/workflows/blog-3day-report.yml`
-- `docs/blog-indexing-status.md` — human view (auto-generated)
-- `docs/blog-indexing-status.json` — canonical state (auto-generated)
-- `docs/blog-traffic-digest.md` — daily traffic digest (auto-generated)
+- `docs/blog-indexing-status.md` — human view（auto-generated）
+- `docs/blog-indexing-status.json` — canonical state（auto-generated）
+- `docs/blog-traffic-digest.md` — daily traffic digest（auto-generated）
 
-The JSON state records `firstInspectedAt` as the first time automation
-successfully captured an inspection for a URL. It is not Google's
-first-discovery time; escalation scripts prefer the post frontmatter date
-for age windows and only use this inspection timestamp as a fallback.
+JSON state 会把 `firstInspectedAt` 记录为 automation 首次成功为某个 URL 捕获 inspection 的时间。它不是 Google 的 first-discovery time；escalation scripts 在计算 age windows 时优先使用 post frontmatter date，只把该 inspection timestamp 作为 fallback。

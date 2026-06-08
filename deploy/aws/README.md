@@ -1,69 +1,69 @@
-# Open Design AWS Deployment
+# Open Design AWS 部署
 
-This directory contains an AWS CloudFormation template (`template.yaml`) to deploy Open Design into your AWS environment using Amazon Elastic Container Service (ECS) with AWS Fargate.
+本目录包含一个 AWS CloudFormation template（`template.yaml`），用于通过 Amazon Elastic Container Service (ECS) 与 AWS Fargate 将 Open Design 部署到你的 AWS 环境中。
 
-## Architecture Overview
+## 架构概览
 
-The template provisions a robust, fault-tolerant, and secure architecture for Open Design:
+这个 template 会为 Open Design 配置稳健、容错且安全的架构：
 
-*   **Networking:** A new Virtual Private Cloud (VPC) spanning two Availability Zones, with both Public and Private subnets. Two independent NAT Gateways (one in each AZ) provide highly available outbound internet access.
-*   **Load Balancing:** An internet-facing Application Load Balancer (ALB) routes incoming traffic. It optionally supports HTTPS if a custom domain and ACM certificate are provided.
-*   **Compute:** AWS ECS running on serverless Fargate instances in the private subnets. To protect the file-based SQLite database from concurrent network write corruption, the service hard-codes a single-instance baseline (DesiredCount: 1). However, it leverages the multi-AZ networking primitives for Active-Passive fault tolerance: if a task or zone fails, ECS automatically reschedules the container in the healthy AZ. The task definition includes:
-    *   The **Open Design** app container.
-    *   An **Nginx Auth Proxy** sidecar container that securely attaches the Open Design API Token to incoming `/api/` requests.
-*   **Storage:** Amazon Elastic File System (EFS) is mounted to the Fargate containers to durably store the Open Design `.od` SQLite database and file artifacts. It is configured with deletion protection (`Retain`) to prevent accidental data loss.
+*   **Networking:** 新建一个 Virtual Private Cloud (VPC)，跨两个 Availability Zones，并包含 Public 与 Private subnets。两个独立 NAT Gateways（每个 AZ 一个）提供高可用的出站 internet access。
+*   **Load Balancing:** 一个 internet-facing Application Load Balancer (ALB) 路由入站流量。如果提供 custom domain 和 ACM certificate，也可选支持 HTTPS。
+*   **Compute:** AWS ECS 在 private subnets 中运行 serverless Fargate instances。为保护基于文件的 SQLite database 免受并发 network write corruption，服务硬编码为单实例 baseline（DesiredCount: 1）。不过它仍使用 multi-AZ networking primitives 实现 Active-Passive fault tolerance：如果某个 task 或 zone 失败，ECS 会自动把 container 重新调度到健康 AZ。Task definition 包含：
+    *   **Open Design** app container。
+    *   **Nginx Auth Proxy** sidecar container，用于安全地把 Open Design API Token 附加到入站 `/api/` requests。
+*   **Storage:** Amazon Elastic File System (EFS) 会挂载到 Fargate containers，用于持久保存 Open Design `.od` SQLite database 和 file artifacts。它配置了 deletion protection（`Retain`），以防意外数据丢失。
 *   **Security:**
-    *   **Secrets Manager:** Securely stores the Open Design API Token, preventing it from being exposed in plain text.
-    *   **Security Groups:** Restrict traffic flow. The ALB requires an explicitly configured CIDR — ensure this is your VPN or corporate range to avoid unintended public exposure. Fargate only accepts traffic from the ALB; EFS only accepts traffic from Fargate.
-*   **Logging:** Amazon CloudWatch Log Group captures container logs for easy debugging.
+    *   **Secrets Manager:** 安全存储 Open Design API Token，避免明文暴露。
+    *   **Security Groups:** 限制流量流向。ALB 要求显式配置 CIDR；请确保它是你的 VPN 或公司网段，避免意外公网暴露。Fargate 只接受来自 ALB 的流量；EFS 只接受来自 Fargate 的流量。
+*   **Logging:** Amazon CloudWatch Log Group 捕获 container logs，方便调试。
 
 ## Prerequisites
 
-*   An AWS Account.
-*   [AWS CLI](https://aws.amazon.com/cli/) installed and configured with appropriate permissions.
-*   (Optional) An ACM Certificate ARN if you want to use a custom domain with HTTPS.
+*   一个 AWS Account。
+*   已安装并配置合适权限的 [AWS CLI](https://aws.amazon.com/cli/)。
+*   （可选）如果要使用带 HTTPS 的 custom domain，需要 ACM Certificate ARN。
 
 ## Parameters
 
-When deploying the CloudFormation stack, you can customize the following parameters:
+部署 CloudFormation stack 时，可以自定义以下参数：
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
-| `AllowedSourceIp` | **(Required)** The specific IPv4 CIDR block allowlisted to access the Load Balancer. The ALB requires an explicitly configured CIDR — ensure this is your VPN or corporate range to avoid unintended public exposure. Accepts any valid IPv4 range with a subnet mask between /16 and /32. | *None* |
-| `ApiToken` | **(Required)** The secure API token used to authenticate requests to the Open Design backend. It is stored securely in AWS Secrets Manager. |  |
-| `DockerImage` | **(Required)** The full repository URI and tag for the Open Design Docker image. You must provide an explicit image as the public Docker Hub baseline is currently unmaintained. | *None* |
-| `VpcCidr` | The CIDR block for the VPC. | `10.42.0.0/16` |
-| `PublicSubnet1Cidr` | The CIDR block for Public Subnet 1 (AZ1). | `10.42.1.0/24` |
-| `PublicSubnet2Cidr` | The CIDR block for Public Subnet 2 (AZ2). | `10.42.3.0/24` |
-| `PrivateSubnet1Cidr` | The CIDR block for Private Subnet 1 (AZ1). | `10.42.2.0/24` |
-| `PrivateSubnet2Cidr` | The CIDR block for Private Subnet 2 (AZ2). | `10.42.4.0/24` |
-| `TaskSize` | The compute size for the Open Design application. Allowed values: `small` (256 CPU, 1024 MiB), `medium` (512 CPU, 2048 MiB), `large` (1024 CPU, 4096 MiB). | `small` |
-| `TaskCpuArchitecture` | The CPU architecture for the ECS task. Must match the architecture of your Docker image. Allowed values (available as a dropdown): `X86_64`, `ARM64`. | `X86_64` |
-| `CustomDomainName` | *(Optional)* Your custom domain name (e.g., `design.yourcompany.com`). If provided, you must manually create a DNS CNAME/Alias record pointing to the ALB after deployment. If blank, the default ALB DNS name is used over HTTP. | *None* |
-| `AcmCertificateArn` | *(Optional)* The ARN of your AWS Certificate Manager (ACM) certificate. **Required** if `CustomDomainName` is provided. | *None* |
-| `ProxyPort` | The dynamic port used by the Nginx proxy and exposed to the Load Balancer. Must be >= 1024 (unprivileged container). | `8080` |
-| `AppStoragePath` | The container path where the `.od` SQLite directory is mounted via EFS. | `/app/.od` |
+| `AllowedSourceIp` | **（Required）** 允许访问 Load Balancer 的具体 IPv4 CIDR block。ALB 要求显式配置 CIDR；请确保它是你的 VPN 或公司网段，避免意外公网暴露。接受任何有效 IPv4 range，subnet mask 在 /16 到 /32 之间。 | *None* |
+| `ApiToken` | **（Required）** 用于认证 Open Design backend requests 的安全 API token。它会安全存储在 AWS Secrets Manager 中。 |  |
+| `DockerImage` | **（Required）** Open Design Docker image 的完整 repository URI 和 tag。必须提供显式 image，因为 public Docker Hub baseline 当前未维护。 | *None* |
+| `VpcCidr` | VPC 的 CIDR block。 | `10.42.0.0/16` |
+| `PublicSubnet1Cidr` | Public Subnet 1 (AZ1) 的 CIDR block。 | `10.42.1.0/24` |
+| `PublicSubnet2Cidr` | Public Subnet 2 (AZ2) 的 CIDR block。 | `10.42.3.0/24` |
+| `PrivateSubnet1Cidr` | Private Subnet 1 (AZ1) 的 CIDR block。 | `10.42.2.0/24` |
+| `PrivateSubnet2Cidr` | Private Subnet 2 (AZ2) 的 CIDR block。 | `10.42.4.0/24` |
+| `TaskSize` | Open Design application 的 compute size。允许值：`small`（256 CPU, 1024 MiB）、`medium`（512 CPU, 2048 MiB）、`large`（1024 CPU, 4096 MiB）。 | `small` |
+| `TaskCpuArchitecture` | ECS task 的 CPU architecture。必须与你的 Docker image 架构匹配。允许值（以下拉菜单提供）：`X86_64`、`ARM64`。 | `X86_64` |
+| `CustomDomainName` | *（Optional）* 你的 custom domain name（例如 `design.yourcompany.com`）。如果提供，部署后必须手动创建 DNS CNAME/Alias record 指向 ALB。如果留空，则使用默认 ALB DNS name，通过 HTTP 访问。 | *None* |
+| `AcmCertificateArn` | *（Optional）* 你的 AWS Certificate Manager (ACM) certificate ARN。如果提供 `CustomDomainName`，则**必填**。 | *None* |
+| `ProxyPort` | Nginx proxy 使用并暴露给 Load Balancer 的 dynamic port。必须 >= 1024（unprivileged container）。 | `8080` |
+| `AppStoragePath` | 通过 EFS 挂载 `.od` SQLite directory 的 container path。 | `/app/.od` |
 
 ## Deployment
 
-You can deploy this stack via the AWS Management Console or the AWS CLI.
+可以通过 AWS Management Console 或 AWS CLI 部署这个 stack。
 
-### Using AWS Management Console
+### 使用 AWS Management Console
 
-1.  Log in to the AWS Management Console and navigate to the **CloudFormation** service.
-2.  Click **Create stack** and select **With new resources (standard)**.
-3.  Under **Prerequisite - Prepare template**, select **Template is ready**.
-4.  Under **Specify template**, select **Upload a template file**, click **Choose file**, and select the `template.yaml` file from this directory.
-5.  Click **Next**.
-6.  Enter a **Stack name** (e.g., `open-design-stack`).
-7.  Fill in the **Parameters** according to your requirements. Note that `ApiToken`, `AllowedSourceIp`, and `DockerImage` are required.
-8.  Click **Next**. Configure any stack options if desired, then click **Next** again.
-9.  Scroll to the bottom of the review page, check the box that says **I acknowledge that AWS CloudFormation might create IAM resources**, and click **Submit**.
+1.  登录 AWS Management Console，进入 **CloudFormation** 服务。
+2.  点击 **Create stack**，选择 **With new resources (standard)**。
+3.  在 **Prerequisite - Prepare template** 下选择 **Template is ready**。
+4.  在 **Specify template** 下选择 **Upload a template file**，点击 **Choose file**，并选择本目录中的 `template.yaml`。
+5.  点击 **Next**。
+6.  输入 **Stack name**（例如 `open-design-stack`）。
+7.  按需填写 **Parameters**。注意 `ApiToken`、`AllowedSourceIp` 和 `DockerImage` 为必填。
+8.  点击 **Next**。如有需要配置 stack options，然后再次点击 **Next**。
+9.  滚动到 review 页面底部，勾选 **I acknowledge that AWS CloudFormation might create IAM resources**，然后点击 **Submit**。
 
-### Using AWS CLI
+### 使用 AWS CLI
 
-1.  Open your terminal and navigate to this directory.
-2.  Run the `aws cloudformation deploy` command, passing in the required parameters (`ApiToken`, `AllowedSourceIp`, and `DockerImage`):
+1.  打开 terminal，进入本目录。
+2.  运行 `aws cloudformation deploy` 命令，并传入必需参数（`ApiToken`、`AllowedSourceIp` 和 `DockerImage`）：
 
 ```bash
 aws cloudformation deploy \
@@ -76,14 +76,14 @@ aws cloudformation deploy \
     DockerImage="your-registry/open-design:latest"
 ```
 
-*Note: If you want to use a custom domain with HTTPS, include the `CustomDomainName` and `AcmCertificateArn` parameters in the `--parameter-overrides` list.*
+*Note: 如果想使用带 HTTPS 的 custom domain，请在 `--parameter-overrides` 列表中包含 `CustomDomainName` 和 `AcmCertificateArn` 参数。*
 
-## Accessing the Application
+## 访问应用
 
-Once the CloudFormation stack creation is complete, go to the **Outputs** tab of the stack in the AWS CloudFormation Console to find the `AlbDnsName` and `AppUrl`.
+CloudFormation stack 创建完成后，到 AWS CloudFormation Console 中该 stack 的 **Outputs** tab，查找 `AlbDnsName` 和 `AppUrl`。
 
-**If you did NOT use a custom domain:**
-Access Open Design directly using the HTTP URL provided in `AppUrl`.
+**如果没有使用 custom domain：**
+直接使用 `AppUrl` 中提供的 HTTP URL 访问 Open Design。
 
-**If you used a Custom Domain (HTTPS):**
-You must create a DNS record to route traffic to your new load balancer. Go to your DNS provider (e.g., AWS Route53, Cloudflare) and create a CNAME or Alias (A) record that points your `CustomDomainName` to the `AlbDnsName` output value. Once DNS propagates, you can access Open Design securely via your custom HTTPS domain.
+**如果使用了 Custom Domain (HTTPS)：**
+你必须创建 DNS record，将流量路由到新的 load balancer。到你的 DNS provider（例如 AWS Route53、Cloudflare）创建 CNAME 或 Alias (A) record，让你的 `CustomDomainName` 指向 `AlbDnsName` output value。DNS 生效后，即可通过自定义 HTTPS domain 安全访问 Open Design。

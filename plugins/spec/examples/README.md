@@ -1,23 +1,23 @@
-# Plugin Spec Examples
+# 插件规范示例
 
-Language: English | [简体中文](README.zh-CN.md)
+语言：[English](https://github.com/nexu-io/open-design/blob/main/plugins/spec/examples/README.md) | 简体中文
 
-These examples are source material for plugin authors and external agents. They are not bundled first-party plugins and are not scanned by the daemon at startup.
+这些示例是给插件作者和外部 agent 使用的源材料。它们不是随包一方插件，daemon 启动时不会扫描这个目录。
 
-Coverage:
+覆盖范围：
 
-- `import-screenshot-to-prototype` - import lane.
-- `create-prototype-dashboard` - prototype create mode.
-- `create-slides-pitch` - slide deck create mode.
-- `create-live-artifact-ops` - live artifact create mode.
-- `create-image-campaign` - image create mode.
-- `create-video-storyboard` - video create mode.
-- `create-hyperframes-launch` - HyperFrames create mode.
-- `export-nextjs-handoff` - export lane.
-- `share-github-pr` - share lane.
-- `deploy-vercel-static` - deploy lane.
-- `refine-critique-loop` - refine lane.
-- `extend-plugin-author` - extend lane.
+- `import-screenshot-to-prototype` - import 主类。
+- `create-prototype-dashboard` - prototype create 模式。
+- `create-slides-pitch` - slide deck create 模式。
+- `create-live-artifact-ops` - live artifact create 模式。
+- `create-image-campaign` - image create 模式。
+- `create-video-storyboard` - video create 模式。
+- `create-hyperframes-launch` - HyperFrames create 模式。
+- `export-nextjs-handoff` - export 主类。
+- `share-github-pr` - share 主类。
+- `deploy-vercel-static` - deploy 主类。
+- `refine-critique-loop` - refine 主类。
+- `extend-plugin-author` - extend 主类。
 
-Use the examples as copyable patterns, then trim aggressively for your actual plugin.
-The sample `open-design-marketplace.json` is versioned at the catalog level and each entry pins the listed plugin version so registry snapshots can be audited.
+使用这些示例作为可复制模式，然后为你的真实插件大幅裁剪。
+示例 `open-design-marketplace.json` 在 catalog 顶层有版本，每个 entry 也固定列入的插件版本，便于 registry snapshot 审计。

@@ -132,10 +132,9 @@ import {
   type ProviderModelsCache,
 } from './providerModelsCache';
 
-// Persist the entry nav-rail open/collapsed state so it survives both a
-// home -> project -> home navigation (EntryShell unmounts on the project
-// route) and a full reload. Without this the rail always reset to its
-// collapsed default on return.
+// 持久化入口 nav-rail 的打开/折叠状态，让它在 home -> project -> home 导航
+//（EntryShell 会在 project route 上卸载）和完整刷新后都能保留。否则 rail
+// 返回时总会重置到默认折叠态。
 const RAIL_OPEN_STORAGE_KEY = 'od.entry.railOpen';
 
 function readStoredRailOpen(): boolean {
@@ -442,12 +441,11 @@ export function EntryShell({
   const view: EntryViewKind = route.kind === 'home' ? route.view : 'home';
   const [previewSystemId, setPreviewSystemId] = useState<string | null>(null);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
-  // The entry nav rail is collapsed by default (Manus-style) so the entry
-  // view opens clean and full-width; the panel toggle in the topbar opens it
-  // as an overlay that dismisses on selection / backdrop click / Escape.
-  // Its open/collapsed state is persisted (localStorage) so it survives a
-  // home -> project -> home round trip (EntryShell unmounts on the project
-  // route) and a reload, instead of snapping back to collapsed.
+  // 入口 nav rail 默认折叠（Manus-style），让入口视图以干净的全宽状态打开；
+  // topbar 中的 panel toggle 会以 overlay 形式打开它，并在选择 / 点击 backdrop /
+  // Escape 时关闭。打开/折叠状态会持久化到 localStorage，因此可以跨
+  // home -> project -> home 往返（EntryShell 会在 project route 上卸载）和刷新保留，
+  // 而不是突然回到折叠态。
   const [railOpen, setRailOpen] = useState<boolean>(readStoredRailOpen);
   useEffect(() => {
     writeStoredRailOpen(railOpen);

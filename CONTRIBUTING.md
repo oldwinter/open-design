@@ -1,88 +1,88 @@
-# Contributing to Open Design
+# 贡献指南 · Contributing to Open Design
 
-Thanks for thinking about contributing. OD is small on purpose — most of the value lives in **files** (skills, design systems, prompt fragments) rather than framework code. That means the highest-leverage contributions are usually one folder, one Markdown file, or one PR-sized adapter.
+谢谢你愿意参与贡献。OD 有意保持小巧：大部分价值存在于**文件**中（skills、design systems、prompt fragments），而不是框架代码里。这意味着最高杠杆的贡献通常只是一个文件夹、一份 Markdown 文件，或一个 PR 规模的 adapter。
 
-This guide tells you exactly where to look for each type of contribution and what bar a PR has to clear before we merge it.
+这份指南会明确告诉你：每类贡献该看哪里，以及 PR 合并前必须达到什么标准。
 
-<p align="center"><b>English</b> · <a href="docs/i18n/CONTRIBUTING.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/CONTRIBUTING.de.md">Deutsch</a> · <a href="docs/i18n/CONTRIBUTING.fr.md">Français</a> · <a href="docs/i18n/CONTRIBUTING.zh-CN.md">简体中文</a> · <a href="docs/i18n/CONTRIBUTING.ja-JP.md">日本語</a></p>
+<p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/CONTRIBUTING.md">English</a> · <a href="docs/i18n/CONTRIBUTING.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/CONTRIBUTING.de.md">Deutsch</a> · <a href="docs/i18n/CONTRIBUTING.fr.md">Français</a> · <b>简体中文</b> · <a href="docs/i18n/CONTRIBUTING.ja-JP.md">日本語</a></p>
 
 ---
 
-## Three things you can ship in one afternoon
+## 一个下午就能交付的三件事
 
-| If you want to… | You're really adding | Where it lives | Ship size |
+| 如果你想…… | 你其实在添加 | 放在哪里 | 交付体量 |
 |---|---|---|---|
-| Make OD render a new kind of artifact (an invoice, an iOS Settings screen, a one-pager…) | a **Skill** | [`skills/<your-skill>/`](skills/) | one folder, ~2 files |
-| Make OD speak a new brand's visual language | a **Design System** | [`design-systems/<brand>/DESIGN.md`](design-systems/) | one Markdown file |
-| Hook up a new coding-agent CLI | an **Agent adapter** | [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts) | ~10 lines in one array |
-| Add a feature, fix a bug, lift a UX pattern from [`open-codesign`][ocod] | code | `apps/web/src/`, `apps/daemon/` | normal PR |
-| Improve docs, port a section to Français / Deutsch / 中文, fix typos | docs | `README.md`, `docs/i18n/README.fr.md`, `docs/i18n/README.de.md`, `docs/i18n/README.zh-CN.md`, `docs/`, `QUICKSTART.md` | one PR |
+| 让 OD 渲染一种新的 artifact（一张发票、一个 iOS Settings 页面、一份 one-pager……） | 一个 **Skill** | [`skills/<your-skill>/`](skills/) | 一个文件夹，约 2 个文件 |
+| 让 OD 说一种新品牌的视觉语言 | 一个 **Design System** | [`design-systems/<brand>/DESIGN.md`](design-systems/) | 一个 Markdown 文件 |
+| 接入一个新的 coding-agent CLI | 一个 **Agent adapter** | [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts) | 一个数组里约 10 行 |
+| 添加功能、修 bug、从 [`open-codesign`][ocod] 借鉴一个 UX 模式 | 代码 | `apps/web/src/`、`apps/daemon/` | 普通 PR |
+| 改进文档、把章节移植到 Français / Deutsch / 中文、修 typo | docs | `README.md`、`docs/i18n/README.fr.md`、`docs/i18n/README.de.md`、`docs/i18n/README.zh-CN.md`、`docs/`、`QUICKSTART.md` | 一个 PR |
 
-If you're not sure which bucket your idea is in, [open a discussion / issue first](https://github.com/nexu-io/open-design/issues/new) and we'll point you at the right surface.
+如果你不确定自己的想法属于哪一类，请[先开 discussion / issue](https://github.com/nexu-io/open-design/issues/new)，我们会帮你指向正确 surface。
 
 ---
 
-## Local setup
+## 本地设置
 
-The full one-page setup lives in [`QUICKSTART.md`](QUICKSTART.md). The TL;DR for contributors:
+完整的一页式设置说明在 [`QUICKSTART.md`](QUICKSTART.md)。给贡献者的 TL;DR：
 
 ```bash
 git clone https://github.com/nexu-io/open-design.git
 cd open-design
-corepack enable           # selects the pinned pnpm from packageManager
+corepack enable           # 选择 packageManager 固定的 pnpm
 pnpm install
-pnpm tools-dev run web    # daemon + web foreground loop
+pnpm tools-dev run web    # daemon + web 前台循环
 pnpm typecheck            # tsc -b --noEmit
-pnpm --filter @open-design/web build  # web package build when needed
+pnpm --filter @open-design/web build  # 需要时构建 web package
 ```
 
-Node `~24` and pnpm `10.33.x` are required. `nvm` / `fnm` are optional; use `nvm install 24 && nvm use 24` or `fnm install 24 && fnm use 24` if you prefer managing Node that way. macOS, Linux, and WSL2 are the primary paths. Windows native is supported; see [`docs/windows-troubleshooting.md`](docs/windows-troubleshooting.md) for the common setup gotchas.
+需要 Node `~24` 和 pnpm `10.33.x`。`nvm` / `fnm` 是可选工具；如果你喜欢用它们管理 Node，可运行 `nvm install 24 && nvm use 24` 或 `fnm install 24 && fnm use 24`。macOS、Linux、WSL2 是主要路径。Windows 原生也受支持；常见设置问题请参阅 [`docs/windows-troubleshooting.md`](docs/windows-troubleshooting.md)。
 
-## Docker Setup
+## Docker 设置
 
-Run Open Design without installing Node.js or pnpm.
+无需安装 Node.js 或 pnpm，也可以运行 Open Design。
 
-### Prerequisites
+### 前置条件
 
-Make sure Docker Desktop with Compose v2 is installed:
+确保已安装带 Compose v2 的 Docker Desktop：
 
 ```bash
 docker compose version
 ```
 
-### Start Open Design
+### 启动 Open Design
 
 ```bash
 cd deploy
 docker compose up -d
 ```
 
-Open in your browser:
+在浏览器中打开：
 
 ```text
 http://localhost:7456
 ```
 
-### Common Commands
+### 常用命令
 
 ```bash
-# View logs
+# 查看日志
 docker compose logs -f
 
-# Restart containers
+# 重启容器
 docker compose restart
 
-# Stop containers
+# 停止容器
 docker compose down
 
-# Pull latest image
+# 拉取最新镜像
 docker compose pull
 docker compose up -d
 ```
 
-### Optional Environment Overrides
+### 可选环境覆盖
 
-Create a `deploy/.env` file:
+创建 `deploy/.env` 文件：
 
 ```env
 OPEN_DESIGN_PORT=7456
@@ -91,46 +91,44 @@ OPEN_DESIGN_ALLOWED_ORIGINS=https://yourdomain.com
 OPEN_DESIGN_IMAGE=docker.io/vanjayak/open-design:latest
 ```
 
-> Projects and database data are persisted automatically using Docker volumes.
+> 项目和数据库数据会使用 Docker volume 自动持久化。
 
-For the full Docker guide and advanced configuration, see `QUICKSTART.md`.
-
-
+完整 Docker 指南和高级配置请参阅 `QUICKSTART.md`。
 
 ---
 
-## Adding a new Skill
+## 添加一个新 Skill
 
-A skill is a folder under [`skills/`](skills/) with a `SKILL.md` at the root, following Claude Code's [`SKILL.md` convention][skill] plus our optional `od:` extension. **No registration step.** Drop the folder in, restart the daemon, the picker shows it.
+Skill 是 [`skills/`](skills/) 下的一个文件夹，根目录包含 `SKILL.md`，遵循 Claude Code 的 [`SKILL.md` convention][skill]，再加上我们可选的 `od:` 扩展。**无需注册步骤。** 放入文件夹、重启 daemon，picker 就会显示它。
 
-### → See [`docs/skills-contributing.md`](docs/skills-contributing.md) for the full guide
+### → 完整指南见 [`docs/skills-contributing.md`](docs/skills-contributing.md)
 
-That file walks through:
+那份文档会带你走完：
 
-- **Quick start** — clone → copy a closest existing skill → run `pnpm tools-dev run web` → see the picker → open PR.
-- **What a skill IS / IS NOT** — saves you a week if your idea turns out to be a feature or vendor integration in disguise.
-- **Skill anatomy** — minimum folder layout and `SKILL.md` frontmatter cheat sheet.
-- **Running locally** — the four commands that actually matter.
-- **Merge bar** — copy-pasteable checklist of every thing a reviewer will check.
-- **PR description template** — drop into your PR body and fill in.
-- **Common rejection patterns** — the close reasons we've used recently, with concrete examples.
+- **Quick start**：clone → 复制最接近的现有 skill → 运行 `pnpm tools-dev run web` → 在 picker 中看到它 → 打开 PR。
+- **What a skill IS / IS NOT**：如果你的想法其实是 feature 或 vendor integration，这一节能帮你省下一周。
+- **Skill anatomy**：最小文件夹布局和 `SKILL.md` frontmatter 速查。
+- **Running locally**：真正重要的四条命令。
+- **Merge bar**：reviewer 会检查的所有事项，可直接复制粘贴成 checklist。
+- **PR description template**：粘到 PR body 里填空即可。
+- **Common rejection patterns**：近期 close 过的原因，附具体例子。
 
-The protocol spec (full frontmatter grammar — typed inputs, slider parameters, craft references, testing primitives) lives separately in [`docs/skills-protocol.md`](docs/skills-protocol.md).
+协议 spec（完整 frontmatter 语法：typed inputs、slider parameters、craft references、testing primitives）单独放在 [`docs/skills-protocol.md`](docs/skills-protocol.md)。
 
 ---
 
-## Adding a new Design System
+## 添加一个新 Design System
 
-A design system is a single [`DESIGN.md`](design-systems/README.md) file under `design-systems/<slug>/`. **One file, no code.** Drop it in, restart the daemon, the picker shows it grouped by category.
+Design system 是 `design-systems/<slug>/` 下的一个 [`DESIGN.md`](design-systems/README.md) 文件。**一个文件，无需代码。** 放进去、重启 daemon，picker 就会按 category 显示它。
 
-### Design system folder layout
+### Design system 文件夹布局
 
 ```text
 design-systems/your-brand/
 └── DESIGN.md
 ```
 
-### `DESIGN.md` shape
+### `DESIGN.md` 形态
 
 ```markdown
 # Design System Inspired by YourBrand
@@ -156,23 +154,23 @@ design-systems/your-brand/
 ## 9. Anti-patterns
 ```
 
-The 9-section schema is fixed — that's what skill bodies grep for. The first H1 becomes the picker label (the `Design System Inspired by` prefix is stripped automatically), and the `> Category: …` line decides which group it lands in. Existing categories are listed in [`design-systems/README.md`](design-systems/README.md); if your brand truly doesn't fit, you can introduce a new one, but **try existing categories first**.
+9-section schema 是固定的，因为 skill body 会 grep 这些内容。第一个 H1 会成为 picker label（`Design System Inspired by` 前缀会自动剥离），`> Category: …` 行决定它归入哪一组。现有 category 列在 [`design-systems/README.md`](design-systems/README.md)；如果你的品牌真的放不进现有类别，可以新增一个，但**优先尝试现有 category**。
 
-### Bar for merging a new design system
+### 合并新 design system 的标准
 
-1. **All 9 sections present.** Empty section bodies are fine for hard-to-find data (e.g. motion tokens), but the headings have to be there or the prompt grep breaks.
-2. **Hex codes are real.** Sample directly from the brand's site or product, not from memory or AI guesses. The README's "brand-spec extraction" 5-step protocol applies to maintainers too.
-3. **OKLch values for accent colors** are nice-to-have. They make palettes lerp predictably across light/dark.
-4. **No marketing fluff.** The brand's tagline is not a design token. Cut it.
-5. **Slug uses ASCII** — `linear.app` becomes `linear-app`, `x.ai` becomes `x-ai`. The 69 imported systems already follow this convention; mirror it.
+1. **9 个 section 都必须存在。** 对难以查到的数据（例如 motion token），空 section body 可以接受，但 heading 必须存在，否则 prompt grep 会断。
+2. **Hex code 必须真实。** 直接从品牌网站或产品取样，不要凭记忆或 AI 猜。README 中的 “brand-spec extraction” 5-step protocol 对 maintainer 也适用。
+3. **Accent color 提供 OKLch 值是加分项。** 这能让 palette 在 light/dark 之间可预测地 lerp。
+4. **不要营销废话。** 品牌 tagline 不是 design token。删掉。
+5. **Slug 使用 ASCII**：`linear.app` 写成 `linear-app`，`x.ai` 写成 `x-ai`。已导入的 69 套系统都遵循这个约定，请照做。
 
-The 69 product systems we ship are imported from [`VoltAgent/awesome-design-md`][acd2] via [`scripts/sync-design-systems.ts`](scripts/sync-design-systems.ts). If your brand belongs upstream, **send the PR there first** — we'll pick it up automatically on the next sync. The `design-systems/` folder is for systems that don't fit upstream, plus our two hand-authored starters.
+我们内置的 69 套产品系统来自 [`VoltAgent/awesome-design-md`][acd2]，通过 [`scripts/sync-design-systems.ts`](scripts/sync-design-systems.ts) 导入。如果你的品牌更适合进 upstream，**请先把 PR 发到那里**，我们会在下一次 sync 时自动带过来。`design-systems/` 文件夹用于放不适合 upstream 的系统，以及两套手写 starter。
 
 ---
 
-## Adding a new coding-agent CLI
+## 添加一个新的 coding-agent CLI
 
-Hooking up a new agent (e.g. some new shop's `foo-coder` CLI) is one entry in [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts):
+接入新 agent（例如某个新团队的 `foo-coder` CLI）只是在 [`apps/daemon/src/agents.ts`](apps/daemon/src/agents.ts) 中加一项：
 
 ```javascript
 {
@@ -185,33 +183,33 @@ Hooking up a new agent (e.g. some new shop's `foo-coder` CLI) is one entry in [`
 }
 ```
 
-That's it — daemon will detect it on `PATH`, the picker shows it, the chat path works. If the CLI emits **typed events** (like Claude Code's `--output-format stream-json`), wire a parser in [`apps/daemon/src/claude-stream.ts`](apps/daemon/src/claude-stream.ts) and set `streamFormat: 'claude-stream-json'`.
+就是这样。Daemon 会在 `PATH` 上检测到它，picker 会显示它，chat path 也会工作。如果该 CLI 会输出**类型化事件**（类似 Claude Code 的 `--output-format stream-json`），请在 [`apps/daemon/src/claude-stream.ts`](apps/daemon/src/claude-stream.ts) 中接入 parser，并把 `streamFormat` 设为 `'claude-stream-json'`。
 
-Bar for merging:
+合并标准：
 
-1. **A real session works end-to-end** with the new agent — paste the daemon log into the PR description showing it streamed an artifact through.
-2. **`docs/agent-adapters.md`** is updated with the CLI's quirks (does it require a key file? does it support image input? what's its non-interactive flag?).
-3. **The README's "Supported coding agents" table** gets one row.
+1. **新 agent 真实端到端跑通一次**：把 daemon log 粘到 PR 描述里，证明它流式输出了 artifact。
+2. **更新 `docs/agent-adapters.md`**：写清 CLI 的 quirks（是否需要 key file？是否支持 image input？非交互 flag 是什么？）。
+3. **README 的 “Supported coding agents” 表增加一行。**
 
 ---
 
-## Updating model `max_tokens` metadata
+## 更新 model `max_tokens` 元数据
 
-API-mode chat sends `max_tokens` to the upstream provider on every request. The web client picks that number from a three-tier lookup in [`apps/web/src/state/maxTokens.ts`](apps/web/src/state/maxTokens.ts):
+API-mode chat 每次请求都会向 upstream provider 发送 `max_tokens`。Web client 会通过 [`apps/web/src/state/maxTokens.ts`](apps/web/src/state/maxTokens.ts) 中的三层 lookup 选择该数字：
 
-1. The user's explicit override in Settings, if set.
-2. Otherwise, the per-model default in [`apps/web/src/state/litellm-models.json`](apps/web/src/state/litellm-models.json) — a vendored slice of [BerriAI/litellm][litellm]'s `model_prices_and_context_window.json` (MIT). It covers ~2k chat models across Anthropic, OpenAI, DeepSeek, Groq, Together, Mistral, Gemini, Bedrock, Vertex, OpenRouter, and friends.
-3. Otherwise, `FALLBACK_MAX_TOKENS = 8192`.
+1. 如果用户在 Settings 中显式设置了 override，则使用它。
+2. 否则使用 [`apps/web/src/state/litellm-models.json`](apps/web/src/state/litellm-models.json) 中的 per-model default；这是 [BerriAI/litellm][litellm] 的 `model_prices_and_context_window.json`（MIT）的一份 vendored slice，覆盖约 2k 个 chat model，横跨 Anthropic、OpenAI、DeepSeek、Groq、Together、Mistral、Gemini、Bedrock、Vertex、OpenRouter 等。
+3. 否则使用 `FALLBACK_MAX_TOKENS = 8192`。
 
-To pick up a newly-launched model, regenerate the vendored JSON:
+如需接入新发布的 model，请重新生成 vendored JSON：
 
 ```bash
 node --experimental-strip-types scripts/sync-litellm-models.ts
 ```
 
-The script fetches LiteLLM's catalog, filters to `mode: 'chat'` entries, projects each to its `max_output_tokens` (or `max_tokens` fallback), and writes a sorted snapshot. Commit the regenerated `litellm-models.json` alongside whatever PR triggered the refresh.
+该脚本会抓取 LiteLLM catalog，筛选 `mode: 'chat'` 条目，将每条投影到 `max_output_tokens`（或 fallback 到 `max_tokens`），并写入排序后的 snapshot。请把重新生成的 `litellm-models.json` 与触发刷新需求的 PR 一起提交。
 
-The OVERRIDES table in `maxTokens.ts` is for the rare case where LiteLLM is missing or wrong for a model id we actually use — for example, `mimo-v2.5-pro` (LiteLLM only ships MiMo via the `openrouter/xiaomi/...` and `novita/xiaomimimo/...` aliases, neither of which matches the canonical id Xiaomi's direct API uses). Keep it small; everything that LiteLLM gets right belongs upstream.
+`maxTokens.ts` 中的 OVERRIDES table 只用于 LiteLLM 缺失或错误的少数 model id，例如 `mimo-v2.5-pro`（LiteLLM 只通过 `openrouter/xiaomi/...` 和 `novita/xiaomimimo/...` alias 提供 MiMo，而它们不匹配小米 direct API 使用的 canonical id）。保持这张表很小；凡是 LiteLLM 已经正确覆盖的内容，都应该回到 upstream。
 
 [litellm]: https://github.com/BerriAI/litellm
 
@@ -219,87 +217,87 @@ The OVERRIDES table in `maxTokens.ts` is for the rare case where LiteLLM is miss
 
 ## Localization maintenance
 
-German uses formal `Sie` because OD speaks to a mixed audience of solo creators, agencies, and engineering teams; until project feedback shows that an informal `du` voice fits better, formal German is the least surprising default. Locale PRs should translate UI chrome, core docs, and display-only gallery metadata in `apps/web/src/i18n/content.ts`, but should not translate `skills/`, `design-systems/`, or prompt bodies that agents execute. Those source prompts are maintained as workflow inputs, and keeping one source language avoids multiplying prompt QA across locales. When adding or renaming a skill, design system, or prompt template, update the German display metadata and run `pnpm --filter @open-design/web test`; `content.test.ts` fails if German display coverage drifts. Daemon errors, export filenames, and agent-generated artifact text are known limitations unless a PR explicitly scopes them.
+德语使用正式的 `Sie`，因为 OD 面向 solo creators、agencies 和 engineering teams 的混合受众；除非项目反馈证明非正式 `du` 更合适，否则正式德语是最不意外的默认选择。Locale PR 应翻译 UI chrome、核心 docs，以及 `apps/web/src/i18n/content.ts` 中仅用于展示的 gallery metadata，但不应翻译 agents 会执行的 `skills/`、`design-systems/` 或 prompt bodies。这些 source prompts 作为 workflow inputs 维护，保持单一源语言可以避免在多个 locale 中重复 prompt QA。新增或重命名 skill、design system 或 prompt template 时，请更新 German display metadata 并运行 `pnpm --filter @open-design/web test`；如果 German display coverage 漂移，`content.test.ts` 会失败。Daemon errors、export filenames、agent-generated artifact text 是已知限制，除非某个 PR 明确把它们纳入 scope。
 
-For step-by-step instructions on adding a new locale (UI dictionary, README, language switcher, regional terminology), see [`TRANSLATIONS.md`](TRANSLATIONS.md).
+添加新 locale 的分步说明（UI dictionary、README、language switcher、regional terminology）见 [`TRANSLATIONS.md`](TRANSLATIONS.md)。
 
 ---
 
-## Code style
+## 代码风格
 
-We're not pedantic about formatting (Prettier on save is fine), but two rules are non-negotiable because they show up in the prompt stack and the user-facing API:
+我们不在格式上吹毛求疵（保存时跑 Prettier 没问题），但有两条不能违反，因为它们会出现在 prompt stack 和 user-facing API 中：
 
-1. **Single quotes in JS/TS.** Strings are single-quoted unless escaping makes them ugly. The codebase is already consistent — please match.
-2. **Comments in English.** Even if the PR is translating something into Deutsch or 中文, code comments stay in English so we can keep one set of greppable references.
+1. **JS/TS 使用单引号。** 字符串使用单引号，除非转义会很难看。代码库已经保持一致，请匹配现有风格。
+2. **代码注释使用英文。** 即便 PR 是把某些内容翻译成 Deutsch 或中文，代码注释也保持英文，这样才能维护一套可 grep 的引用。
 
-Beyond that:
+除此之外：
 
-- **Don't narrate.** No `// import the module`, no `// loop through items`. If the code reads obviously, the comment is noise. Save comments for non-obvious intent or constraints the code can't express.
-- **TypeScript** for `apps/web/src/`. The daemon (`apps/daemon/`) is plain ESM JavaScript with JSDoc when types matter — keep it that way.
-- **No new top-level dependencies** without a paragraph in the PR description on what we get vs. what bytes we ship. The dep list in [`package.json`](package.json) is small on purpose.
-- **Run `pnpm typecheck`** before pushing. CI runs it; failing it earns a "please fix" comment.
+- **不要叙述式注释。** 不要写 `// import the module`，也不要写 `// loop through items`。如果代码本身已经清楚，注释就是噪音。把注释留给非显而易见的意图，或代码无法表达的约束。
+- **`apps/web/src/` 使用 TypeScript。** Daemon（`apps/daemon/`）是 plain ESM JavaScript，类型重要时使用 JSDoc，请保持这个方向。
+- **不要随意添加新的 top-level dependency**，除非 PR 描述中有一段说明：我们得到了什么，以及多发了多少 bytes。[`package.json`](package.json) 的依赖列表有意保持很小。
+- **push 前运行 `pnpm typecheck`。** CI 会运行它；失败会收到 “please fix” comment。
 
 ---
 
 ## Commits & pull requests
 
-- **One concern per PR.** Adding a skill + refactoring the parser + bumping a dep is three PRs.
-- **Title is imperative + scope.** `add dating-web skill`, `fix daemon SSE backpressure when CLI hangs`, `docs: clarify .od layout`.
-- **Use the PR template.** Fill every section of [`.github/pull_request_template.md`](.github/pull_request_template.md) — Why, What users will see, Surface area, Screenshots (if UI), Bug fix verification (if bug fix), Validation. Empty sections earn a "please fill in" reply.
-- **Body explains the why.** "What does this do" is usually obvious from the diff; "why does this need to exist" rarely is.
-- **Reference an issue** if there is one. If there isn't and the PR is non-trivial, open one first so we can agree the change is wanted before you spend the time.
-- **No squash-during-review.** Push fixups; we'll squash on merge.
-- **No force-push to a shared branch** unless the reviewer asked.
+- **一个 PR 只做一件事。** 添加 skill、重构 parser、升级 dependency 是三个 PR。
+- **标题使用祈使语气 + scope。** `add dating-web skill`、`fix daemon SSE backpressure when CLI hangs`、`docs: clarify .od layout`。
+- **使用 PR template。** 填完 [`.github/pull_request_template.md`](.github/pull_request_template.md) 的每个 section：Why、What users will see、Surface area、Screenshots（如涉及 UI）、Bug fix verification（如为 bug fix）、Validation。空 section 会收到 “please fill in” 回复。
+- **正文解释 why。** “这做了什么”通常从 diff 很明显；“为什么需要它”很少明显。
+- **如果有 issue，请引用。** 如果没有且 PR 非平凡，请先开 issue，让大家先确认这个改动值得做。
+- **Review 期间不要 squash。** Push fixup；我们会在 merge 时 squash。
+- **不要 force-push 到共享分支**，除非 reviewer 要求。
 
-We don't enforce a CLA. Apache-2.0 covers us; your contribution is licensed under the same.
-
----
-
-## Reporting bugs
-
-Open an issue with:
-
-- What you ran (the exact `pnpm tools-dev ...` invocation).
-- Which agent CLI was selected (or whether you were on the BYOK path).
-- The skill + design system pair that triggered it.
-- The relevant **daemon stderr tail** — most "the artifact never rendered" reports get diagnosed in 30 seconds when we can see `spawn ENOENT` or the CLI's actual error.
-- A screenshot if it's UI.
-
-For prompt-stack bugs ("the agent emitted a purple gradient hero, the slop blacklist was supposed to forbid that"), include the **full assistant message** so we can see whether the violation was the model or the prompt.
+我们不强制 CLA。Apache-2.0 已覆盖；你的贡献按同一 license 授权。
 
 ---
 
-## Asking questions
+## 报告 bug
 
-- Architecture question, design question, "is this a bug or a misuse" → [GitHub Discussions](https://github.com/nexu-io/open-design/discussions) (preferred — searchable for the next person).
-- "How do I write a skill that does X" → Open a discussion. We'll answer it and turn the answer into [`docs/skills-protocol.md`](docs/skills-protocol.md) if it's a missing pattern.
+开 issue 时请提供：
+
+- 你运行了什么（精确的 `pnpm tools-dev ...` 调用）。
+- 选择了哪个 agent CLI（或是否走 BYOK path）。
+- 触发问题的 skill + design system 组合。
+- 相关的 **daemon stderr tail**：大多数 “artifact never rendered” 报告，只要看到 `spawn ENOENT` 或 CLI 的真实错误，30 秒就能定位。
+- 如果是 UI 问题，请提供截图。
+
+对于 prompt-stack bug（例如 “agent emitted a purple gradient hero, the slop blacklist was supposed to forbid that”），请包含**完整 assistant message**，这样我们才能判断违规来自 model 还是 prompt。
 
 ---
 
-## What we don't accept
+## 提问
 
-To keep the project focused, please don't open PRs that:
+- 架构问题、设计问题、“这是 bug 还是误用” → [GitHub Discussions](https://github.com/nexu-io/open-design/discussions)（首选，后面的人能搜到）。
+- “我该如何写一个能做 X 的 skill” → 开 discussion。我们会回答；如果那是缺失 pattern，会把答案补进 [`docs/skills-protocol.md`](docs/skills-protocol.md)。
 
-- **Vendor a model runtime.** OD's whole bet is "your existing CLI is enough". We don't ship `pi-ai`, OpenAI keys, or model loaders.
-- **Rewrite the frontend away from the current stack without prior discussion.** Next.js 16 App Router + React 18 + TS is the line. No Astro, Solid, Svelte, or other framework rewrites unless maintainers explicitly want that migration.
-- **Replace the daemon with a serverless function.** The daemon's whole point is owning a real `cwd` and spawning a real CLI. Vercel deployment of the SPA is fine; the daemon stays a daemon.
-- **Add telemetry / analytics / phone-home.** OD is local-first. The only outbound calls are to providers the user explicitly configured.
-- **Bundle a binary** without a license file and authorship attribution next to it.
+---
 
-If you're not sure whether your idea fits, open a discussion before writing the code.
+## 我们不接受什么
+
+为了保持项目聚焦，请不要打开以下 PR：
+
+- **Vendor 一个 model runtime。** OD 的核心判断是“你现有的 CLI 已经足够”。我们不打包 `pi-ai`、OpenAI keys 或 model loaders。
+- **未经讨论把 frontend 重写到当前 stack 之外。** Next.js 16 App Router + React 18 + TS 是边界。除非 maintainer 明确想迁移，否则不要重写到 Astro、Solid、Svelte 或其他框架。
+- **用 serverless function 替换 daemon。** Daemon 的价值就是拥有真实 `cwd` 并 spawn 真实 CLI。SPA 部署到 Vercel 没问题，daemon 仍然是 daemon。
+- **添加 telemetry / analytics / phone-home。** OD 是 local-first。唯一 outbound call 是用户明确配置的 provider。
+- **打包 binary**，但旁边没有 license 文件和 authorship attribution。
+
+如果不确定想法是否合适，请先开 discussion，再写代码。
 
 ---
 
 ## Becoming a Maintainer
 
-If you've been contributing consistently and want to know what the path to becoming a Maintainer looks like, the rules live in **[`MAINTAINERS.md`](MAINTAINERS.md)**. The short version:
+如果你一直在贡献，并想了解成为 Maintainer 的路径，规则在 **[`MAINTAINERS.md`](MAINTAINERS.md)**。简版如下：
 
-- A Maintainer can review, approve, and close issues. The merge button stays with the Core Team — your approval still counts as the required approval for merge.
-- The bar is **≥ 20 merged PRs** plus a published account-quality check (anti-bot, anti-sock-puppet) plus a Core Team judgment on contribution quality. There is no application form; the Core Team raises candidates internally and reaches out.
-- There are **no quotas, no SLAs, and no fixed term.** Stepping down is easy and reversible (Emeritus → return when life calms down).
-- All the thresholds, the nomination flow, the step-down rules, and the early-project waiver are in [`MAINTAINERS.md`](MAINTAINERS.md). Read that document if any of the above interests you.
+- Maintainer 可以 review、approve、关闭 issue。Merge button 仍属于 Core Team；你的 approval 仍然计为 merge 所需 approval。
+- 门槛是 **≥ 20 个 merged PR**，再加一项公开的 account-quality check（防 bot、防 sock-puppet），以及 Core Team 对贡献质量的判断。没有申请表；Core Team 会内部提出候选人并主动联系。
+- **没有 quotas、没有 SLAs、没有固定任期。** 退出很容易且可逆（Emeritus → 生活稳定后回归）。
+- 完整 thresholds、nomination flow、step-down rules 和 early-project waiver 都在 [`MAINTAINERS.md`](MAINTAINERS.md)。如果上面任何一点让你感兴趣，请读那份文档。
 
-The tl;dr: ship good PRs, review thoughtfully, hang out in [Discussions][discussions] / [Discord][discord], and the rest takes care of itself.
+tl;dr：持续提交好 PR、认真 review、在 [Discussions][discussions] / [Discord][discord] 参与交流，剩下的会自然发生。
 
 [discussions]: https://github.com/nexu-io/open-design/discussions
 [discord]: https://discord.gg/qhbcCH8Am4

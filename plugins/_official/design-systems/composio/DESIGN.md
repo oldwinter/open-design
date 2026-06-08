@@ -1,97 +1,97 @@
-# Design System Inspired by Composio
+# Inspired by Composio 的 Design System
 
 > Category: Backend & Data
-> Tool integration platform. Modern dark with colorful integration icons.
+> 工具集成平台。现代暗色界面，搭配多彩 integration icons。
 
-## 1. Visual Theme & Atmosphere
+## 1. 视觉主题与氛围
 
-Composio's interface is a nocturnal command center — a dense, developer-focused darkness punctuated by electric cyan and deep cobalt signals. The entire experience is built on an almost-pure-black canvas (`#0f0f0f`) where content floats within barely-visible containment borders, creating the feeling of a high-tech control panel rather than a traditional marketing page. It's a site that whispers authority to developers who live in dark terminals.
+Composio 的 interface 像一座夜间 command center：密集、面向开发者的黑暗，被 electric cyan 和 deep cobalt signal 点亮。整个体验建立在近乎纯黑的 canvas（`#0f0f0f`）之上，content 漂浮在几乎不可见的 containment border 中，营造出高科技 control panel 的感觉，而不是传统 marketing page。它对生活在 dark terminal 里的开发者低声传递权威。
 
-The visual language leans heavily into the aesthetic of code editors and terminal windows. JetBrains Mono appears alongside the geometric precision of abcDiatype, reinforcing the message that this is a tool built *by* developers *for* developers. Decorative elements are restrained but impactful — subtle cyan-blue gradient glows emanate from cards and sections like bioluminescent organisms in deep water, while hard-offset shadows (`4px 4px`) on select elements add a raw, brutalist edge that prevents the design from feeling sterile.
+视觉语言强烈靠近 code editor 和 terminal window 的美学。JetBrains Mono 与 abcDiatype 的几何精度并置，强化了“这是由开发者为开发者构建的工具”这一信息。Decorative elements 克制但有冲击：微妙的 cyan-blue gradient glow 从 card 和 section 中发散，像深海里的 bioluminescent organism；而 select element 上的 hard-offset shadows（`4px 4px`）则加入一种粗粝的 brutalist edge，防止设计变得无菌。
 
-What makes Composio distinctive is its tension between extreme minimalism and strategic bursts of luminous color. The site never shouts — headings use tight line-heights (0.87) that compress text into dense, authoritative blocks. Color is rationed like a rare resource: white text for primary content, semi-transparent white (`rgba(255,255,255,0.5-0.6)`) for secondary, and brand blue (`#0007cd`) or electric cyan (`#00ffff`) reserved exclusively for interactive moments and accent glows.
+Composio 的独特之处在于极端 minimalism 与策略性色彩爆发之间的张力。站点从不大喊；heading 使用 tight line-heights（0.87），把 text 压缩成密集、权威的 block。Color 像稀缺资源一样配给：primary content 用 white text，secondary 用 semi-transparent white（`rgba(255,255,255,0.5-0.6)`），brand blue（`#0007cd`）或 electric cyan（`#00ffff`）只保留给 interactive moment 和 accent glow。
 
-**Key Characteristics:**
-- Pitch-black canvas with near-invisible white-border containment (4-12% opacity)
-- Dual-font identity: geometric sans-serif (abcDiatype) for content, monospace (JetBrains Mono) for technical credibility
-- Ultra-tight heading line-heights (0.87-1.0) creating compressed, impactful text blocks
-- Bioluminescent accent strategy — cyan and blue glows that feel like they're emitting light from within
-- Hard-offset brutalist shadows (`4px 4px`) on select interactive elements
-- Monochrome hierarchy with color used only at the highest-signal moments
-- Developer-terminal aesthetic that bridges marketing and documentation
+**关键特征：**
+- Pitch-black canvas，带近乎不可见的 white-border containment（4-12% opacity）
+- 双字体身份：content 使用 geometric sans-serif（abcDiatype），technical credibility 使用 monospace（JetBrains Mono）
+- Ultra-tight heading line-heights（0.87-1.0），创造压缩、有冲击力的 text block
+- Bioluminescent accent strategy：cyan 和 blue glow 像从内部发光
+- Select interactive element 使用 hard-offset brutalist shadows（`4px 4px`）
+- Monochrome hierarchy，color 只用于最高信号时刻
+- Developer-terminal aesthetic，在 marketing 与 documentation 之间架桥
 
-## 2. Color Palette & Roles
+## 2. 色彩 Palette 与角色
 
 ### Primary
-- **Composio Cobalt** (`#0007cd`): The core brand color — a deep, saturated blue used sparingly for high-priority interactive elements and brand moments. It anchors the identity with quiet intensity.
+- **Composio Cobalt** (`#0007cd`): 核心品牌色，一种深且饱和的 blue，少量用于高优先级 interactive element 和 brand moment。它以安静强度锚定身份。
 
 ### Secondary & Accent
-- **Electric Cyan** (`#00ffff`): The attention-grabbing accent — used at low opacity (`rgba(0,255,255,0.12)`) for glowing button backgrounds and card highlights. At full saturation, it serves as the energetic counterpoint to the dark canvas.
-- **Signal Blue** (`#0089ff` / `rgb(0,137,255)`): Used for select button borders and interactive focus states, bridging the gap between Cobalt and Cyan.
-- **Ocean Blue** (`#0096ff` / `rgb(0,150,255)`): Accent border color on CTA buttons, slightly warmer than Signal Blue.
+- **Electric Cyan** (`#00ffff`): 抓注意力的 accent；以低 opacity（`rgba(0,255,255,0.12)`）用于 glowing button background 和 card highlight。全饱和时，它是 dark canvas 的能量对位。
+- **Signal Blue** (`#0089ff` / `rgb(0,137,255)`): 用于 select button border 和 interactive focus state，桥接 Cobalt 与 Cyan。
+- **Ocean Blue** (`#0096ff` / `rgb(0,150,255)`): CTA button 上的 accent border color，比 Signal Blue 略暖。
 
 ### Surface & Background
-- **Void Black** (`#0f0f0f`): The primary page background — not pure black, but a hair warmer, reducing eye strain on dark displays.
-- **Pure Black** (`#000000`): Used for card interiors and deep-nested containers, creating a subtle depth distinction from the page background.
-- **Charcoal** (`#2c2c2c` / `rgb(44,44,44)`): Used for secondary button borders and divider lines on dark surfaces.
+- **Void Black** (`#0f0f0f`): Primary page background。不是 pure black，而是稍暖一点，降低暗色显示上的眼疲劳。
+- **Pure Black** (`#000000`): 用于 card interiors 和 deep-nested containers，与 page background 形成 subtle depth distinction。
+- **Charcoal** (`#2c2c2c` / `rgb(44,44,44)`): 用于 dark surface 上的 secondary button border 和 divider line。
 
 ### Neutrals & Text
-- **Pure White** (`#ffffff`): Primary heading and high-emphasis text color on dark surfaces.
-- **Muted Smoke** (`#444444`): De-emphasized body text, metadata, and tertiary content.
-- **Ghost White** (`rgba(255,255,255,0.6)`): Secondary body text and link labels — visible but deliberately receded.
-- **Whisper White** (`rgba(255,255,255,0.5)`): Tertiary button text and placeholder content.
-- **Phantom White** (`rgba(255,255,255,0.2)`): Subtle button backgrounds and deeply receded UI chrome.
+- **Pure White** (`#ffffff`): Dark surface 上的 primary heading 和 high-emphasis text color。
+- **Muted Smoke** (`#444444`): De-emphasized body text、metadata 和 tertiary content。
+- **Ghost White** (`rgba(255,255,255,0.6)`): Secondary body text 和 link label，可见但刻意后退。
+- **Whisper White** (`rgba(255,255,255,0.5)`): Tertiary button text 和 placeholder content。
+- **Phantom White** (`rgba(255,255,255,0.2)`): Subtle button background 和深度后退的 UI chrome。
 
 ### Semantic & Accent
-- **Border Mist 12** (`rgba(255,255,255,0.12)`): Highest-opacity border treatment — used for prominent card edges and content separators.
-- **Border Mist 10** (`rgba(255,255,255,0.10)`): Standard container borders on dark surfaces.
-- **Border Mist 08** (`rgba(255,255,255,0.08)`): Subtle section dividers and secondary card edges.
-- **Border Mist 06** (`rgba(255,255,255,0.06)`): Near-invisible containment borders for background groupings.
-- **Border Mist 04** (`rgba(255,255,255,0.04)`): The faintest border — used for atmospheric separation only.
-- **Light Border** (`#e0e0e0` / `rgb(224,224,224)`): Reserved for light-surface contexts (rare on this site).
+- **Border Mist 12** (`rgba(255,255,255,0.12)`): 最高 opacity 的 border treatment，用于 prominent card edge 和 content separator。
+- **Border Mist 10** (`rgba(255,255,255,0.10)`): Dark surface 上的 standard container border。
+- **Border Mist 08** (`rgba(255,255,255,0.08)`): Subtle section divider 和 secondary card edge。
+- **Border Mist 06** (`rgba(255,255,255,0.06)`): Background grouping 上近乎不可见的 containment border。
+- **Border Mist 04** (`rgba(255,255,255,0.04)`): 最淡 border，只用于 atmospheric separation。
+- **Light Border** (`#e0e0e0` / `rgb(224,224,224)`): 保留给 light-surface context（本站少见）。
 
 ### Gradient System
-- **Cyan Glow**: Radial gradients using `#00ffff` at very low opacity, creating bioluminescent halos behind cards and feature sections.
-- **Blue-to-Black Fade**: Linear gradients from Composio Cobalt (`#0007cd`) fading into Void Black (`#0f0f0f`), used in hero backgrounds and section transitions.
-- **White Fog**: Bottom-of-page gradient transitioning from dark to a diffused white/gray, creating an atmospheric "horizon line" effect near the footer.
+- **Cyan Glow**: 使用 very low opacity `#00ffff` 的 radial gradient，在 card 和 feature section 后方制造 bioluminescent halo。
+- **Blue-to-Black Fade**: 从 Composio Cobalt（`#0007cd`）淡入 Void Black（`#0f0f0f`）的 linear gradient，用于 hero background 和 section transition。
+- **White Fog**: 页面底部从暗色过渡到 diffused white/gray 的 gradient，在 footer 附近制造 atmospheric "horizon line" effect。
 
-## 3. Typography Rules
+## 3. 字体规则
 
 ### Font Family
-- **Primary**: `abcDiatype`, with fallbacks: `abcDiatype Fallback, ui-sans-serif, system-ui, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji`
-- **Monospace**: `JetBrains Mono`, with fallbacks: `JetBrains Mono Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New`
-- **System Monospace** (fallback): `Menlo`, `monospace` for smallest inline code
+- **Primary**: `abcDiatype`，fallbacks: `abcDiatype Fallback, ui-sans-serif, system-ui, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji`
+- **Monospace**: `JetBrains Mono`，fallbacks: `JetBrains Mono Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New`
+- **System Monospace** (fallback): `Menlo`, `monospace`，用于最小 inline code
 
 ### Hierarchy
 
 | Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
 |------|------|------|--------|-------------|----------------|-------|
-| Display / Hero | abcDiatype | 64px (4rem) | 400 | 0.87 (ultra-tight) | normal | Massive, compressed headings |
-| Section Heading | abcDiatype | 48px (3rem) | 400 | 1.00 (tight) | normal | Major feature section titles |
-| Sub-heading Large | abcDiatype | 40px (2.5rem) | 400 | 1.00 (tight) | normal | Secondary section markers |
-| Sub-heading | abcDiatype | 28px (1.75rem) | 400 | 1.20 (tight) | normal | Card titles, feature names |
-| Card Title | abcDiatype | 24px (1.5rem) | 500 | 1.20 (tight) | normal | Medium-emphasis card headings |
-| Feature Label | abcDiatype | 20px (1.25rem) | 500 | 1.20 (tight) | normal | Smaller card titles, labels |
-| Body Large | abcDiatype | 18px (1.125rem) | 400 | 1.20 (tight) | normal | Intro paragraphs |
-| Body / Button | abcDiatype | 16px (1rem) | 400 | 1.50 | normal | Standard body text, nav links, buttons |
+| Display / Hero | abcDiatype | 64px (4rem) | 400 | 0.87 (ultra-tight) | normal | 巨大、压缩的 heading |
+| Section Heading | abcDiatype | 48px (3rem) | 400 | 1.00 (tight) | normal | Major feature section title |
+| Sub-heading Large | abcDiatype | 40px (2.5rem) | 400 | 1.00 (tight) | normal | Secondary section marker |
+| Sub-heading | abcDiatype | 28px (1.75rem) | 400 | 1.20 (tight) | normal | Card title、feature name |
+| Card Title | abcDiatype | 24px (1.5rem) | 500 | 1.20 (tight) | normal | Medium-emphasis card heading |
+| Feature Label | abcDiatype | 20px (1.25rem) | 500 | 1.20 (tight) | normal | Smaller card title、label |
+| Body Large | abcDiatype | 18px (1.125rem) | 400 | 1.20 (tight) | normal | Intro paragraph |
+| Body / Button | abcDiatype | 16px (1rem) | 400 | 1.50 | normal | Standard body text、nav link、button |
 | Body Small | abcDiatype | 15px (0.94rem) | 400 | 1.63 (relaxed) | normal | Longer-form body text |
-| Caption | abcDiatype | 14px (0.875rem) | 400 | 1.63 (relaxed) | normal | Descriptions, metadata |
-| Label | abcDiatype | 13px (0.81rem) | 500 | 1.50 | normal | UI labels, badges |
-| Tag / Overline | abcDiatype | 12px (0.75rem) | 500 | 1.00 (tight) | 0.3px | Uppercase overline labels |
+| Caption | abcDiatype | 14px (0.875rem) | 400 | 1.63 (relaxed) | normal | Description、metadata |
+| Label | abcDiatype | 13px (0.81rem) | 500 | 1.50 | normal | UI label、badge |
+| Tag / Overline | abcDiatype | 12px (0.75rem) | 500 | 1.00 (tight) | 0.3px | Uppercase overline label |
 | Micro | abcDiatype | 12px (0.75rem) | 400 | 1.00 (tight) | 0.3px | Smallest sans-serif text |
-| Code Body | JetBrains Mono | 16px (1rem) | 400 | 1.50 | -0.32px | Inline code, terminal output |
-| Code Small | JetBrains Mono | 14px (0.875rem) | 400 | 1.50 | -0.28px | Code snippets, technical labels |
-| Code Caption | JetBrains Mono | 12px (0.75rem) | 400 | 1.50 | -0.28px | Small code references |
-| Code Overline | JetBrains Mono | 14px (0.875rem) | 400 | 1.43 | 0.7px | Uppercase technical labels |
-| Code Micro | JetBrains Mono | 11px (0.69rem) | 400 | 1.33 | 0.55px | Tiny uppercase code tags |
+| Code Body | JetBrains Mono | 16px (1rem) | 400 | 1.50 | -0.32px | Inline code、terminal output |
+| Code Small | JetBrains Mono | 14px (0.875rem) | 400 | 1.50 | -0.28px | Code snippet、technical label |
+| Code Caption | JetBrains Mono | 12px (0.75rem) | 400 | 1.50 | -0.28px | Small code reference |
+| Code Overline | JetBrains Mono | 14px (0.875rem) | 400 | 1.43 | 0.7px | Uppercase technical label |
+| Code Micro | JetBrains Mono | 11px (0.69rem) | 400 | 1.33 | 0.55px | Tiny uppercase code tag |
 | Code Nano | JetBrains Mono | 9-10px | 400 | 1.33 | 0.45-0.5px | Smallest monospace text |
 
 ### Principles
-- **Compression creates authority**: Heading line-heights are drastically tight (0.87-1.0), making large text feel dense and commanding rather than airy and decorative.
-- **Dual personality**: abcDiatype carries the marketing voice — geometric, precise, friendly. JetBrains Mono carries the technical voice — credible, functional, familiar to developers.
-- **Weight restraint**: Almost everything is weight 400 (regular). Weight 500 (medium) is reserved for small labels, badges, and select card titles. Weight 700 (bold) appears only in microscopic system-monospace contexts.
-- **Negative letter-spacing on code**: JetBrains Mono uses negative letter-spacing (-0.28px to -0.98px) for dense, compact code blocks that feel like a real IDE.
-- **Uppercase is earned**: The `uppercase` + `letter-spacing` treatment is reserved exclusively for tiny overline labels and technical tags — never for headings.
+- **Compression creates authority**：Heading line-height 大幅收紧（0.87-1.0），让大字号 text 变得密集、命令式，而不是轻飘装饰。
+- **Dual personality**：abcDiatype 承载 marketing voice：几何、精确、友好。JetBrains Mono 承载 technical voice：可信、功能性、开发者熟悉。
+- **Weight restraint**：几乎所有 text 都是 weight 400（regular）。Weight 500（medium）只保留给小 label、badge 和 select card title。Weight 700（bold）只出现在 microscopic system-monospace context。
+- **Negative letter-spacing on code**：JetBrains Mono 使用 negative letter-spacing（-0.28px 到 -0.98px），让 code block 更密、更紧，像真实 IDE。
+- **Uppercase is earned**：`uppercase` + `letter-spacing` 只保留给 tiny overline label 和 technical tag，绝不用于 heading。
 
 ## 4. Component Stylings
 
@@ -100,186 +100,186 @@ What makes Composio distinctive is its tension between extreme minimalism and st
 **Primary CTA (White Fill)**
 - Background: Pure White (`#ffffff`)
 - Text: Near Black (`oklch(0.145 0 0)`)
-- Padding: comfortable (8px 24px)
+- Padding: comfortable（8px 24px）
 - Border: none
-- Radius: subtly rounded (likely 4px based on token scale)
-- Hover: likely subtle opacity reduction or slight gray shift
+- Radius: subtly rounded（基于 token scale 推测为 4px）
+- Hover: 可能是 subtle opacity reduction 或轻微 gray shift
 
 **Cyan Accent CTA**
-- Background: Electric Cyan at 12% opacity (`rgba(0,255,255,0.12)`)
+- Background: 12% opacity 的 Electric Cyan（`rgba(0,255,255,0.12)`）
 - Text: Near Black (`oklch(0.145 0 0)`)
-- Padding: comfortable (8px 24px)
-- Border: thin solid Ocean Blue (`1px solid rgb(0,150,255)`)
-- Radius: subtly rounded (4px)
-- Creates a "glowing from within" effect on dark backgrounds
+- Padding: comfortable（8px 24px）
+- Border: thin solid Ocean Blue（`1px solid rgb(0,150,255)`）
+- Radius: subtly rounded（4px）
+- 在 dark background 上制造 "glowing from within" effect
 
 **Ghost / Outline (Signal Blue)**
 - Background: transparent
 - Text: Near Black (`oklch(0.145 0 0)`)
-- Padding: balanced (10px)
-- Border: thin solid Signal Blue (`1px solid rgb(0,137,255)`)
-- Hover: likely fill or border color shift
+- Padding: balanced（10px）
+- Border: thin solid Signal Blue（`1px solid rgb(0,137,255)`）
+- Hover: 可能 fill 或 border color shift
 
 **Ghost / Outline (Charcoal)**
 - Background: transparent
 - Text: Near Black (`oklch(0.145 0 0)`)
-- Padding: balanced (10px)
-- Border: thin solid Charcoal (`1px solid rgb(44,44,44)`)
-- For secondary/tertiary actions on dark surfaces
+- Padding: balanced（10px）
+- Border: thin solid Charcoal（`1px solid rgb(44,44,44)`）
+- 用于 dark surface 上的 secondary/tertiary action
 
 **Phantom Button**
-- Background: Phantom White (`rgba(255,255,255,0.2)`)
-- Text: Whisper White (`rgba(255,255,255,0.5)`)
-- No visible border
-- Used for deeply de-emphasized actions
+- Background: Phantom White（`rgba(255,255,255,0.2)`）
+- Text: Whisper White（`rgba(255,255,255,0.5)`）
+- 无 visible border
+- 用于深度弱化的 action
 
 ### Cards & Containers
-- Background: Pure Black (`#000000`) or transparent
-- Border: white at very low opacity, ranging from Border Mist 04 (`rgba(255,255,255,0.04)`) to Border Mist 12 (`rgba(255,255,255,0.12)`) depending on prominence
-- Radius: barely rounded corners (2px for inline elements, 4px for content cards)
-- Shadow: select cards use the hard-offset brutalist shadow (`rgba(0,0,0,0.15) 4px 4px 0px 0px`) — a distinctive design choice that adds raw depth
-- Elevation shadow: deeper containers use soft diffuse shadow (`rgba(0,0,0,0.5) 0px 8px 32px`)
-- Hover behavior: likely subtle border opacity increase or faint glow effect
+- Background: Pure Black (`#000000`) 或 transparent
+- Border: white 低 opacity，根据 prominence 从 Border Mist 04（`rgba(255,255,255,0.04)`）到 Border Mist 12（`rgba(255,255,255,0.12)`）变化
+- Radius: barely rounded corners（inline element 为 2px，content card 为 4px）
+- Shadow: select card 使用 hard-offset brutalist shadow（`rgba(0,0,0,0.15) 4px 4px 0px 0px`），这是一种增加 raw depth 的独特设计选择
+- Elevation shadow: 更深 container 使用 soft diffuse shadow（`rgba(0,0,0,0.5) 0px 8px 32px`）
+- Hover behavior: 可能是 subtle border opacity increase 或 faint glow effect
 
 ### Inputs & Forms
-- No explicit input token data extracted — inputs likely follow the dark-surface pattern with:
-  - Background: transparent or Pure Black
-  - Border: Border Mist 10 (`rgba(255,255,255,0.10)`)
-  - Focus: border shifts to Signal Blue (`#0089ff`) or Electric Cyan
-  - Text: Pure White with Ghost White placeholder
+- 未提取到显式 input token data；input 可能遵循 dark-surface pattern：
+  - Background: transparent 或 Pure Black
+  - Border: Border Mist 10（`rgba(255,255,255,0.10)`）
+  - Focus: border 切到 Signal Blue（`#0089ff`）或 Electric Cyan
+  - Text: Pure White，placeholder 为 Ghost White
 
 ### Navigation
-- Sticky top nav bar on dark/black background
-- Logo (white SVG): Composio wordmark on the left
-- Nav links: Pure White (`#ffffff`) at standard body size (16px, abcDiatype)
-- CTA button in the nav: White Fill Primary style
-- Mobile: collapses to hamburger menu, single-column layout
-- Subtle bottom border on nav (Border Mist 06-08)
+- Dark/black background 上的 sticky top nav bar
+- Logo（white SVG）：左侧 Composio wordmark
+- Nav links: Pure White（`#ffffff`），standard body size（16px，abcDiatype）
+- Nav 中的 CTA button: White Fill Primary style
+- Mobile: 折叠为 hamburger menu，single-column layout
+- Nav 下方 subtle bottom border（Border Mist 06-08）
 
 ### Image Treatment
-- Dark-themed product screenshots and UI mockups dominate
-- Images sit within bordered containers matching the card system
-- Blue/cyan gradient glows behind or beneath feature images
-- No visible border-radius on images beyond container rounding (4px)
-- Full-bleed within their card containers
+- Dark-themed product screenshots 和 UI mockups 占主导
+- Image 位于符合 card system 的 bordered container 内
+- Feature image 背后或下方使用 blue/cyan gradient glow
+- 除 container rounding（4px）外，image 没有明显 border-radius
+- 在 card container 内 full-bleed
 
 ### Distinctive Components
 
 **Stats/Metrics Display**
-- Large monospace numbers (JetBrains Mono) — "10k+" style
-- Tight layout with subtle label text beneath
+- Large monospace numbers（JetBrains Mono），例如 "10k+"
+- 紧凑 layout，下方有 subtle label text
 
 **Code Blocks / Terminal Previews**
-- Dark containers with JetBrains Mono
+- Dark container，使用 JetBrains Mono
 - Syntax-highlighted content
-- Subtle bordered containers (Border Mist 10)
+- Subtle bordered containers（Border Mist 10）
 
 **Integration/Partner Logos Grid**
-- Grid layout of tool logos on dark surface
-- Contained within bordered card
-- Demonstrates ecosystem breadth
+- Dark surface 上的 tool logos grid layout
+- 包含在 bordered card 内
+- 展示 ecosystem breadth
 
 **"COMPOSIO" Brand Display**
-- Oversized brand typography — likely the largest text on the page
-- Used as a section divider/brand statement
+- Oversized brand typography，可能是页面上最大的 text
+- 用作 section divider/brand statement
 - Stark white on black
 
-## 5. Layout Principles
+## 5. 布局原则
 
 ### Spacing System
 - Base unit: 8px
 - Scale: 1px, 2px, 4px, 6px, 8px, 10px, 12px, 14px, 16px, 18px, 20px, 24px, 30px, 32px, 40px
-- Component padding: typically 10px (buttons) to 24px (CTA buttons horizontal)
-- Section padding: generous vertical spacing (estimated 80-120px between major sections)
-- Card internal padding: approximately 24-32px
+- Component padding: 通常从 10px（button）到 24px（CTA button horizontal）
+- Section padding: major section 之间有慷慨 vertical spacing（估计 80-120px）
+- Card internal padding: 约 24-32px
 
 ### Grid & Container
-- Max container width: approximately 1200px, centered
-- Content sections use single-column or 2-3 column grids for feature cards
-- Hero: centered single-column with maximum impact
-- Feature sections: asymmetric layouts mixing text blocks with product screenshots
+- Max container width: 约 1200px，居中
+- Content section 使用 single-column 或 2-3 column grid 放 feature card
+- Hero: 居中的 single-column，最大化冲击
+- Feature sections: 非对称 layout，混合 text block 与 product screenshot
 
 ### Whitespace Philosophy
-- **Breathing room between sections**: Large vertical gaps create distinct "chapters" in the page scroll.
-- **Dense within components**: Cards and text blocks are internally compact (tight line-heights, minimal internal padding), creating focused information nodes.
-- **Contrast-driven separation**: Rather than relying solely on whitespace, Composio uses border opacity differences and subtle background shifts to delineate content zones.
+- **Breathing room between sections**: 大 vertical gap 在页面滚动中创造清晰“章节”。
+- **Dense within components**: Card 和 text block 内部紧凑（tight line-heights、minimal internal padding），形成聚焦的信息节点。
+- **Contrast-driven separation**: Composio 不只依赖 whitespace，还使用 border opacity difference 和 subtle background shift 来勾勒 content zone。
 
 ### Border Radius Scale
-- Nearly squared (2px): Inline code spans, small tags, pre blocks — the sharpest treatment, conveying technical precision
-- Subtly rounded (4px): Content cards, images, standard containers — the workhorse radius
-- Pill-shaped (37px): Select buttons and badges — creates a softer, more approachable feel for key CTAs
-- Full round (9999px+): Circular elements, avatar-like containers, decorative dots
+- Nearly squared（2px）: Inline code span、small tag、pre block；最锐利的处理，传达 technical precision
+- Subtly rounded（4px）: Content card、image、standard container；主力 radius
+- Pill-shaped（37px）: Select button 和 badge；为 key CTA 带来更柔和、更亲近的感觉
+- Full round（9999px+）: Circular element、avatar-like container、decorative dot
 
-## 6. Depth & Elevation
+## 6. 深度与 Elevation
 
 | Level | Treatment | Use |
 |-------|-----------|-----|
-| Flat (Level 0) | No shadow, no border | Page background, inline text |
-| Contained (Level 1) | Border Mist 04-08, no shadow | Background groupings, subtle sections |
-| Card (Level 2) | Border Mist 10-12, no shadow | Standard content cards, code blocks |
-| Brutalist (Level 3) | Hard offset shadow (`4px 4px`, 15% black) | Select interactive cards, distinctive feature highlights |
-| Floating (Level 4) | Soft diffuse shadow (`0px 8px 32px`, 50% black) | Modals, overlays, deeply elevated content |
+| Flat (Level 0) | No shadow, no border | Page background、inline text |
+| Contained (Level 1) | Border Mist 04-08，无 shadow | Background grouping、subtle section |
+| Card (Level 2) | Border Mist 10-12，无 shadow | Standard content card、code block |
+| Brutalist (Level 3) | Hard offset shadow（`4px 4px`，15% black） | Select interactive card、distinctive feature highlight |
+| Floating (Level 4) | Soft diffuse shadow（`0px 8px 32px`，50% black） | Modal、overlay、深度 elevated content |
 
-**Shadow Philosophy**: Composio uses shadows sparingly and with deliberate contrast. The hard-offset brutalist shadow is the signature — it breaks the sleek darkness with a raw, almost retro-computing feel. The soft diffuse shadow is reserved for truly floating elements. Most depth is communicated through border opacity gradations rather than shadows.
+**Shadow Philosophy**: Composio 少量且有意地使用 shadow。Hard-offset brutalist shadow 是签名动作；它用 raw、近似 retro-computing 的感觉打破 sleek darkness。Soft diffuse shadow 只保留给真正 floating 的 element。大多数深度通过 border opacity gradation 表达，而不是 shadow。
 
 ### Decorative Depth
-- **Cyan Glow Halos**: Radial gradient halos using Electric Cyan at low opacity behind feature cards and images. Creates a "screen glow" effect as if the UI elements are emitting light.
-- **Blue-Black Gradient Washes**: Linear gradients from Composio Cobalt to Void Black used as section backgrounds, adding subtle color temperature shifts.
-- **White Fog Horizon**: A gradient from dark to diffused white/gray at the bottom of the page, creating an atmospheric "dawn" effect before the footer.
+- **Cyan Glow Halos**: 在 feature card 和 image 背后使用低 opacity Electric Cyan 的 radial gradient halo。制造一种 UI element 正在发光的 "screen glow" effect。
+- **Blue-Black Gradient Washes**: Section background 使用从 Composio Cobalt 到 Void Black 的 linear gradient，加入 subtle color temperature shift。
+- **White Fog Horizon**: 页面底部从暗色过渡到 diffused white/gray 的 gradient，在 footer 前创造 atmospheric "dawn" effect。
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use Void Black (`#0f0f0f`) as the primary page background — never pure white for main surfaces
-- Keep heading line-heights ultra-tight (0.87-1.0) for compressed, authoritative text blocks
-- Use white-opacity borders (4-12%) for containment — they're more important than shadows here
-- Reserve Electric Cyan (`#00ffff`) for high-signal moments only — CTAs, glows, interactive accents
-- Pair abcDiatype with JetBrains Mono to reinforce the developer-tool identity
-- Use the hard-offset shadow (`4px 4px`) intentionally on select elements for brutalist personality
-- Keep button text dark (`oklch(0.145 0 0)`) even on the darkest backgrounds — buttons carry their own surface
-- Layer opacity-based borders to create subtle depth without shadows
-- Use uppercase + letter-spacing only for tiny overline labels (12px or smaller)
+- 使用 Void Black (`#0f0f0f`) 作为 primary page background；main surface 绝不使用 pure white
+- Heading line-height 保持 ultra-tight（0.87-1.0），形成 compressed、authoritative text block
+- 使用 white-opacity borders（4-12%）做 containment；这里它们比 shadow 更重要
+- 只在 high-signal moment 使用 Electric Cyan (`#00ffff`)：CTA、glow、interactive accent
+- 将 abcDiatype 与 JetBrains Mono 配对，强化 developer-tool identity
+- 在 select element 上有意使用 hard-offset shadow（`4px 4px`），注入 brutalist personality
+- 即使在最暗背景上，也保持 button text 为 dark（`oklch(0.145 0 0)`）；button 自带 surface
+- 通过 opacity-based borders 叠出 subtle depth，而不是依靠 shadow
+- Uppercase + letter-spacing 只用于 tiny overline label（12px 或更小）
 
 ### Don't
-- Don't use bright backgrounds or light surfaces as primary containers
-- Don't apply heavy shadows everywhere — depth comes from border opacity, not box-shadow
-- Don't use Composio Cobalt (`#0007cd`) as a text color — it's too dark on dark and too saturated on light
-- Don't increase heading line-heights beyond 1.2 — the compressed feel is core to the identity
-- Don't use bold (700) weight for body or heading text — 400-500 is the ceiling
-- Don't mix warm colors — the palette is strictly cool (blue, cyan, white, black)
-- Don't use border-radius larger than 4px on content cards — the precision of near-square corners is intentional
-- Don't place Electric Cyan at full opacity on large surfaces — it's an accent, used at 12% max for backgrounds
-- Don't use decorative serif or handwritten fonts — the entire identity is geometric sans + monospace
-- Don't skip the monospace font for technical content — JetBrains Mono is not decorative, it's a credibility signal
+- 不要把 bright background 或 light surface 用作 primary container
+- 不要到处使用 heavy shadows；深度来自 border opacity，而不是 box-shadow
+- 不要把 Composio Cobalt (`#0007cd`) 用作 text color；它在暗底上太暗，在亮底上又太饱和
+- 不要把 heading line-height 提高到 1.2 以上；compressed feel 是身份核心
+- 不要在 body 或 heading text 上使用 bold（700）weight；400-500 是上限
+- 不要混入 warm colors；palette 严格保持 cool（blue、cyan、white、black）
+- Content card 上不要使用大于 4px 的 border-radius；near-square corner 的精度是有意的
+- 不要在大 surface 上 full opacity 使用 Electric Cyan；它是 accent，background 中最多 12%
+- 不要使用 decorative serif 或 handwritten fonts；整个身份是 geometric sans + monospace
+- Technical content 不要跳过 monospace font；JetBrains Mono 不是装饰，而是 credibility signal
 
-## 8. Responsive Behavior
+## 8. 响应式行为
 
 ### Breakpoints
 | Name | Width | Key Changes |
 |------|-------|-------------|
-| Mobile | <768px | Single column, hamburger nav, full-width cards, reduced section padding, hero text scales down to ~28-40px |
-| Tablet | 768-1024px | 2-column grid for cards, condensed nav, slightly reduced hero text |
-| Desktop | 1024-1440px | Full multi-column layout, expanded nav with all links visible, large hero typography (64px) |
-| Large Desktop | >1440px | Max-width container centered, generous horizontal margins |
+| Mobile | <768px | Single column，hamburger nav，full-width cards，减少 section padding，hero text 缩到约 28-40px |
+| Tablet | 768-1024px | Card 使用 2-column grid，condensed nav，hero text 略微减小 |
+| Desktop | 1024-1440px | Full multi-column layout，expanded nav 显示所有 links，大 hero typography（64px） |
+| Large Desktop | >1440px | Max-width container 居中，慷慨 horizontal margins |
 
 ### Touch Targets
-- Minimum touch target: 44x44px for all interactive elements
-- Buttons use comfortable padding (8px 24px minimum) ensuring adequate touch area
-- Nav links spaced with sufficient gap for thumb navigation
+- 所有 interactive element 最小 touch target 为 44x44px
+- Button 使用 comfortable padding（最小 8px 24px），保证足够触摸面积
+- Nav link 间距足够，适合 thumb navigation
 
 ### Collapsing Strategy
-- **Navigation**: Full horizontal nav on desktop collapses to hamburger on mobile
+- **Navigation**: Desktop 上 full horizontal nav，mobile 上折叠为 hamburger
 - **Feature grids**: 3-column → 2-column → single-column stacking
 - **Hero text**: 64px → 40px → 28px progressive scaling
-- **Section padding**: Reduces proportionally but maintains generous vertical rhythm
-- **Cards**: Stack vertically on mobile with full-width treatment
-- **Code blocks**: Horizontal scroll on smaller viewports rather than wrapping
+- **Section padding**: 按比例减少，但保持慷慨 vertical rhythm
+- **Cards**: Mobile 上垂直堆叠，full-width treatment
+- **Code blocks**: 小 viewport 上 horizontal scroll，而不是 wrapping
 
 ### Image Behavior
-- Product screenshots scale proportionally within their containers
-- Dark-themed images maintain contrast on the dark background at all sizes
-- Gradient glow effects scale with container size
-- No visible art direction changes between breakpoints — same crops, proportional scaling
+- Product screenshot 在 container 内按比例缩放
+- Dark-themed image 在所有尺寸上保持暗色背景上的对比
+- Gradient glow effect 随 container size 缩放
+- Breakpoint 之间没有明显 art direction change：same crops、proportional scaling
 
 ## 9. Agent Prompt Guide
 
@@ -294,17 +294,17 @@ What makes Composio distinctive is its tension between extreme minimalism and st
 - Button Border: "Signal Blue (#0089ff)"
 
 ### Example Component Prompts
-- "Create a feature card with a near-black background (#000000), barely visible white border at 10% opacity, subtly rounded corners (4px), and a hard-offset shadow (4px right, 4px down, 15% black). Use Pure White for the title in abcDiatype at 24px weight 500, and Ghost White (60% opacity) for the description at 16px."
-- "Design a primary CTA button with a solid white background, near-black text, comfortable padding (8px vertical, 24px horizontal), and subtly rounded corners. Place it next to a secondary button with transparent background, Signal Blue border, and matching padding."
-- "Build a hero section on Void Black (#0f0f0f) with a massive heading at 64px, line-height 0.87, in abcDiatype. Center the text. Add a subtle blue-to-black gradient glow behind the content. Include a white CTA button and a cyan-accented secondary button below."
-- "Create a code snippet display using JetBrains Mono at 14px with -0.28px letter-spacing on a black background. Add a Border Mist 10 border (rgba(255,255,255,0.10)) and 4px radius. Show syntax-highlighted content with white and cyan text."
-- "Design a navigation bar on Void Black with the Composio wordmark in white on the left, 4-5 nav links in white abcDiatype at 16px, and a white-fill CTA button on the right. Add a Border Mist 06 bottom border."
+- "创建 feature card：near-black background (#000000)，几乎不可见的 10% opacity white border，subtly rounded corners（4px），以及 hard-offset shadow（右移 4px、下移 4px、15% black）。Title 使用 Pure White、abcDiatype 24px weight 500；description 使用 Ghost White（60% opacity）、16px。"
+- "设计 primary CTA button：solid white background、near-black text、comfortable padding（8px vertical、24px horizontal）和 subtly rounded corners。旁边放一个 secondary button，transparent background、Signal Blue border，并保持 matching padding。"
+- "构建 hero section：Void Black (#0f0f0f)，使用 64px、line-height 0.87 的 abcDiatype massive heading。Text 居中。Content 背后加入 subtle blue-to-black gradient glow。下方包含 white CTA button 和 cyan-accented secondary button。"
+- "创建 code snippet display：使用 JetBrains Mono 14px、-0.28px letter-spacing，黑色背景。添加 Border Mist 10 border（rgba(255,255,255,0.10)）和 4px radius。用 white 和 cyan text 展示 syntax-highlighted content。"
+- "设计 navigation bar：Void Black 上左侧为 white Composio wordmark，4-5 个 nav links 使用 white abcDiatype 16px，右侧为 white-fill CTA button。添加 Border Mist 06 bottom border。"
 
 ### Iteration Guide
-When refining existing screens generated with this design system:
-1. Focus on ONE component at a time
-2. Reference specific color names and hex codes from this document — "use Ghost White (rgba(255,255,255,0.6))" not "make it lighter"
-3. Use natural language descriptions — "make the border barely visible" = Border Mist 04-06
-4. Describe the desired "feel" alongside specific measurements — "compressed and authoritative heading at 48px with line-height 1.0"
-5. For glow effects, specify "Electric Cyan at 12% opacity as a radial gradient behind the element"
-6. Always specify which font — abcDiatype for marketing, JetBrains Mono for technical/code content
+在细化用此 design system 生成的现有 screen 时：
+1. 一次只关注一个 component
+2. 引用本文档中的具体 color name 和 hex code；写 "use Ghost White (rgba(255,255,255,0.6))"，不要只写 "make it lighter"
+3. 使用自然语言描述；"make the border barely visible" = Border Mist 04-06
+4. 把期望的“feel”和具体 measurement 放在一起描述，例如 "compressed and authoritative heading at 48px with line-height 1.0"
+5. 对 glow effect，明确写 "Electric Cyan at 12% opacity as a radial gradient behind the element"
+6. 始终指定 font：marketing 使用 abcDiatype，technical/code content 使用 JetBrains Mono

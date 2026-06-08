@@ -1,142 +1,142 @@
 # Custom theme — protocol
 
-Loaded only when the user has opted into the **custom** theme route in Step 1 of the Design flow. Custom produces a **complete OKLCH palette + free-font pairing tuned to this brief** — a one-off theme written inline into the page's `:root`, not a permanent catalog entry.
+仅当用户在 Design flow 的 Step 1 中选择 **custom** theme route 时加载。Custom 会生成一套**针对本 brief 调优的完整 OKLCH palette + free-font pairing**；它是一次性 theme，直接内联写入页面 `:root`，不是永久 catalog entry。
 
-**The freedom is the combination, not the rules.** Every constraint in [`color.md`](color.md), [`typography.md`](typography.md), and [`anti-patterns.md`](anti-patterns.md) still applies. The 65 slop-test gates fire unchanged. The Step 5 preview block surfaces the palette + pairing in plain text *before* any code is emitted, so the user can redirect.
+**自由在于组合，不在于规则。**[`color.md`](color.md)、[`typography.md`](typography.md) 和 [`anti-patterns.md`](anti-patterns.md) 中的每条约束仍然适用。65 个 slop-test gates 原样触发。Step 5 preview block 会在任何 code 输出前，用 plain text 展示 palette + pairing，方便用户重定向。
 
 ## Two words, plain English
 
-- **catalog** — the named-theme catalogue. Hallmark's 22 themes (Specimen, Atelier, Brutal, Salon, Newsprint, Linen, Studio, Manifesto, Terminal, Midnight, Almanac, Garden, Quiet, Riso, Sport, Bloom, Coral, Violet, Aurora, Halo, Plume, Editorial). Each one is a fixed combination of paper-band, display-style, and accent-hue. The rotation rule cycles through them so two consecutive runs don't read alike. **This is the default.** Most briefs use it.
-- **custom** — made-to-measure. A one-off palette + font pairing constructed specifically for one brief. The skill builds the OKLCH values, picks fonts, and stamps the page — but does **not** extend the catalog with a new theme. The rules behind the catalog (paper L bands, accent chroma caps, font ban list, slop-test gates) all still apply; only the *combination* is per-brief.
+- **catalog** — named-theme catalogue。Hallmark 的 22 个 themes（Specimen、Atelier、Brutal、Salon、Newsprint、Linen、Studio、Manifesto、Terminal、Midnight、Almanac、Garden、Quiet、Riso、Sport、Bloom、Coral、Violet、Aurora、Halo、Plume、Editorial）。每个都是 paper-band、display-style 和 accent-hue 的固定组合。Rotation rule 会循环它们，让连续两次运行读起来不同。**这是默认值。**多数 briefs 使用它。
+- **custom** — made-to-measure。为单个 brief 专门构建的一次性 palette + font pairing。Skill 会构建 OKLCH values、选择 fonts 并 stamp 页面，但**不会**把 catalog 扩展出一个新 theme。Catalog 背后的规则（paper L bands、accent chroma caps、font ban list、slop-test gates）仍全部适用；只有*组合*是 per-brief。
 
 ## When to surface this fork — Step 1 trigger signals
 
-Hallmark must **not** offer catalog-vs-custom on every prompt. That's friction, not discipline. Surface the fork only when the brief carries one of these signals:
+Hallmark **不得**在每个 prompt 上都提供 catalog-vs-custom。这是摩擦，不是纪律。只有当 brief 带有以下信号之一时，才暴露这个 fork：
 
-1. **Explicit ask** — the user types `custom`, "custom theme", "tailored to our brand", "make it ours", "something unique", "play around with the colors and fonts", "I want my own palette".
-2. **Named brand colour** — the user gives a specific anchor colour as a hex / OKLCH / brand name. Example: "use our terracotta", "the brand red is hex #c0392b", "anchor on sea-blue".
-3. **Multi-attribute aesthetic the catalog can't carry** — three or more vibe words pointing at a specific, off-catalog feel. Examples: "moss, lichen, soft pink, herbal" / "sun-drenched, market-day, carbon-black" / "late-night, neon, brutalist deli". Compare against the 22 catalog themes; if no single catalog theme is within one axis-step of the vibe, fire the fork. **One adjective ("warm", "technical", "playful") is not a signal — that's a tone, the catalog already carries it.**
-4. **Brand-mood reference attached** — the user attaches a colour swatch, a moodboard, a Pantone chip. (If they attach a *page* screenshot, route to `study` instead; custom is for brand colour / mood, study is for design DNA.)
+1. **Explicit ask** — 用户输入 `custom`、"custom theme"、"tailored to our brand"、"make it ours"、"something unique"、"play around with the colors and fonts"、"I want my own palette"。
+2. **Named brand colour** — 用户给出明确 anchor colour，形式可以是 hex / OKLCH / brand name。例如："use our terracotta"、"the brand red is hex #c0392b"、"anchor on sea-blue"。
+3. **Catalog 承载不了的 multi-attribute aesthetic** — 三个或更多 vibe words 指向具体且 off-catalog 的感觉。例如："moss, lichen, soft pink, herbal" / "sun-drenched, market-day, carbon-black" / "late-night, neon, brutalist deli"。与 22 个 catalog themes 对照；如果没有单个 catalog theme 在 vibe 的一个 axis-step 内，就触发 fork。**单个 adjective（"warm"、"technical"、"playful"）不是信号；那只是 tone，catalog 已经能承载。**
+4. **Brand-mood reference attached** — 用户附带 colour swatch、moodboard、Pantone chip。（如果附的是*页面* screenshot，route 到 `study`；custom 用于 brand colour / mood，study 用于 design DNA。）
 
-If any signal fires, ask one short follow-up before picking a theme:
+如果任一信号触发，选 theme 前先问一个简短 follow-up：
 
 > *"This brief reads like a custom palette would fit better than the 22 named themes. Want me to construct a custom OKLCH palette + free-font pairing tuned to <one-line summary of the vibe>, or stay on the catalog for variety + speed?"*
 
-Wait for the user to answer. If they say custom (or yes / go) → continue this protocol from § A. If they say catalog (or no / stay catalog) → drop the fork and proceed with the catalog route. **Default to catalog** — silence routes to catalog, not custom.
+等待用户回答。如果用户说 custom（或 yes / go）→ 从 § A 继续本协议。如果用户说 catalog（或 no / stay catalog）→ 放弃 fork，继续 catalog route。**默认 catalog**：沉默 route 到 catalog，不是 custom。
 
-If **none** of the signals fires, do not mention the fork at all. Continue silently with the catalog flow.
+如果**没有**信号触发，完全不要提 fork。静默继续 catalog flow。
 
 ---
 
 ## § A · The one follow-up question
 
-Once the user names `custom` as the theme route, ask **one** thing in **one** message:
+一旦用户把 `custom` 命名为 theme route，只问**一个**问题，用**一条**消息：
 
 > *"Custom needs one input — describe the brand's vibe in 4–8 words. Examples: 'archival warmth, hand-set, no varnish' · 'industrial precision, cool, technical' · 'moss, lichen, soft pink, herbal' · 'sun-drenched, market-day, carbon black' · 'late-night, neon, brutalist deli'.*
 >
 > *Optional second input: an anchor colour — hex, OKLCH, or a name like 'terracotta', 'sea-blue', 'forest-green', 'dusty-pink'. If you skip it, I'll pick one from the vibe."*
 
-**Do not ask anything else.** Audience / use / tone (Step 1) plus the brand vibe is already enough signal. The model has no business asking the user to nominate paper lightness or font weights — that's the model's job.
+**不要再问其他任何问题。**Audience / use / tone（Step 1）加上 brand vibe 已经足够。让用户指定 paper lightness 或 font weights 不是 model 该做的事，那是 model 的工作。
 
-If the user gives just two or three words ("sun-drenched"), proceed; the recipe below extracts enough. If the user gives a paragraph, accept it but compress to 4–8 words for the stamp.
+如果用户只给两三个词（"sun-drenched"），继续执行；下面的 recipe 能提取足够信息。如果用户给一段话，接受它，但在 stamp 中压缩为 4–8 words。
 
 ---
 
 ## § B · Palette construction
 
-Build the palette in this order. Each step cites the rule it's obeying — do not restate the rule, just apply it.
+按以下顺序构建 palette。每一步都在遵守对应规则；不要复述规则，只应用规则。
 
 ### B.1 · Anchor accent first
 
-- Convert the user's named or hex anchor into OKLCH.
-- Clamp chroma to **0.12–0.20** per [`color.md`](color.md) § "Accent — the discipline".
-- If user skipped: derive hue from the vibe — *warmth* → 30–60° · *technical/industrial* → 220–250° · *botanical/moss* → 130–160° · *late-night/neon* → 280–320° · *sun-drenched/market* → 60–80° amber. Keep chroma 0.12–0.16 (mid-saturation; saturation comes from contrast against neutral, not from chroma).
+- 将用户命名或 hex anchor 转为 OKLCH。
+- 按 [`color.md`](color.md) § "Accent — the discipline"，将 chroma clamp 到 **0.12–0.20**。
+- 如果用户跳过：从 vibe 推导 hue：*warmth* → 30–60°；*technical/industrial* → 220–250°；*botanical/moss* → 130–160°；*late-night/neon* → 280–320°；*sun-drenched/market* → 60–80° amber。保持 chroma 0.12–0.16（中等饱和；saturation 来自与 neutral 的对比，而不是 chroma 本身）。
 
 ### B.2 · Paper
 
-- Derive paper L from the vibe:
-  - bright/airy/breakfast/hand-set → **L 95–98 %** (warm-tinted)
-  - archival/editorial/restrained → **L 92–95 %** (warm-tinted)
-  - technical/clinical/spec-sheet → **L 98–100 % near-white** (cool-tinted; can equal #fff but tinted neutrals downstream)
-  - dark/restless/late-night/manifesto → **L 12–18 %** (anchor-tinted)
-- **Always tint paper toward the anchor hue with chroma 0.005–0.020** per [`color.md`](color.md) § "Neutral tinting". Pure-white #fff is allowed only when ink + accent + greys carry the chroma; the paper itself never carries chroma 0 in *both* directions.
-- Paper-2 (one elevation step): step ±2–4 % L from paper.
-- Paper-3 (optional second step): step ±5–7 % L from paper. Skip on minimal palettes.
+- 从 vibe 推导 paper L：
+  - bright/airy/breakfast/hand-set → **L 95–98 %**（warm-tinted）
+  - archival/editorial/restrained → **L 92–95 %**（warm-tinted）
+  - technical/clinical/spec-sheet → **L 98–100 % near-white**（cool-tinted；可等于 #fff，但下游 neutrals 要 tinted）
+  - dark/restless/late-night/manifesto → **L 12–18 %**（anchor-tinted）
+- 按 [`color.md`](color.md) § "Neutral tinting"，**始终让 paper 朝 anchor hue tint，chroma 0.005–0.020**。只有当 ink + accent + greys 承载 chroma 时，pure-white #fff 才允许；paper 本身不能在*两个方向*都 chroma 0。
+- Paper-2（一个 elevation step）：从 paper 起按 ±2–4 % L 调整。
+- Paper-3（可选第二 step）：从 paper 起按 ±5–7 % L 调整。Minimal palettes 可跳过。
 
 ### B.3 · Ink
 
-- If paper L < 50: ink L **88–96 %**.
-- If paper L ≥ 50: ink L **16–24 %**.
-- Tint ink chroma **0.005–0.014** toward anchor (a shade darker / lighter, never neutral).
-- Ink-2 (secondary text): step 4–8 % L away from ink toward paper. Same hue family.
+- 如果 paper L < 50：ink L **88–96 %**。
+- 如果 paper L ≥ 50：ink L **16–24 %**。
+- Ink chroma **0.005–0.014**，朝 anchor tint（更暗或更亮的一阶，绝不 neutral）。
+- Ink-2（secondary text）：从 ink 起向 paper 方向移动 4–8 % L。同一 hue family。
 
 ### B.4 · Supporting greys
 
-Step by ~6–10 % L between paper and ink, all tinted toward anchor with chroma 0.005–0.018:
+在 paper 和 ink 之间按约 6–10 % L 步进，全部朝 anchor tint，chroma 0.005–0.018：
 
-- `--color-rule` — dividers · L ~70–82 % (light paper) or ~26–34 % (dark paper).
-- `--color-rule-2` — secondary dividers · 4–6 % L closer to paper than rule.
-- `--color-muted` — de-emphasised text · L ~38–56 %.
-- `--color-neutral` — mid-grey equivalent · L ~30–56 %.
+- `--color-rule` — dividers；light paper 上 L 约 70–82 %，dark paper 上 L 约 26–34 %。
+- `--color-rule-2` — secondary dividers；比 rule 更靠近 paper 4–6 % L。
+- `--color-muted` — de-emphasised text；L 约 38–56 %。
+- `--color-neutral` — mid-grey equivalent；L 约 30–56 %。
 
-These are not arbitrary. The L-step gives the palette **typographic depth** without leaning on accent.
+这些不是任意值。L-step 让 palette 具备**typographic depth**，而不是依赖 accent。
 
 ### B.5 · Focus
 
-- Same hue as accent, slightly higher chroma (0.18–0.22) for visibility.
-- Same L as accent ±5 %.
-- Used only on `:focus-visible` — must show instantly per [`microinteractions.md`](microinteractions.md) § "Focus is a first-class state".
+- 与 accent 相同 hue，chroma 略高（0.18–0.22），以保证可见。
+- L 与 accent 相同 ±5 %。
+- 只用于 `:focus-visible`；按 [`microinteractions.md`](microinteractions.md) § "Focus is a first-class state"，必须立刻显示。
 
-### B.6 · Accent-ink (overlay text colour on accent)
+### B.6 · Accent-ink（accent 上的 overlay text colour）
 
-- If accent L > 50: use ink (text reads dark on accent fill).
-- If accent L ≤ 50: use paper (text reads light on accent fill).
-- Verify **APCA contrast ≥ 7:1** for body, ≥ 3:1 for large text per [`color.md`](color.md).
+- 如果 accent L > 50：用 ink（accent fill 上的深色文字）。
+- 如果 accent L ≤ 50：用 paper（accent fill 上的浅色文字）。
+- 按 [`color.md`](color.md) 验证 body **APCA contrast ≥ 7:1**，large text ≥ 3:1。
 
 ### B.7 · Verification
 
-- **Gate 8** (no pure #000 / #fff base): paper and ink both have chroma > 0. Pass.
-- **Gate 24** (no zero-chroma neutrals): every grey has chroma ≥ 0.005. Pass.
-- **Gate 25** (accent ≤ 5 % footprint): plan the accent's role on the page (active state, one wordmark dot, one CTA fill). Don't carpet a section in accent.
+- **Gate 8**（no pure #000 / #fff base）：paper 和 ink 都 chroma > 0。Pass。
+- **Gate 24**（no zero-chroma neutrals）：每个 grey 都 chroma ≥ 0.005。Pass。
+- **Gate 25**（accent ≤ 5 % footprint）：规划 accent 在页面中的角色（active state、一个 wordmark dot、一个 CTA fill）。不要把整个 section 铺满 accent。
 
 ---
 
 ## § C · Font pairing
 
-Custom pulls from the seven tone-pairings in [`typography.md`](typography.md) — Editorial, Technical, Brutalist, Soft, Luxury, Playful, Austere, Workshop. Each tone has a **free baseline** and a **paid upgrade**.
+Custom 从 [`typography.md`](typography.md) 中的七组 tone-pairings 抽取：Editorial、Technical、Brutalist、Soft、Luxury、Playful、Austere、Workshop。每个 tone 都有一个 **free baseline** 和一个 **paid upgrade**。
 
 ### C.1 · The freedom
 
-The catalog pairs Display-from-tone-X with Body-from-tone-X. **Custom can mix tones** — that's the whole point:
+Catalog 会把 Display-from-tone-X 与 Body-from-tone-X 配对。**Custom 可以混合 tones**，这正是它的意义：
 
-- Editorial display + Technical body (italic Fraunces wordmark + Geist body) — works for an academic-tone SaaS.
-- Brutalist display + Editorial body (Anton + Newsreader italic) — works for a left-leaning manifesto magazine.
-- Playful display + Austere body (Bricolage Grotesque + Inter Tight) — works for a creator-tool brand.
-- Luxury display + Technical body (Cormorant Garamond + JetBrains Mono) — works for a hand-crafted dev-tool.
+- Editorial display + Technical body（italic Fraunces wordmark + Geist body）— 适用于 academic-tone SaaS。
+- Brutalist display + Editorial body（Anton + Newsreader italic）— 适用于 left-leaning manifesto magazine。
+- Playful display + Austere body（Bricolage Grotesque + Inter Tight）— 适用于 creator-tool brand。
+- Luxury display + Technical body（Cormorant Garamond + JetBrains Mono）— 适用于 hand-crafted dev-tool。
 
-Pick **one display face** and **one body face** from any tone's columns. Optional mono if the page has code or tabular data.
+从任意 tone 的 columns 中选择**一个 display face** 和**一个 body face**。如果页面包含 code 或 tabular data，可选 mono。
 
 ### C.2 · The discipline
 
-- **Free baseline only** unless the user has confirmed paid licences. Per [`typography.md`](typography.md) § "The discipline": "Never name a paid font in code without confirming the user is licensed."
-- **Banned defaults still banned** per [`typography.md`](typography.md) § "Banned defaults" — Inter / Roboto / Open Sans / Poppins / Lato / Work Sans / DM Sans / Montserrat / system-ui as display all fail Gate 1.
-- **Variable fonts are preferred** when available (Fraunces, Bricolage Grotesque, Newsreader, Geist, EB Garamond, Inter Tight) — they support optical-size and weight axes for tighter typographic control.
+- 除非用户确认已有 paid licences，否则**只用 free baseline**。按 [`typography.md`](typography.md) § "The discipline"："Never name a paid font in code without confirming the user is licensed."
+- 按 [`typography.md`](typography.md) § "Banned defaults"，**banned defaults 仍然 banned**：Inter / Roboto / Open Sans / Poppins / Lato / Work Sans / DM Sans / Montserrat / system-ui 作为 display 都会触发 Gate 1。
+- 可用时**优先 variable fonts**（Fraunces、Bricolage Grotesque、Newsreader、Geist、EB Garamond、Inter Tight），它们支持 optical-size 和 weight axes，可做更紧的 typographic control。
 
 ### C.3 · The pair must read
 
-Once you have display + body, mentally render the page:
+选出 display + body 后，在脑中渲染页面：
 
-- Does the display face have enough weight contrast (200/400 next to 700/900) per [`typography.md`](typography.md) § "Commit to extremes"?
-- Does the body face read at the chosen body size (≥ 14 px floor; default 1 rem) at the chosen measure (45–75 ch)?
-- If display is mono and body is mono — that's only allowed when the page IS the design (Terminal-aesthetic, true single-font specimen). Per [`typography.md`](typography.md) line 7.
+- Display face 是否按 [`typography.md`](typography.md) § "Commit to extremes" 具备足够 weight contrast（200/400 旁边是 700/900）？
+- Body face 在所选 body size（≥ 14 px floor；默认 1 rem）和所选 measure（45–75 ch）下是否可读？
+- 如果 display 是 mono 且 body 也是 mono，只有当页面本身*就是* design choice（Terminal-aesthetic、真正 single-font specimen）时才允许。见 [`typography.md`](typography.md) line 7。
 
-If any answer is no, redirect — pick a different body face or shift the display weight.
+如果任何答案为 no，重定向：选择不同 body face，或调整 display weight。
 
 ---
 
 ## § D · Custom-axis computation
 
-A custom theme must declare its three diversification-rule axis values explicitly so [`SKILL.md`](../SKILL.md) § "Theme-diversification rule" fires the same way as it does on catalog themes.
+Custom theme 必须明确声明三个 diversification-rule axis values，这样 [`SKILL.md`](../SKILL.md) § "Theme-diversification rule" 能像 catalog themes 一样触发。
 
 ### D.1 · Paper band
 
@@ -146,36 +146,36 @@ A custom theme must declare its three diversification-rule axis values explicitl
 
 ### D.2 · Display style
 
-Pick one based on the chosen display face:
+基于所选 display face 选择一个：
 
-- **italic-serif** — Fraunces italic, Newsreader italic, EB Garamond italic, Cormorant italic
-- **roman-serif** — Source Serif 4, Newsreader, Crimson Pro, Bitter, Cardo
-- **geometric-sans** — Geist, Bricolage Grotesque, Inter Tight, Manrope, Sora
-- **mono** — Geist Mono, JetBrains Mono, IBM Plex Mono, Space Mono
-- **display-condensed-italic** — Migra italic, Tobias italic
-- **display-condensed-bold** — Anton, Bebas Neue, Oswald, Barlow Condensed
-- **display-heavy** — Inter Tight 900, Bricolage 800, Druk-class
-- **slab-serif** — Roboto Slab, Bitter heavy, Zilla Slab
-- **system-native** — system-ui, Inter Tight 400 (austere)
+- **italic-serif** — Fraunces italic、Newsreader italic、EB Garamond italic、Cormorant italic
+- **roman-serif** — Source Serif 4、Newsreader、Crimson Pro、Bitter、Cardo
+- **geometric-sans** — Geist、Bricolage Grotesque、Inter Tight、Manrope、Sora
+- **mono** — Geist Mono、JetBrains Mono、IBM Plex Mono、Space Mono
+- **display-condensed-italic** — Migra italic、Tobias italic
+- **display-condensed-bold** — Anton、Bebas Neue、Oswald、Barlow Condensed
+- **display-heavy** — Inter Tight 900、Bricolage 800、Druk-class
+- **slab-serif** — Roboto Slab、Bitter heavy、Zilla Slab
+- **system-native** — system-ui、Inter Tight 400（austere）
 - **risograph-bold** — bold sans with hand-crafted feel
-- **handwritten** — Caveat, Sacramento, Patrick Hand (rare; only when brand demands)
+- **handwritten** — Caveat、Sacramento、Patrick Hand（少见；仅当 brand 需要）
 
 ### D.3 · Accent hue band
 
-- **warm** — hue 10–60° (red, orange, amber)
-- **cool** — hue 200–300° (blue, indigo, cyan)
-- **neutral** — no chromatic accent (austere; chroma < 0.05)
-- **chromatic-other** — anything outside warm/cool/neutral. Sub-tag the specific anchor: `chromatic-green ~145°` · `chromatic-sage ~120°` · `chromatic-phosphor ~150°` · `chromatic-terracotta ~30°` · `chromatic-dusty-pink ~350°` · `chromatic-moss ~140°` · `chromatic-amber ~75°`.
+- **warm** — hue 10–60°（red、orange、amber）
+- **cool** — hue 200–300°（blue、indigo、cyan）
+- **neutral** — 无 chromatic accent（austere；chroma < 0.05）
+- **chromatic-other** — warm/cool/neutral 之外的任何颜色。加上具体 anchor sub-tag：`chromatic-green ~145°` · `chromatic-sage ~120°` · `chromatic-phosphor ~150°` · `chromatic-terracotta ~30°` · `chromatic-dusty-pink ~350°` · `chromatic-moss ~140°` · `chromatic-amber ~75°`。
 
 ### D.4 · Where these go
 
-Write all three into the macrostructure stamp (§ E below) and the `.hallmark/log.json` entry (§ F below). They are the durable record. The next run reads them.
+把三者全部写入 macrostructure stamp（§ E）和 `.hallmark/log.json` entry（§ F）。它们是 durable record。下一次运行会读取它们。
 
 ---
 
 ## § E · Stamp format
 
-The CSS comment at the top of the produced stylesheet (per [`SKILL.md`](../SKILL.md) Step 6 § "Stamp the output"):
+生成 stylesheet 顶部的 CSS 注释（按 [`SKILL.md`](../SKILL.md) Step 6 § "Stamp the output"）：
 
 ```css
 /* Hallmark · macrostructure: <name> · <hero archetype + knobs>
@@ -185,7 +185,7 @@ The CSS comment at the top of the produced stylesheet (per [`SKILL.md`](../SKILL
  */
 ```
 
-Concrete example:
+Concrete example：
 
 ```css
 /* Hallmark · macrostructure: Long Document · H5 hero knobs: salutation=time-stamp, body=2 paragraphs, signoff=initials
@@ -195,13 +195,13 @@ Concrete example:
  */
 ```
 
-The stamp is the durable record. `audit` reads it. The next run reads it. The user reads it.
+Stamp 是 durable record。`audit` 会读取它。下一次运行会读取它。用户也会读取它。
 
 ---
 
 ## § F · `.hallmark/log.json` entry shape
 
-Custom runs extend the existing schema with a `theme_axes` field and an optional `vibe` field:
+Custom runs 在现有 schema 上增加 `theme_axes` 字段和可选 `vibe` 字段：
 
 ```json
 { "date": "2026-05-01",
@@ -213,15 +213,15 @@ Custom runs extend the existing schema with a `theme_axes` field and an optional
   "brief": "Coffeebox · subscription" }
 ```
 
-Catalog entries continue to record `theme: <name>` and skip `theme_axes` (the catalog's axes are looked up from [`tokens.css`](../../../site/css/tokens.css)). Step 2.5 logic uses the same diversification check on both — for catalog entries it reads the axes from tokens.css; for custom entries it reads them from the entry.
+Catalog entries 继续记录 `theme: <name>`，并跳过 `theme_axes`（catalog axes 从 [`tokens.css`](../../../site/css/tokens.css) 查表）。Step 2.5 logic 对二者使用相同 diversification check：对 catalog entries，从 tokens.css 读取 axes；对 custom entries，从 entry 读取 axes。
 
-When rotating, **a custom run that follows another custom run must differ on at least one axis from the previous custom** — same rule as catalog-vs-catalog. A custom run that follows a catalog run must differ on at least one axis from the catalog's axes. The diversification rule is theme-route-blind.
+Rotation 时，**如果 custom run 跟在另一个 custom run 后面，必须与上一个 custom 至少有一个 axis 不同**，与 catalog-vs-catalog 规则相同。如果 custom run 跟在 catalog run 后面，必须与 catalog axes 至少有一个 axis 不同。Diversification rule 不关心 theme route。
 
 ---
 
 ## § G · Three worked examples
 
-Concrete generations to seed model imitation. Each shows the brief, the user's vibe answer, the constructed palette, the chosen pair, and the stamp.
+用于让 model imitation 有具体种子的生成示例。每个示例展示 brief、用户 vibe answer、构建出的 palette、所选 pairing 和 stamp。
 
 ### G.1 · Archival café — "Coffeebox"
 
@@ -230,19 +230,19 @@ Concrete generations to seed model imitation. Each shows the brief, the user's v
 **Vibe answer:** *"archival warmth, hand-set, no varnish."*  **Anchor:** *"terracotta."*
 
 **Palette:**
-- paper `oklch(94% 0.020 65)` — warm-cream, hue 65 (amber-warm)
-- paper-2 `oklch(91% 0.022 65)` — one elevation step
+- paper `oklch(94% 0.020 65)` — warm-cream，hue 65（amber-warm）
+- paper-2 `oklch(91% 0.022 65)` — 一个 elevation step
 - ink `oklch(22% 0.014 60)` — warm dark brown-black
 - ink-2 `oklch(40% 0.014 60)` — warm secondary
 - rule `oklch(78% 0.018 65)` — warm hairline
 - muted `oklch(54% 0.014 60)` — warm grey
-- accent `oklch(58% 0.16 35)` — terracotta (hue 35, chroma 0.16)
-- accent-ink `oklch(96% 0.014 65)` — paper for text on accent
-- focus `oklch(56% 0.20 35)` — accent at higher chroma
+- accent `oklch(58% 0.16 35)` — terracotta（hue 35，chroma 0.16）
+- accent-ink `oklch(96% 0.014 65)` — accent 上文字用 paper
+- focus `oklch(56% 0.20 35)` — 更高 chroma 的 accent
 
-**Pair:** display **Fraunces italic** (Editorial, free) · body **Source Serif 4** (Editorial, free) · mono **JetBrains Mono** (Technical, free).
+**Pair:** display **Fraunces italic**（Editorial，free）· body **Source Serif 4**（Editorial，free）· mono **JetBrains Mono**（Technical，free）。
 
-**Axes:** **light / italic-serif / chromatic-terracotta**.
+**Axes:** **light / italic-serif / chromatic-terracotta**。
 
 **Stamp:**
 ```css
@@ -262,19 +262,19 @@ Concrete generations to seed model imitation. Each shows the brief, the user's v
 **Palette:**
 - paper `oklch(13% 0.012 220)` — dark cool
 - paper-2 `oklch(17% 0.014 220)` — one step up
-- paper-3 `oklch(22% 0.014 220)` — two steps up (panels)
+- paper-3 `oklch(22% 0.014 220)` — two steps up（panels）
 - ink `oklch(94% 0.010 220)` — cool light
 - ink-2 `oklch(72% 0.010 220)`
 - rule `oklch(30% 0.012 220)`
 - muted `oklch(58% 0.012 220)`
-- accent `oklch(72% 0.16 220)` — sea-blue (cool)
+- accent `oklch(72% 0.16 220)` — sea-blue（cool）
 - focus `oklch(78% 0.20 220)`
 
-**Pair:** display **Geist Mono 500** (Technical, free) · body **Geist** (Technical, free) · mono **Geist Mono** (Technical, free).
+**Pair:** display **Geist Mono 500**（Technical，free）· body **Geist**（Technical，free）· mono **Geist Mono**（Technical，free）。
 
-Note: this *is* a single-family page (Geist + Geist Mono are the same family at different widths). [`typography.md`](typography.md) line 7 allows it: "single-font pages are allowed only when the single font IS the design choice." For an industrial-precision fintech, that's the design choice.
+Note：这是一个 single-family page（Geist + Geist Mono 是同一 family 的不同 widths）。[`typography.md`](typography.md) line 7 允许这种情况："single-font pages are allowed only when the single font IS the design choice." 对 industrial-precision fintech 来说，这就是 design choice。
 
-**Axes:** **dark / mono / cool**.
+**Axes:** **dark / mono / cool**。
 
 **Stamp:**
 ```css
@@ -289,9 +289,9 @@ Note: this *is* a single-family page (Geist + Geist Mono are the same family at 
 
 **Brief:** *"Mossroot is a small herbal apothecary in Porto. We make tinctures, salves, and tea blends. Audience: locals + visitors. Use: see what we make + visit. Tone: quiet, herbal, hand-poured. Theme route: custom."*
 
-**Vibe answer:** *"moss, lichen, soft pink, herbal."*  **Anchor:** *(skipped — pick from vibe)*.
+**Vibe answer:** *"moss, lichen, soft pink, herbal."*  **Anchor:** *（skipped — pick from vibe）*。
 
-The vibe names two hues: *moss* (greenish, ~140°) and *soft pink* (warm, ~350°). Pick **soft pink as the accent** (single anchor — custom is one-accent strict) and use the moss-green as the *paper tint* (chroma 0.018 toward 145°). This carries the dual-vibe without splitting accent.
+Vibe 命名了两个 hues：*moss*（偏 green，约 140°）和 *soft pink*（warm，约 350°）。选择 **soft pink 作为 accent**（单 anchor，custom 严格单 accent），并把 moss-green 用作 *paper tint*（chroma 0.018 朝 145°）。这样无需拆分 accent，也能承载双重 vibe。
 
 **Palette:**
 - paper `oklch(96% 0.018 145)` — moss-tinted near-white
@@ -300,12 +300,12 @@ The vibe names two hues: *moss* (greenish, ~140°) and *soft pink* (warm, ~350°
 - ink-2 `oklch(42% 0.014 140)`
 - rule `oklch(82% 0.018 145)`
 - muted `oklch(56% 0.014 140)`
-- accent `oklch(72% 0.13 350)` — dusty-pink (chromatic-other)
+- accent `oklch(72% 0.13 350)` — dusty-pink（chromatic-other）
 - focus `oklch(70% 0.18 350)`
 
-**Pair:** display **Cormorant Garamond** (Luxury, free) · body **EB Garamond** (Luxury, free) · mono **Geist Mono** (rare on this page; only for ingredient lists).
+**Pair:** display **Cormorant Garamond**（Luxury，free）· body **EB Garamond**（Luxury，free）· mono **Geist Mono**（本页少见；只用于 ingredient lists）。
 
-**Axes:** **light / roman-serif / chromatic-other (dusty-pink)**.
+**Axes:** **light / roman-serif / chromatic-other (dusty-pink)**。
 
 **Stamp:**
 ```css
@@ -318,12 +318,12 @@ The vibe names two hues: *moss* (greenish, ~140°) and *soft pink* (warm, ~350°
 
 ---
 
-## What custom does **not** do (worth restating)
+## What custom does **not** do（值得重申）
 
-1. **Does not invent themes that ignore the rules.** Every paper L band, accent chroma cap, neutral-tinting requirement, font ban, and slop-test gate carries forward. The freedom is the *combination* — not the rules.
-2. **Does not save themes for reuse.** A custom run is per-output. The skill does not write back to [`tokens.css`](../../../site/css/tokens.css). If the user wants a permanent theme, they paste the custom palette into tokens.css themselves and name it.
-3. **Does not ask multiple follow-up questions.** One vibe answer (+ optional anchor) is enough. The audience/use/tone from Step 1 plus the brief plus the macrostructure pick already give the model 80 % of the signal.
-4. **Does not relax the diversification rule.** Custom entries declare their three axes the same way catalog entries do; the rotation rule fires on both, theme-route-blind.
-5. **Does not bypass the Step 5 preview.** The custom palette + pairing surface in plain text *before* any code is emitted, so the user can redirect early.
+1. **不会发明无视规则的 themes。**每个 paper L band、accent chroma cap、neutral-tinting requirement、font ban 和 slop-test gate 都继续生效。自由在于*组合*，不是规则。
+2. **不会保存 themes 供复用。**Custom run 是 per-output。Skill 不会写回 [`tokens.css`](../../../site/css/tokens.css)。如果用户想要永久 theme，他们可以自己把 custom palette 粘进 tokens.css 并命名。
+3. **不会问多个 follow-up questions。**一个 vibe answer（+ optional anchor）足够。Step 1 的 audience/use/tone，加上 brief 和 macrostructure pick，已经给 model 80% 信号。
+4. **不会放松 diversification rule。**Custom entries 与 catalog entries 一样声明三个 axes；rotation rule 对二者都触发，theme-route-blind。
+5. **不会绕过 Step 5 preview。**Custom palette + pairing 会在任何 code 输出前以 plain text 展示，方便用户早期重定向。
 
-If any of those five lines is bent, the custom output is over-invented. Audit it; redirect.
+如果这五条中任何一条被折弯，custom output 就是 over-invented。Audit it；redirect。

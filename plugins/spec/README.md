@@ -1,55 +1,55 @@
-# Open Design Plugin Spec Kit
+# Open Design 插件规范包
 
-Language: English | [简体中文](README.zh-CN.md)
+语言：[English](https://github.com/nexu-io/open-design/blob/main/plugins/spec/README.md) | 简体中文
 
-This folder is the shareable specification kit for Open Design plugin authors. It is meant to work for a human reading the repo and for an external coding agent such as Claude Code, Codex, Cursor, OpenClaw, Hermes Agent, or another Agent Skills compatible tool.
+这个文件夹是给 Open Design 插件作者使用的可共享规范包。它既适合人直接阅读，也适合交给 Claude Code、Codex、Cursor、OpenClaw、Hermes Agent 或其他兼容 Agent Skills 的编码 agent 使用。
 
-Open Design plugins follow the same portable shape as Agent Skills: a folder with `SKILL.md` plus optional assets, references, scripts, and examples. Open Design adds `open-design.json` as a sidecar so the same folder can appear in the OD plugin gallery, hydrate the home composer, declare inputs and GenUI surfaces, run an OD atom pipeline, and participate in publish or PR flows.
+Open Design 插件遵循和 Agent Skills 兼容的可移植形态：一个包含 `SKILL.md` 的文件夹，可选添加 assets、references、scripts 和 examples。Open Design 额外使用 `open-design.json` 作为 sidecar，让同一个文件夹可以出现在 OD 插件库里、填充首页输入框、声明 inputs 和 GenUI surfaces、运行 OD atom pipeline，并参与发布或 PR 流程。
 
-## Folder Map
+## 文件夹地图
 
-- [`SPEC.md`](SPEC.md) - the portable plugin spec and taxonomy.
-- [`AGENT-DEVELOPMENT.md`](AGENT-DEVELOPMENT.md) - copy this into an external agent session to build and validate a plugin.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) - PR standards for plugins that follow this spec.
-- [`PUBLISHING-REGISTRIES.md`](PUBLISHING-REGISTRIES.md) - strategies for skills.sh, ClawHub, GitHub, and Open Design publishing.
-- [`templates/`](templates/) - blank starter files.
-- [`examples/`](examples/) - complete example plugin folders and a sample marketplace index.
+- [`SPEC.zh-CN.md`](SPEC.zh-CN.md) - 可移植插件规范与分类。
+- [`AGENT-DEVELOPMENT.zh-CN.md`](AGENT-DEVELOPMENT.zh-CN.md) - 可以直接复制给外部 agent 的开发说明。
+- [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) - 遵循此规范的插件 PR 标准。
+- [`PUBLISHING-REGISTRIES.zh-CN.md`](PUBLISHING-REGISTRIES.zh-CN.md) - 发布到 skills.sh、ClawHub、GitHub 和 Open Design 的策略。
+- [`templates/`](templates/) - 空白 starter 文件。
+- [`examples/`](examples/) - 完整示例插件文件夹和示例 marketplace index。
 
-Chinese mirrors:
+英文原文：
 
-- [`SPEC.zh-CN.md`](SPEC.zh-CN.md)
-- [`AGENT-DEVELOPMENT.zh-CN.md`](AGENT-DEVELOPMENT.zh-CN.md)
-- [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md)
-- [`PUBLISHING-REGISTRIES.zh-CN.md`](PUBLISHING-REGISTRIES.zh-CN.md)
-- [`examples/README.zh-CN.md`](examples/README.zh-CN.md)
+- [`SPEC.md`](SPEC.md)
+- [`AGENT-DEVELOPMENT.md`](AGENT-DEVELOPMENT.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- [`PUBLISHING-REGISTRIES.md`](PUBLISHING-REGISTRIES.md)
+- [`examples/README.md`](examples/README.md)
 
-## What To Build
+## 可以构建什么
 
-Workflow lanes:
+工作流主类：
 
-- Import - Figma, GitHub, code folders, URLs, screenshots, PDFs, PPTX, Framer, Webflow.
-- Create - prototypes, slide decks, live artifacts, image assets, video prompts, HyperFrames compositions, audio assets.
-- Export - PPTX, PDF, HTML, ZIP, Markdown, Figma handoff, Next.js, React, Vue, Svelte, Astro, Angular, Tailwind.
-- Share - public links, GitHub PRs, Gists, Slack, Discord, Notion, Linear, Jira.
-- Deploy - Vercel, Cloudflare Pages, Netlify, GitHub Pages, Fly.io, Render.
-- Refine - critique, patch, tune, brand swap, A/B variants, stakeholder review.
-- Extend - plugin authoring, marketplace publishing, internal catalog automation.
+- Import - Figma、GitHub、代码文件夹、URL、截图、PDF、PPTX、Framer、Webflow。
+- Create - 原型、幻灯片、live artifact、图像资产、视频 prompt、HyperFrames composition、音频资产。
+- Export - PPTX、PDF、HTML、ZIP、Markdown、Figma handoff、Next.js、React、Vue、Svelte、Astro、Angular、Tailwind。
+- Share - 公共链接、GitHub PR、Gist、Slack、Discord、Notion、Linear、Jira。
+- Deploy - Vercel、Cloudflare Pages、Netlify、GitHub Pages、Fly.io、Render。
+- Refine - critique、patch、tune、品牌替换、A/B variants、stakeholder review。
+- Extend - 插件作者工具、marketplace 发布、内部目录自动化。
 
-## Five Minute Start
+## 五分钟开始
 
-1. Copy `templates/` to a new plugin folder.
-2. Rename the folder and frontmatter `name` to a lowercase id such as `launch-deck`.
-3. Write a pushy `description` in `SKILL.md`: "Use this plugin when..."
-4. Fill `open-design.json`: `specVersion`, title, plugin `version`, tags, `od.taskKind`, `od.mode`, `od.useCase.query`, `od.pipeline`, inputs, and capabilities.
-5. Add a small `examples/` or `preview/` artifact if the plugin is visual.
-6. Validate locally:
+1. 复制 `templates/` 到一个新的插件文件夹。
+2. 把文件夹名和 frontmatter `name` 改成小写 id，例如 `launch-deck`。
+3. 在 `SKILL.md` 里写清触发描述，格式建议是：“Use this plugin when...”
+4. 填写 `open-design.json`：`specVersion`、title、插件 `version`、tags、`od.taskKind`、`od.mode`、`od.useCase.query`、`od.pipeline`、inputs 和 capabilities。
+5. 如果插件有视觉输出，添加一个小的 `examples/` 或 `preview/` artifact。
+6. 本地校验：
 
 ```bash
 pnpm guard
 pnpm --filter @open-design/plugin-runtime typecheck
 ```
 
-When the daemon CLI is built:
+如果 daemon CLI 已构建：
 
 ```bash
 od plugin validate ./path/to/plugin
@@ -57,12 +57,12 @@ od plugin install ./path/to/plugin
 od plugin apply <plugin-id> --input key=value
 ```
 
-## Compatibility Promise
+## 兼容性承诺
 
-A folder with `SKILL.md` can be used as a plain skill in Agent Skills compatible clients. Adding `open-design.json` should never make the skill less portable; it only adds Open Design product behavior.
+包含 `SKILL.md` 的文件夹可以作为普通 skill 被兼容 Agent Skills 的客户端使用。添加 `open-design.json` 不应该降低可移植性；它只增加 Open Design 产品行为。
 
-References:
+参考：
 
 - Agent Skills overview: https://agentskills.io/home
 - Agent Skills specification: https://agentskills.io/specification
-- Open Design plugin spec: ../../docs/plugins-spec.md
+- Open Design 插件完整 spec: ../../docs/plugins-spec.zh-CN.md

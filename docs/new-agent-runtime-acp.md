@@ -1,90 +1,90 @@
-# New agent runtime expectations: ACP over stdio
+# 新 agent runtime 预期：ACP over stdio
 
-This note documents the preferred integration shape for a new Open Design agent runtime.
+本文记录新的 Open Design agent runtime 推荐采用的集成形态。
 
 ## Recommendation
 
-New agent runtimes should expose an **ACP over stdio** CLI mode.
+新的 agent runtimes 应暴露一个 **ACP over stdio** CLI mode。
 
-In practice, Open Design expects to spawn a local executable and speak JSON-RPC over the child process streams:
+实践中，Open Design 预期启动一个本地 executable，并通过 child process streams 使用 JSON-RPC 通信：
 
 ```text
 Open Design daemon
   └─ spawn your-agent acp
        ├─ stdin  <- ACP JSON-RPC requests/responses
        ├─ stdout -> ACP JSON-RPC responses/notifications
-       └─ stderr -> logs and diagnostics only
+       └─ stderr -> 仅 logs 与 diagnostics
 ```
 
-If the runtime's real implementation is a local or remote server, keep that detail behind a thin CLI wrapper:
+如果 runtime 的真实实现是本地或远程 server，请把这个细节藏在薄 CLI wrapper 后面：
 
 ```text
 your-agent acp
   └─ connects to your runtime server / SDK / model backend
 ```
 
-That wrapper keeps Open Design on the standard ACP subprocess transport and avoids requiring a daemon-side network transport adapter.
+这个 wrapper 让 Open Design 保持在标准 ACP subprocess transport 上，也避免 daemon 侧需要额外 network transport adapter。
 
-## Why stdio, not an ACP server?
+## 为什么是 stdio，而不是 ACP server？
 
-The ACP protocol uses JSON-RPC, but transport matters.
+ACP protocol 使用 JSON-RPC，但 transport 很重要。
 
-The ACP transport documentation defines **stdio** as communication over standard input and standard output. In that transport, the client launches the agent as a subprocess, the agent reads from `stdin`, writes protocol messages to `stdout`, and writes logs to `stderr`.
+ACP transport documentation 将 **stdio** 定义为通过 standard input 和 standard output 通信。在这种 transport 中，client 把 agent 作为 subprocess 启动，agent 从 `stdin` 读取，向 `stdout` 写 protocol messages，并把 logs 写到 `stderr`。
 
-ACP's remote HTTP/WebSocket transport is still described as a draft/proposal rather than the established compatibility path. Open Design's implemented ACP adapters therefore use stdio subprocesses today.
+ACP 的 remote HTTP/WebSocket transport 仍被描述为 draft/proposal，而不是既定 compatibility path。因此 Open Design 已实现的 ACP adapters 今天使用 stdio subprocesses。
 
-## Messages Open Design sends
+## Open Design 发送的 messages
 
-For `streamFormat: 'acp-json-rpc'`, Open Design currently drives a session with these JSON-RPC methods:
+对于 `streamFormat: 'acp-json-rpc'`，Open Design 当前用这些 JSON-RPC methods 驱动 session：
 
 1. `initialize`
-   - Sent first.
-   - Includes Open Design client metadata and `clientCapabilities`.
+   - 最先发送。
+   - 包含 Open Design client metadata 和 `clientCapabilities`。
 2. `session/new`
-   - Creates a working session.
-   - Includes the project working directory.
-   - May include MCP server descriptors when the runtime is allowed to use Open Design-provided tools.
-3. `session/set_config_option` or `session/set_model` *(optional)*
-   - Sent when the user selected a non-default model.
-   - Open Design prefers `session/set_config_option` when `session/new` reports a model config option; otherwise it falls back to `session/set_model`.
+   - 创建 working session。
+   - 包含 project working directory。
+   - 当 runtime 允许使用 Open Design-provided tools 时，可能包含 MCP server descriptors。
+3. `session/set_config_option` 或 `session/set_model`（可选）
+   - 当用户选择非默认 model 时发送。
+   - 如果 `session/new` 报告了 model config option，Open Design 优先使用 `session/set_config_option`；否则 fallback 到 `session/set_model`。
 4. `session/prompt`
-   - Sends the composed user/system prompt as text content.
-   - A successful response marks the prompt as complete.
+   - 以 text content 发送 composed user/system prompt。
+   - 成功响应表示 prompt 已完成。
 5. `session/cancel`
-   - Sent on user cancellation when a session exists and stdin is still writable.
+   - 当 session 存在且 stdin 仍 writable 时，在用户 cancellation 时发送。
 
-## Messages Open Design expects from the agent
+## Open Design 期望 agent 返回的 messages
 
-The runtime should support the corresponding JSON-RPC responses and notifications:
+Runtime 应支持对应的 JSON-RPC responses 和 notifications：
 
-1. Response to `initialize`.
-2. Response to `session/new`.
-   - Must include a usable `sessionId`.
-   - Should report the current model if available.
-   - Should report model config options if model selection is supported through config options.
-3. Notifications using `session/update`.
-   - Open Design currently maps:
-     - `agent_thought_chunk` to thinking output.
-     - `agent_message_chunk` to assistant text output.
-4. Optional `session/request_permission` requests.
-   - Open Design auto-selects an approve/allow-style option when available.
-   - If no acceptable option is present, the turn fails fast.
-5. Response to `session/prompt`.
-   - Should include usage metadata when available.
-   - This response tells Open Design the turn is finished.
+1. 对 `initialize` 的 response。
+2. 对 `session/new` 的 response。
+   - 必须包含可用的 `sessionId`。
+   - 如果可用，应报告 current model。
+   - 如果通过 config options 支持 model selection，应报告 model config options。
+3. 使用 `session/update` 的 notifications。
+   - Open Design 当前会映射：
+     - `agent_thought_chunk` 到 thinking output。
+     - `agent_message_chunk` 到 assistant text output。
+4. 可选的 `session/request_permission` requests。
+   - Open Design 会在可用时自动选择 approve/allow 风格 option。
+   - 如果没有可接受 option，turn 会 fast fail。
+5. 对 `session/prompt` 的 response。
+   - 如果可用，应包含 usage metadata。
+   - 这个 response 告诉 Open Design 当前 turn 已结束。
 
 ## Process lifecycle expectations
 
-- Keep protocol messages on `stdout` parseable as JSON-RPC lines.
-- Write human-readable logs and diagnostics to `stderr`.
-- Return clear JSON-RPC errors for protocol failures.
-- After `session/prompt` completes, either exit cleanly when stdin closes or tolerate Open Design sending `SIGTERM` after a short grace period.
-- Implement `session/cancel` if possible. Open Design falls back to process termination when the transport is no longer usable.
-- Avoid interactive terminal prompts. If permission is required, use ACP permission requests instead.
+- `stdout` 上的 protocol messages 必须保持 parseable JSON-RPC lines。
+- Human-readable logs 和 diagnostics 写到 `stderr`。
+- Protocol failures 返回清晰 JSON-RPC errors。
+- `session/prompt` 完成后，要么在 stdin 关闭时干净退出，要么容忍 Open Design 在短 grace period 后发送 `SIGTERM`。
+- 尽可能实现 `session/cancel`。当 transport 不再可用时，Open Design 会 fallback 到 process termination。
+- 避免 interactive terminal prompts。如果需要 permission，请使用 ACP permission requests。
 
 ## Open Design adapter shape
 
-An ACP runtime definition in Open Design is intentionally small:
+Open Design 中的 ACP runtime definition 刻意保持很小：
 
 ```ts
 export const myAgentDef = {
@@ -98,19 +98,19 @@ export const myAgentDef = {
 } satisfies RuntimeAgentDef;
 ```
 
-Existing examples include Devin, Hermes, Kimi, Kiro, Kilo, and Vibe runtime definitions under `apps/daemon/src/runtimes/defs/`.
+现有示例包括 `apps/daemon/src/runtimes/defs/` 下的 Devin、Hermes、Kimi、Kiro、Kilo 和 Vibe runtime definitions。
 
 ## Fact sources
 
 - ACP transport documentation: <https://agentclientprotocol.com/protocol/transports>
-  - ACP uses JSON-RPC.
-  - The stdio transport uses standard input and standard output.
-  - In stdio mode, the client launches the agent as a subprocess.
-  - The agent reads from `stdin`, writes protocol messages to `stdout`, and uses `stderr` for logs.
+  - ACP 使用 JSON-RPC。
+  - Stdio transport 使用 standard input 和 standard output。
+  - 在 stdio mode 中，client 将 agent 作为 subprocess 启动。
+  - Agent 从 `stdin` 读取，向 `stdout` 写 protocol messages，并用 `stderr` 输出 logs。
 - ACP remote transport RFD: <https://agentclientprotocol.com/rfds/streamable-http-websocket-transport>
-  - Describes Streamable HTTP / WebSocket as the proposed remote transport direction.
-  - Notes that ACP's standard transport has historically been stdio and that a standard remote transport is still being defined.
-- Open Design implementation:
-  - `apps/daemon/src/acp.ts` implements the ACP JSON-RPC session lifecycle.
-  - `apps/daemon/src/server.ts` spawns ACP runtimes as child processes with piped stdio.
-  - `apps/daemon/src/runtimes/defs/*.ts` contains existing ACP runtime definitions using `streamFormat: 'acp-json-rpc'`.
+  - 将 Streamable HTTP / WebSocket 描述为 proposed remote transport direction。
+  - 说明 ACP 的 standard transport 历史上一直是 stdio，且 standard remote transport 仍在定义中。
+- Open Design implementation：
+  - `apps/daemon/src/acp.ts` 实现 ACP JSON-RPC session lifecycle。
+  - `apps/daemon/src/server.ts` 以 child processes + piped stdio 方式启动 ACP runtimes。
+  - `apps/daemon/src/runtimes/defs/*.ts` 包含使用 `streamFormat: 'acp-json-rpc'` 的现有 ACP runtime definitions。

@@ -4320,13 +4320,11 @@ export function resolveActiveInactivityTimeoutMs(params: {
 //     an external `kill -9` after the artifact write must still report
 //     `failed`, only the watchdog-initiated SIGTERM/SIGKILL escalation
 //     is allowed to flip the status to `succeeded`.
-//   - the artifact-produced carve-out is EXIT-CODE ONLY (code != null &&
-//     code !== 0): a non-zero *normal* exit that nonetheless wrote a
-//     confirmed artifact this run is teardown noise, not a generation
-//     failure. It deliberately never overrides a signal kill (code ===
-//     null) — an OOM / external `kill` / container shutdown after an
-//     artifact write stays `failed`, same guard as the quiet-period
-//     branch above.
+//   - artifact-produced carve-out 仅适用于 EXIT-CODE（code != null &&
+//     code !== 0）：一次非零的 *normal* exit 如果本 run 已写入 confirmed artifact，
+//     应视为 teardown noise，而不是 generation failure。它刻意不覆盖 signal kill
+//     (code === null)；artifact 写入后的 OOM / external `kill` / container shutdown
+//     仍保持 `failed`，与上方 quiet-period branch 使用同一个 guard。
 export function classifyChatRunCloseStatus(params: {
   cancelRequested: boolean;
   code: number | null;
@@ -4346,14 +4344,13 @@ export function classifyChatRunCloseStatus(params: {
     params.code === null &&
     (params.signal === 'SIGTERM' || params.signal === 'SIGKILL');
   if (artifactQuietShutdown) return 'succeeded';
-  // Artifact-aware NORMAL-exit carve-out. A non-zero exit that still
-  // produced a confirmed artifact this run (a SessionEnd hook or a late
-  // stdin/stream error dragging the CLI to exit 1 *after* the deliverable
-  // landed) is teardown noise, not a generation failure — reproduced by
-  // project c92897e1: a 31KB HTML + .artifact.json on disk, status='failed'.
-  // CRITICAL: gated on `code != null && code !== 0` so a signal kill
-  // (code === null, SIGKILL/SIGTERM) is NEVER flipped by an artifact,
-  // preserving the OOM / external-kill / container-shutdown guard.
+  // Artifact-aware NORMAL-exit carve-out。一次非零 exit 如果本 run 仍产出了 confirmed
+  // artifact（SessionEnd hook，或 deliverable 已落盘 *之后* 的 late stdin/stream error
+  // 把 CLI 拉到 exit 1），应视为 teardown noise，而不是 generation failure。project
+  // c92897e1 可复现：磁盘上有 31KB HTML + .artifact.json，但 status='failed'。
+  // CRITICAL：受 `code != null && code !== 0` 约束，因此 signal kill（code === null，
+  // SIGKILL/SIGTERM）永远不会被 artifact 翻转，保留 OOM / external-kill /
+  // container-shutdown guard。
   if (params.code != null && params.code !== 0 && params.artifactProducedThisRun) {
     return 'succeeded';
   }

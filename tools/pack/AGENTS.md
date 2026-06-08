@@ -1,80 +1,80 @@
 # tools/pack
 
-Follow the root `AGENTS.md` and `tools/AGENTS.md` first. This tool owns the repo-external packaged build/start/stop/logs command surface.
+先遵循根目录 `AGENTS.md` 和 `tools/AGENTS.md`。此工具拥有 repo-external packaged build/start/stop/logs command surface。
 
 ## Owns
 
-- Local packaging orchestration for packaged Open Design artifacts.
-- mac build/install/start/stop/logs/uninstall/cleanup smoke commands.
-- Windows NSIS build/install/start/stop/logs/uninstall/cleanup/list/reset smoke commands.
-- Windows registry observation/cleanup must go through `reg.exe` and stay scoped to entries matching the namespace install/uninstaller paths.
-- Windows lifecycle logs must expose NSIS automation logs/markers/timings in addition to app runtime logs.
-- Linux AppImage build/install/start/stop/logs/uninstall/cleanup smoke commands.
-- Linux headless (no-Electron) install/start/stop via `--headless` flag on `install`, `start`, and `stop`.
-- Linux containerized builds via `electronuserland/builder` Docker image for distro-agnostic glibc compat.
-- Consuming sidecar/process/path primitives from `@open-design/sidecar-proto`, `@open-design/sidecar`, and `@open-design/platform`.
+- Packaged Open Design artifacts 的本地 packaging orchestration。
+- mac build/install/start/stop/logs/uninstall/cleanup smoke commands。
+- Windows NSIS build/install/start/stop/logs/uninstall/cleanup/list/reset smoke commands。
+- Windows registry observation/cleanup 必须通过 `reg.exe`，且范围只限匹配 namespace install/uninstaller paths 的 entries。
+- Windows lifecycle logs 除 app runtime logs 外，还必须暴露 NSIS automation logs/markers/timings。
+- Linux AppImage build/install/start/stop/logs/uninstall/cleanup smoke commands。
+- Linux headless（no-Electron）install/start/stop，通过 `install`、`start` 和 `stop` 上的 `--headless` flag。
+- 通过 `electronuserland/builder` Docker image 执行 Linux containerized builds，以获得 distro-agnostic glibc compat。
+- 消费来自 `@open-design/sidecar-proto`、`@open-design/sidecar` 和 `@open-design/platform` 的 sidecar/process/path primitives。
 
 ## Does not own
 
-- Product business logic.
-- Sidecar protocol definitions.
-- A second process identity model.
-- Product/business update runtime integration.
+- Product business logic。
+- Sidecar protocol definitions。
+- 第二套 process identity model。
+- Product/business update runtime integration。
 
 ## Rules
 
-- Do not hand-build `--od-stamp-*` args; use `createProcessStampArgs` with `OPEN_DESIGN_SIDECAR_CONTRACT`.
-- Do not use port numbers in data/log/runtime/cache path decisions. Namespace decides paths; ports are only transient transports.
-- Public release artifacts must use channel-specific app identity: stable uses `Open Design`, beta uses `Open Design Beta`, and preview uses `Open Design Preview`. Local tools-pack installs may still use namespace-scoped install paths only as a developer multi-instance validation convention.
-- Do not let namespace-named `.app` installs change data/log/runtime/cache path conventions.
-- Use `--portable` for public/release artifacts so packaged config does not bake local tools-pack runtime roots from the build machine.
-- Pack resource files used by electron-builder belong under `tools/pack/resources/`; do not point pack logic at Downloads, web public assets, docs assets, or other app-owned resource paths.
-- For ordinary Windows NSIS smoke tests, use short namespaces such as `rg`, `smoke`, or `nsis-a`. NSIS extracts deeply nested Next.js standalone files under the namespace-scoped install directory; long namespaces can push installed paths past the traditional Windows 260-character limit even when builder `win-unpacked` output is correct. During merge regression, namespace `regression-merge-nsis` produced an installed path length of 264 characters and missed `next/dist/server/route-matcher-providers/helpers/cached-route-matcher-provider.js` in the installed directory, while the same NSIS smoke passed with namespace `rg`. Use long namespaces only when intentionally testing installer path-length behavior.
+- 不要手工构建 `--od-stamp-*` args；请结合 `OPEN_DESIGN_SIDECAR_CONTRACT` 使用 `createProcessStampArgs`。
+- 不要在 data/log/runtime/cache path decisions 中使用 port numbers。Namespace 决定 paths；ports 只是临时 transports。
+- Public release artifacts 必须使用 channel-specific app identity：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，preview 使用 `Open Design Preview`。本地 tools-pack installs 仍可只把 namespace-scoped install paths 当作 developer multi-instance validation convention。
+- 不要让按 namespace 命名的 `.app` installs 改变 data/log/runtime/cache path conventions。
+- Public/release artifacts 使用 `--portable`，避免 packaged config 烘入构建机器上的本地 tools-pack runtime roots。
+- Electron-builder 使用的 pack resource files 属于 `tools/pack/resources/`；不要让 pack logic 指向 Downloads、web public assets、docs assets 或其他 app-owned resource paths。
+- 对普通 Windows NSIS smoke tests，使用 `rg`、`smoke` 或 `nsis-a` 这类短 namespaces。NSIS 会在 namespace-scoped install directory 下解压深层嵌套的 Next.js standalone files；长 namespaces 即使在 builder `win-unpacked` output 正确时，也可能让 installed paths 超过传统 Windows 260-character limit。Merge regression 期间，namespace `regression-merge-nsis` 产生了 264 characters 的 installed path length，并在 installed directory 中缺失 `next/dist/server/route-matcher-providers/helpers/cached-route-matcher-provider.js`，而同一个 NSIS smoke 使用 namespace `rg` 时通过。只有在有意测试 installer path-length behavior 时才使用长 namespaces。
 
 ## Packaged auto-update architecture and harness
 
-Read this section before changing packaged auto-update behavior. The updater crosses package, desktop, web UI, release-feed, and installer surfaces, so bugs often hide between otherwise-green package tests.
+修改 packaged auto-update behavior 前请先阅读本节。Updater 跨越 package、desktop、web UI、release-feed 和 installer surfaces，因此 bugs 常藏在 otherwise-green package tests 之间。
 
 ### Architecture map
 
-- `apps/desktop/src/main/updater.ts` owns updater state, release metadata parsing, artifact selection, checksum verification, download-store ownership, progress events, and opening the downloaded installer. It is pure main-process logic and is tested under `apps/desktop/tests/main/updater.test.ts`.
-- `apps/desktop/src/main/runtime.ts` exposes updater IPC to the renderer through `od:update:status|check|download|install|quit` and emits `od:update:status-changed`. Keep installer launch separate from process shutdown; quit is an explicit post-installer action.
-- `apps/desktop/src/main/index.ts` wires the scheduler. Native menu update actions are intentionally not the user-facing surface; the web updater UI owns discovery and action prompts.
-- `apps/web/src/lib/updater.ts` normalizes host updater snapshots into UI-ready state.
-- `apps/web/src/components/UpdaterPopup.tsx` is the visible updater surface in the left rail. All visible copy must go through `apps/web/src/i18n`.
-- `apps/packaged/src/index.ts` passes packaged `appVersion` and namespace-scoped `updateRoot` into desktop main.
-- `tools/serve` owns deterministic local updater fixtures only. It must not contain product updater runtime logic.
-- `tools/pack` owns packaged build/install/start/inspect/logs/uninstall/cleanup and the platform installer harness, including Windows NSIS registry observation and cleanup.
+- `apps/desktop/src/main/updater.ts` 拥有 updater state、release metadata parsing、artifact selection、checksum verification、download-store ownership、progress events，以及打开下载好的 installer。它是纯 main-process logic，并在 `apps/desktop/tests/main/updater.test.ts` 下测试。
+- `apps/desktop/src/main/runtime.ts` 通过 `od:update:status|check|download|install|quit` 向 renderer 暴露 updater IPC，并发出 `od:update:status-changed`。保持 installer launch 与 process shutdown 分离；quit 是 explicit post-installer action。
+- `apps/desktop/src/main/index.ts` 连接 scheduler。Native menu update actions 有意不是 user-facing surface；web updater UI 拥有 discovery 和 action prompts。
+- `apps/web/src/lib/updater.ts` 将 host updater snapshots 归一化为 UI-ready state。
+- `apps/web/src/components/UpdaterPopup.tsx` 是左侧 rail 中可见的 updater surface。所有 visible copy 必须经过 `apps/web/src/i18n`。
+- `apps/packaged/src/index.ts` 将 packaged `appVersion` 和 namespace-scoped `updateRoot` 传入 desktop main。
+- `tools/serve` 只拥有 deterministic local updater fixtures。它不得包含 product updater runtime logic。
+- `tools/pack` 拥有 packaged build/install/start/inspect/logs/uninstall/cleanup 和 platform installer harness，包括 Windows NSIS registry observation 与 cleanup。
 
 ### Release metadata shape
 
-The runtime updater reads `https://releases.open-design.ai/<channel>/latest/metadata.json` unless `OD_UPDATE_METADATA_URL` overrides it. For package-launcher updates:
+Runtime updater 默认读取 `https://releases.open-design.ai/<channel>/latest/metadata.json`，除非 `OD_UPDATE_METADATA_URL` 覆盖它。对于 package-launcher updates：
 
-- mac selects `platforms.mac.artifacts.dmg`.
-- Windows selects `platforms.win.artifacts.installer`.
-- The artifact must have a checksum, preferably `sha256Url`; the updater verifies bytes before exposing an install action.
-- `OD_UPDATE_CURRENT_VERSION` may override the packaged version for tests, but user-flow package validation should prefer building the package with the intended `--app-version`.
+- mac 选择 `platforms.mac.artifacts.dmg`。
+- Windows 选择 `platforms.win.artifacts.installer`。
+- Artifact 必须有 checksum，最好是 `sha256Url`；updater 会先验证 bytes，再暴露 install action。
+- `OD_UPDATE_CURRENT_VERSION` 可以为 tests 覆盖 packaged version，但 user-flow package validation 应优先用目标 `--app-version` 构建 package。
 
 ### Channel identity rules
 
-Channel identity must be stable across install, update install, shortcuts, registry entries, and app data:
+Channel identity 必须在 install、update install、shortcuts、registry entries 和 app data 中保持稳定：
 
-- Stable: `Open Design`, namespace `default` or stable release namespace.
-- Beta Windows: `Open Design Beta`, namespace `release-beta-win`, uninstall key `Open Design-release-beta-win`.
-- Preview Windows: `Open Design Preview`, namespace `release-preview-win`, uninstall key `Open Design-release-preview-win`.
-- Beta-like ad hoc namespaces such as `beta-local-flow` are test namespaces, not the beta channel. They must not be used for user-flow beta validation because they create a different registry key while sharing a confusing display name/path.
+- Stable: `Open Design`，namespace `default` 或 stable release namespace。
+- Beta Windows: `Open Design Beta`，namespace `release-beta-win`，uninstall key `Open Design-release-beta-win`。
+- Preview Windows: `Open Design Preview`，namespace `release-preview-win`，uninstall key `Open Design-release-preview-win`。
+- `beta-local-flow` 这类 beta-like ad hoc namespaces 是 test namespaces，不是 beta channel。它们不得用于 user-flow beta validation，因为它们会创建不同 registry key，却共享令人困惑的 display name/path。
 
-If a local beta package is meant to be updated by the real beta feed, build it with `--namespace release-beta-win` and an older beta `--app-version`. Otherwise the installed beta.5 package and the downloaded beta.6 package can appear as separate registry entries even though they target the same display name.
+如果本地 beta package 预期由真实 beta feed 更新，请用 `--namespace release-beta-win` 和较旧 beta `--app-version` 构建。否则已安装 beta.5 package 和下载的 beta.6 package 可能显示为独立 registry entries，即使它们目标是同一个 display name。
 
 ### Deterministic fixture harness
 
-Use `tools-serve start updater` for fast, deterministic tests and e2e automation where network release state is not the thing under test. Fixture flow:
+当 network release state 不是被测对象时，用 `tools-serve start updater` 做快速、deterministic tests 和 e2e automation。Fixture flow：
 
 ```bash
 pnpm tools-serve start updater --json --channel beta --version 99.0.0-beta.1 --platform win
 ```
 
-Then launch packaged desktop with:
+然后用以下环境启动 packaged desktop：
 
 ```bash
 OD_UPDATE_ENABLED=1
@@ -84,40 +84,40 @@ OD_UPDATE_OPEN_DRY_RUN=1
 OD_UPDATE_AUTO_CHECK=1
 ```
 
-This harness is appropriate for asserting IPC, popup rendering, progress, checksum/download-store behavior, and dry-run installer opening. It is not a full user-view validation because it replaces the public release feed and uses synthetic artifact bytes.
+该 harness 适合断言 IPC、popup rendering、progress、checksum/download-store behavior 和 dry-run installer opening。它不是完整 user-view validation，因为它替换了 public release feed，并使用 synthetic artifact bytes。
 
 ### High-confidence local user-flow acceptance
 
-Use this when validating release-channel behavior before handing a Windows beta build to a human tester. This path intentionally avoids mock services and exercises the real public beta feed.
+在把 Windows beta build 交给人类 tester 前，用它验证 release-channel behavior。该路径有意避开 mock services，并演练真实 public beta feed。
 
-1. Confirm the latest beta metadata first:
+1. 先确认最新 beta metadata：
 
 ```bash
 curl.exe --ssl-no-revoke -fsSL https://releases.open-design.ai/beta/latest/metadata.json
 ```
 
-2. Build a non-portable Windows beta package with the real beta namespace and a version lower than latest:
+2. 使用真实 beta namespace 和低于 latest 的 version 构建 non-portable Windows beta package：
 
 ```bash
 pnpm tools-pack win build --dir C:\odtp-beta-release-fixed --namespace release-beta-win --to nsis --app-version 0.8.0-beta.5 --json
 ```
 
-3. Give the tester the generated installer:
+3. 将生成的 installer 给 tester：
 
 ```text
 C:\odtp-beta-release-fixed\out\win\namespaces\release-beta-win\builder\Open Design-release-beta-win-setup.exe
 ```
 
-4. Expected user flow:
+4. 预期 user flow：
 
-- User installs `0.8.0-beta.5` through the NSIS UI.
-- User launches `Open Design Beta`.
-- App auto-checks the real beta feed, downloads the latest `platforms.win.artifacts.installer`, verifies sha256, and shows the web updater popup.
-- The native File menu must not expose update actions.
-- The updater popup uses i18n strings and download progress must not flash to 100% before real bytes arrive.
-- Clicking `Open installer` opens the real downloaded beta installer. Installing it should overwrite the same `Open Design-release-beta-win` registry key, not create a second beta key.
+- User 通过 NSIS UI 安装 `0.8.0-beta.5`。
+- User 启动 `Open Design Beta`。
+- App 自动检查真实 beta feed，下载最新 `platforms.win.artifacts.installer`，验证 sha256，并显示 web updater popup。
+- Native File menu 不得暴露 update actions。
+- Updater popup 使用 i18n strings，download progress 不得在真实 bytes 到达前闪到 100%。
+- 点击 `Open installer` 会打开真实下载的 beta installer。安装它应覆盖同一个 `Open Design-release-beta-win` registry key，而不是创建第二个 beta key。
 
-5. Registry sanity check after beta.6 install:
+5. beta.6 安装后的 registry sanity check：
 
 ```powershell
 Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -ErrorAction SilentlyContinue |
@@ -125,10 +125,10 @@ Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -
   Select-Object PSChildName,DisplayName,DisplayVersion,InstallLocation
 ```
 
-For a clean beta channel result, expect one beta entry with `PSChildName` `Open Design-release-beta-win` and the latest `DisplayVersion`.
-Windows Settings > Apps may cache uninstall metadata within the current view. If Settings still shows the previous beta version after the registry query is correct, switch away from the Apps view and back, or reopen Settings, before treating it as an installer failure. The registry query above is the source of truth for this harness.
+干净的 beta channel 结果应只有一个 beta entry，`PSChildName` 为 `Open Design-release-beta-win`，且 `DisplayVersion` 为 latest。
+Windows Settings > Apps 可能在当前 view 内缓存 uninstall metadata。如果 registry query 正确后 Settings 仍显示之前的 beta version，请切换离开 Apps view 再回来，或重开 Settings，再把它视为 installer failure。上面的 registry query 是该 harness 的 source of truth。
 
-6. Avoid leaving validation residue. Stop running app processes first, then use tools-pack uninstall/cleanup for tool-managed namespaces. Only delete explicit temp roots after verifying the resolved path is exactly the intended directory.
+6. 避免留下 validation residue。先停止正在运行的 app processes，然后对 tool-managed namespaces 使用 tools-pack uninstall/cleanup。只有在验证 resolved path 确实是预期目录后，才删除 explicit temp roots。
 
 ```bash
 pnpm tools-pack win stop --dir C:\odtp-beta-release-fixed --namespace release-beta-win --json
@@ -138,7 +138,7 @@ pnpm tools-pack win cleanup --dir C:\odtp-beta-release-fixed --namespace release
 
 ### Validation matrix for updater changes
 
-Run the narrow tests that match the surface you touched, then the repo checks:
+运行与所触及 surface 匹配的窄 tests，然后运行 repo checks：
 
 ```bash
 pnpm --filter @open-design/desktop test -- tests/main/updater.test.ts tests/main/updater-host-boundary.test.ts tests/main/preload-host-boundary.test.ts
@@ -154,4 +154,4 @@ pnpm guard
 pnpm typecheck
 ```
 
-Run the high-confidence local user-flow acceptance whenever a change touches real release feed selection, channel identity, Windows registry/install behavior, installer opening, or visible updater UI behavior.
+当变更触及真实 release feed selection、channel identity、Windows registry/install behavior、installer opening 或 visible updater UI behavior 时，请运行 high-confidence local user-flow acceptance。
