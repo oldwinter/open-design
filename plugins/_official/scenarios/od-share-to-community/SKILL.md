@@ -8,7 +8,7 @@ od:
 
 # od-share-to-community (scenario)
 
-由完成后 Discord prompt 旁边的 "Share to Open Design" 按钮触发。用户刚在这个项目里完成一件作品，并希望把它作为 plugin 发布。他们还没有被问过任何问题。
+由完成后的 "Share to Open Design" 提交动作触发。用户刚在这个项目里完成一件作品，并希望把它作为 plugin 发布。他们还没有被问过任何问题。
 
 ## 必需结果
 
