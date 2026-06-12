@@ -1,16 +1,19 @@
 <h1 align="center">Open Design：开源 Claude Design 替代品</h1>
 
-> 🔥 **Open Design 0.9.0 正式发布：创作，从此无需准备。** [官方 Model Router](https://open-design.ai/amr) 直接内置于应用，无需额外配置、不用安装 CLI，也不必准备 API Key。只需打开应用，登录账号，就能立刻开始设计与创作。[下载 0.9.0](https://github.com/nexu-io/open-design/releases) · [参与讨论](https://github.com/nexu-io/open-design/discussions/3524)
+> 🔥 **Open Design 0.10.0 正式发布：一体化 Agentic 设计工作区。** 整套创作流程现在都在一个窗口里完成：从模糊想法出发，发现参考、收集素材、交互式编辑、排队处理评论、打磨动效，再交给编辑器或 Code Agent，无需离开应用。并行会话让它不再像单个助手，而更像一支在本地为你工作的设计团队。[下载 0.10.0](https://github.com/nexu-io/open-design/releases) · [参与讨论](https://github.com/nexu-io/open-design/discussions/4153)
+>
+> ⚡ **Open Design AMR（Agentic Model Router）——官方模型服务。** 一次充值即可在 Open Design 中使用 GPT、Claude、Gemini 和 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[试用 AMR](https://open-design.ai/amr/)
 >
 > 🏅 **Open Design Fellow 计划正式开放。** 如果你也相信设计应该是开放的，欢迎成为 Open Design Fellow，和核心团队一起打磨产品，让更多人参与并定义设计的未来。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 与 [Discord](https://discord.gg/qhbcCH8Am4)。
 
 <p align="center">
-  <img src="https://repo-assets.open-design.ai/resources/images/hero.png" alt="Open Design — 开源 Claude Design 替代品 · 150 Design Systems · 261 Plugins · 21 Coding Agents · 14 Media Providers" width="100%" />
+  <img src="https://repo-assets.open-design.ai/resources/images/hero.png" alt="Open Design — 开源 Claude Design 替代品 · 150 Design Systems · 261 Plugins · 22 Coding Agents · 14 Media Providers" width="100%" />
 </p>
 
 <p align="center">
   <a href="https://open-design.ai/">官网</a> ·
   <a href="https://open-design.ai/">下载</a> ·
+  <a href="https://open-design.ai/amr/">模型路由</a> ·
   <a href="https://discord.gg/qhbcCH8Am4">Discord</a> ·
   <a href="https://x.com/nexudotio">关注 @nexudotio</a>
 </p>
@@ -28,7 +31,7 @@
 
 ## 什么是 Open Design
 
-🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Hermes · Kimi · Antigravity 等 21 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
+🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Amp · Hermes · Kimi · Antigravity 等 22 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
 
 Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agent 原生**循环——发现需求、锁定方向、流式输出工件、评审、交付——不再封闭，而是变成了一个由**技能、设计系统和插件组成的文件系统**，你笔记本电脑上已有的编码 Agent 就能读取、编写和混搭。你的 CLI 变成设计引擎，你的笔记本变成工作坊，团队的 `DESIGN.md` 变成品牌契约。
 
@@ -116,13 +119,13 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
 | [Cursor](https://www.cursor.com/cli) | ✅ 支持 | `od mcp install cursor` |
 | [VS Code + GitHub Copilot](https://github.com/features/copilot) | ✅ 支持 | `od mcp install copilot` |
 | [GitHub Copilot CLI](https://github.com/features/copilot/cli) | ✅ 支持 | `od mcp install copilot` |
-| Gemini CLI | ✅ 支持 | `od mcp install gemini` |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | ✅ 支持 | `od mcp install gemini` |
 | [OpenCode](https://opencode.ai/) | ✅ 支持 | `od mcp install opencode` |
 | [OpenClaw](https://github.com/openclaw/openclaw) | ✅ 支持 | `od mcp install openclaw` |
 | [Antigravity](https://antigravity.google) | ✅ 支持 | `od mcp install antigravity` |
 | [Cline](https://github.com/cline/cline) | ✅ 支持 | `od mcp install cline` |
 | [Trae](https://www.trae.ai/) | ✅ 支持 | `od mcp install trae` |
-| Kimi CLI | ✅ 支持 | `od mcp install kimi` |
+| [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) | ✅ 支持 | `od mcp install kimi` |
 | [Pi Agent](https://github.com/badlogic/pi-mono) | ✅ 支持 | `od mcp install pi` |
 | [Mistral Vibe CLI](https://github.com/mistralai/mistral-vibe) | ✅ 支持 | `od mcp install vibe` |
 | [Hermes Agent](https://github.com/nousresearch/hermes-agent) | ✅ 支持 | `od mcp install hermes` |
@@ -130,7 +133,7 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
 `od mcp install <agent> --print` 干跑预览 · `--uninstall` 卸载 · 完整清单 `od mcp install --help`。
 
 <p align="center">
-  <img src="https://repo-assets.open-design.ai/resources/images/coding-agents.png" alt="Open Design 支持的 21 个编码 Agent CLI — Claude Code · Codex · OpenCode · Hermes · Antigravity · Gemini · Grok Build · Kimi · Cursor Agent · Qwen · Qoder · GitHub Copilot · Pi · Kiro · Kilo · Mistral Vibe · DeepSeek · Reasonix · Aider · Devin · Trae" width="100%" />
+  <img src="https://repo-assets.open-design.ai/resources/images/coding-agents.png" alt="Open Design 支持的 22 个编码 Agent CLI — Claude Code · Codex · OpenCode · Hermes · Antigravity · Gemini · Grok Build · Kimi · Cursor Agent · Qwen · Qoder · GitHub Copilot · Pi · Kiro · Kilo · Mistral Vibe · DeepSeek · Reasonix · Aider · Devin · Trae" width="100%" />
 </p>
 
 **未安装任何 CLI？** `POST /api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream` 的 BYOK 代理提供同样的循环（无需 spawn 进程）——粘贴 `baseUrl` + `apiKey` + `model`，支持 OpenAI、Anthropic、Azure OpenAI、Google Gemini、Ollama、LM Studio、vLLM 或任何 OpenAI 兼容端点。每个目标的 SSRF 防护在守护进程边缘拦截内网 IP / link-local / CGNAT。
@@ -272,7 +275,7 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 |---|---|---|---|---|
 | 开源 | ❌ | ❌ | ❌ | **✅ Apache-2.0** |
 | 自托管 / 桌面 | ❌ | ❌ | ❌ | **✅ macOS + Windows + Vercel** |
-| Agent 原生（在 CLI 中运行） | 仅 Anthropic | ❌ | 仅云端 Agent | **✅ 21 CLI + BYOK** |
+| Agent 原生（在 CLI 中运行） | 仅 Anthropic | ❌ | 仅云端 Agent | **✅ 22 CLI + BYOK** |
 | 品牌级 `DESIGN.md` | 私有 | Theme JSON | 有限 token | **✅ 150 系统随附** |
 | 技能 / 插件 / 模板 | 封闭 | 插件商店 | 封闭 | **✅ 100+ 技能 · 261 插件** |
 | HyperFrames (HTML→MP4) | ❌ | ❌ | ❌ | **✅ 一等公民** |
@@ -559,7 +562,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 
 ## 路线图
 
-- [x] 守护进程 + 21 个编码 Agent CLI 适配器 + 技能注册中心 + 设计系统目录
+- [x] 守护进程 + 22 个编码 Agent CLI 适配器 + 技能注册中心 + 设计系统目录
 - [x] Web 应用 + 聊天 + 问题表单 + 5 方向选择器 + 待办进度 + 沙箱预览
 - [x] 100+ 技能 · 150 设计系统 · 5 视觉方向 · 5 设备外框
 - [x] SQLite 支撑的项目 · 会话 · 消息 · 标签页 · 模板
@@ -568,6 +571,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 - [x] Sidecar 协议 + Electron 桌面 + IPC 自动化
 - [x] 工件 Lint API + 五维自评预输出门控
 - [x] **0.8.0**——插件市场基础设施（261 个官方插件、manifest 规范、逐 Agent 安装脚本）
+- [x] **0.9.0**——Open Design AMR（内置官方模型路由：零配置、一键登录）
 - [x] 打包 Electron 构建——macOS（Apple Silicon + Intel）+ Windows（x64）+ Linux AppImage（可选通道）
 - [ ] 评论模式精确编辑——部分已发布，可靠的定向补丁进行中
 - [ ] AI 输出的调参面板 UX——尚未实现

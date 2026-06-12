@@ -86,6 +86,7 @@ Daemon 启动时并行运行所有 adapter 的 `detect()`，然后把结果缓�
 | Adapter | CLI command | Config dir | Skills dir | Native skill loading | Surgical edit | Streaming | Priority |
 |---|---|---|---|---|---|---|---|
 | **claude-code** | `claude` | `~/.claude/` | `~/.claude/skills/` | ✅ | ✅ | ✅ | P0 (MVP) |
+| **amp** | `amp` | `~/.config/amp/` | n/a (via `amp skill add`) | ❌ (prompt-injected) | ✅ | ✅ (`-x --stream-json`, Claude-compatible) | P2 |
 | **api-fallback** | *(direct Anthropic API)* | — | — | ❌ (prompt-injected) | 〜 | ✅ | P0 (MVP) |
 | **codex** | `codex` | `~/.codex/` | `~/.codex/skills/` | 〜 (varies by version) | 〜 (regenerate w/ scoping) | ✅ | P1 |
 | **devin** | `devin` | `~/.config/devin/` | `~/.config/devin/skills/` | ✅ | ✅ | ✅ (`acp-json-rpc`) | P1 |

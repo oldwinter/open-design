@@ -25,6 +25,8 @@ import {
   trackCommunityGalleryClick,
   trackHomeChatComposerClick,
   trackPageView,
+  trackPluginDetailModalClick,
+  trackPluginDetailModalSharePopoverClick,
   trackPluginDetailModalSurfaceView,
   trackPluginReplacementModalClick,
   trackPluginReplacementModalSurfaceView,
@@ -59,6 +61,7 @@ import type {
   SkillSummary,
 } from '../types';
 import { inlineMentionToken, mentionTokenPresent } from '../utils/inlineMentions';
+import { smoothScrollToTop } from '../utils/smoothScrollToTop';
 import { missingRequiredInputs, pluginInputsAreValid } from '../utils/pluginRequiredInputs';
 import { HomeHero, type ExamplePromptInfo, type HomeHeroHandle } from './HomeHero';
 import { findChip, HOME_HERO_CHIPS, type HomeHeroChip } from './home-hero/chips';
@@ -80,7 +83,7 @@ import { PluginDetailsModal } from './PluginDetailsModal';
 import { HomeTemplatesReveal } from './HomeTemplatesReveal';
 import { PluginsHomeSection } from './PluginsHomeSection';
 import type { PluginLoopSubmit } from './PluginLoopHome';
-import type { FacetSelection } from './plugins-home/facets';
+import { localizePluginTitle } from './plugins-home/localization';
 import type { PluginUseAction } from './plugins-home/useActions';
 import { examplePresetSeedPrompt } from './plugins-home/presetSeedPrompt';
 import { localizePluginDescription } from './plugins-home/localization';
@@ -378,12 +381,7 @@ export function HomeView({
     requestAnimationFrame(() => {
       const scrollContainer = homeViewRef.current?.closest('.entry-main--scroll');
       if (!(scrollContainer instanceof HTMLElement)) return;
-      if (typeof scrollContainer.scrollTo === 'function') {
-        scrollContainer.scrollTo({ top: 0, left: 0 });
-      } else {
-        scrollContainer.scrollTop = 0;
-        scrollContainer.scrollLeft = 0;
-      }
+      smoothScrollToTop(scrollContainer);
     });
   }, []);
   useEffect(() => {
@@ -580,20 +578,6 @@ export function HomeView({
     stagedFiles.length,
   ]);
 
-  // The Home chip rail and the Community grid share a mental
-  // model — "Prototype" up top is the same artifact intent as the
-  // `prototype` slice down below. When the user picks a chip,
-  // we drive the starters' FacetSelection from it so they get a
-  // pre-filtered shelf of templates for the same intent without having
-  // to scroll and re-pick. `pendingChipId` (set on click, before apply
-  // resolves) is preferred over `active?.chipId` so the filter snaps on
-  // the same frame as the click.
-  const presetStartersSelection = useMemo<FacetSelection | null>(() => {
-    const chipId = pendingChipId ?? active?.chipId ?? null;
-    if (!chipId) return null;
-    return facetSelectionForChip(chipId);
-  }, [pendingChipId, active?.chipId]);
-
   // When the active plugin was bound through a chip, the badge shows
   // the chip label (e.g. "Prototype") instead of the underlying plugin
   // record title (e.g. "New generation (default scenario)"). Several
@@ -613,8 +597,11 @@ export function HomeView({
         return { title: homeHeroChipLabelForId(chip.id, t), isExplicitPlugin: false };
       }
     }
-    return { title: active.record.title, isExplicitPlugin: true };
-  }, [active, t]);
+    return {
+      title: localizePluginTitle(locale, active.record),
+      isExplicitPlugin: true,
+    };
+  }, [active, locale, t]);
   const activeBadgeTitle = activeBadge.title;
   const activePluginIsExplicit = activeBadge.isExplicitPlugin;
   const showActivePluginChip = useMemo(
@@ -683,7 +670,10 @@ export function HomeView({
       // plugin. Stored on `active.explicitPick`; gates the chip's clear button.
       explicitPick?: boolean;
     },
-  ) {
+    // Resolves true when the bound plugin left the composer submittable
+    // (inputs valid, apply not failed/superseded) — callers use this to
+    // decide whether the Send cue should fire.
+  ): Promise<boolean> {
     const applyRequestId = activePluginApplyRequestRef.current + 1;
     activePluginApplyRequestRef.current = applyRequestId;
     setActiveSkill(null);
@@ -753,12 +743,14 @@ export function HomeView({
 
     if (!inputsValid) {
       setPendingChipId(null);
-      return;
+      // Required inputs without defaults: the inputs form is the next step,
+      // not Send.
+      return false;
     }
-    if (!shouldResolveImmediately) return;
+    if (!shouldResolveImmediately) return true;
 
     const result = await resolveActivePlugin(record, optimisticInputs, applyRequestId);
-    if (activePluginApplyRequestRef.current !== applyRequestId) return;
+    if (activePluginApplyRequestRef.current !== applyRequestId) return false;
     if (!result) {
       // Roll back the optimistic active so submit can't fire against a
       // plugin that never bound. Only clear when the in-flight apply
@@ -766,7 +758,7 @@ export function HomeView({
       // would otherwise stomp a successful later apply.
       setActive((prev) => (prev?.record.id === record.id ? { ...prev, inputsValid: false } : prev));
       setError(`Failed to apply ${record.title}. Make sure the daemon is reachable.`);
-      return;
+      return false;
     }
     const reconciledInputs: Record<string, unknown> = { ...optimisticInputs };
     for (const field of result.inputs ?? []) {
@@ -774,6 +766,10 @@ export function HomeView({
         reconciledInputs[field.name] = field.default;
       }
     }
+    const reconciledInputsValid = pluginInputsAreValid(
+      options?.preserveInputFields ? inputFields : result.inputs ?? inputFields,
+      reconciledInputs,
+    );
     setActive((prev) =>
       prev && prev.record.id === record.id
         ? {
@@ -781,10 +777,7 @@ export function HomeView({
             result,
             inputs: reconciledInputs,
             inputFields: options?.preserveInputFields ? inputFields : result.inputs ?? inputFields,
-            inputsValid: pluginInputsAreValid(
-              options?.preserveInputFields ? inputFields : result.inputs ?? inputFields,
-              reconciledInputs,
-            ),
+            inputsValid: reconciledInputsValid,
             projectMetadata: homeCreateProjectMetadata(
               prev.projectKind,
               reconciledInputs,
@@ -821,6 +814,7 @@ export function HomeView({
         }
       }
     }
+    return reconciledInputsValid;
   }
 
   async function resolveActivePlugin(
@@ -860,7 +854,7 @@ export function HomeView({
       inputFields: options?.inputFields,
       queryTemplate: options?.queryTemplate,
     });
-    const confirm = () => usePlugin(record, nextPrompt, options);
+    const confirm = async () => { await usePlugin(record, nextPrompt, options); };
     if (options?.replaceWithoutConfirmation) {
       void confirm();
       return;
@@ -929,7 +923,7 @@ export function HomeView({
         ? resolvePluginQueryFallback(record.manifest?.od?.useCase?.query, locale) || null
         : null;
       const hasTemplate = Boolean(rawQueryTemplate && trimmedSeed);
-      await usePlugin(record, combined, {
+      const submittable = await usePlugin(record, combined, {
         ...(inputs ? { inputs } : {}),
         queryTemplate: hasTemplate ? rawQueryTemplate : null,
         // Allow an arbitrary prefix whenever we track the query template, so the
@@ -941,14 +935,25 @@ export function HomeView({
         explicitPick: true,
       });
       scrollHomeToTop();
+      // Plugins with required inputs and no defaults land on the inputs
+      // form, not Send — only cue Send when submit is actually unlocked.
+      if (submittable) {
+        inputRef.current?.pulseSend();
+      }
       return;
     }
-    await usePlugin(record, undefined, {
+    const submittable = await usePlugin(record, undefined, {
       ...(inputs ? { inputs } : {}),
       suppressPromptUpdate: true,
       explicitPick: true,
     });
     scrollHomeToTop();
+    // Plain Use doesn't seed the composer; with no draft and no staged
+    // files (or with required inputs still missing) the send button stays
+    // disabled, and flashing a disabled button points at a dead end.
+    if (submittable && (prompt.trim().length > 0 || stagedFiles.length > 0)) {
+      inputRef.current?.pulseSend();
+    }
   }
 
   function runWithReplacementConfirmation(
@@ -1038,6 +1043,8 @@ export function HomeView({
       projectMetadata: active?.projectMetadata ?? null,
       deferApply: true,
       explicitPick: true,
+    }).then((submittable) => {
+      if (submittable) inputRef.current?.pulseSend();
     });
     focusPromptAtEnd();
   }
@@ -1444,7 +1451,7 @@ export function HomeView({
     // footer/media fields，形成面向 run 的 inputs。
     const submittedApplyInputs = submittedActive ? submittedActive.inputs : defaultInputs;
     // 这些 inputs 会转发给 run，并用于构建面向 run 的 snapshot：删除所有现在隐藏的
-    // footer/media 设置，让首轮 AskUserQuestion flow 去收集它们，而不是继承内置默认值
+    // footer/media 设置，让首轮 question-form flow 去收集它们，而不是继承内置默认值
     //（`ratio: 16:9`、`duration: 5`、`audioType: speech` 等）。snapshot 也从这些
     // 剥离后的 inputs 解析，因为 daemon 会从 `snapshot.inputs` 渲染 `## Plugin inputs`，
     // 并告诉 agent 不要重复询问其中列出的内容；如果 deferred defaults 留在 snapshot 中，
@@ -1554,6 +1561,7 @@ export function HomeView({
       <HomeHero
         ref={inputRef}
         active={isActive}
+        firstRunGuide={projectsLoading ? undefined : projects.length === 0}
         prompt={prompt}
         onPromptChange={handlePromptChange}
         onSubmit={submit}
@@ -1676,7 +1684,6 @@ export function HomeView({
           onOpenExternal={handleCommunityOpenExternal}
           onBrowseRegistry={onBrowseRegistry}
           preferDefaultFacet={false}
-          presetSelection={presetStartersSelection}
           cardLayout="gallery"
         />
       </HomeTemplatesReveal>
@@ -1685,9 +1692,40 @@ export function HomeView({
         {detailsRecord ? (
           <PluginDetailsModal
             record={detailsRecord}
-            onClose={() => setDetailsRecord(null)}
-            onUse={(record, action) => void routePluginUse(record, action)}
+            onClose={() => {
+              // Covers the close button, Esc and the backdrop — every
+              // variant funnels dismissal through this single onClose.
+              trackPluginDetailModalClick(analytics.track, {
+                page_name: 'home',
+                area: 'plugin_detail_modal',
+                element: 'close',
+                plugin_id: detailsRecord.sourceMarketplaceEntryName ?? detailsRecord.id,
+                plugin_type: detailsRecord.marketplaceTrust ?? 'official',
+              });
+              setDetailsRecord(null);
+            }}
+            onUse={(record, action) => {
+              // Track here (not inside routePluginUse) so the gallery's
+              // own onUse keeps its community_gallery attribution; the
+              // kebab 'use-with-query' action maps to the dropdown face.
+              trackPluginDetailModalClick(analytics.track, {
+                page_name: 'home',
+                area: 'plugin_detail_modal',
+                element: action === 'use-with-query' ? 'use_plugin_dropdown' : 'use_plugin',
+                plugin_id: record.sourceMarketplaceEntryName ?? record.id,
+                plugin_type: record.marketplaceTrust ?? 'official',
+              });
+              void routePluginUse(record, action);
+            }}
             isApplying={pendingApplyId === detailsRecord.id}
+            onSharePopoverItemClick={(item) =>
+              trackPluginDetailModalSharePopoverClick(analytics.track, {
+                page_name: 'home',
+                area: 'plugin_detail_share_popover',
+                element: item,
+                plugin_id: detailsRecord.sourceMarketplaceEntryName ?? detailsRecord.id,
+                plugin_type: detailsRecord.marketplaceTrust ?? 'official',
+              })}
           />
         ) : null}
       </AnimatePresence>
@@ -1807,27 +1845,6 @@ export function shouldShowActivePluginChip(active: ActivePlugin | null): boolean
   return active.record.id !== defaultPluginIdForChip(active.chipId);
 }
 
-// Maps a Home hero chip id to the Community facet slice the
-// user most likely wants to browse next. The chip rail is intent
-// ("I want to design a slide deck"); the starters grid is the catalog
-// for that intent, so pinning the same `deck` slice lets the
-// user keep scanning examples without re-picking the same artifact
-// kind in a different control. The list mirrors the `apply-scenario`
-// and `apply-figma-migration` chip ids in `home-hero/chips.ts`; any
-// new chip there should add a row here too.
-function facetSelectionForChip(chipId: string): FacetSelection | null {
-  switch (chipId) {
-    case 'prototype': return { category: 'prototype', subcategory: null };
-    case 'live-artifact': return { category: 'live-artifact', subcategory: null };
-    case 'deck': return { category: 'deck', subcategory: null };
-    case 'image': return { category: 'image', subcategory: null };
-    case 'video': return { category: 'video', subcategory: null };
-    case 'hyperframes': return { category: 'hyperframes', subcategory: null };
-    case 'audio': return { category: 'audio', subcategory: null };
-    default: return null;
-  }
-}
-
 function homeHeroChipLabelForId(chipId: string, t: ReturnType<typeof useI18n>['t']): string {
   switch (chipId) {
     case 'prototype': return t('homeHero.chip.prototype');
@@ -1849,7 +1866,7 @@ function homeHeroChipLabelForId(chipId: string, t: ReturnType<typeof useI18n>['t
 // prototype/deck footer 只保留 design-system picker。Media surfaces
 //（image/video/audio/hyperframes）现在也采用同样的延迟方式：image/video 只保留
 // design-system picker，audio/hyperframes 不保留任何预检设置；model / ratio /
-// resolution / duration / audio type 改由 agent 在 run 期间通过 AskUserQuestion 收集，
+// resolution / duration / audio type 改由 agent 在 run 期间通过 question-form 收集，
 // 不再作为 inline pre-flight controls。
 const ARTIFACT_FOOTER_FIELD_NAMES = new Set([
   'fidelity',
@@ -1858,7 +1875,7 @@ const ARTIFACT_FOOTER_FIELD_NAMES = new Set([
   // Media surfaces（image/video/audio/hyperframes）同样延迟收集。这些字段已从
   // footer 移除，但 `buildHomeMediaComposer` 仍会 seed 它们（`model: gpt-image-2`、
   // `ratio: 16:9`、`duration: 5`、`audioType: speech` 等），所以提交前必须剥离；
-  // 否则 run 会带着内置默认值到达，首轮 AskUserQuestion flow 就没有内容可问。
+  // 否则 run 会带着内置默认值到达，首轮 question-form flow 就没有内容可问。
   // `subject` / `style` / `aspect` / `mediaKind` 有意不列入：od-media-generation
   // apply 仍会用它们验证。
   'model',
@@ -1891,7 +1908,7 @@ function footerInputNamesForChip(chipId: string | null): string[] {
   if (chipId === 'prototype' || chipId === 'deck') return ['designSystem'];
   if (chipId === 'image' || chipId === 'video') return ['designSystem'];
   // hyperframes / audio surface 没有 pre-flight settings；agent 会在 run 期间
-  // 通过 AskUserQuestion 询问 ratio / duration / model / audio kind。
+  // 通过 question-form 询问 ratio / duration / model / audio kind。
   return [];
 }
 
@@ -1905,7 +1922,7 @@ function homeCreateProjectMetadata(
 
   // Artifact-specific settings (fidelity, speaker notes, slide count, …) are no
   // longer collected in the home composer; the agent asks for them via
-  // AskUserQuestion, so we only seed `kind` here and let those fields stay
+  // question-form, so we only seed `kind` here and let those fields stay
   // unset (the system prompt then marks them "unknown — ask").
   const next: ProjectMetadata = {
     ...(existing ?? {}),

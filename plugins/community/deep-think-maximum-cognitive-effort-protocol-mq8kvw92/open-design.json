@@ -1,0 +1,37 @@
+{
+  "$schema": "https://open-design.ai/schemas/plugin.v1.json",
+  "specVersion": "1.0.0",
+  "name": "deep-think-maximum-cognitive-effort-protocol-mq8kvw92",
+  "title": "/deep-think — Maximum Cognitive Effort Protocol",
+  "title_i18n": {
+    "en": "/deep-think — Maximum Cognitive Effort Protocol",
+    "zh-CN": "/deep-think — 最大认知投入协议"
+  },
+  "version": "0.1.0",
+  "description": "Comprehensive deep-thinking process. Activates maximum reasoning, skill retrieval, verification, and step-by-step execution.",
+  "description_i18n": {
+    "en": "Comprehensive deep-thinking process. Activates maximum reasoning, skill retrieval, verification, and step-by-step execution.",
+    "zh-CN": "完整的深度思考流程。启用最大化推理、技能检索、验证和逐步执行。"
+  },
+  "compat": {
+    "agentSkills": [
+      {
+        "path": "./SKILL.md"
+      }
+    ]
+  },
+  "od": {
+    "kind": "skill",
+    "taskKind": "new-generation",
+    "context": {
+      "skills": [
+        {
+          "path": "./SKILL.md"
+        }
+      ]
+    },
+    "capabilities": [
+      "prompt:inject"
+    ]
+  }
+}
