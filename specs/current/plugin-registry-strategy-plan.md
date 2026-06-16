@@ -146,18 +146,13 @@ Default community registry
   -> community source is configured by default
   -> Available shows restricted community entries
   -> user explicitly installs one
-  -> plugin is copied to ~/.open-design/plugins/<plugin-id>
+  -> plugin is installed into daemon-managed storage
   -> Installed becomes part of agent context/runtime consumption
 ```
 
 `Available` entries 是 supply candidates，不是 runnable capabilities。agent 应消费 installed set：bundled official plugins、user-created plugins、direct GitHub/URL/local installs 和 marketplace-installed plugins。未来的 "Use from Available" shortcut 可以先 auto-install，但在 agent 运行之前仍必须产出 installed record。
 
-User-created 和 user-installed plugins 位于 user-state plugin root，
-默认是 `~/.open-design/plugins/<plugin-id>`。daemon 在后续 boots 中重新加载这些
-installed records 和 folders。Runtime-bundled official plugins
-留在 app/repo image 内，并在 boot 时作为 official-source
-preinstalls 重新注册；后续可以通过从 official registry source refresh/install
-来更新它们，而不必等待 app release。
+User-created 和 user-installed plugins 位于 daemon-managed storage。本 plan 不得定义 daemon data paths；记录 storage 前，先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。daemon 在后续 boots 中重新加载这些 installed records 和 folders。Runtime-bundled official plugins 留在 app/repo image 内，并在 boot 时作为 official-source preinstalls 重新注册；后续可以通过从 official registry source refresh/install 来更新它们，而不必等待 app release。
 
 production-side loop 是它的镜像：
 
@@ -588,7 +583,7 @@ Goal：从 "catalog index" 推进到 "registry entry"。
 - [x] Add `od marketplace plugins <id>` with pagination/search/filter.
 - [x] Add `od plugin install <name>@<version-or-tag>`.
 - [x] Add resolver support for exact version, dist-tag, and conservative `^`/`~` ranges.
-- [x] Add initial `.od/od-plugin-lock.json` shape with name, version, source, marketplace id, resolved ref, manifest digest, archive integrity.
+- [x] Add initial daemon-managed plugin lockfile shape with name, version, source, marketplace id, resolved ref, manifest digest, archive integrity. This plan MUST NOT define daemon data paths.
 - [ ] Add `od plugin lock verify`.
 - [ ] Add `od plugin outdated`.
 - [x] Add yanking metadata and resolver behavior：yanked versions 对 audit 可见，并拒绝 new resolution。Exact locked replay warning 等 lock verify 落地后作为 route-level follow-up 处理。
@@ -716,7 +711,7 @@ pnpm --filter @open-design/web test
 
 - official registry 应放在这个 monorepo 中，还是单独的 `open-design/plugin-registry` repo？单独 repo 对 community PR review 和 static-site generation 更干净。
 - `official` marketplace trust 应允许 user-added URLs 使用，还是只允许 Open Design ship 的 built-in source ids？建议：只有 built-in sources 可以是 `official`；user-added sources 可以是 `trusted` 或 `restricted`。
-- lockfile 应该是 project-local（`.od/plugins-lock.json`）还是 user-global？建议：为了 reproducible runs 使用 project-local，并将 user-global cache 作为 implementation detail。
+- lockfile 应该是 project-local 还是 user-global？建议：为了 reproducible runs 使用 project-local，并将 user-global cache 作为 implementation detail。本 plan 不得定义 daemon data paths；先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。
 - 当 catalog URL 映射到 GitHub 时，`od plugin publish --to marketplace-json` 应直接 mutate local catalog file，还是创建 branch/PR？建议：两者都支持，但检测到 GitHub remote 时默认走 PR。
 - telemetry policy 稳定前，official site 应展示多少 popularity/ranking data？建议：只有当 stars/downloads 来自 public GitHub 或 explicit registry events 时才展示；install telemetry 保持 opt-in。
 

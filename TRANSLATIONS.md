@@ -409,10 +409,15 @@ Names、protocols、commands、environment variables、code identifiers、packag
 #### Context-Sensitive Choices
 
 - 当 `Skill` 指 Open Design/Claude skill format 时保持 `Skill`。只有 "ability" 或 "capability" 这类泛义 prose 才翻译为 `capacité`。
+- 当 `fork` 指 Open Design conversation-fork feature 或相关 product/CLI 文案时保持 `fork`。Git branches 翻译为 `branche`，但不要把 product action 改写成 branch。
 - 当 `Design System` 指 product registry/object name 时可以保持 `Design System`。在解释性 prose 中，如果能提升可读性，也可用 `système de design`。
+- 当 `Craft` 指 repository 的 `craft/` extension point 或匹配的 UI label 时保持 `Craft`。不要把这个 feature name 翻成 generic polish/finishing pass。
+- 当 `SOTA Harness` 和 `Harness` 指 Open Design product/runtime harness concept 或匹配的 marketing label 时保持英文。
+- Motion-design jargon，例如 `motion`、`timing`、`easing`、`fallback` 和 `timeline`，在 compact UI labels 或 agent-workflow prompts 中可保持英文，因为这些术语是 design-domain vocabulary。
 - `runtime` 作为 noun 时保持 `runtime`。像 "execution mode" 这样的 labels 仍可用 `mode d’exécution`。
 - Provenance labels 中的 `source` 可保持 `source`，但普通 "data source" 翻译为 `source de données`。
 - 不要翻译 command output 或用户应在 terminal 中精确看到的 examples。
+- 不要翻译 UI input hints 中 copy-paste-safe 的 parser tokens 或 operators。当用户可能把 `kind`、`limit`、`scale`、`selector`、`columns`、`maxWidth` 和 `gap` 这类 literals 粘贴进字段时，保持原样。
 
 ### zh-CN ↔ zh-TW Glossary
 

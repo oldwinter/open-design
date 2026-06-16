@@ -32,6 +32,8 @@ od:
 
 Allowed values 与本目录中的文件名一致，但去掉 `.md` extension。Unknown values 会被静默忽略（forward-compatible）。
 
+添加或修改 `od.craft.requires` 后，请运行 `pnpm lint:craft`。Repository guard 会带上 manifest paths 报告无法解析的 slugs，因此 typo 不会静默地从 runtime prompt 中丢掉 craft section。如果某个 slug 是有意的 forward reference，请先把它列入 `craft/FUTURE_SECTIONS.md`，直到对应的 `craft/<slug>.md` 文件发布。
+
 ### 为什么 silent fallback 而不是 fail-fast？
 
 挑剔的读者会问：“如果 skill 请求了 planned-but-not-yet-vendored section，而对应文件还不存在，难道不应该警告用户吗？”我们选择 forward-compatibility，而不是 fail-fast：今天编写的 skill 可以列出 planned slug，并在后续 PR vendored 对应 `craft/<slug>.md` 的那一刻自动受益，无需修改 skill。Missing reference 的代价只是 system prompt 少了一段，而不是 broken skill；因此 loud failure mode 不值得增加摩擦。

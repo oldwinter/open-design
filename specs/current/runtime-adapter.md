@@ -67,7 +67,7 @@ detection result 包含：
 
 1. frontend 提交 `agentId`、user message、system prompt、project ID、attachments、model 和 reasoning options。
 2. daemon 使用 `getAgentDef(agentId)` 查找 runtime definition。
-3. daemon 创建或定位 `.od/projects/<projectId>/`，作为 Agent working directory。
+3. daemon 创建或定位 daemon-managed project working directory。本 spec 不得定义 daemon data paths；先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。
 4. daemon 校验 uploaded image paths 和 project attachment paths。
 5. daemon 将 system prompt、working directory hint、existing file list、attachment list 和 user request 组合成一个 prompt。
 6. daemon 准备额外可读目录：`skills/` 和 `design-systems/`。
@@ -270,7 +270,7 @@ Claude Code 还通过 `--add-dir` 暴露 `skills/` 和 `design-systems/`，让 A
 - Reasoning options 必须存在于 runtime definition 的 `reasoningOptions` 中。
 - Image paths 必须位于 daemon temporary upload directory 内。
 - Attachment paths 必须位于 project working directory 内。
-- Agent working directories 被约束到 `.od/projects/<projectId>/`。
+- Agent working directories 被约束到 daemon-managed project storage。
 - ACP runtimes 对 initialize、session/new、session/set_model 和 session/prompt 阶段有 timeout protection。
 - ACP runtimes 监听 `stdin` errors，并在 model detection 完成后主动清理 detection processes。
 - SSE connection 关闭时，daemon 会向 subprocess 发送 `SIGTERM`。

@@ -5,7 +5,7 @@
 ## Active apps
 
 - `apps/web`: Next.js 16 App Router + React 18 web runtime。Entrypoints 位于 `apps/web/app/`；main client shell 是 `apps/web/src/App.tsx`。本地 `tools-dev` web runs 期间，`apps/web/next.config.ts` 会将 `/api/*`、`/artifacts/*` 和 `/frames/*` rewrite 到 `OD_PORT`。
-- `apps/daemon`: Express + SQLite local daemon 和 `od` bin。它拥有 REST/SSE APIs、agent CLI spawning、skills、design systems、artifact persistence、static serving，以及 `.od/` 下的本地 data。
+- `apps/daemon`: Express + SQLite local daemon 和 `od` bin。它拥有 REST/SSE APIs、agent CLI spawning、skills、design systems、artifact persistence、static serving，以及 daemon-managed data。描述或修改 daemon data paths 前，先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section；这是强制要求，且不要在这里重述。
 - `apps/desktop`: Electron shell。Desktop 不猜测 web port；它通过 sidecar IPC 读取 runtime status，并打开报告的 web URL。
 - `apps/packaged`: 薄 packaged Electron runtime entry。它启动 packaged daemon/web sidecars，注册 `od://` entry protocol，并将 desktop host behavior 委托给 `apps/desktop`。
 

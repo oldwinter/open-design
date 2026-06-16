@@ -258,11 +258,11 @@ ALTER TABLE artifacts DROP COLUMN critique_score;
 | --- | --- | --- |
 | `critique_score` | `REAL` | Final composite。legacy artifacts 为 `NULL`。 |
 | `critique_rounds_json` | `TEXT` | 每个 round 的紧凑 summary：`[{n, composite, mustFix, decision}]`。有界；完整 transcript 在磁盘上。 |
-| `critique_transcript_path` | `TEXT` | `.od/artifacts/<artifactId>/` 下的 relative path。存储值是 relative path；absolute resolution 只在 daemon 侧完成。 |
+| `critique_transcript_path` | `TEXT` | daemon-managed artifact storage 下的 relative path。存储值是 relative path；absolute resolution 只在 daemon 侧完成。本 spec 不得定义 daemon data paths；先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。 |
 | `critique_status` | `TEXT` | 受 `CHECK` clause 约束。`legacy` 标记 feature shipped 之前产出的 artifacts。 |
 | `critique_protocol_version` | `INTEGER` | 固定 replay 要使用哪个 `parsers/v{n}.ts`。 |
 
-Transcripts 写入 `.od/artifacts/<artifactId>/transcript.ndjson`（每行一个 `PanelEvent`）。大于 256 KiB 的 files 会 gzip 成 `transcript.ndjson.gz`。orchestrator 在写入时选择格式；replay path 通过 extension 检测格式。
+Transcripts 通过 daemon-managed artifact storage 写入（每行一个 `PanelEvent`）。大于 256 KiB 的 files 会 gzip。orchestrator 在写入时选择格式；replay path 通过 extension 检测格式。本 spec 不得定义 daemon data paths。
 
 ## UI surface
 
@@ -490,7 +490,7 @@ Grafana dashboard 位于 `tools/dev/dashboards/critique.json`，包含三个 def
 | Surface | Threat | Mitigation |
 | --- | --- | --- |
 | `<ARTIFACT>` body | XSS in shipped HTML | Existing sandboxed iframe pattern with `sandbox` and CSP headers. No new surface. |
-| Transcript on disk | Path traversal via stored path | The SQLite column stores a relative path; the daemon resolves under `.od/artifacts/<artifactId>/`; no user-supplied component reaches the resolver. |
+| Transcript on disk | Path traversal via stored path | The SQLite column stores a relative path; the daemon resolves under daemon-managed artifact storage; no user-supplied component reaches the resolver. |
 | Brand `DESIGN.md` content in prompt | Prompt injection from a malicious system | DESIGN.md 会包裹在 `<BRAND_SOURCE>` block 中，其 framing 指示 agent 将其视为 data。与现有 skill loader 使用同一防御。 |
 | Score and must-fix from agent stdout | Log injection (newlines, ANSI) | Parser strips ANSI; logs JSON-encode every value; UI renders as text only. |
 | Pathological agent output | DoS via unbounded buffers | `parserMaxBlockBytes`, `perRoundTimeoutMs`, `totalTimeoutMs` are bounded and config-driven. Orchestrator enforces hard kill. |

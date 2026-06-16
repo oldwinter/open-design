@@ -7,7 +7,7 @@
 架构边界保持不变：
 
 - `apps/web`: Next.js frontend 和轻量 BFF/proxy layer。
-- `apps/daemon`: SQLite、`.od` filesystem state、AI agent CLI processes 和 SSE streaming 的本地 runtime/backend。
+- `apps/daemon`: SQLite、daemon-managed filesystem state、AI agent CLI processes 和 SSE streaming 的本地 runtime/backend。本 roadmap 不得定义 daemon data paths；记录 storage 前，先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。
 
 第一性 maintainability 目标是：
 
@@ -33,7 +33,7 @@
 | R1 | P0 | Daemon TypeScript enforcement 需要持续维护。 | `apps/daemon` 现在会对 source 和 tests 做 typecheck，所有 `@ts-nocheck` suppressions 已移除。 | 新的 daemon payload、DB row、agent event 或 task-state changes 如果绕过 shared contracts 或 typed boundaries，可能重新引入 drift。 | 保持 daemon source 和 tests 受 TypeScript enforcement 约束；维持零 `@ts-nocheck`；通过 `packages/contracts` 路由 shared API/SSE/error shapes；为不可信 daemon inputs 添加 runtime validation。 |
 | R2 | P0 | Web/daemon API contract 是隐式的。 | `apps/web` 通过 `/api/*` rewrites 调用 daemon；web 有 TypeScript types，daemon 返回手工成形的 JSON。 | Field mismatches 会在 runtime 暴露；API evolution 脆弱。 | 创建 `packages/api-contract` 或等价 shared contract layer，用于 request、response、error 和 SSE event types。 |
 | R3 | P0 | Daemon boundary 的 runtime validation 不完整。 | Daemon requests 可触发 local filesystem access、SQLite writes 和 `child_process.spawn()`。 | 单靠 type correctness 无法防护 malformed runtime input、path traversal、invalid agent IDs 或 unsafe args。 | 在 HTTP boundaries 添加 Zod/TypeBox schema validation；集中校验 workspace paths、task IDs、agent IDs、models、reasoning options、uploaded files 和 command arguments。 |
-| R4 | P0 | Local capability security boundary 需要显式规则。 | Daemon 拥有 high-permission capabilities：local files、`.od`、project workspaces、agent CLIs 和 logs。 | Unsafe path handling、过宽 command execution、token leakage 和 unintended workspace access 都可能成为 failure modes。 | 将 daemon 视作 capability server：绑定 localhost，使用 workspace/path allowlists，normalize and jail paths，allowlist agent commands，并 redact sensitive output。 |
+| R4 | P0 | Local capability security boundary 需要显式规则。 | Daemon 拥有 high-permission capabilities：local files、daemon-managed storage、project workspaces、agent CLIs 和 logs。 | Unsafe path handling、过宽 command execution、token leakage 和 unintended workspace access 都可能成为 failure modes。 | 将 daemon 视作 capability server：绑定 localhost，使用 workspace/path allowlists，normalize and jail paths，allowlist agent commands，并 redact sensitive output。 |
 | R5 | P0 | Agent process lifecycle 需要一等 manager。 | `/api/chat` 会 spawn 多个 agent runtimes 并把 output stream 到 frontend。 | Zombie processes、cancellation gaps、orphaned tasks、inconsistent exit handling 和 concurrent process conflicts。 | 引入 process/task manager，包含 task state machine、cancellation、timeout、cleanup、exit code capture、signal handling 和 concurrency limits。 |
 | R6 | P1 | `server.ts` 过于 monolithic。 | `apps/daemon/src/server.ts` 包含大量 routes，以及 orchestration、filesystem logic、streaming、uploads 和 artifact handling。 | 更难理解、测试和修改；无关 edits 共享同一文件并增加 regression risk。 | 拆分为 thin routes 加 services/adapters：`routes/`、`services/`、`agents/`、`db/`、`fs/`、`streams/`、`artifacts/`。 |
 | R7 | P1 | Error handling 不一致。 | Handlers 通常使用局部 `try/catch` 并返回 ad hoc JSON errors。 | UI 收到不一致 failures；logs 丢失 context；task state 可能在 partial failures 后停滞。 | 定义统一 error model，包含 `code`、`message`、`details`、`retryable` 和 `requestId/taskId`；添加 centralized Express error middleware 和 adapter-level error mapping。 |
@@ -45,7 +45,7 @@
 | R13 | P2 | Cross-platform behavior 是反复出现的风险。 | Daemon 使用 filesystem paths、SQLite native bindings、shell/process behavior 和 signals。 | macOS、Linux 和 Windows/WSL 在 path normalization、quoting、permissions 和 process termination 上可能不同。 | 一致使用 Node path APIs，避免 shell string composition，隔离 platform-specific process logic，并为 supported platforms 添加 CI coverage。 |
 | R14 | P2 | Framework migration 可能分散对核心 maintainability issues 的注意力。 | 当前复杂度集中在 FS/spawn/SSE/SQLite 和 module boundaries。 | Framework rewrite 可能消耗时间，却保留风险最高的 domain logic。 | 目前保留 Express；只有在 TS、contracts、validation、tests 和 modularization 就位，且 Express 明确成为 limiter 后，才重新评估 Fastify。 |
 | R15 | P2 | Web/daemon boundary 可能随时间侵蚀。 | Next.js 有 BFF capability，daemon 有 backend capability；未来 edits 可能模糊 ownership。 | High-permission local runtime logic 可能泄漏到 `apps/web`；deployment 和 security assumptions 变得不清晰。 | 记录并执行 ownership：web 处理 UI/BFF/proxy；daemon 拥有 local runtime capabilities；shared code 只包含 contracts 和 pure logic。 |
-| R16 | P3 | Operational documentation 不完整。 | Local-first daemon behavior 依赖 ports、`.od`、agent CLIs、runtime logs 和 recovery flows。 | Onboarding 和 support costs 上升；troubleshooting 依赖口头知识。 | 记录 daemon architecture、API/SSE contract、task lifecycle、`.od` data layout、agent dependency checks 和 common recovery procedures。 |
+| R16 | P3 | Operational documentation 不完整。 | Local-first daemon behavior 依赖 ports、daemon-managed storage、agent CLIs、runtime logs 和 recovery flows。 | Onboarding 和 support costs 上升；troubleshooting 依赖口头知识。 | 记录 daemon architecture、API/SSE contract、task lifecycle、storage contract index、agent dependency checks 和 common recovery procedures。 |
 
 ## 优化依赖
 

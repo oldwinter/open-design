@@ -153,19 +153,19 @@ Update script 会：
 ## Uninstall
 
 ```bash
-# Remove containers and data
+# Remove containers and persistent daemon storage
 bash deploy/scripts/uninstall.sh
 
-# Remove containers but keep data volume
+# Remove containers but keep persistent daemon storage
 bash deploy/scripts/uninstall.sh --keep-data
 ```
 
 Uninstaller 会：
-1. 停止并移除 containers（`docker compose down`），然后单独移除 data volume。
+1. 停止并移除 containers（`docker compose down`），然后单独移除 persistent daemon storage。
 2. 在 Linux 上：disable 并移除 systemd unit。
 3. 移除 `deploy/.env`。
 
-> **Data:** 默认也会删除 `open_design_data` volume（projects、artifacts、config）。传 `--keep-data` 可保留。之后可手动移除 volume：`docker volume rm open_design_data`。
+> **Data:** 在记录、修改、删除或保留 persistent daemon storage 前，必须先阅读根目录 [`AGENTS.md`](../AGENTS.md) → **Daemon data directory contract**。本指南不得重述该契约，也不得定义 storage paths。
 
 ## Configuration
 

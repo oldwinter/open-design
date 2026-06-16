@@ -72,7 +72,7 @@ type AgentEvent =
 
 ## 2. Detection strategy
 
-Daemon 启动时并行运行所有 adapter 的 `detect()`，然后把结果缓存在 `~/.open-design/agents.json`，TTL 为 24 小时。Daemon 收到 `SIGHUP` 时重新检测。
+Daemon 启动时并行运行所有 adapter 的 `detect()`，然后把结果缓存在 daemon-managed storage 中，TTL 为 24 小时。本文档不得定义 daemon data paths；修改或记录该 storage 前，必须先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section。
 
 每个 adapter 使用**两类信号**：
 

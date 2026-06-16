@@ -152,16 +152,7 @@ Daemon 的 skill registry 扫描三个位置：
 
 ### Symlink strategy（借鉴 [cc-switch](https://github.com/farion1231/cc-switch)）
 
-`cc-switch` 在 `~/.cc-switch/skills/` 维护中心 skill dir，并 symlink 到每个 agent 预期的位置（`~/.claude/skills/`、`~/.codex/skills/` 等）。OD 可以采用同一模型：
-
-```text
-~/.open-design/skills/
-    magazine-web-ppt/      (canonical location)
-~/.claude/skills/
-    magazine-web-ppt → ~/.open-design/skills/magazine-web-ppt
-~/.codex/skills/
-    magazine-web-ppt → ~/.open-design/skills/magazine-web-ppt
-```
+`cc-switch` 维护一个 central skill dir，并 symlink 到每个 agent 预期的位置（`~/.claude/skills/`、`~/.codex/skills/` 等）。OD 可以选择采用同一模型，但本协议不得定义 Open Design daemon data paths。修改或记录任何 Open Design-owned storage location 前，先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section。
 
 一次安装 → 每个 agent 都能看到该 skill。这是可选机制；只使用一个 agent 的用户不需要它。
 
@@ -262,7 +253,7 @@ Compose 时的解析流程：
 
 ```sh
 od skill add https://github.com/op7418/guizang-ppt-skill
-# → clones into ~/.open-design/skills/magazine-web-ppt
+# → installs into daemon-managed storage; read root AGENTS.md -> "Daemon data directory contract" before documenting paths
 # → symlinks into ~/.claude/skills/ (and any other active agent dirs)
 # → re-indexes registry
 
@@ -290,7 +281,7 @@ od skill remove <name>
 4. 用户输入：“给我做一份杂志风 8 页投资人 PPT”。
 5. Daemon dispatch 到 active agent（Claude Code），附带：
    - system message: skill 的 `SKILL.md` body
-   - cwd: `./.od/artifacts/2026-04-24-pitch-deck/`
+   - cwd: daemon-managed artifact workspace。本协议不得定义 daemon data paths；修改或记录 artifact storage 前，先阅读根目录 `AGENTS.md` -> **Daemon data directory contract**。
    - 已放入 cwd 的文件：`template.html`（来自 skill 的 `assets/`）
 6. Agent 运行自己的 6-step workflow（clarify → copy template → populate → self-check → preview → refine）。
 7. OD 把 agent 的 tool calls 流式转换为 UI events；artifact dir 持续增长。

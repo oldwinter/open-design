@@ -242,7 +242,7 @@ node --experimental-strip-types scripts/sync-litellm-models.ts
 ## Commits & pull requests
 
 - **一个 PR 只做一件事。** 添加 skill、重构 parser、升级 dependency 是三个 PR。
-- **标题使用祈使语气 + scope。** `add dating-web skill`、`fix daemon SSE backpressure when CLI hangs`、`docs: clarify .od layout`。
+- **标题使用祈使语气 + scope。** `add dating-web skill`、`fix daemon SSE backpressure when CLI hangs`、`docs: clarify storage contract`。
 - **使用 PR template。** 填完 [`.github/pull_request_template.md`](.github/pull_request_template.md) 的每个 section：Why、What users will see、Surface area、Screenshots（如涉及 UI）、Bug fix verification（如为 bug fix）、Validation。空 section 会收到 “please fill in” 回复。
 - **正文解释 why。** “这做了什么”通常从 diff 很明显；“为什么需要它”很少明显。
 - **如果有 issue，请引用。** 如果没有且 PR 非平凡，请先开 issue，让大家先确认这个改动值得做。

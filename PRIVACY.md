@@ -38,6 +38,10 @@ Redacted telemetry batches 会发送到 Open Design 团队运营的 Cloudflare W
 
 Open Design 在每一层都是 BYOK。你为 coding agents 和 model providers 配置的 API keys 都存储在本地，只用于直接调用对应 provider。它们永远不会发送给 Open Design 团队。
 
+## Open Design AMR
+
+“Open Design AMR” 是 Open Design 官方的 first-party model service。由于二者属于同一团队运营的同一产品族，我们可能会在二者之间共享必要信息，用于提供、连接并改进组合体验，例如识别你来自 Open Design、帮助你完成设置，以及让两个产品协同稳定运行。这种共享发生在我们自己的产品之间，而不是与无关第三方共享；涉及的任何数据仍遵循本页所述控制。
+
 ## 本页变更
 
 本文档跟踪已发布应用的数据处理行为。当 telemetry 行为发生变化时，本页会同步更新。如有问题，请打开 [GitHub Discussion](https://github.com/nexu-io/open-design/discussions)。

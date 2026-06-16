@@ -356,13 +356,11 @@ type LiveArtifactToolResponse<TSuccess> = TSuccess | ApiErrorResponse;
 
 ### 7.1 Storage layout
 
-优先使用 daemon runtime data directory 下的 project-scoped files。`OD_DATA_DIR` 可以覆盖默认值；否则 `<RUNTIME_DATA_DIR>` 为 `<repo>/.od`：
+优先使用 daemon-managed storage 下的 project-scoped files。本历史 spec 不得定义 daemon data paths；记录 storage 前，先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。
 
 ```text
-<RUNTIME_DATA_DIR>/projects/<projectId>/
-└── .live-artifacts/
-    └── <artifactId>/
-        ├── artifact.json
+project artifact storage
+└── live artifact metadata and payloads
         ├── template.html
         ├── index.html
         ├── data.json
@@ -638,9 +636,9 @@ Connector policy 必须在 execution 和 refresh time 执行，而不只是 cata
 
 默认决策：
 
-- OAuth connection state 和 credentials 位于 project artifacts 之外，放在 daemon-controlled global store 中，例如 `~/.open-design/connectors/` 或 app database。
+- OAuth connection state 和 credentials 位于 project artifacts 之外，放在 daemon-controlled storage 或 app database 中。本 spec 不得定义 daemon data paths。
 - Project artifacts 只存储 stable references：`connectorId`、`accountLabel`、provider tool id/name、minimized input 和 provenance。
-- Access tokens、refresh tokens、headers、cookies、OAuth state 和 raw provider responses 永远不能写入 `<RUNTIME_DATA_DIR>/projects/<projectId>/.live-artifacts` 或任何其他 project artifact directory。
+- Access tokens、refresh tokens、headers、cookies、OAuth state 和 raw provider responses 永远不能写入 project artifact storage。
 - Refresh 在 execution time 通过 daemon connector service 解析 credentials。
 - UI 必须显示 connector/account label，让用户理解哪个 global connection 支撑 project artifact。
 

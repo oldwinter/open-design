@@ -11,7 +11,7 @@
 *   **Compute:** AWS ECS 在 private subnets 中运行 serverless Fargate instances。为保护基于文件的 SQLite database 免受并发 network write corruption，服务硬编码为单实例 baseline（DesiredCount: 1）。不过它仍使用 multi-AZ networking primitives 实现 Active-Passive fault tolerance：如果某个 task 或 zone 失败，ECS 会自动把 container 重新调度到健康 AZ。Task definition 包含：
     *   **Open Design** app container。
     *   **Nginx Auth Proxy** sidecar container，用于安全地把 Open Design API Token 附加到入站 `/api/` requests。
-*   **Storage:** Amazon Elastic File System (EFS) 会挂载到 Fargate containers，用于持久保存 Open Design `.od` SQLite database 和 file artifacts。它配置了 deletion protection（`Retain`），以防意外数据丢失。
+*   **Storage:** Amazon Elastic File System (EFS) 会挂载到 Fargate containers，用于 persistent daemon storage。记录或修改该 mount 前，必须先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**；本 README 不得重述该契约。EFS 配置了 deletion protection（`Retain`），以防意外数据丢失。
 *   **Security:**
     *   **Secrets Manager:** 安全存储 Open Design API Token，避免明文暴露。
     *   **Security Groups:** 限制流量流向。ALB 要求显式配置 CIDR；请确保它是你的 VPN 或公司网段，避免意外公网暴露。Fargate 只接受来自 ALB 的流量；EFS 只接受来自 Fargate 的流量。
@@ -42,7 +42,7 @@
 | `CustomDomainName` | *（Optional）* 你的 custom domain name（例如 `design.yourcompany.com`）。如果提供，部署后必须手动创建 DNS CNAME/Alias record 指向 ALB。如果留空，则使用默认 ALB DNS name，通过 HTTP 访问。 | *None* |
 | `AcmCertificateArn` | *（Optional）* 你的 AWS Certificate Manager (ACM) certificate ARN。如果提供 `CustomDomainName`，则**必填**。 | *None* |
 | `ProxyPort` | Nginx proxy 使用并暴露给 Load Balancer 的 dynamic port。必须 >= 1024（unprivileged container）。 | `8080` |
-| `AppStoragePath` | 通过 EFS 挂载 `.od` SQLite directory 的 container path。 | `/app/.od` |
+| `AppStoragePath` | Persistent daemon storage path。设置或记录它之前，必须先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**。 | 见根目录契约 |
 
 ## Deployment
 

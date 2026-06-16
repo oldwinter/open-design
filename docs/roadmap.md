@@ -88,7 +88,7 @@
 3. 未安装 Claude Code 时：API-fallback 可产出 prototypes（不产出 decks —— guizang-ppt-skill 需要 native skill loading）。
 4. 用户可把 DESIGN.md 放到 project root，后续 generations 会遵守它。
 5. 第三方可发布 skill repo；`od skill add <url>` 安装后可运行。
-6. Artifacts 是 plain files；`git add ./.od/artifacts/` 和 `git log` 能讲出合理的故事。
+6. Artifacts 是 plain files。本 roadmap 不得定义 daemon data paths；修改或记录 artifact storage 前，先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section。
 7. Repo 中没有 Electron、Tauri 或 desktop packaging。
 
 ---

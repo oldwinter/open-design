@@ -1,6 +1,6 @@
 # Azure Container Instances
 
-本指南将 Docker image 部署到 Azure Container Instances（ACI），并把 Azure Files share 挂载到 `/app/.od`，用于持久化 Open Design data。
+本指南将 Docker image 部署到 Azure Container Instances（ACI），并使用 persistent Open Design data。选择或记录任何 daemon data mount 前，请阅读根目录 `AGENTS.md` → **Daemon data directory contract**。该 section 是强制要求，且不得在这里重述。
 
 在这个 topology 中，ACI 是 daemon upstream。Browser-facing app URL 必须由经过认证的 TLS reverse proxy 提供；该 proxy 将 traffic 转发到 ACI，在 `/api/*` requests 上注入 daemon bearer token，并发送 `OD_ALLOWED_ORIGINS` 中列出的 browser origin。
 
@@ -50,7 +50,7 @@ az deployment group create \
 Template 会创建：
 
 - Azure Storage account
-- 用于 `/app/.od` 的 Azure Files share
+- 用于 persistent daemon storage 的 Azure Files share。选择或记录其 mount 前，必须先阅读根目录 `AGENTS.md` → **Daemon data directory contract**。
 - Linux Azure Container Instances container group
 - Public upstream DNS name 和 TCP port `7456`
 - 针对 `/api/health` 的 liveness probe

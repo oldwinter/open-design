@@ -94,7 +94,7 @@
 - **Daemon** — 长驻本地进程。检测 agents、注册 skills、管理磁盘 artifacts、解析 active design system，并代理 REST/SSE requests。
 - **Agent adapters** — 每个受支持 CLI 一个 adapter；见 [`agent-adapters.md`](agent-adapters.md)。
 - **Skill registry** — 扫描 `~/.claude/skills/`、`./skills/` 和 `./.claude/skills/`；合并并暴露 typed catalog。
-- **Artifact store** — project-scoped folder（默认 `./.od/`），保存生成文件、version snapshots（git-friendly）和 per-artifact metadata。
+- **Artifact store** — daemon-managed storage，用于保存生成文件、version snapshots 和 per-artifact metadata。当前 data-path rules 不在本 draft 中指定；contributors 必须先阅读根目录 `AGENTS.md` → **Daemon data directory contract**，再记录或修改 storage paths。
 - **Design-system resolver** — 加载 active `DESIGN.md`，并把它作为 skill context 注入。
 - **Automations** — 编排 schedules、connectors、ingestion、memory updates、skill crystallization、design-system extraction、token compression 和 review gates 的 templates；source packets 从 Automations page、`/api/automation-ingestions` 和 `od automation source` 进入，而 evolution proposals 可通过 `/api/automation-proposals` 与 `od automation proposal` review。
 - **Memory / evolution store** — Markdown-backed、可编辑的 memory tree，通过 Settings、`/api/memory/tree` 和 `od memory tree` 暴露；accepted tree nodes 会进入未来 daemon 与 BYOK/API-mode agent prompts，accepted proposals 可把已 review 的 memory、skill 和 design-system drafts 写入用户拥有的 runtime roots。
@@ -143,7 +143,7 @@
 ## 10. 开放问题（编码前解决）
 
 - **Daemon ↔ Vercel bridge。** 我们要不要提供 reverse-tunnel helper（例如 `cloudflared`），要求用户自行配置，还是先退回到 “run locally for now”？当前倾向：MVP 暂缓，v1 加 helper。
-- **Artifact versioning。** Git、SQLite，还是两者都要？[Open CoDesign][ocod] 使用 SQLite；更简单但更难 review。倾向：artifacts 写成 plain files + `.od/history.jsonl` log。Git 是用户自己的事。
+- **Artifact versioning。** Git、SQLite，还是两者都要？[Open CoDesign][ocod] 使用 SQLite；更简单但更难 review。本 draft 不定义当前 daemon data path；根目录 `AGENTS.md` → **Daemon data directory contract** 是强制 source of truth。
 - **非 Claude-Code agents 的 comment mode。** Claude Code 通过自己的 tool loop 支持 surgical edits。Codex 和 Gemini CLI 没那么优雅。对于能力较弱的 agents，是否降级为 “regenerate whole file”？倾向：是，在 adapter table 中清楚说明。
 - **Skill trust model。** Skills 可以通过 agent shell out。至少应在 install 时警告，可能还要把 agent 的 cwd sandbox 到 project directory。若使用 Claude Code，其 permission mode 会处理；Codex 更宽松。需要 per-adapter note。
 

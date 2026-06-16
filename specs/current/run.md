@@ -35,7 +35,7 @@ run 是 daemon 拥有的执行实例。它属于一个 project 和一个 convers
 project 是设计工作区。它提供：
 
 - project metadata，例如 skill、design system 和 fidelity；
-- daemon 工作目录，通常是 `.od/projects/<projectId>/`；
+- daemon-managed project working directory。本 spec 不得定义 daemon data paths；记录 storage 前，先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**；
 - artifact ownership；
 - conversations 和 runs 的顶层 scope。
 

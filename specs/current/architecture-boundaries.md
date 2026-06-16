@@ -16,7 +16,7 @@ Electron 不引入独立的 privileged application layer。web layer 与 daemon 
 
 `apps/web` 不得直接访问本地 privileged capabilities：
 
-- `.od` state
+- daemon-managed state
 - SQLite storage
 - workspace filesystem reads or writes
 - agent CLI processes
@@ -29,7 +29,7 @@ web layer 通过 API DTOs 和 streaming events 与 daemon-owned capabilities 通
 
 `apps/daemon` 是唯一的 local capability server。它拥有 privileged local runtime 行为：
 
-- `.od` state
+- daemon-managed state
 - SQLite storage, schema, migrations, and storage layout
 - workspace filesystem access
 - agent CLI invocation

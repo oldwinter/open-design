@@ -8,7 +8,7 @@ Accepted
 
 `od` CLI 有两个不同角色：它可以启动 local daemon，也可以作为 `od media generate` 等 commands 的 thin client。Client commands 应该与 already-running daemon 通信，不应 evaluate daemon startup code。
 
-此前，`apps/daemon/src/cli.ts` 静态 import 了 `server.ts`。由于 ES modules 会在 import 时执行 top-level code，client-only commands 也会 evaluate daemon startup globals，包括 `OD_DATA_DIR` resolution。错误的 runtime data directory 可能因此在 CLI 发送 HTTP request 之前就让 media generation 失败。
+此前，`apps/daemon/src/cli.ts` 静态 import 了 `server.ts`。由于 ES modules 会在 import 时执行 top-level code，client-only commands 也会 evaluate daemon startup globals，包括 daemon data directory resolution。错误的 runtime data directory 可能因此在 CLI 发送 HTTP request 之前就让 media generation 失败。当前 daemon data-path rules 只位于根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**；本 ADR 不得重述它们。
 
 Daemon sidecar 也会直接启动 server，因此 startup behavior 被拆在 human CLI path 和 sidecar path 两边。
 

@@ -26,7 +26,7 @@ helm install my-release ./charts/open-design
 
 #### SQLite State & Concurrency Limitations
 
-当前 Open Design runtime 将 state 存储在 `/app/.od` 下的本地文件和 SQLite 中。由于 SQLite 不支持来自多个 network replicas 的并发写入，**此 chart 严格限制为 1 个 replica**。
+当前 Open Design runtime 将 state 存储在本地文件和 SQLite 中。记录或修改持久化 daemon storage 前，必须先阅读根目录 [`AGENTS.md`](../../AGENTS.md) → **Daemon data directory contract**；此 chart README 不得重述该契约。由于 SQLite 不支持来自多个 network replicas 的并发写入，**此 chart 严格限制为 1 个 replica**。
 
 Horizontal Pod Autoscaling (HPA) 默认禁用。除非你已经修改 application，将 state 外置到 standalone database，否则不要启用 HPA，也不要把 deployment 扩展到 `replicas: 1` 以上。
 

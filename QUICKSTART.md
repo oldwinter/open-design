@@ -153,25 +153,7 @@ OD_API_TOKEN=
 
 ## 持久化存储
 
-Open Design 会把项目和 SQLite 数据存储在 Docker volume 中：
-
-```text
-open_design_data
-```
-
-该 volume 挂载到：
-
-```text
-/app/.od
-```
-
-数据会在容器重启和镜像更新后继续保留。
-
-查看 volume：
-
-```bash
-docker volume inspect open-design_open_design_data
-```
+在记录、修改或选择任何持久化 daemon storage path 前，必须先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section。本 Quickstart 不得重述该契约，也不得定义 storage paths。
 
 ---
 
@@ -198,7 +180,7 @@ pnpm tools-dev run web # 在前台启动 daemon + web
 pnpm tools-dev # 在后台启动 daemon + web + desktop
 ```
 
-首次加载时，应用会检测已安装的 code-agent CLI（Claude Code / Codex / Devin for Terminal / Gemini / OpenCode / Cursor Agent / Qwen / Qoder CLI），自动选择一个，并默认使用 `web-prototype` skill + `Neutral Modern` design system。输入 prompt 并点击 **Send**。Agent 会流式输出到左侧面板；`<artifact>` 标签会被解析出来，HTML 会在右侧实时渲染。运行完成后，点击 **Save to disk**，artifact 会保存到 `./.od/artifacts/<timestamp>-<slug>/index.html`。
+首次加载时，应用会检测已安装的 code-agent CLI（Claude Code / Codex / Devin for Terminal / Gemini / OpenCode / Cursor Agent / Qwen / Qoder CLI），自动选择一个，并默认使用 `web-prototype` skill + `Neutral Modern` design system。输入 prompt 并点击 **Send**。Agent 会流式输出到左侧面板；`<artifact>` 标签会被解析出来，HTML 会在右侧实时渲染。记录或修改任何 artifact storage path 前，必须先阅读 `AGENTS.md` → **Daemon data directory contract**。
 
 **Design system** 下拉框内置 71 套系统：2 套手写 starter（Neutral Modern、Warm Editorial）和 69 套从 [`awesome-design-md`](https://github.com/VoltAgent/awesome-design-md) 导入的产品系统，按 category 分组（AI & LLM、Developer Tools、Productivity、Backend、Design Tools、Fintech、E-Commerce、Media、Automotive）。选择其中一套，即可用该品牌的审美为每个原型换肤；另外还有 57 个来自 [`awesome-design-skills`](https://github.com/bergside/awesome-design-skills) 的 design skill。
 
@@ -357,10 +339,6 @@ open-design/
 │   └── ...129 systems         # 2 starters · 70 product systems · 57 design skills
 ├── scripts/sync-design-systems.ts    # 从 upstream getdesign tarball 重新导入
 ├── docs/                      # product vision + spec
-├── .od/                       # runtime data（gitignored，自动创建）
-│   ├── app.sqlite              #   projects / conversations / messages / tabs
-│   ├── artifacts/              #   one-off "Save to disk" renders
-│   └── projects/<id>/          #   per-project working dir + agent cwd
 ├── pnpm-workspace.yaml        # apps/* + packages/* + tools/* + e2e
 └── package.json               # root quality scripts + `od` bin
 ```

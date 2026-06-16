@@ -2,7 +2,7 @@
 
 **父文档：** [`spec.md`](spec.md) · **同级文档：** [`skills-protocol.md`](skills-protocol.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
 
-本文档描述系统 topology、runtime modes、data flow 和 file layout。设计理由见 [`spec.md`](spec.md)；skills 与 agent adapters 的协议细节分别放在各自文档中。
+本文档描述系统 topology、runtime modes、data flow 和 file layout。设计理由见 [`spec.md`](spec.md)；skills 与 agent adapters 的协议细节分别放在各自文档中。要把 OD 嵌入另一个 control plane 后面，请看 [`orchestrator-workspaces.md`](orchestrator-workspaces.md)。
 
 [ocod]: https://github.com/OpenCoworkAI/open-codesign
 [acd]: https://github.com/VoltAgent/awesome-claude-design
@@ -91,8 +91,8 @@ browser ──► od.yourdomain.com (Vercel serverless)
   │                                                │
   ▼                                                ▼
 ┌─ agent CLIs ─┐                           ┌─ filesystem ─┐
-│ claude       │                           │ ./.od/      │
-│ codex        │                           │ ~/.od/      │
+│ claude       │                           │ daemon data │
+│ codex        │                           │ root        │
 │ cursor-agent │                           │ skills/      │
 │ gemini       │                           │ DESIGN.md    │
 │ opencode     │                           └──────────────┘
@@ -152,25 +152,11 @@ browser ──► od.yourdomain.com (Vercel serverless)
 
 ### 3.6 Artifact store
 
-磁盘上的普通文件。每个 project 使用约定布局：
-
-```text
-./.od/
-├── config.json                  # project-level daemon config
-├── artifacts/
-│   ├── 2026-04-24T10-03-12-landing/
-│   │   ├── artifact.json        # metadata（skill、mode、prompt、parent）
-│   │   ├── index.html           # 主输出（或 .jsx、.md、.pptx.json）
-│   │   └── assets/              # skill 生成的图片、字体等
-│   └── …
-├── history.jsonl                # append-only action log（generations、edits、comments）
-└── sessions/
-    └── <session-id>.json        # 临时状态；24 小时后垃圾回收
-```
+Daemon-managed storage 下磁盘上的普通文件。本历史 architecture draft 不定义当前 data paths。当前路径规则只位于根目录 `AGENTS.md` → **Daemon data directory contract**；修改或记录任何 storage path 前必须先阅读。
 
 理由：
 
-- **Plain files** → 用户可以 `git add ./.od/artifacts/`，并在 PR 中 review designs。
+- **Plain files** → artifacts 可以在没有专有 binary format 的情况下被检查和导出。
 - **`artifact.json` metadata** → OD 无需 DB 也能重建 artifact tree。
 - **`history.jsonl` 而非 SQLite** → append-only、git-friendly、可 grep。[Open CoDesign][ocod] 使用 SQLite；我们有意不用。
 - **Sessions 与 artifacts 分开** → sessions 是 ephemeral UI state；artifacts 是 durable。
@@ -196,7 +182,7 @@ browser ──► od.yourdomain.com (Vercel serverless)
 3. Daemon:
      a. 选择 active skill（prototype-skill）
      b. 加载 design-system（DESIGN.md）
-     c. 在 ./.od/artifacts/<slug>/ 下 materialize 新 artifact dir
+     c. 通过 daemon-managed storage materialize 新 artifact
      d. 调用 agent adapter，传入：
           - system: skill 的 SKILL.md 内容 + DESIGN.md
           - user: 原始 prompt
@@ -245,13 +231,10 @@ browser ──► od.yourdomain.com (Vercel serverless)
 
 | 文件 | 用途 |
 |---|---|
-| `~/.open-design/config.toml` | daemon-global：默认 agent preference、keys（可选，BYOK）、telemetry opt-in（默认 off） |
-| `~/.open-design/agents.json` | cached agent detection results |
-| `./.od/config.json` | project-local：active design system、preferred skills、preferred mode |
 | `./skills/<skill>/SKILL.md` | skill manifest（standard Claude Code format） |
 | `./DESIGN.md` | active design system（[awesome-claude-design][acd] format） |
 
-所有 config 都是 plain text / TOML / JSON；没有 binary formats，没有 sqlite。可以在 PR 中 review。
+Daemon data paths 只由根目录 `AGENTS.md` → **Daemon data directory contract** 管辖。不要在这里添加 config-path examples。
 
 ## 7. Web 与 daemon 之间的协议
 
@@ -275,14 +258,15 @@ POST /api/artifacts/save
 
 ### Folder import
 
-`POST /api/import/folder` 会创建一个 project，其 root 是已有本地文件夹，而不是默认的 `.od/projects/<id>/`。提交的 `baseDir` 存在 `metadata.baseDir`，OD 直接在其中读写；没有 copy，也没有 shadow tree。用户拥有该 workspace，并负责自己的 version control（git、Time Machine 等），这和 Cursor / Claude Code / Aider 的行为一致。
+`POST /api/import/folder` 会创建一个 root 位于已有本地文件夹的 project，而不是 daemon-managed project cwd。提交的 `baseDir` 存在 `metadata.baseDir`，OD 直接在其中读写；没有 copy，也没有 shadow tree。用户拥有该 workspace，并负责自己的 version control（git、Time Machine 等），这和 Cursor / Claude Code / Aider 的行为一致。
 
 安全性：
 
 - 提交的 `baseDir` 在存储前会通过 `realpath()` canonicalize，因此用户控制的 symlink 无法重定向后续写入。
 - 每次写入仍应用标准 `resolveSafe` / `sanitizePath` checks；`metadata.baseDir` 只改变 project root，不改变 bounds check。
-- Symlink resolution 后位于 `RUNTIME_DATA_DIR`（daemon 自己的数据目录）内部的 imports 会被拒绝。
-- File panel 会隐藏约定 build / install dirs（`node_modules .git dist build .next .nuxt .turbo .cache .output out coverage __pycache__ .venv vendor target .od .tmp`），让 listing 聚焦在 design content。
+- Imports inside daemon-owned storage are refused after symlink resolution.
+  记录 daemon storage paths 前，必须先阅读根目录 `AGENTS.md` → **Daemon data directory contract**。
+- File panel 会隐藏约定 build / install dirs（`node_modules .git dist build .next .nuxt .turbo .cache .output out coverage __pycache__ .venv vendor target .tmp`），让 listing 聚焦在 design content。
 
 Request / response types: `@open-design/contracts` 中的 `ImportFolderRequest`、`ImportFolderResponse`。
 
@@ -323,7 +307,7 @@ pnpm tools-dev run web       # 启动 daemon + web 前台循环
 services:
   daemon:
     image: openclaudedesign/daemon
-    volumes: [ "~/.open-design:/root/.open-design", "./:/workspace" ]
+    volumes: [ "./:/workspace" ]
     ports: ["7456:7456"]
   web:
     image: openclaudedesign/web

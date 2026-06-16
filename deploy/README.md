@@ -30,7 +30,7 @@ OPEN_DESIGN_IMAGE=docker.io/vanjayak/open-design:latest docker compose up -d --n
 默认值：
 
 - Host port：`127.0.0.1:7456`（设置 `OPEN_DESIGN_PORT=8080` 可发布到 `127.0.0.1:8080`）
-- Runtime data volume：`open_design_data`，挂载到 `/app/.od`
+- Runtime data：记录、修改或选择持久化 daemon storage 前，必须先阅读根目录 [`AGENTS.md`](../AGENTS.md) → **Daemon data directory contract**；本 README 不得重述该契约。
 - Node heap cap：`--max-old-space-size=192`
 - Compose memory cap：`384m`（设置 `OPEN_DESIGN_MEM_LIMIT=256m` 可覆盖）
 

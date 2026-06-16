@@ -29,7 +29,7 @@
 ## Inactive or placeholder directories
 
 - `apps/nextjs` 和 `packages/shared` 已移除；不要重新创建或引用它们。
-- `.od/`、`.tmp/`、Playwright reports 和 agent scratch directories 是本地 runtime data，必须留在 git 之外。
+- 本地 runtime data、`.tmp/`、Playwright reports 和 agent scratch directories 必须留在 git 之外。对于 daemon-managed data paths，阅读并遵循下方 **Daemon data directory contract**；不要在别处重述或即兴发明路径约定。
 
 # Development workflow
 
@@ -54,6 +54,81 @@
 - 不要添加或恢复 root lifecycle aliases：`pnpm dev`、`pnpm dev:all`、`pnpm daemon`、`pnpm preview` 或 `pnpm start`。
 - Ports 由 `tools-dev` flags 管理：`--daemon-port` 和 `--web-port`。
 - `tools-dev` 会为 web proxy target 导出 `OD_PORT`，为 web listener 导出 `OD_WEB_PORT`；不要使用 `NEXT_PORT`。
+
+## Daemon data directory contract
+
+This section is the only repository-wide source of truth for daemon-managed
+data paths. Every README, guide, deployment note, and operational handoff that
+mentions daemon data paths must point here instead of restating the rules.
+
+This boundary is strict. Do not introduce concrete filesystem examples for the
+daemon data directory, recommended data directory, shared data directory,
+deployment mount, or example data directory. If existing code exposes a legacy
+fallback, treat it as implementation detail or a known escape candidate, not as
+a documentation pattern to copy. If a change needs a data-path rule that is not
+covered here, request a core-maintainer decision in the PR instead of inventing
+a new convention.
+
+The daemon has one active data-root truth source:
+
+- On daemon startup, `apps/daemon/src/server.ts` resolves `OD_DATA_DIR` into
+  `RUNTIME_DATA_DIR`.
+- All daemon-owned data paths must derive from `RUNTIME_DATA_DIR` or from a
+  constant derived from it, such as `PROJECTS_DIR` or `ARTIFACTS_DIR`.
+- `PROJECTS_DIR` is the managed-project root. Imported-folder projects are the
+  explicit exception: they use `metadata.baseDir` for the user-selected
+  external workspace.
+- `ARTIFACTS_DIR`, SQLite, app config, memory, MCP config/tokens, automation
+  state, plugin state, connector credentials, generated files, logs owned by
+  sandbox mode, and agent runtime homes are daemon data and must remain under
+  the resolved daemon data root unless this file names a specific exception.
+- Agent subprocesses receive the resolved daemon data root as `OD_DATA_DIR`.
+  They must inherit the daemon's truth source instead of guessing their own
+  data path.
+
+Development propagation:
+
+- `tools-dev` owns sidecar runtime/log/ipc namespacing.
+- `tools-dev --namespace <name>` does not, by itself, define daemon data
+  isolation.
+- A development run that needs an isolated daemon data root must pass
+  `OD_DATA_DIR` into the daemon process environment. After that, the daemon
+  resolves it once and all daemon data paths flow from `RUNTIME_DATA_DIR`.
+
+Packaged propagation:
+
+- `tools-pack` / `apps/packaged` own packaged channel and namespace layout.
+- Packaged code resolves the final namespace-scoped daemon data root before
+  spawning the daemon.
+- The packaged daemon receives that final data root as `OD_DATA_DIR`; daemon
+  code must not infer packaged data paths from app names, Electron `userData`,
+  ports, channel names, or namespace names.
+
+Sanctioned exceptions:
+
+- `OD_MEDIA_CONFIG_DIR` is a narrow override for `media-config.json` only. It
+  is not a second daemon data root.
+- `OD_LEGACY_DATA_DIR` is a migration source for legacy data import only. It is
+  not an active daemon data root.
+- External tool homes such as `CODEX_HOME` are integration inputs, not daemon
+  data roots. The daemon must not describe them as Open Design runtime data.
+- Agent/project-cwd skill staging aliases are not daemon data roots.
+- Manifest metadata keys and CSS identifiers are semantic namespaces, not
+  filesystem path conventions.
+
+Known escape candidates that must not be reused:
+
+- Module-level defaults that point at a cwd-relative legacy data directory.
+- Helper defaults such as `defaultRegistryRoots()` that recompute a data root
+  from `process.env.OD_DATA_DIR` or a cwd fallback instead of receiving
+  `RUNTIME_DATA_DIR`.
+- `openDatabase(projectRoot)` calls that rely on its fallback instead of
+  passing the resolved data root.
+- Script help text or examples that suggest concrete legacy data directories.
+
+Do not extend these escape patterns. When a fix is obvious, route the path
+through `RUNTIME_DATA_DIR` or an explicit data-root argument. When it is not
+obvious, block the PR and request core-maintainer guidance.
 
 ## Root command boundary
 
@@ -261,15 +336,6 @@ Desktop 通过 sidecar IPC 查询 runtime status。Web URL 来自 `tools-dev` la
 ## How are sidecar-proto, sidecar, and platform split?
 
 `@open-design/sidecar-proto` 拥有 Open Design app/mode/source constants、namespace validation、stamp fields/flags、IPC message schema、status shapes 和 error semantics。`@open-design/sidecar` 只提供 generic bootstrap、IPC transport、path/runtime resolution、launch env 和 JSON runtime files。`@open-design/platform` 只提供 generic OS process stamp serialization、command parsing 和 process matching/search primitives，并消费 proto descriptor。
-
-## Where is data written?
-
-daemon 默认写入 `.od/`：SQLite 位于 `.od/app.sqlite`，agent CWDs 位于 `.od/projects/<id>/`，saved renders 位于 `.od/artifacts/`，credentials 位于 `.od/media-config.json`。两个 env vars 会按顺序覆盖 storage root：
-
-1. `OD_DATA_DIR=<dir>`：把*全部* daemon runtime data relocation 到 `<dir>`（Playwright 用于 test isolation；packaged daemon 和 Home Manager / NixOS modules 在 install root read-only 时，用它把 daemon 指向 writable directory）。Path 会解析 `~/` expansion，并把 relative paths 锚定到 `<projectRoot>`。
-2. `OD_MEDIA_CONFIG_DIR=<dir>`：更窄的 override，只 relocation `media-config.json`。解析语义相同。多数安装不需要它；它服务于那些希望 API credentials 与其余 runtime data 分开放置的 setups。
-
-默认优先级是 OD_MEDIA_CONFIG_DIR > OD_DATA_DIR > `<projectRoot>/.od`。
 
 ## When is `pnpm install` required?
 

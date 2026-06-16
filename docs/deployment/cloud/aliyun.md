@@ -187,8 +187,8 @@ spec:
           ports:
             - containerPort: 7456
           env:
-            - name: OD_DATA_DIR
-              value: /data
+            # Storage env vars are intentionally omitted here.
+            # Before setting them, you MUST read root AGENTS.md -> Daemon data directory contract.
             - name: OD_BIND_HOST
               value: "0.0.0.0"            # required so the readinessProbe and Service can reach the daemon
             - name: OD_API_TOKEN
@@ -198,9 +198,8 @@ spec:
                   key: api-token            # required whenever OD_BIND_HOST is non-loopback
             - name: OD_ALLOWED_ORIGINS
               value: "https://design.example.cn"  # set when fronting with an Ingress; daemon reads OD_*, not OPEN_DESIGN_*
-          volumeMounts:
-            - name: data
-              mountPath: /data
+          # Storage volume mounts are intentionally omitted here.
+          # Before adding them, you MUST read root AGENTS.md -> Daemon data directory contract.
           readinessProbe:
             httpGet: { path: /api/health, port: 7456 }
             initialDelaySeconds: 10
@@ -226,7 +225,7 @@ spec:
 
 用 `kubectl apply -f open-design.yaml` apply。用 Ingress（ACK Pro 预装 NGINX Ingress Controller）和 ACM-issued certificate 放在 Service 前面。设置 `OD_API_TOKEN` 后，来自 non-loopback origins 的每个 `/api/*` request 都必须携带 `Authorization: Bearer <token>` header —— 请把它接入你的 Ingress / proxy auth layer。
 
-> **Note on `replicas: 1`:** daemon 将 SQLite 写到 `.od/app.sqlite`（见 [`AGENTS.md`](../../../AGENTS.md) FAQ “Where is data written?”）。没有 shared storage 就运行多个 replicas 会导致 state 分叉。Multi-replica ACK topology 需要 external database；这超出本指南 scope。
+> **Note on `replicas: 1`:** 修改 storage paths 或 shared persistent storage 前，必须先阅读根目录 [`AGENTS.md`](../../../AGENTS.md) → **Daemon data directory contract**。没有 shared persistent daemon storage 就运行多个 replicas 会导致 state 分叉。Multi-replica ACK topology 需要 external database；这超出本指南 scope。
 
 ## Path C — ROS templates
 
