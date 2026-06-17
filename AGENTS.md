@@ -255,6 +255,9 @@ obvious, block the PR and request core-maintainer guidance.
 - 每个 `pnpm-lock.yaml` change 都视为需要 Nix pnpm deps hash refresh check。`nix/pnpm-deps.nix` 是 generated lock artifact；仅在有意维护 Nix packaging 时使用 `pnpm nix:update-hash`，随后重新运行 `nix flake check --print-build-logs --keep-going`。没有 Nix 的 contributors 可依赖 PR `Validate workspace` gate；该 gate 现在会在可能时上传或自动应用 generated hash-only fix。
 - 标记常规工作 ready 前，至少运行 `pnpm guard` 和 `pnpm typecheck`，再加上匹配已改文件的 package-scoped tests/builds。不要使用或添加 root `pnpm test`/`pnpm build` aliases。
 - local web runtime loops 优先使用 `pnpm tools-dev run web --daemon-port <port> --web-port <port>`。
+- 需要 tools-dev daemon/web runtime 的 e2e tests 必须使用 `e2e/lib/tools-dev/` 下的共享 tools-dev harness 和 framework suite adapters（`e2e/lib/playwright/suite.ts`、`e2e/lib/vitest/suite.ts`）。不要在 test case 中手动 spawn `tools-dev`，也不要在 framework-specific folders 下复制 lifecycle helpers。
+- Playwright UI tests 必须从 `@/playwright/suite` 导入 `test`/`expect`，不要直接从 `@playwright/test` 导入；仅 type-only imports 仍可来自 `@playwright/test`。该 suite 为每个 Playwright worker 拥有一个隔离的 tools-dev daemon/web/data root。不要添加 shared-runtime fallback；资源受限时把 Playwright workers 设为 `1`。
+- Playwright suite code 不负责 workspace prebuild policy。CI 和调用方保留现有 prebuild steps；`tools-dev` daemon freshness checks 只是 fallback guard。
 - 在 GUI-capable machine 上，通过运行 `pnpm tools-dev`，再运行 `pnpm tools-dev inspect desktop status` 验证 desktop。
 - Stamp/namespace changes 必须验证两个 concurrent namespaces，并对每个 namespace 运行 desktop `inspect eval` 和 `inspect screenshot`。
 - Path/log changes 必须运行 `pnpm tools-dev logs --namespace <name> --json`，并确认 log paths 位于 `.tmp/tools-dev/<namespace>/...` 下。

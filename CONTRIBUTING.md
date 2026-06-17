@@ -88,7 +88,7 @@ docker compose up -d
 OPEN_DESIGN_PORT=7456
 OPEN_DESIGN_MEM_LIMIT=384m
 OPEN_DESIGN_ALLOWED_ORIGINS=https://yourdomain.com
-OPEN_DESIGN_IMAGE=docker.io/vanjayak/open-design:latest
+OPEN_DESIGN_IMAGE=ghcr.io/nexu-io/od:latest
 ```
 
 > 项目和数据库数据会使用 Docker volume 自动持久化。
@@ -300,7 +300,7 @@ node --experimental-strip-types scripts/sync-litellm-models.ts
 tl;dr：持续提交好 PR、认真 review、在 [Discussions][discussions] / [Discord][discord] 参与交流，剩下的会自然发生。
 
 [discussions]: https://github.com/nexu-io/open-design/discussions
-[discord]: https://discord.gg/qhbcCH8Am4
+[discord]: https://discord.gg/9ptkbbqRu
 
 ---
 

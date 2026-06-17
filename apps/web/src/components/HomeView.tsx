@@ -196,7 +196,10 @@ interface Props {
   projectsLoading?: boolean;
   designSystems?: DesignSystemSummary[];
   defaultDesignSystemId?: string | null;
-  onSubmit: (payload: PluginLoopSubmit) => void;
+  // Resolves false when the project/conversation creation was rejected —
+  // the composer uses that to leave the sending state and let the user
+  // retry (#4082). Plain-void handlers keep working (treated as accepted).
+  onSubmit: (payload: PluginLoopSubmit) => Promise<boolean> | boolean | void;
   onOpenProject: (id: string) => void;
   onViewAllProjects: () => void;
   onBrowseRegistry?: () => void;
@@ -304,6 +307,10 @@ export function HomeView({
     examplePromptInfoRef.current = info;
   }, []);
   const [error, setError] = useState<string | null>(null);
+  // In-flight window between Send and the run starting (or failing) — the
+  // project-creation roundtrip happens upstream of this component, so the
+  // submit handler's promise is the only signal that it settled (#4082).
+  const [sending, setSending] = useState(false);
   const [elevenLabsVoices, setElevenLabsVoices] = useState<AudioVoiceOption[]>([]);
   const [elevenLabsVoicesLoading, setElevenLabsVoicesLoading] = useState(false);
   // Live AIHubMix image catalogue merged into the home media composer's model
@@ -1358,9 +1365,11 @@ export function HomeView({
             projectMetadata: metadataForHomeMediaComposer(mediaSurface, composer.inputs, promptTemplates),
             editableInputNames: composer.editableFieldNames,
             preserveInputFields: true,
-            // Media chips 和 Prototype、Slide deck 一样是模式切换：它们不再展示
-            // inline model/ratio/duration 设置（agent 会在 run 期间询问这些内容），
-            // 并且在用户选择具体 template/preset 或输入自己的 prompt 前，不改动 textarea。
+            // Media chips are a mode switch, just like Prototype and
+            // Slide deck: they no longer surface inline model/ratio/duration
+            // settings (the agent asks for those during the run), and they
+            // leave the textarea alone until the user picks a concrete
+            // template/preset or types their own prompt.
             suppressPromptUpdate: true,
             replaceWithoutConfirmation: true,
           });
@@ -1406,6 +1415,9 @@ export function HomeView({
   }
 
   async function submit() {
+    // The send button disables itself while sending, but the Enter-to-send
+    // path lands here directly — swallow re-entry during the in-flight window.
+    if (sending) return;
     const trimmed = prompt.trim();
     if (!trimmed && stagedFiles.length === 0) return;
     // P0 ui_click area=chat_composer element=send_button. Fires before the
@@ -1430,119 +1442,146 @@ export function HomeView({
       );
       return;
     }
-    const defaultInputs = { prompt: trimmed };
-    const submittedDesignSystemId = homeDesignSystemSelectionForInputs(
-      submittedActive?.inputs ?? null,
-      designSystemPickerSystems,
-      t('designSystemPicker.noneTitle'),
-    );
-    // Composer inputs 原样转发；下面会从这组 inputs 中剥离延迟收集的
-    // footer/media fields，形成面向 run 的 inputs。
-    const submittedApplyInputs = submittedActive ? submittedActive.inputs : defaultInputs;
-    // 这些 inputs 会转发给 run，并用于构建面向 run 的 snapshot：删除所有现在隐藏的
-    // footer/media 设置，让首轮 question-form flow 去收集它们，而不是继承内置默认值
-    //（`ratio: 16:9`、`duration: 5`、`audioType: speech` 等）。snapshot 也从这些
-    // 剥离后的 inputs 解析，因为 daemon 会从 `snapshot.inputs` 渲染 `## Plugin inputs`，
-    // 并告诉 agent 不要重复询问其中列出的内容；如果 deferred defaults 留在 snapshot 中，
-    // 即使 `onSubmit.pluginInputs` 已被剥离，也会压制 discovery flow。剥离只移除非必填
-    // fields（保留 `subject`/`style`/`aspect`/`mediaKind`），所以 od-media-generation
-    // apply 仍能通过验证。
-    const submittedPluginInputs = submittedActive
-      ? stripArtifactFooterInputs(submittedApplyInputs)
-      : defaultInputs;
-    const activeInputsChangedForSubmit = submittedActive
-      ? !inputsEqual(submittedActive.result?.appliedPlugin?.inputs ?? submittedActive.inputs, submittedPluginInputs)
-      : false;
-    if (submittedActive && (!submittedActive.result || activeInputsChangedForSubmit)) {
-      const result = await resolveActivePlugin(submittedActive.record, submittedPluginInputs);
-      if (!result) {
-        setError(`Failed to apply ${submittedActive.record.title}. Check the plugin parameters and try again.`);
+    setError(null);
+    // Sending covers the whole async tail — a pending plugin apply (when one
+    // must resolve first) and the project-creation roundtrip are both windows
+    // a second click could otherwise re-enter.
+    setSending(true);
+    try {
+      const defaultInputs = { prompt: trimmed };
+      const submittedDesignSystemId = homeDesignSystemSelectionForInputs(
+        submittedActive?.inputs ?? null,
+        designSystemPickerSystems,
+        t('designSystemPicker.noneTitle'),
+      );
+      // Composer inputs are forwarded as-is; the deferred footer/media fields are
+      // stripped from this set just below to form the run-facing inputs.
+      const submittedApplyInputs = submittedActive ? submittedActive.inputs : defaultInputs;
+      // Inputs forwarded to the run AND used to build the run-facing snapshot:
+      // drop every now-hidden footer/media setting so the first-turn
+      // question-form flow collects them instead of inheriting a baked-in
+      // default (`ratio: 16:9`, `duration: 5`, `audioType: speech`, …). The
+      // snapshot is resolved from these stripped inputs too — the daemon renders
+      // `## Plugin inputs` from `snapshot.inputs` and tells the agent not to
+      // re-ask about anything listed there, so leaving the deferred defaults in
+      // the snapshot would suppress the discovery flow even though
+      // `onSubmit.pluginInputs` was stripped. Stripping only removes non-required
+      // fields (`subject`/`style`/`aspect`/`mediaKind` stay), so the
+      // od-media-generation apply still validates.
+      const submittedPluginInputs = submittedActive
+        ? stripArtifactFooterInputs(submittedApplyInputs)
+        : defaultInputs;
+      const activeInputsChangedForSubmit = submittedActive
+        ? !inputsEqual(submittedActive.result?.appliedPlugin?.inputs ?? submittedActive.inputs, submittedPluginInputs)
+        : false;
+      if (submittedActive && (!submittedActive.result || activeInputsChangedForSubmit)) {
+        const result = await resolveActivePlugin(submittedActive.record, submittedPluginInputs);
+        if (!result) {
+          setError(`Failed to apply ${submittedActive.record.title}. Check the plugin parameters and try again.`);
+          return;
+        }
+        submittedActive = { ...submittedActive, result, inputs: submittedPluginInputs };
+        setActive(submittedActive);
+      }
+      // Reconcile each selected context against the serialized prompt text before
+      // forwarding it. Inline-backed contexts (inserted as `@mention` pills) are
+      // only sent while their token survives in the prompt — the Lexical composer
+      // lets users delete a mention pill (backspace, edit), and when they do that
+      // plugin/MCP/connector should stop being sent. Context-only `Use`
+      // selections never carry a token, so they stay in the payload until the
+      // user explicitly clears them.
+      const contextPlugins = selectedPluginContexts
+        .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.record.title))
+        .map((item) => ({
+          id: item.record.id,
+          title: item.record.title,
+          ...(item.record.manifest?.description
+            ? { description: item.record.manifest.description }
+            : {}),
+        }));
+      const contextMcpServers = selectedMcpContexts
+        .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.server.label || item.server.id))
+        .map((item) => ({
+          id: item.server.id,
+          ...(item.server.label ? { label: item.server.label } : {}),
+          ...(item.server.transport ? { transport: item.server.transport } : {}),
+          ...(item.server.url ? { url: item.server.url } : {}),
+          ...(item.server.command ? { command: item.server.command } : {}),
+        }));
+      const contextConnectors = selectedConnectorContexts
+        .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.connector.name))
+        .map((item) => ({
+          id: item.connector.id,
+          name: item.connector.name,
+          provider: item.connector.provider,
+          category: item.connector.category,
+          status: item.connector.status,
+          ...(item.connector.accountLabel ? { accountLabel: item.connector.accountLabel } : {}),
+        }));
+      const submittedProjectKind =
+        submittedActive?.projectKind ?? fallbackProjectKind ?? projectKindForSkill(activeSkill) ?? 'other';
+      const submittedProjectMetadata = submittedActive?.mediaSurface
+        ? metadataForHomeMediaComposer(submittedActive.mediaSurface, submittedActive.inputs, promptTemplates)
+        : homeCreateProjectMetadata(
+            submittedProjectKind,
+            submittedActive?.inputs ?? null,
+            submittedActive?.projectMetadata ?? fallbackProjectMetadata ?? null,
+          );
+      // Scenario plugins (chips / preset cards) and explicit skill picks are
+      // mutually exclusive routing sources — never send both (#2972).
+      const resolvedSkillId = submittedActive ? null : activeSkill?.id ?? null;
+      const routedPluginId =
+        sessionMode === 'design'
+          ? submittedActive?.record.id ?? DEFAULT_UNSELECTED_SCENARIO_PLUGIN_ID
+          : submittedActive?.record.id ?? null;
+      // The example-prompt override is a one-shot marker. Decide whether to
+      // send it now, but defer spending the marker until the create is
+      // accepted — a rejected attempt stays retryable and must resend it.
+      const examplePromptKey = 'od:example-prompt-used';
+      const examplePromptToSend =
+        examplePromptInfoRef.current != null && localStorage.getItem(examplePromptKey) == null
+          ? examplePromptInfoRef.current
+          : null;
+      const accepted = await onSubmit({
+        prompt: trimmed,
+        pluginId: routedPluginId,
+        pluginType: submittedActive?.record.marketplaceTrust ?? (routedPluginId ? 'official' : null),
+        skillId: resolvedSkillId,
+        appliedPluginSnapshotId: submittedActive?.result?.appliedPlugin?.snapshotId ?? null,
+        pluginTitle: submittedActive?.record.title ?? null,
+        taskKind: submittedActive?.result?.appliedPlugin?.taskKind ?? null,
+        pluginInputs: submittedPluginInputs,
+        projectKind: submittedProjectKind,
+        projectMetadata: submittedProjectMetadata,
+        designSystemId: submittedDesignSystemId,
+        contextPlugins,
+        contextMcpServers,
+        contextConnectors,
+        attachments: stagedFiles,
+        ...(workingDir ? { workingDir } : {}),
+        ...(workingDirToken ? { workingDirToken } : {}),
+        conversationMode: sessionMode,
+        ...(examplePromptToSend ? { examplePromptContext: examplePromptToSend } : {}),
+      });
+      if (accepted === false) {
+        setError('Failed to start the run. Make sure the daemon is reachable, then try again.');
         return;
       }
-      submittedActive = { ...submittedActive, result, inputs: submittedPluginInputs };
-      setActive(submittedActive);
+      // Create accepted — now it is safe to spend the one-shot marker.
+      if (examplePromptToSend) localStorage.setItem(examplePromptKey, '1');
+      // Only drop the staged contexts once the run actually started — a
+      // rejected creation keeps them so the retry sends the same payload.
+      setSelectedPluginContexts([]);
+      setSelectedMcpContexts([]);
+      setSelectedConnectorContexts([]);
+    } catch (err) {
+      // A submit handler that throws (instead of resolving false) lands on
+      // the same recovery path as a rejected creation.
+      console.warn('Home composer submit failed', err);
+      setError('Failed to start the run. Make sure the daemon is reachable, then try again.');
+    } finally {
+      setSending(false);
     }
-    // Reconcile each selected context against the serialized prompt text before
-    // forwarding it. Inline-backed contexts (inserted as `@mention` pills) are
-    // only sent while their token survives in the prompt — the Lexical composer
-    // lets users delete a mention pill (backspace, edit), and when they do that
-    // plugin/MCP/connector should stop being sent. Context-only `Use`
-    // selections never carry a token, so they stay in the payload until the
-    // user explicitly clears them.
-    const contextPlugins = selectedPluginContexts
-      .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.record.title))
-      .map((item) => ({
-        id: item.record.id,
-        title: item.record.title,
-        ...(item.record.manifest?.description
-          ? { description: item.record.manifest.description }
-          : {}),
-      }));
-    const contextMcpServers = selectedMcpContexts
-      .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.server.label || item.server.id))
-      .map((item) => ({
-        id: item.server.id,
-        ...(item.server.label ? { label: item.server.label } : {}),
-        ...(item.server.transport ? { transport: item.server.transport } : {}),
-        ...(item.server.url ? { url: item.server.url } : {}),
-        ...(item.server.command ? { command: item.server.command } : {}),
-      }));
-    const contextConnectors = selectedConnectorContexts
-      .filter((item) => !item.inlineBacked || mentionTokenPresent(trimmed, item.connector.name))
-      .map((item) => ({
-        id: item.connector.id,
-        name: item.connector.name,
-        provider: item.connector.provider,
-        category: item.connector.category,
-        status: item.connector.status,
-        ...(item.connector.accountLabel ? { accountLabel: item.connector.accountLabel } : {}),
-      }));
-    const submittedProjectKind =
-      submittedActive?.projectKind ?? fallbackProjectKind ?? projectKindForSkill(activeSkill) ?? 'other';
-    const submittedProjectMetadata = submittedActive?.mediaSurface
-      ? metadataForHomeMediaComposer(submittedActive.mediaSurface, submittedActive.inputs, promptTemplates)
-      : homeCreateProjectMetadata(
-          submittedProjectKind,
-          submittedActive?.inputs ?? null,
-          submittedActive?.projectMetadata ?? fallbackProjectMetadata ?? null,
-        );
-    // Scenario plugins (chips / preset cards) and explicit skill picks are
-    // mutually exclusive routing sources — never send both (#2972).
-    const resolvedSkillId = submittedActive ? null : activeSkill?.id ?? null;
-    const routedPluginId =
-      sessionMode === 'design'
-        ? submittedActive?.record.id ?? DEFAULT_UNSELECTED_SCENARIO_PLUGIN_ID
-        : submittedActive?.record.id ?? null;
-    onSubmit({
-      prompt: trimmed,
-      pluginId: routedPluginId,
-      pluginType: submittedActive?.record.marketplaceTrust ?? (routedPluginId ? 'official' : null),
-      skillId: resolvedSkillId,
-      appliedPluginSnapshotId: submittedActive?.result?.appliedPlugin?.snapshotId ?? null,
-      pluginTitle: submittedActive?.record.title ?? null,
-      taskKind: submittedActive?.result?.appliedPlugin?.taskKind ?? null,
-      pluginInputs: submittedPluginInputs,
-      projectKind: submittedProjectKind,
-      projectMetadata: submittedProjectMetadata,
-      designSystemId: submittedDesignSystemId,
-      contextPlugins,
-      contextMcpServers,
-      contextConnectors,
-      attachments: stagedFiles,
-      ...(workingDir ? { workingDir } : {}),
-      ...(workingDirToken ? { workingDirToken } : {}),
-      conversationMode: sessionMode,
-      ...(() => {
-        if (!examplePromptInfoRef.current) return {};
-        const key = 'od:example-prompt-used';
-        if (localStorage.getItem(key)) return {};
-        localStorage.setItem(key, '1');
-        return { examplePromptContext: examplePromptInfoRef.current };
-      })(),
-    });
-    setSelectedPluginContexts([]);
-    setSelectedMcpContexts([]);
-    setSelectedConnectorContexts([]);
   }
 
   return (
@@ -1605,6 +1644,7 @@ export function HomeView({
           Boolean(pendingAuthoringChipId) ||
           Boolean(active && !active.inputsValid)
         }
+        submitting={sending}
         onPickPlugin={(record, nextPrompt) => addPluginContext(record, nextPrompt)}
         onPickExamplePlugin={useExamplePlugin}
         onPickSkill={useSkill}
@@ -1848,23 +1888,25 @@ function homeHeroChipLabelForId(chipId: string, t: ReturnType<typeof useI18n>['t
   }
 }
 
-// Prototype/deck 专属设置（fidelity、slide count、speaker notes）不再提升到
-// home composer footer；agent 会通过首轮 discovery flow 询问这些内容，因此
-// prototype/deck footer 只保留 design-system picker。Media surfaces
-//（image/video/audio/hyperframes）现在也采用同样的延迟方式：image/video 只保留
-// design-system picker，audio/hyperframes 不保留任何预检设置；model / ratio /
-// resolution / duration / audio type 改由 agent 在 run 期间通过 question-form 收集，
-// 不再作为 inline pre-flight controls。
+// Prototype/deck-specific settings (fidelity, slide count, speaker notes) are
+// no longer promoted into the home composer footer — the agent asks for those
+// via the first-turn discovery flow, so the prototype/deck footer keeps only
+// the design-system picker. Media surfaces (image/video/audio/hyperframes)
+// now defer the same way: image/video keep only the design-system picker and
+// audio/hyperframes keep nothing, with model / ratio / resolution / duration /
+// audio type collected by the agent via question-form during the run instead
+// of inline pre-flight controls.
 const ARTIFACT_FOOTER_FIELD_NAMES = new Set([
   'fidelity',
   'slideCount',
   'speakerNotes',
-  // Media surfaces（image/video/audio/hyperframes）同样延迟收集。这些字段已从
-  // footer 移除，但 `buildHomeMediaComposer` 仍会 seed 它们（`model: gpt-image-2`、
-  // `ratio: 16:9`、`duration: 5`、`audioType: speech` 等），所以提交前必须剥离；
-  // 否则 run 会带着内置默认值到达，首轮 question-form flow 就没有内容可问。
-  // `subject` / `style` / `aspect` / `mediaKind` 有意不列入：od-media-generation
-  // apply 仍会用它们验证。
+  // Media surfaces (image/video/audio/hyperframes) defer the same way. These
+  // were dropped from the footer but `buildHomeMediaComposer` still seeds them
+  // (`model: gpt-image-2`, `ratio: 16:9`, `duration: 5`, `audioType: speech`,
+  // …) so they must be stripped before submission — otherwise the run arrives
+  // with baked-in defaults and the first-turn question-form flow has nothing
+  // left to ask. `subject` / `style` / `aspect` / `mediaKind` are intentionally
+  // NOT listed: the od-media-generation apply still validates against them.
   'model',
   'ratio',
   'resolution',
@@ -1894,8 +1936,8 @@ function stripArtifactFooterInputs(
 function footerInputNamesForChip(chipId: string | null): string[] {
   if (chipId === 'prototype' || chipId === 'deck') return ['designSystem'];
   if (chipId === 'image' || chipId === 'video') return ['designSystem'];
-  // hyperframes / audio surface 没有 pre-flight settings；agent 会在 run 期间
-  // 通过 question-form 询问 ratio / duration / model / audio kind。
+  // hyperframes / audio surface no pre-flight settings — the agent asks for
+  // ratio / duration / model / audio kind via question-form during the run.
   return [];
 }
 

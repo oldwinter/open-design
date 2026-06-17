@@ -303,10 +303,10 @@ README 中的一些 badges 可以通过修改 badge URL 来本地化：
 
 ```markdown
 <!-- English -->
-<a href="https://discord.gg/qhbcCH8Am4"><img alt="Discord" src="https://img.shields.io/badge/discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
+<a href="https://discord.gg/9ptkbbqRu"><img alt="Discord" src="https://img.shields.io/badge/discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
 
 <!-- Italian -->
-<a href="https://discord.gg/qhbcCH8Am4"><img alt="Discord" src="https://img.shields.io/badge/discord-unisciti-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
+<a href="https://discord.gg/9ptkbbqRu"><img alt="Discord" src="https://img.shields.io/badge/discord-unisciti-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
 ```
 
 **翻译这些 badge labels：**
@@ -857,7 +857,7 @@ pnpm tools-dev
 
 - **有问题？** 开一个 [GitHub Discussion](https://github.com/nexu-io/open-design/discussions)
 - **发现 issue？** 开一个 [GitHub Issue](https://github.com/nexu-io/open-design/issues)
-- **想聊天？** 加入我们的 [Discord](https://discord.gg/qhbcCH8Am4)
+- **想聊天？** 加入我们的 [Discord](https://discord.gg/9ptkbbqRu)
 - **需要 review？** 在 PR 中 tag `@nexu-io/maintainers`
 
 ---

@@ -12,10 +12,14 @@
 - `resources/`: e2e suites 的 declarative resources，例如 Playwright UI scenario lists。
 - `lib/fake-agents.ts`: UI 和 pure-inspect daemon specs 共用的 fake local agent CLI harness。
 - `lib/timeouts.ts`: 按 CI 缩放的 timeout constants（`T.short`、`T.medium`、`T.long`、`T.xlong`）。从 `@/timeouts` 导入 `{ T }`。UI tests 中请使用它们，不要硬编码 millisecond values。
+- `lib/tools-dev/`: framework-neutral tools-dev runtime lifecycle。它拥有 namespace/path construction、port reservation、`tools-dev ... --json` execution、status/log/check reads、URL construction 和 start/stop semantics。它不得 import Vitest 或 Playwright。
+- `lib/playwright/suite.ts`: Playwright-only suite assembly。它提供 worker-scoped tools-dev fixture、dynamic `baseURL` 和 failure attachments。UI tests 从 `@/playwright/suite` 导入 `test`/`expect`。
+- `lib/vitest/suite.ts`: Vitest-only suite assembly。它组合 neutral tools-dev runtime、report creation、scratch preservation 和非 UI smoke suites 的 Vitest assertions。
 - `lib/playwright/mock-factory.ts`: 共享 Playwright mock helpers。`applyStandardMocks(page)` 会 seed localStorage，并用标准 daemon/mock-agent fixtures 拦截 `/api/agents` 和 `/api/app-config`。不需要 custom agent 或 protocol setup 的 tests，请在 `beforeEach` 中使用。
-- `lib/vitest/`: 仅 Vitest-specific atomic helpers。Helpers 描述 namespace lifecycle、mock servers、HTTP calls、tools-dev commands、inspect、logs 和 reports 等动作；它们不应隐藏 core business scenario decisions。
+- `lib/vitest/`: 仅 Vitest-specific atomic helpers。Helpers 描述 mock servers、HTTP calls 和 reports 等动作；tools-dev lifecycle 属于 `lib/tools-dev/`，并且只通过 `lib/vitest/suite.ts` 组合。
 - `lib/vitest/report.ts`: report boundary。Specs 通过 `report.save(<relpath>, <blob>)` 或 `report.json(<relpath>, value)` 保存 curated output；release workflows 只应消费最终 report path，而不是其内部文件布局。
-- `createSmokeSuite(...).with.*`: suite-owned lifecycle composition。对 `suite.with.toolsDev(...)` 这类 namespace-bound resources，优先使用这种形态，让 specs 把 business workflow code 放在前景。
+- `createSmokeSuite(...).with.*`: 来自 `@/vitest/suite` 的 suite-owned lifecycle composition。对 `suite.with.toolsDev(...)` 这类 namespace-bound resources，优先使用这种形态，让 specs 把 business workflow code 放在前景。
+- 临时 e2e Vitest env/PATH mutations、AMR fake endpoint URLs 和 packaged smoke default namespaces 必须放在 `@/vitest/suite` helpers 后面，例如 `suite.with.env(...)`、`suite.with.pathEntry(...)`、`suite.amr` 和 `resolvePackagedSmokeNamespace(...)`。不要在单个 specs 中手写 save/restore blocks 或固定 localhost ports。
 - `lib/playwright/`: Playwright-specific fixtures、resource accessors、route helpers 和 UI actions。
 - `scripts/playwright.ts`: Playwright auxiliary subcommands，例如 artifact cleanup；它不得包装 `playwright test`。
 
@@ -35,6 +39,7 @@
 - `specs/` files 必须是 `*.spec.ts`；`tests/` files 必须是 `*.test.ts`。
 - 优先使用目录层级，而不是很长的文件名。Basename 通常应不超过三个词，例如 `main.spec.ts`、`run.spec.ts`、`inspect.test.ts` 或 `report.test.ts`。
 - `ui/` files 必须是 flat `*.test.ts` Playwright tests。不要在 `ui/` 下添加 subdirectories、TSX、Vitest、jsdom、Testing Library 或 React harness tests。
+- `ui/` tests 必须从 `@/playwright/suite` 导入 runtime-bound `test`/`expect`；只有 type imports 或不拥有 test lifecycle 的低层 helper modules 才能使用 `@playwright/test`。
 - E2E Vitest tests 使用 Node APIs；不要在 `specs/` 或 `tests/` 下添加 JSX/TSX、jsdom 或 browser-component tests。
 - Web component/runtime tests 属于 `apps/web/tests/`，不属于 `e2e/ui/`。
 - E2E tests 可以验证 cross-app/resource consistency，但不得把某个 app 的 private implementation 当作另一个 app 的 shared helper。Test-only helpers 保持在 `e2e/lib/` 本地，或提升到 `packages/contracts` 这类 pure package。
@@ -62,3 +67,5 @@ pnpm exec playwright test -c playwright.config.ts
 验证单个 case 时使用具体 file path。不要添加 root e2e aliases，或为单个 cases 增加额外 package scripts。
 
 Case-level priority tags 使用 test-name prefixes：`[P0]`、`[P1]`、`[P2]`。
+
+Playwright UI runs 为每个 Playwright worker 使用一个 tools-dev daemon/web/data root。Single-worker fallback 是 `--workers=1`（或 `OD_PLAYWRIGHT_WORKERS=1`）；不要重新引入 shared daemon/web runtime mode。

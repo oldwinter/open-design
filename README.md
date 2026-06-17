@@ -1,27 +1,27 @@
-<h1 align="center">Open Design：开源 Claude Design 替代品</h1>
+<h1 align="center">Open Design：The open-source Claude Design alternative</h1>
 
-> 🔥 **Open Design 0.10.0 正式发布：一体化 Agentic 设计工作区。** 整套创作流程现在都在一个窗口里完成：从模糊想法出发，发现参考、收集素材、交互式编辑、排队处理评论、打磨动效，再交给编辑器或 Code Agent，无需离开应用。并行会话让它不再像单个助手，而更像一支在本地为你工作的设计团队。[下载 0.10.0](https://github.com/nexu-io/open-design/releases) · [参与讨论](https://github.com/nexu-io/open-design/discussions/4153)
+> 🔥 **Open Design 0.10.0 正式发布：All-in-one 的 Agentic 设计工作台。** 设计的全流程从此只需一个窗口——从一个模糊的想法出发，到发现参考、收集素材、交互式编辑、评论排队、打磨动效，再交付给编辑器或 Code Agent，全程无需离开应用。配合多会话并行，它不再只是一个助手，而是一支为你工作的本地设计团队。[下载 0.10.0](https://github.com/nexu-io/open-design/releases) · [参与讨论](https://github.com/nexu-io/open-design/discussions/4153)
 >
-> ⚡ **Open Design AMR（Agentic Model Router）——官方模型服务。** 一次充值即可在 Open Design 中使用 GPT、Claude、Gemini 和 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[试用 AMR](https://open-design.ai/amr/)
+> ⚡ **Open Design AMR（Agentic Model Router）——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/amr/)
 >
-> 🏅 **Open Design Fellow 计划正式开放。** 如果你也相信设计应该是开放的，欢迎成为 Open Design Fellow，和核心团队一起打磨产品，让更多人参与并定义设计的未来。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 与 [Discord](https://discord.gg/qhbcCH8Am4)。
+> 🏅 **Open Design Fellow 计划正式开放。** 如果你也相信设计应该是开放的，欢迎成为 Open Design Fellow，和核心团队一起打磨产品，让更多人参与并定义设计的未来。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 与 [Discord](https://discord.gg/9ptkbbqRu)。
 
 <p align="center">
-  <img src="https://repo-assets.open-design.ai/resources/images/hero.png" alt="Open Design — 开源 Claude Design 替代品 · 150 Design Systems · 261 Plugins · 22 Coding Agents · 14 Media Providers" width="100%" />
+  <img src="https://repo-assets.open-design.ai/resources/images/hero.png" alt="Open Design — The open-source Claude Design alternative · 150 Design Systems · 261 Plugins · 21 Coding Agents · 14 Media Providers" width="100%" />
 </p>
 
 <p align="center">
   <a href="https://open-design.ai/">官网</a> ·
   <a href="https://open-design.ai/">下载</a> ·
-  <a href="https://open-design.ai/amr/">模型路由</a> ·
-  <a href="https://discord.gg/qhbcCH8Am4">Discord</a> ·
+  <a href="https://open-design.ai/amr/">Model Router</a> ·
+  <a href="https://discord.gg/9ptkbbqRu">Discord</a> ·
   <a href="https://x.com/nexudotio">关注 @nexudotio</a>
 </p>
 
 <p align="center">
   <a href="https://github.com/nexu-io/open-design/releases"><img alt="release" src="https://img.shields.io/github/v/release/nexu-io/open-design?style=flat&color=blueviolet&label=release&include_prereleases&display_name=tag" /></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat" /></a>
-  <a href="https://discord.gg/qhbcCH8Am4"><img alt="discord" src="https://img.shields.io/discord/1479002485040480266?style=flat&logo=discord&logoColor=white&label=discord&color=5865F2&cacheSeconds=3600" /></a>
+  <a href="https://discord.gg/9ptkbbqRu"><img alt="discord" src="https://img.shields.io/discord/1479002485040480266?style=flat&logo=discord&logoColor=white&label=discord&color=5865F2&cacheSeconds=3600" /></a>
   <a href="QUICKSTART.md"><img alt="quickstart" src="https://img.shields.io/badge/quickstart-3%20commands-green?style=flat" /></a>
 </p>
 
@@ -31,7 +31,7 @@
 
 ## 什么是 Open Design
 
-🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Amp · Hermes · Kimi · Antigravity 等 22 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
+🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Hermes · Kimi · Antigravity 等 21 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
 
 Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agent 原生**循环——发现需求、锁定方向、流式输出工件、评审、交付——不再封闭，而是变成了一个由**技能、设计系统和插件组成的文件系统**，你笔记本电脑上已有的编码 Agent 就能读取、编写和混搭。你的 CLI 变成设计引擎，你的笔记本变成工作坊，团队的 `DESIGN.md` 变成品牌契约。
 
@@ -133,7 +133,7 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
 `od mcp install <agent> --print` 干跑预览 · `--uninstall` 卸载 · 完整清单 `od mcp install --help`。
 
 <p align="center">
-  <img src="https://repo-assets.open-design.ai/resources/images/coding-agents.png" alt="Open Design 支持的 22 个编码 Agent CLI — Claude Code · Codex · OpenCode · Hermes · Antigravity · Gemini · Grok Build · Kimi · Cursor Agent · Qwen · Qoder · GitHub Copilot · Pi · Kiro · Kilo · Mistral Vibe · DeepSeek · Reasonix · Aider · Devin · Trae" width="100%" />
+  <img src="https://repo-assets.open-design.ai/resources/images/coding-agents.png" alt="Open Design 支持的 21 个编码 Agent CLI — Claude Code · Codex · OpenCode · Hermes · Antigravity · Gemini · Grok Build · Kimi · Cursor Agent · Qwen · Qoder · GitHub Copilot · Pi · Kiro · Kilo · Mistral Vibe · DeepSeek · Reasonix · Aider · Devin · Trae" width="100%" />
 </p>
 
 **未安装任何 CLI？** `POST /api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream` 的 BYOK 代理提供同样的循环（无需 spawn 进程）——粘贴 `baseUrl` + `apiKey` + `model`，支持 OpenAI、Anthropic、Azure OpenAI、Google Gemini、Ollama、LM Studio、vLLM 或任何 OpenAI 兼容端点。每个目标的 SSRF 防护在守护进程边缘拦截内网 IP / link-local / CGNAT。
@@ -264,7 +264,7 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 
 - 🤖 **Agent 原生，不绑定模型。** 我们不发布 Agent。你 `PATH` 上已有的 `claude` / `codex` / `cursor-agent` / `copilot` / `hermes` / `kimi` 就是设计引擎。一键切换。
 - 🧠 **默认品牌级。** 每次渲染都读取激活的 `DESIGN.md`——9 节 schema 涵盖色板、字体、间距、动效、语言风格、反模式。150 个系统随仓库发布（Linear、Stripe、Vercel、Airbnb、Apple、Tesla、Notion、Anthropic、Cursor、Supabase、Figma……）。放入文件夹，选择器自动识别。
-- 🖥️ **本地优先，每一层都可 BYOK。** macOS（Apple Silicon + Intel）和 Windows（x64）原生桌面应用。Linux AppImage 位于可选发布通道。无遥测，无云端往返。描述 daemon data paths 前，contributors 和 operators 必须阅读 `AGENTS.md` → **Daemon data directory contract**；本 README 不得重述该契约。
+- 🖥️ **本地优先，每一层都可 BYOK。** 原生桌面应用保持本地优先，不发生云端往返。在描述 daemon 数据路径之前，必须阅读仓库根目录 `AGENTS.md` 中的 **Daemon data directory contract**。
 - 🌍 **三个平面上可组合。** **插件**承载可运行的工作流 · **技能**承载 Agent 的设计品味 · **设计系统**承载品牌。三者都是普通文件，任何人都可以编写、版本控制和发布。
 - 🔁 **刷新现有代码库。** 将 `git` 仓库 + `DESIGN.md` 交给 Agent，它就能将你的真实组件重构到品牌规范。专门的插件用于将 Figma / Pencil 工作流迁移到 React / Next.js / Vue 代码。
 - 🔒 **隐私信条。** 一切都运行在持有你数据的环境中——你的笔记本、你团队的服务器、你的 Vercel 项目。需要网络时有 SSRF 防护的 BYOK 代理。
@@ -275,7 +275,7 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 |---|---|---|---|---|
 | 开源 | ❌ | ❌ | ❌ | **✅ Apache-2.0** |
 | 自托管 / 桌面 | ❌ | ❌ | ❌ | **✅ macOS + Windows + Vercel** |
-| Agent 原生（在 CLI 中运行） | 仅 Anthropic | ❌ | 仅云端 Agent | **✅ 22 CLI + BYOK** |
+| Agent 原生（在 CLI 中运行） | 仅 Anthropic | ❌ | 仅云端 Agent | **✅ 21 CLI + BYOK** |
 | 品牌级 `DESIGN.md` | 私有 | Theme JSON | 有限 token | **✅ 150 系统随附** |
 | 技能 / 插件 / 模板 | 封闭 | 插件商店 | 封闭 | **✅ 100+ 技能 · 261 插件** |
 | HyperFrames (HTML→MP4) | ❌ | ❌ | ❌ | **✅ 一等公民** |
@@ -550,7 +550,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 |---|---|
 | 前端 | Next.js 16 App Router + React 18 + TypeScript |
 | 守护进程 | Node 24 · Express · SSE 流式传输 · `better-sqlite3` |
-| 存储 | 修改或记录 daemon storage paths 前，必须阅读 `AGENTS.md` → **Daemon data directory contract**；本 README 不得重述该契约。 |
+| 存储 | 在修改或记录 daemon 存储路径之前，必须阅读仓库根目录 `AGENTS.md` 中的 **Daemon data directory contract**。本 README 不得复述该契约。 |
 | 预览 | 沙箱 `srcdoc` iframe + 流式 `<artifact>` 解析器 |
 | 导出 | HTML（内联）· PDF（浏览器打印）· PPTX（Agent 驱动）· ZIP · Markdown · MP4（HyperFrames） |
 | 桌面 | Electron 外壳 + 沙箱渲染进程 + sidecar IPC（STATUS · EVAL · SCREENSHOT · CONSOLE · CLICK · SHUTDOWN） |
@@ -562,7 +562,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 
 ## 路线图
 
-- [x] 守护进程 + 22 个编码 Agent CLI 适配器 + 技能注册中心 + 设计系统目录
+- [x] 守护进程 + 21 个编码 Agent CLI 适配器 + 技能注册中心 + 设计系统目录
 - [x] Web 应用 + 聊天 + 问题表单 + 5 方向选择器 + 待办进度 + 沙箱预览
 - [x] 100+ 技能 · 150 设计系统 · 5 视觉方向 · 5 设备外框
 - [x] SQLite 支撑的项目 · 会话 · 消息 · 标签页 · 模板
@@ -571,7 +571,6 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 - [x] Sidecar 协议 + Electron 桌面 + IPC 自动化
 - [x] 工件 Lint API + 五维自评预输出门控
 - [x] **0.8.0**——插件市场基础设施（261 个官方插件、manifest 规范、逐 Agent 安装脚本）
-- [x] **0.9.0**——Open Design AMR（内置官方模型路由：零配置、一键登录）
 - [x] 打包 Electron 构建——macOS（Apple Silicon + Intel）+ Windows（x64）+ Linux AppImage（可选通道）
 - [ ] 评论模式精确编辑——部分已发布，可靠的定向补丁进行中
 - [ ] AI 输出的调参面板 UX——尚未实现
@@ -588,7 +587,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 
 每个渠道背后都是真实的人。
 
-- 💬 **Discord**——日常聊天、插件分享、提问 → [**discord.gg/qhbcCH8Am4**](https://discord.gg/qhbcCH8Am4)
+- 💬 **Discord**——日常聊天、插件分享、提问 → [**discord.gg/9ptkbbqRu**](https://discord.gg/9ptkbbqRu)
 - 🐦 **X / Twitter**——发版说明、里程碑、幕后 → [**@nexudotio**](https://x.com/nexudotio)
 - 🗣️ **GitHub Discussions**——深度问答、RFC、"展示你的作品" → [**Discussions**](https://github.com/nexu-io/open-design/discussions)
 - 🐛 **GitHub Issues**——Bug 报告、功能请求 → [**Issues**](https://github.com/nexu-io/open-design/issues)
@@ -634,11 +633,11 @@ pnpm --filter @open-design/<package> test
 gh pr create --fill
 ```
 
-完整的 Agent 友好贡献流程、代码风格和 PR 标准 → [English](https://github.com/nexu-io/open-design/blob/main/CONTRIBUTING.md)（[Deutsch](docs/i18n/CONTRIBUTING.de.md) · [Français](docs/i18n/CONTRIBUTING.fr.md) · [简体中文](CONTRIBUTING.md) · [日本語](docs/i18n/CONTRIBUTING.ja-JP.md) · [Português](docs/i18n/CONTRIBUTING.pt-BR.md)）。
+完整的 Agent 友好贡献流程、代码风格和 PR 标准 → [English](CONTRIBUTING.md)（[Deutsch](docs/i18n/CONTRIBUTING.de.md) · [Français](docs/i18n/CONTRIBUTING.fr.md) · [简体中文](docs/i18n/CONTRIBUTING.zh-CN.md) · [日本語](docs/i18n/CONTRIBUTING.ja-JP.md) · [Português](docs/i18n/CONTRIBUTING.pt-BR.md)）。
 
 ### 🏅 Open Design Fellow 计划
 
-我们正在全球招募 **Open Design Fellow**——付费维护者，$1,000 / MR 免费 LLM 额度，官方授权在你所在地区推动增长，以及核心团队审查通道。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 和 [Discord](https://discord.gg/qhbcCH8Am4) 上的公告。
+我们正在全球招募 **Open Design Fellow**——付费维护者，$1,000 / MR 免费 LLM 额度，官方授权在你所在地区推动增长，以及核心团队审查通道。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 和 [Discord](https://discord.gg/9ptkbbqRu) 上的公告。
 
 ---
 
@@ -665,7 +664,7 @@ gh pr create --fill
   </tr>
 </table>
 
-维护者规则、晋升标准和退出协议 → [`MAINTAINERS.md`](MAINTAINERS.md)（另有 [English](https://github.com/nexu-io/open-design/blob/main/MAINTAINERS.md) · [Deutsch](docs/i18n/MAINTAINERS.de.md) · [Français](docs/i18n/MAINTAINERS.fr.md) · [日本語](docs/i18n/MAINTAINERS.ja-JP.md) · [Português](docs/i18n/MAINTAINERS.pt-BR.md)）。
+维护者规则、晋升标准和退出协议 → [`MAINTAINERS.md`](MAINTAINERS.md)（另有 [Deutsch](docs/i18n/MAINTAINERS.de.md) · [Français](docs/i18n/MAINTAINERS.fr.md) · [简体中文](docs/i18n/MAINTAINERS.zh-CN.md) · [日本語](docs/i18n/MAINTAINERS.ja-JP.md) · [Português](docs/i18n/MAINTAINERS.pt-BR.md)）。
 
 ## 贡献者
 
