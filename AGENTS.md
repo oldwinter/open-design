@@ -8,7 +8,7 @@
 - Contribution and environment：`CONTRIBUTING.md`、`docs/i18n/CONTRIBUTING.zh-CN.md`。
 - Architecture and protocols：`docs/spec.md`、`docs/architecture.md`、`docs/skills-protocol.md`、`docs/agent-adapters.md`、`docs/modes.md`。
 - Roadmap and references：`docs/roadmap.md`、`docs/references.md`、`docs/code-review-guidelines.md`、`specs/current/maintainability-roadmap.md`。
-- Directory-level agent guidance：`apps/AGENTS.md`、`packages/AGENTS.md`、`tools/AGENTS.md`、`e2e/AGENTS.md`。
+- Directory-level agent guidance：`.github/AGENTS.md`、`apps/AGENTS.md`、`packages/AGENTS.md`、`tools/AGENTS.md`、`e2e/AGENTS.md`。
 - Packaged auto-update architecture 和 high-confidence local harness：在触碰 packaged updater code、release-channel identity、installer behavior 或 updater UI 前，先阅读 `tools/pack/AGENTS.md` 中的 "Packaged auto-update architecture and harness" section。
 
 ## Workspace directories
@@ -135,6 +135,17 @@ obvious, block the PR and request core-maintainer guidance.
 - root scripts 只保留给真正的 repo-level checks 和 tools control-plane entrypoints：`pnpm guard`、`pnpm typecheck`、`pnpm tools-dev`、`pnpm tools-pack` 和 `pnpm tools-serve`。
 - 不要添加 root aggregate `pnpm build` 或 `pnpm test` aliases。Build/test commands 必须保持 package-scoped（`pnpm --filter <package> ...`）或 tool-scoped（`pnpm tools-pack ...`）。
 - 不要添加 root e2e aliases；e2e package commands 和 ownership rules 位于 `e2e/AGENTS.md`。
+
+## GitHub automation boundary
+
+编辑 `.github/workflows/`、`.github/scripts/`、`.github/actions/`、PR follow-on automation、`workflow_run` trusted writes、CI handoff artifacts，或守护这些 surface 的 workflow topology checks 前，先阅读 `.github/AGENTS.md`。
+
+CI 相关 GitHub automation 使用两层架构：
+
+- Business layer workflows 负责 product 或 validation decisions。`ci.yml` 是主要的 low-privilege PR、merge-queue 和 manual validation workflow。它检测 scope、运行 checks，并产出 typed handoff artifacts。
+- Atomic capability workflows 负责可复用的 trusted operations。`comment.atom.yml` 发布纯文本 PR comments，`autofix.atom.yml` 应用 same-repository patches，`report.atom.yml` 则 materialize 需要 trusted dependencies、secrets 或 report generation 后才能 upsert 的 advanced comments。
+
+不要在未先尝试把 flow 表达为 `ci.yml` producer + 现有 `comment`、`autofix` 或 `report` capability 的情况下，新增类似 `foo.comment.atom.yml` 或 `bar.autofix.atom.yml` 的 business-named follow-on workflow。Artifact naming、storage layout 和 parser behavior 必须集中在 `.github/scripts/handoff.py`；不要让单个 workflow 发明平行的 handoff conventions。
 
 ## Release channel model
 

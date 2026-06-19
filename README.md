@@ -326,6 +326,14 @@ docker compose up -d
 # 打开 http://localhost:7456
 ```
 
+> **macOS 用户：**如果 Web UI 显示 `Authorization: Bearer <OD_API_TOKEN> required`，原因是 Docker Desktop bridge networking。修复方式见 [Docker Desktop on macOS](deploy/README.md#docker-desktop-on-macos)。
+
+### 🚀 部署到 Sealos
+
+[![Deploy on Sealos](https://sealos.io/Deploy-on-Sealos.svg)](https://sealos.io/products/app-store/open-design/)
+
+Sealos App Store 模板会运行已发布的 Open Design Docker image，提供持久化 workspace storage，并在 public proxy 上启用 Basic Auth。自定义 public 或 shared Docker 部署请遵循 [`deploy/README.md`](deploy/README.md#local-compose) 中的 reverse-proxy 和 `OPEN_DESIGN_ALLOWED_ORIGINS` 指引。
+
 ### 🧑‍💻 从源码运行
 
 ```bash
