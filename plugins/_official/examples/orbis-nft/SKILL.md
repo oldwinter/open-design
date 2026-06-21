@@ -1,6 +1,6 @@
 ---
 name: orbis-nft
-description: "暗黑太空主题 NFT 收藏落地页：全屏 CloudFront 视频背景、液态玻璃 UI、Anton + Condiment 字体、霓虹绿点缀，四个分区。"Orbis.Nft\") with full-bleed CloudFront video backgrounds, a liquid-glass UI, Anton + Condiment fonts, and a neon-green accent. Invoke for 'NFT landing page', 'space NFT site', 'crypto collection page', or when the user references the Orbis NFT template."
+description: "暗黑太空主题 NFT 收藏落地页 Orbis.Nft：全屏 CloudFront 视频背景、液态玻璃 UI、Anton + Condiment 字体、霓虹绿点缀，四个分区。用户提到 NFT landing page、space NFT site、crypto collection page 或 Orbis NFT template 时调用。"
 version: 0.1.0
 od:
   mode: prototype
