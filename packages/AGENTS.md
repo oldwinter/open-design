@@ -8,6 +8,7 @@
 - `packages/components`: 共享 React UI primitives 和 primitive CSS。它只能依赖 React types/runtime；product workflows 和 app-specific layout/styling 保留在 apps 中。
 - `packages/host`: web/desktop host bridge contract。它建模 renderer-facing host capabilities 和 helpers，同时让 `window.__od__` access 不进入 app UI code。
 - `packages/metatool`: repo-local tool build outputs 的内部 metadata helpers。将可复用 hash/check/write mechanics 保持在这里；每个具体 tool 拥有自己的 `meta.json`。
+- `packages/release`: pure release-domain primitives。拥有 release channel names、version parsing/formatting、metadata field derivation、storage prefixes、release namespaces 和 app identity data。它不得读写文件、调用 GitHub/R2、spawn build tools 或拥有 workflow execution。
 - `packages/sidecar-proto`: Open Design sidecar business protocol。拥有 app/mode/source constants、namespace validation、stamp descriptor/fields/flags、IPC message schema、status shapes、error semantics 和 default product path constants。
 - `packages/sidecar`: generic sidecar runtime primitives。包括 bootstrap、IPC transport、path/runtime resolution、launch env 和 JSON runtime file helpers；它不得 hard-code Open Design app keys 或 IPC business messages。
 - `packages/platform`: generic OS process primitives。包括 stamp serialization、command parsing、process matching/search 和 well-known user-toolchain bin discovery；它必须消费 `sidecar-proto` descriptor，且不得 hard-code `--od-stamp-*` details。Toolchain helper 是 daemon agent resolver（`apps/daemon/src/agents.ts`）和 packaged sidecar PATH builder（`apps/packaged/src/sidecars.ts`）共享的 single source of truth，避免两层 search list 漂移。
@@ -33,6 +34,8 @@ pnpm --filter @open-design/host typecheck
 pnpm --filter @open-design/host test
 pnpm --filter @open-design/metatool typecheck
 pnpm --filter @open-design/metatool test
+pnpm --filter @open-design/release typecheck
+pnpm --filter @open-design/release test
 pnpm --filter @open-design/sidecar-proto typecheck
 pnpm --filter @open-design/sidecar-proto test
 pnpm --filter @open-design/sidecar typecheck

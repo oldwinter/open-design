@@ -31,7 +31,7 @@
 
 ## 什么是 Open Design
 
-🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Hermes · Kimi · Antigravity 等 21 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
+🎨 **本地优先、开源的 [Claude Design][cd] 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 技能** · ✨ **150 个品牌级 `DESIGN.md` 系统** · 📦 **261 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Amp · Hermes · Kimi · Antigravity 等 22 个本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
 
 Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agent 原生**循环——发现需求、锁定方向、流式输出工件、评审、交付——不再封闭，而是变成了一个由**技能、设计系统和插件组成的文件系统**，你笔记本电脑上已有的编码 Agent 就能读取、编写和混搭。你的 CLI 变成设计引擎，你的笔记本变成工作坊，团队的 `DESIGN.md` 变成品牌契约。
 
@@ -302,10 +302,13 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 
 ```bash
 # 一行命令安装到你正在使用的 Agent：
-curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
+od mcp install <agent>
 # <agent> = claude | codex | cursor | copilot | openclaw | antigravity | gemini
 #         | pi | vibe | hermes | cline | kimi | trae | opencode
 ```
+
+> **WSL2 用户：** 如果你的 coding-agent CLI 运行在 WSL2 内，请先阅读
+> [`WSL2 setup guide`](docs/wsl-setup.md)。Linux 自带的 `/usr/bin/od` 可能遮蔽 Open Design 的 `od` 命令。
 
 然后在 Agent 内：
 
@@ -341,7 +344,7 @@ corepack enable && pnpm install
 pnpm tools-dev run web
 ```
 
-Node `~24`，pnpm `10.33.x`。Windows 用户请参见 [`docs/windows-troubleshooting.md`](docs/windows-troubleshooting.md)。完整的快速开始指南、环境变量、Nix flake 和打包构建流程 → [`QUICKSTART.zh-CN.md`](docs/i18n/QUICKSTART.zh-CN.md)。
+Node `~24`，pnpm `10.33.x`。WSL2 用户请看 [`docs/wsl-setup.md`](docs/wsl-setup.md)；Windows 原生用户请看 [`docs/windows-troubleshooting.md`](docs/windows-troubleshooting.md)。完整的快速开始指南、环境变量、Nix flake 和打包构建流程 → [`QUICKSTART.zh-CN.md`](docs/i18n/QUICKSTART.zh-CN.md)。
 
 ### 一个完整的工作流——从需求到工件
 
@@ -361,7 +364,7 @@ Open Design 提供 **stdio MCP 服务器**和逐 Agent 的**安装脚本**。任
 
 ```bash
 # 一行命令安装（支持 16+ CLI）：
-curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
+od mcp install <agent>
 
 # 然后，Agent 可以：
 od search-files "primary button"      # 跨项目文件搜索
@@ -677,7 +680,7 @@ gh pr create --fill
 感谢每一位参与者——代码、文档、反馈、一个精准的 Issue、一个新技能、一个新设计系统。
 
 <a href="https://github.com/nexu-io/open-design/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=nexu-io/open-design&max=500&columns=20&anon=1&cache_bust=2026-06-22" alt="Open Design 贡献者" />
+  <img src="https://contrib.rocks/image?repo=nexu-io/open-design&max=500&columns=20&anon=1&cache_bust=2026-06-23" alt="Open Design 贡献者" />
 </a>
 
 ---
@@ -702,9 +705,9 @@ gh pr create --fill
 
 <a href="https://star-history.com/#nexu-io/open-design&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&theme=dark&cache_bust=2026-06-22" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-06-22" />
-    <img alt="Open Design Star 历史" src="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-06-22" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&theme=dark&cache_bust=2026-06-23" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-06-23" />
+    <img alt="Open Design Star 历史" src="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-06-23" />
   </picture>
 </a>
 

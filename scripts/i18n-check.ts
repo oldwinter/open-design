@@ -26,6 +26,29 @@ type CoreDocLink = {
   syntax: "html" | "markdown";
 };
 
+const README_TARGET_BY_LABEL = {
+  English: "README.md",
+  "Español": "README.es.md",
+  "Português": "README.pt-BR.md",
+  Deutsch: "README.de.md",
+  "Français": "README.fr.md",
+  "简体中文": "README.zh-CN.md",
+  "繁體中文": "README.zh-TW.md",
+  "한국어": "README.ko.md",
+  "日本語": "README.ja-JP.md",
+  "العربية": "README.ar.md",
+  "Русский": "README.ru.md",
+  "Українська": "README.uk.md",
+  "Türkçe": "README.tr.md",
+} as const satisfies Record<string, string>;
+
+function readmeTargetForLabel(label: string): string | undefined {
+  if (Object.hasOwn(README_TARGET_BY_LABEL, label)) {
+    return README_TARGET_BY_LABEL[label as keyof typeof README_TARGET_BY_LABEL];
+  }
+  return undefined;
+}
+
 const coreDocTargetPattern =
   "((?:(?:\\.\\./\\.\\./|docs/i18n/))?(?:QUICKSTART(?:\\.[A-Za-z0-9-]+)?\\.md|CONTRIBUTING(?:\\.[A-Za-z0-9-]+)?\\.md))";
 
@@ -133,6 +156,11 @@ function canonicalDocName(target: string): string {
   return target.replace(/^(?:\.\.\/\.\.\/|docs\/i18n\/)/, "");
 }
 
+function normalizedReadmeTarget(entry: ReadmeSwitcherEntry, currentReadme: string): string {
+  if (entry.href != null) return canonicalDocName(entry.href);
+  return readmeTargetForLabel(entry.label) ?? currentReadme;
+}
+
 function extractReadmeSwitcher(source: string): ReadmeSwitcherEntry[] | null {
   const line = source.split("\n").find((candidate) => candidate.includes('<p align="center">') && candidate.includes("README"));
   if (!line) return null;
@@ -209,7 +237,7 @@ async function checkReadmeSwitchers(): Promise<CheckResult> {
 
   // Normalize each switcher entry's href to a canonical README name, so files in
   // different directories (root English vs docs/i18n translations) compare equal.
-  const canonicalOrder = canonicalEntries.map((entry) => (entry.href == null ? canonicalName : canonicalDocName(entry.href)));
+  const canonicalOrder = canonicalEntries.map((entry) => normalizedReadmeTarget(entry, canonicalName));
   const expectedTargets = new Set(readmes.map(readmeTarget));
   const canonicalTargetSet = new Set(canonicalOrder);
 
@@ -231,7 +259,7 @@ async function checkReadmeSwitchers(): Promise<CheckResult> {
       continue;
     }
 
-    const order = entries.map((entry) => (entry.href == null ? readme : canonicalDocName(entry.href)));
+    const order = entries.map((entry) => normalizedReadmeTarget(entry, readme));
     if (order.join("\n") !== canonicalOrder.join("\n")) {
       errors.push(`${readme} switcher order differs. Expected ${canonicalOrder.join(", ")}; found ${order.join(", ")}.`);
     }

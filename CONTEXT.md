@@ -94,7 +94,7 @@ _Avoid_: continue, finish setup, passive close
 - **AMR CLI Distribution Contract** 独立于 Open Design 拥有；Open Design release packaging 消费它，而不是自己定义 native CLI release。
 - 第一个 **AMR CLI Distribution Slice** 仅为 mac arm64。
 - **AMR Account Status** 描述 **AMR Cloud** 的 account readiness，而不是 environment profile 或 CLI installation state。
-- **AMR Environment Profile** 独立于 release channel identity；beta、preview、nightly 或 stable package 在显式配置时都可以指向不同的 AMR service environments。
+- **AMR Environment Profile** 独立于 release channel identity；beta、preview、prerelease 或 stable package 在显式配置时都可以指向不同的 AMR service environments。
 - **Onboarding Skip** 会绕过属于正常 onboarding continue path 的 setup completion requirements。
 
 ## Example dialogue

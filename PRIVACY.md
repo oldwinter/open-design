@@ -2,15 +2,17 @@
 
 本页说明 Open Design 桌面应用和 Web 应用会收集哪些数据、何时收集，以及你如何保持控制权。这里记录的是已随应用发布的行为；同样的控制项位于 **Settings → Privacy**。
 
-Open Design 是 **local-first**。你的项目、生成文件和 BYOK API keys 都保留在本机。应用可以完全离线工作；除非你明确开启 telemetry，否则本页所述的数据发送都不会发生。
+Open Design 是 **local-first**。你的项目、生成文件和 BYOK API keys 都保留在本机，应用也可以完全离线工作。Usage telemetry（见下文）是应用可能发送的一类数据；它默认**开启**，你可以随时在 **Settings → Privacy** 中关闭。
 
-## Telemetry 是 opt-in
+## Telemetry 是 opt-out
 
-Usage telemetry 默认**关闭**。首次运行时，应用会显示隐私同意横幅，请你做出选择；在你选择之前，它绝不会开始发送任何内容。你可以随时在 **Settings → Privacy** 中修改决定，下列每个类别都有独立开关。
+Usage telemetry 默认**开启**。首次运行时，应用会显示隐私披露横幅，让你在执行其他操作前了解会收集哪些内容。它是带有单个 **I get it** 确认按钮的知情披露提示，而不是 opt-in gate；由于 telemetry 已启用，应用可能会从首次启动开始发送 events（例如 onboarding 和 UI-interaction events）。
 
-## 开启后会收集什么
+你仍然保持控制权：横幅 footer 会说明 sharing 已开启，并指向 **Settings → Privacy**，你可以在那里关闭 telemetry，并单独切换下列每个类别；也可以随时修改决定。
 
-启用 telemetry 后，应用可能向 Open Design 团队发送以下内容。每个类别都可在 Settings 中单独控制。
+## 会收集什么
+
+当 telemetry 启用时，应用可能向 Open Design 团队发送以下内容。每个类别都可在 Settings 中单独控制。
 
 - **匿名指标** - run 次数、token 用量、错误率和耗时。不包含 prompts，也不包含项目数据。
 - **对话与工具内容** - 你的 prompts、assistant responses、tool inputs 和 tool outputs（发送前会截断）。API keys、tokens、JWTs、emails、IP addresses 和 credit-card numbers 会在任何内容离开本机前自动移除。

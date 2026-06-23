@@ -25,8 +25,9 @@
 
 - 不要手工构建 `--od-stamp-*` args；请结合 `OPEN_DESIGN_SIDECAR_CONTRACT` 使用 `createProcessStampArgs`。
 - 不要在 data/log/runtime/cache path decisions 中使用 port numbers。Namespace 决定 paths；ports 只是临时 transports。
-- Public release artifacts 必须使用 channel-specific app identity：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，preview 使用 `Open Design Preview`。本地 tools-pack installs 仍可只把 namespace-scoped install paths 当作 developer multi-instance validation convention。
+- Public release artifacts 必须使用 channel-specific app identity：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，prerelease 使用 `Open Design Prerelease`，preview 使用 `Open Design Preview`。本地 tools-pack installs 仍可只把 namespace-scoped install paths 当作 developer multi-instance validation convention。
 - 不要让按 namespace 命名的 `.app` installs 改变 data/log/runtime/cache path conventions。
+- `--dir` 只控制 tools-pack output/runtime/install validation roots。不得把它当作 cache root。默认 workspace tools-pack cache 是 hot path。`--cache-dir` 是 cache isolation 或 cold-cache validation 的特殊 escape hatch，不是常规 QA/build 参数。
 - Public/release artifacts 使用 `--portable`，避免 packaged config 烘入构建机器上的本地 tools-pack runtime roots。
 - Electron-builder 使用的 pack resource files 属于 `tools/pack/resources/`；不要让 pack logic 指向 Downloads、web public assets、docs assets 或其他 app-owned resource paths。
 - 对普通 Windows NSIS smoke tests，使用 `rg`、`smoke` 或 `nsis-a` 这类短 namespaces。NSIS 会在 namespace-scoped install directory 下解压深层嵌套的 Next.js standalone files；长 namespaces 即使在 builder `win-unpacked` output 正确时，也可能让 installed paths 超过传统 Windows 260-character limit。Merge regression 期间，namespace `regression-merge-nsis` 产生了 264 characters 的 installed path length，并在 installed directory 中缺失 `next/dist/server/route-matcher-providers/helpers/cached-route-matcher-provider.js`，而同一个 NSIS smoke 使用 namespace `rg` 时通过。只有在有意测试 installer path-length behavior 时才使用长 namespaces。
@@ -61,10 +62,11 @@ Channel identity 必须在 install、update install、shortcuts、registry entri
 
 - Stable: `Open Design`，namespace `default` 或 stable release namespace。
 - Beta Windows: `Open Design Beta`，namespace `release-beta-win`，uninstall key `Open Design-release-beta-win`。
+- Prerelease Windows: `Open Design Prerelease`，namespace `release-prerelease-win`，uninstall key `Open Design-release-prerelease-win`。
 - Preview Windows: `Open Design Preview`，namespace `release-preview-win`，uninstall key `Open Design-release-preview-win`。
 - `beta-local-flow` 这类 beta-like ad hoc namespaces 是 test namespaces，不是 beta channel。它们不得用于 user-flow beta validation，因为它们会创建不同 registry key，却共享令人困惑的 display name/path。
 
-如果本地 beta package 预期由真实 beta feed 更新，请用 `--namespace release-beta-win` 和较旧 beta `--app-version` 构建。否则已安装 beta.5 package 和下载的 beta.6 package 可能显示为独立 registry entries，即使它们目标是同一个 display name。
+如果本地 release-channel package 预期由真实 feed 更新，请使用匹配的 release namespace 和较旧的匹配 `--app-version`，例如 `--namespace release-beta-win --app-version 0.10.0-beta.1` 或 `--namespace release-prerelease-win --app-version 0.10.0-prerelease.1`。否则已安装 package 和下载的 package 可能显示为独立 registry entries，即使它们目标是同一个 display name。
 
 ### Deterministic fixture harness
 
@@ -88,12 +90,18 @@ OD_UPDATE_AUTO_CHECK=1
 
 ### High-confidence local user-flow acceptance
 
-在把 Windows beta build 交给人类 tester 前，用它验证 release-channel behavior。该路径有意避开 mock services，并演练真实 public beta feed。
+在把 Windows beta build 交给人类 tester 前，用它验证 release-channel behavior。该路径有意避开 mock services，并演练选定的真实 beta feed。对 self-hosted `release-beta-s` lane，真实 feed 是 `release_public_origin` 配置的 Nexu S3 origin，目前为 `https://s3.nexu.space/od-releases`。
 
 1. 先确认最新 beta metadata：
 
 ```bash
 curl.exe --ssl-no-revoke -fsSL https://releases.open-design.ai/beta/latest/metadata.json
+```
+
+对 `release-beta-s`，改查内部 feed：
+
+```bash
+curl.exe --ssl-no-revoke -fsSL https://s3.nexu.space/od-releases/beta/latest/metadata.json
 ```
 
 2. 使用真实 beta namespace 和低于 latest 的 version 构建 non-portable Windows beta package：
@@ -112,23 +120,29 @@ C:\odtp-beta-release-fixed\out\win\namespaces\release-beta-win\builder\Open Desi
 
 - User 通过 NSIS UI 安装 `0.8.0-beta.5`。
 - User 启动 `Open Design Beta`。
-- App 自动检查真实 beta feed，下载最新 `platforms.win.artifacts.installer`，验证 sha256，并显示 web updater popup。
+- App 自动检查真实 beta feed，并在 package-launcher context 有效时选择最新 Windows launcher payload。当 payload artifact 或 launcher context 不可用时，installer 是 fallback path。
+- Payload path 下，app 下载 `platforms.win.artifacts.payload`，验证 sha256，将 payload 准备到 `%APPDATA%\Open Design\launcher\channels\beta\namespaces\release-beta-win\versions\<version>\payload`，并显示 web updater popup。
 - Native File menu 不得暴露 update actions。
 - Updater popup 使用 i18n strings，download progress 不得在真实 bytes 到达前闪到 100%。
-- 点击 `Open installer` 会打开真实下载的 beta installer。安装它应覆盖同一个 `Open Design-release-beta-win` registry key，而不是创建第二个 beta key。
+- 应用 payload update 应退出并重新启动到已准备好的 payload version，然后把 launcher `active` 和 `lastSuccessful` 标记到该 version。
+- 如果 updater fallback 到 installer path，点击 `Open installer` 会打开真实下载的 beta installer。安装它应覆盖同一个 `Open Design-release-beta-win` registry key，而不是创建第二个 beta key。
 
-5. beta.6 安装后的 registry sanity check：
+5. beta.6 更新后的 registry 和 launcher sanity check：
 
 ```powershell
 Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -ErrorAction SilentlyContinue |
   Where-Object { $_.DisplayName -like 'Open Design*' } |
   Select-Object PSChildName,DisplayName,DisplayVersion,InstallLocation
+
+Get-Content "$env:APPDATA\Open Design\launcher\channels\beta\namespaces\release-beta-win\runtime.json"
 ```
 
 干净的 beta channel 结果应只有一个 beta entry，`PSChildName` 为 `Open Design-release-beta-win`，且 `DisplayVersion` 为 latest。
+Payload path 下，还应看到 launcher `active.version` 和 `lastSuccessful.version` 与 latest beta version 一致。
 Windows Settings > Apps 可能在当前 view 内缓存 uninstall metadata。如果 registry query 正确后 Settings 仍显示之前的 beta version，请切换离开 Apps view 再回来，或重开 Settings，再把它视为 installer failure。上面的 registry query 是该 harness 的 source of truth。
 
 6. 避免留下 validation residue。先停止正在运行的 app processes，然后对 tool-managed namespaces 使用 tools-pack uninstall/cleanup。只有在验证 resolved path 确实是预期目录后，才删除 explicit temp roots。
+`--dir` 是 output/runtime root，不是 default cache root。常规 validation 不要添加 `--cache-dir`；它只是 cache isolation 或 cold-cache validation 的 escape hatch。
 
 ```bash
 pnpm tools-pack win stop --dir C:\odtp-beta-release-fixed --namespace release-beta-win --json

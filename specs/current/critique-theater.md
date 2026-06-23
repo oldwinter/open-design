@@ -413,7 +413,7 @@ visual companion mockup 包含一些 **不属于产品** 的 affordances：
 | User Interrupt | `POST /api/projects/:id/critique/:runId/interrupt` | cascade `SIGTERM`，persist partial state；如果已有 round closed 则 ship best-so-far，否则标记为 `interrupted` 且无 final。 |
 | CLI process crash | spawn handle 在 `<SHIP>` 前 non-zero exit | persist partial transcript，用 `rounds_json.cause` 标记 `failed`，emit `critique.failed`，绝不 silent retry。 |
 | Daemon restart mid-run | 下次 boot 扫描 SQLite 中 state 为 `running` 且早于 `totalTimeoutMs` 的 rows | 用 `rounds_json.recoveryReason = "daemon_restart"` 标记为 `interrupted`。绝不 auto-resume。 |
-| Adapter unsupported | adapter 在 nightly CI 中 conformance test 失败 | adapter 在 adapter registry 中标记 `critique:degraded`，TTL 24h。UI 每个 session 每个 adapter 只显示一次 degraded banner。 |
+| Adapter unsupported | adapter 在 prerelease CI 中 conformance test 失败 | adapter 在 adapter registry 中标记 `critique:degraded`，TTL 24h。UI 每个 session 每个 adapter 只显示一次 degraded banner。 |
 
 ### Failure-mode rate targets and recovery
 
@@ -506,7 +506,7 @@ merge 前会通过 `code-reviewer` agent 单独运行 security review pass。
 | Golden-file fixtures | vitest with `__fixtures__/critique/v1/*.txt` | Each adapter has at least one happy and two malformed transcripts on disk. |
 | Component | RTL + jsdom | Every reducer phase rendered at least once. |
 | Integration | vitest + sqlite memory + http mock | End-to-end happy path plus five failure modes. |
-| Adapter conformance | nightly e2e against live adapters | Each of 12 CLIs plus BYOK proxy must pass canonical brief. |
+| Adapter conformance | prerelease e2e against live adapters | Each of 12 CLIs plus BYOK proxy must pass canonical brief. |
 | Playwright e2e | `e2e/critique-theater.spec.ts` | Theater renders within 200 ms, Esc triggers Interrupt, replay scrub at 60 fps. |
 | Visual regression | Playwright `toHaveScreenshot()` | Each Theater state captured at 375 / 768 / 1280 viewports. |
 | A11y self-test | axe-playwright | Theater UI passes WCAG AA. |

@@ -150,10 +150,10 @@ CI 相关 GitHub automation 使用两层架构：
 ## Release channel model
 
 - `beta` 是日常 R&D/development validation channel。它为快速开发反馈优化，不属于 stable promotion gate。
-- `nightly` 是 stable delivery 的内部 validation channel。Stable releases 仍由已验证的 nightly artifacts gate。
+- `prerelease` 是 stable delivery 的内部 validation channel。Stable releases 仍由已验证的 prerelease artifacts gate。
 - `preview` 是独立的 early-access channel，具备 stable-like release rigor。它应使用 `X.Y.Z-preview.N` 这类 preview versions，发布到 `preview` R2 channel，在 `preview/latest` 下发布 updater feeds，并遵循 stable 的 platform policy，包括现有 optional Linux enablement。
-- `stable` 是正式 delivery channel。不要让 stable promotion 依赖 preview；stable 继续只依赖 nightly。
-- Public packaged app identity 必须保持 channel-distinct：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，preview 使用 `Open Design Preview`。不要发布 drag-install app bundle 是 `Open Design.app` 的 beta 或 preview mac DMGs。
+- `stable` 是正式 delivery channel。不要让 stable promotion 依赖 preview；stable 继续只依赖 prerelease。
+- Public packaged app identity 必须保持 channel-distinct：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，prerelease 使用 `Open Design Prerelease`，preview 使用 `Open Design Preview`。不要发布 drag-install app bundle 是 `Open Design.app` 的 beta、prerelease 或 preview mac DMGs。
 - Windows beta updater validation 必须使用真实 beta namespace `release-beta-win`；否则 local beta-like namespace 可能创建单独的 uninstall registry key，同时看起来仍像同一个 `Open Design Beta` app。Architecture map 和 high-confidence acceptance harness 见 `tools/pack/AGENTS.md`。
 
 ## Boundary constraints

@@ -1,4 +1,4 @@
-# 原始灵感署名
-这个插件最初受到某个私有 AI 工作区内部 `/deep-think` 工作流的启发。原始源文档包含该工作区特有的业务细节；在这个可移植的社区版本中，这些细节已经被抽象掉。
+# Original Inspiration Attribution
+This plugin was originally inspired by the internal `/deep-think` workflow used in a private AI workspace. The original source document included workspace-specific business details, which have been abstracted away in this portable community version.
 
-如需查看依赖通用 Agent Skills 的可移植实现，请参阅父目录中的 `SKILL.md`。
+For the portable implementation that relies on generic Agent Skills, see the `SKILL.md` in the parent directory.

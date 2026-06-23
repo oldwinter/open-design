@@ -14,7 +14,7 @@
 - ⚡ **更轻、更快的 landing。** Hero decoration 走 Image Resizing，payload 缩小约 92%。#3523，感谢 `@lefarcen`。
 - 🔒 **Security。** 修复了易受攻击的 `tmp` 传递依赖。#3379，感谢 `@gateway`。
 
-> 📥 **Download:** `open-design-v0.10.0` 的 assets 由 nightly pipeline 构建，并在构建完成后发布到 GitHub Releases 和 `releases.open-design.ai`，包括 macOS arm64/Intel `.dmg` 与 Windows x64 installer。
+> 📥 **Download:** `open-design-v0.10.0` 的 assets 由 prerelease pipeline 构建，并在构建完成后发布到 GitHub Releases 和 `releases.open-design.ai`，包括 macOS arm64/Intel `.dmg` 与 Windows x64 installer。
 
 ## ✨ Added
 

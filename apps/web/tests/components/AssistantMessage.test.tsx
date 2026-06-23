@@ -24,7 +24,6 @@ beforeAll(() => {
     },
   });
 });
-
 afterEach(() => {
   cleanup();
   window.localStorage.clear();

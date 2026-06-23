@@ -8,7 +8,7 @@
 
 - **Node.js：** `~24`（Node 24.x）。仓库在 `package.json#engines` 中强制要求该版本。
 - **pnpm：** `10.33.x`。仓库通过 `packageManager` 固定为 `pnpm@10.33.2`；若使用 Corepack，该固定版本将被自动选中。
-- **操作系统：** 主要支持 macOS、Linux、WSL2。Windows 原生环境大部分流程也可运行，但 WSL2 是更稳定的基线。
+- **操作系统：** 主要路径是 macOS、Linux 和 WSL2。如果你的 agent CLI 运行在 WSL2 内，请先阅读 [`WSL2 setup guide`](docs/wsl-setup.md)。Windows 原生环境也受支持；常见 PowerShell 设置问题见 [`docs/windows-troubleshooting.md`](docs/windows-troubleshooting.md)。
 - **可选的本地 agent CLI：** Claude Code、Codex、Devin for Terminal、Gemini CLI、OpenCode、Cursor Agent、Qwen、Qoder CLI、GitHub Copilot CLI 等。即使未安装任何 CLI，也可在 Settings 中切换至 BYOK API 模式。
 
 `nvm` / `fnm` 为可选的便捷工具，并非项目必要依赖。如需使用，请在执行 pnpm 之前安装并切换到 Node 24：
