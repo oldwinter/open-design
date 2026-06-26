@@ -8,6 +8,7 @@
 
 - `specs/`: 最高 ROI、长时间运行的 core business capability regressions，适合 PR 或 release gating。每个 spec 应描述一条几乎正交的 product capability chain，例如 main dialog generation、Pet、Orbit 或 packaged runtime。保持这一层很小，只在 core capability 值得 always-on signal 时扩展。
 - `tests/`: 更广的 user-level end-to-end coverage 和 local hotspot checks，故意跨越 app/package/resource 边界。当重复或高风险 local capability 自然来自 core spec 时，优先在这里添加 tests。不要在 core spec 需要之前构建 speculative coverage matrix。
+- `tests/scripts/`: root operational scripts 的 behavior-contract coverage，这些脚本的回归会影响 install、CI 或 release flows。Fixtures 必须 hermetic，并能通过 e2e Vitest 运行；不要把 `*.test.ts` siblings 直接放在 root `scripts/` 下。
 - `ui/`: 只放 flat Playwright UI automation test files。不要把 helpers、resources 或非 Playwright harnesses 放进这个目录。
 - `resources/`: e2e suites 的 declarative resources，例如 Playwright UI scenario lists。
 - `lib/fake-agents.ts`: UI 和 pure-inspect daemon specs 共用的 fake local agent CLI harness。

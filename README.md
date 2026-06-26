@@ -2,7 +2,7 @@
 
 > 🔥 **Open Design 0.10.0 正式发布：All-in-one 的 Agentic 设计工作台。** 设计的全流程从此只需一个窗口——从一个模糊的想法出发，到发现参考、收集素材、交互式编辑、评论排队、打磨动效，再交付给编辑器或 Code Agent，全程无需离开应用。配合多会话并行，它不再只是一个助手，而是一支为你工作的本地设计团队。[下载 0.10.0](https://github.com/nexu-io/open-design/releases) · [参与讨论](https://github.com/nexu-io/open-design/discussions/4153)
 >
-> ⚡ **Open Design AMR（Agentic Model Router）——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/amr/)
+> ⚡ **Open Design AMR（Agentic Model Router）——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/amr/?utm_source=github&utm_medium=referral&utm_content=readme_try_amr)
 >
 > 🏅 **Open Design Fellow 计划正式开放。** 如果你也相信设计应该是开放的，欢迎成为 Open Design Fellow，和核心团队一起打磨产品，让更多人参与并定义设计的未来。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 与 [Discord](https://discord.gg/9ptkbbqRu)。
 
@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <a href="https://open-design.ai/">官网</a> ·
-  <a href="https://open-design.ai/">下载</a> ·
-  <a href="https://open-design.ai/amr/">Model Router</a> ·
+  <a href="https://open-design.ai/?utm_source=github&utm_medium=referral&utm_content=readme_website">官网</a> ·
+  <a href="https://open-design.ai/?utm_source=github&utm_medium=referral&utm_content=readme_download">下载</a> ·
+  <a href="https://open-design.ai/amr/?utm_source=github&utm_medium=referral&utm_content=readme_model_router">Model Router</a> ·
   <a href="https://discord.gg/9ptkbbqRu">Discord</a> ·
   <a href="https://x.com/OpenDesignHQ">关注 @OpenDesignHQ</a>
 </p>
@@ -290,8 +290,8 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 
 使用 Open Design 最快的方式。无需 Node、pnpm 或克隆仓库。
 
-- **macOS**（Apple Silicon · Intel x64）→ [**open-design.ai**](https://open-design.ai/) 或 [GitHub Releases](https://github.com/nexu-io/open-design/releases)
-- **Windows**（x64）→ [**open-design.ai**](https://open-design.ai/) 或 [GitHub Releases](https://github.com/nexu-io/open-design/releases)
+- **macOS**（Apple Silicon · Intel x64）→ [**open-design.ai**](https://open-design.ai/?utm_source=github&utm_medium=referral&utm_content=readme_download_macos) 或 [GitHub Releases](https://github.com/nexu-io/open-design/releases)
+- **Windows**（x64）→ [**open-design.ai**](https://open-design.ai/?utm_source=github&utm_medium=referral&utm_content=readme_download_windows) 或 [GitHub Releases](https://github.com/nexu-io/open-design/releases)
 - **Linux**（AppImage，可选通道）→ [GitHub Releases](https://github.com/nexu-io/open-design/releases)
 
 安装后：应用自动检测 `PATH` 上的所有编码 Agent CLI，加载 100+ 技能和 150 个设计系统，打开后即可在入口视图中输入需求。

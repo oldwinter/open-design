@@ -1172,6 +1172,7 @@ function displayTabFor(
     tasks: t('entry.navTasks'),
     plugins: t('entry.navPlugins'),
     'design-systems': t('entry.navDesignSystems'),
+    library: 'Library',
     brands: t('entry.navBrands'),
     integrations: t('entry.navIntegrations'),
   };
@@ -1182,6 +1183,7 @@ function displayTabFor(
     tasks: 'kanban',
     plugins: 'grid',
     'design-systems': 'blocks',
+    library: 'image',
     brands: 'blocks',
     integrations: 'link',
   };
