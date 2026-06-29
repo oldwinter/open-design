@@ -300,7 +300,7 @@ node --experimental-strip-types scripts/sync-litellm-models.ts
 tl;dr：持续提交好 PR、认真 review、在 [Discussions][discussions] / [Discord][discord] 参与交流，剩下的会自然发生。
 
 [discussions]: https://github.com/nexu-io/open-design/discussions
-[discord]: https://discord.gg/9ptkbbqRu
+[discord]: https://discord.gg/mHAjSMV6gz
 
 ---
 
