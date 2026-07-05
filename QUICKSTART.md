@@ -1,6 +1,6 @@
 # 快速上手 · Quickstart
 
-<p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/QUICKSTART.md">English</a> · <a href="docs/i18n/QUICKSTART.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/QUICKSTART.de.md">Deutsch</a> · <a href="docs/i18n/QUICKSTART.fr.md">Français</a> · <a href="docs/i18n/QUICKSTART.ja-JP.md">日本語</a> · <b>简体中文</b> · <a href="docs/i18n/QUICKSTART.zh-TW.md">繁體中文</a></p>
+<p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/QUICKSTART.md">English</a> · <a href="docs/i18n/QUICKSTART.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/QUICKSTART.de.md">Deutsch</a> · <a href="docs/i18n/QUICKSTART.fr.md">Français</a> · <a href="docs/i18n/QUICKSTART.ja-JP.md">日本語</a> · <a href="docs/i18n/QUICKSTART.ko.md">한국어</a> · <b>简体中文</b> · <a href="docs/i18n/QUICKSTART.zh-TW.md">繁體中文</a> · <a href="docs/i18n/QUICKSTART.th.md">ภาษาไทย</a></p>
 
 在本地运行完整的产品。
 

@@ -4,7 +4,7 @@
 
 这份指南会明确告诉你：每类贡献该看哪里，以及 PR 合并前必须达到什么标准。
 
-<p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/CONTRIBUTING.md">English</a> · <a href="docs/i18n/CONTRIBUTING.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/CONTRIBUTING.de.md">Deutsch</a> · <a href="docs/i18n/CONTRIBUTING.fr.md">Français</a> · <b>简体中文</b> · <a href="docs/i18n/CONTRIBUTING.ja-JP.md">日本語</a></p>
+<p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/CONTRIBUTING.md">English</a> · <a href="docs/i18n/CONTRIBUTING.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/CONTRIBUTING.de.md">Deutsch</a> · <a href="docs/i18n/CONTRIBUTING.fr.md">Français</a> · <b>简体中文</b> · <a href="docs/i18n/CONTRIBUTING.ja-JP.md">日本語</a> · <a href="docs/i18n/CONTRIBUTING.ko.md">한국어</a> · <a href="docs/i18n/CONTRIBUTING.th.md">ภาษาไทย</a></p>
 
 ---
 
@@ -306,7 +306,7 @@ tl;dr：持续提交好 PR、认真 review、在 [Discussions][discussions] / [D
 
 ## License
 
-By contributing, you agree your contribution is licensed under the [Apache-2.0 License](LICENSE) of this repository, with the exception of files inside [`skills/guizang-ppt/`](skills/guizang-ppt/), which retain their original MIT license and authorship attribution to [op7418](https://github.com/op7418).
+By contributing, you agree your contribution is licensed under the [Apache-2.0 License](LICENSE) of this repository, except where a bundled skill or template carries its own `LICENSE` file. Known MIT-licensed exceptions include [`skills/guizang-ppt/`](skills/guizang-ppt/), which retains authorship attribution to [op7418](https://github.com/op7418), and [`skills/web-clone/`](skills/web-clone/), which retains authorship attribution to [Jane Xiaoer](https://github.com/Jane-xiaoer).
 
 [skill]: https://docs.anthropic.com/en/docs/claude-code/skills
 [guizang]: https://github.com/op7418/guizang-ppt-skill

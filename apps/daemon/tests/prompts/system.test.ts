@@ -97,6 +97,14 @@ describe('composeSystemPrompt', () => {
     expect(prompt).toContain('Keep machine-readable ids and object option `value` fields exact and unlocalized');
   });
 
+  it('keeps Plan mode tied to the real Todo card in filesystem runs', () => {
+    const prompt = composeSystemPrompt({ sessionMode: 'plan' });
+
+    expect(prompt).toContain('# Plan mode — editable document first');
+    expect(prompt).toContain('substantial plan-document work still starts with a real TodoWrite/task-list tool call');
+    expect(prompt).toContain('show progress through the Todo card');
+  });
+
   it('injects the converged verification policy (no mid-build screenshot looping)', () => {
     const prompt = composeSystemPrompt({});
 
@@ -222,12 +230,12 @@ describe('composeSystemPrompt', () => {
     expect(prompt).toContain('`references/artifact-schema.md`');
     expect(prompt).toContain('`references/connector-policy.md`');
     expect(prompt).toContain('`references/refresh-contract.md`');
-    expect(prompt).toContain('The wrapper reads injected `OD_NODE_BIN`, `OD_BIN`, `OD_DAEMON_URL`, and `OD_TOOL_TOKEN`');
-    expect(prompt).toContain('Do not include or invent `projectId`; the daemon derives project/run scope from the token.');
+    expect(prompt).toContain('Wrapper 会读取注入的 `OD_NODE_BIN`、`OD_BIN`、`OD_DAEMON_URL` 和 `OD_TOOL_TOKEN`');
+    expect(prompt).toContain('不要包含或发明 `projectId`；daemon 会从 token 推导 project/run scope。');
     expect(prompt).toContain('"$OD_NODE_BIN" "$OD_BIN" tools live-artifacts create --input artifact.json');
     expect(prompt).toContain('if the user names a connector/source (for example Notion)');
     expect(prompt).toContain('list connectors before asking where the data comes from');
-    expect(prompt).toContain('a connected `notion` connector plus a user brief that names Notion is enough to start with `notion.notion_search`');
+    expect(prompt).toContain('只要存在 connected `notion` connector，且用户 brief 点名 Notion，就足以用从 artifact/topic 请求派生出的 query 启动 `notion.notion_search`');
     expect(prompt).toContain('Prefer the `live-artifact` skill workflow when available');
     expect(prompt).toContain('The first output should be a live artifact/dashboard/report');
   });
@@ -261,7 +269,7 @@ describe('composeSystemPrompt', () => {
   it('keeps both hyperframes skill copies aligned with the daemon render handoff', () => {
     for (const markdown of [hyperframesSkillMarkdown, officialHyperframesSkillMarkdown]) {
       expect(markdown).toContain('media generate --surface video --model hyperframes-html --composition-dir <rel>');
-      expect(markdown).toContain('Do not run `npx hyperframes render`');
+      expect(markdown).toContain('不要自己运行 `npx hyperframes render`');
       expect(markdown).not.toContain('AGENT_RENDERED');
       expect(markdown).not.toContain('rendered by you directly via npx');
       expect(markdown).not.toContain('dispatcher path returns a 400');

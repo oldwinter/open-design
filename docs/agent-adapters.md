@@ -189,7 +189,8 @@ Adapter 通过 `capabilities().nativeSkillLoading` 和私有 `skillInjectionStra
 
 ### 5.7 OpenCode / OpenClaw
 
-这些 CLI 成熟度较低，目标 P2。预计会有颠簸；adapter implementation 很可能是最薄的一层：“shell out, parse output, synthesize events”。
+- 这些 CLI 成熟度较低，目标 P2。预计会有颠簸；adapter implementation 很可能是最薄的一层：“shell out, parse output, synthesize events”。
+- OpenCode 以 `opencode run --format json` 运行，prompt 通过 stdin 传入。较新的 OpenCode build 如果在 `opencode run --help` 中声明支持 `--dangerously-skip-permissions`，就会收到该 flag，避免 headless runs 在 edit approval prompts 上停住；较旧 build 保持 1.3-compatible argv。
 
 ### 5.8 GitHub Copilot CLI
 

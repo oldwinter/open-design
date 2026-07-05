@@ -40,7 +40,7 @@
 - 不得从 `@open-design/web`、`@open-design/daemon`、`@open-design/desktop`、`@open-design/sidecar*` 或 `@open-design/contracts` import。这些属于 product runtime concerns。
 - 不得引入 `src/` shell；所有 source 保持在 `app/` 下。Component bundles 位于 `app/_components/<name>.{tsx,astro}`。
 - 不得依赖任何 non-Google web font。
-- 可见的 "X skills" / "Y systems" claims 必须读取 `getCatalogCounts()`，绝不能 hardcode。Hero、capabilities cards、labs pills、selected-work fractions、footer Library 和 `<meta name="description">` 都从同一个 call 派生，这样新 content edit 永远不会发布相互矛盾的 totals。
+- 可见的 "X skills" / "Y systems" claims 必须读取 `getCatalogCounts()`，绝不能 hardcode。Hero、capabilities cards、labs pills、selected-work fractions 和 footer Library 都从同一个 call 派生，这样新 content edit 永远不会发布相互矛盾的 totals。Homepage `<meta name="description">` 现在有意改成 scenario-focused，不再写 catalog totals，因此它不是 count-backed surface；`getHomeSeo()` 仍接收 counts，且保留 `{skills}` / `{systems}` substitution 作为 no-op hook，所以如果 description 以后再次展示 count，也必须经由 `getCatalogCounts()`。
 - 当 canonical `design-templates/open-design-landing/example.html` 改变时，`app/page.tsx` 中对应的 section JSX 和 `app/globals.css` 中的 rules 必须同步更新。这两个文件保持 lockstep；其余 landing-page sources 不需要。
 - `app/content.config.ts` 中的 content-collection schemas 保持 loose（`passthrough()`）。Validation 在 render time 执行，这样 vendored upstream Markdown（例如 `guizang-ppt`）在 author 使用稍有不同的 `od:` key 时不会破坏 build。
 

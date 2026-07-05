@@ -22,4 +22,4 @@ ls skills/
 
 ## License
 
-除非各自的 `LICENSE` 另有说明，本目录中的 skills 均为 Apache-2.0。最重要的例外是 [`skills/guizang-ppt/`](guizang-ppt/)，它从 [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 原样打包，使用 MIT license。
+除非各自的 `LICENSE` 另有说明，本目录中的 skills 均为 Apache-2.0。值得注意的 MIT 例外包括 [`skills/guizang-ppt/`](guizang-ppt/)（从 [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 原样打包）以及 [`skills/web-clone/`](web-clone/)（改编自 [Jane-xiaoer/claude-skill-web-clone](https://github.com/Jane-xiaoer/claude-skill-web-clone)）。
