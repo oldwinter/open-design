@@ -386,6 +386,8 @@ od skill list --scenario marketing
 
 **安全模型。** 默认只读，守护进程绑定到 `127.0.0.1`，SSRF 在代理边缘拦截。局域网暴露需要 `OD_BIND_HOST` 显式启用加 `OD_ALLOWED_ORIGINS`。连接器凭证和实时工件预览路由无论如何都保持仅本地回环。
 
+**内部托管模型端点。** 为防止 SSRF，守护进程默认会拦截解析到私有/内部地址段（RFC1918、link-local、CGNAT 和云元数据 IP）的 provider base URL，并显示 `Internal IPs blocked`。如果你运行内部托管 gateway（例如只在 VPN 内的 `10.x`/`192.168.x` 地址上的 LiteLLM 或 Ollama），可用 `OD_ALLOWED_INTERNAL_HOSTS=<host1>,<host2>,...` 单独放行这些 host。该值是逗号或空白分隔的裸 hostname / IP 列表（如 `10.0.0.5`、`litellm.internal.corp`）；`host:port` 或完整 URL 会被归约为 hostname；IPv6 必须用方括号包住，例如 `[fd00::1]`。allowlist 是严格 opt-in（默认空）、精确 host 匹配（不做子域/substring 匹配），并且**只**作用于你配置的 provider endpoints（连接测试、模型发现、BYOK chat）。它不会放宽上游响应中返回的 download URL 防护，这些 URL 仍保持拦截。格式错误的条目或不支持的 CIDR notation 会带 warning 丢弃，而不是静默信任，避免 typo 悄悄扩大（或未能扩大）防护范围。放行 hostname 会信任它解析到的地址（类似 `OD_ALLOWED_ORIGINS`）；如果想重新检查 DNS 解析地址，请直接放行解析后的 IP。
+
 ---
 
 ## 技能
@@ -587,6 +589,10 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 - [x] 工件 Lint API + 五维自评预输出门控
 - [x] **0.8.0**——插件市场基础设施（261 个官方插件、manifest 规范、逐 Agent 安装脚本）
 - [x] **0.9.0**——Open Design Cloud（内置官方模型服务：零配置、一键登录）
+- [x] **0.10.0**——一体化设计工作区：完整创作循环在一个窗口内完成（references → material → interactive editing → motion → handoff）
+- [x] **0.11.0**——_The Bazaar_：开放共建的社区 marketplace，任何人都可选用并贡献插件与设计系统
+- [x] **0.12.0**——_Brand-backed Design System_：把你已有的品牌转成可复用、可移植的 `DESIGN.md` 系统
+- [x] **0.13.0**——_Stay in Flow_：原生会话恢复、更快模型选择，并直接导出带截图证据的 PPTX / PDF
 - [x] 打包 Electron 构建——macOS（Apple Silicon + Intel）+ Windows（x64）+ Linux AppImage（可选通道）
 - [ ] 评论模式精确编辑——部分已发布，可靠的定向补丁进行中
 - [ ] AI 输出的调参面板 UX——尚未实现

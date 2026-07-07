@@ -61,6 +61,65 @@ OPEN_DESIGN_IMAGE=ghcr.io/nexu-io/od@sha256:<digest> docker compose up -d --no-b
 ```
 这个 image 有意不捆绑 Claude/Codex/Gemini CLI binaries。请把它们放在 image 外部；如果 server deployment 需要在 container 中安装本地 code-agent CLIs，请构建单独的 private runtime layer。
 
+## Linux：挂载宿主机 agent CLI
+
+在 Linux 上，可以把宿主机已安装的 agent CLI（Claude Code、opencode、Codex 等）挂载进 container，而无需重新构建 image。Linux 上 `install.sh` 已经会自动加载 override 文件 `docker-compose.linux.yml`；它会切换到 `network_mode: host` 并添加 CLI mounts。
+
+**1. 构建本地 image**（会加入 `libc6-compat`，让链接 glibc 的 CLI 能在 Alpine 上运行）：
+
+```bash
+docker build -t open-design-local -f deploy/Dockerfile.local .
+```
+
+**2. 让 `.env` 指向本地 image：**
+
+```bash
+OPEN_DESIGN_IMAGE=open-design-local
+```
+
+**3. 编辑 `docker-compose.linux.yml`**，让其中路径匹配你的 CLI 安装位置，然后启动：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.linux.yml up -d --no-build
+```
+
+常见安装路径：
+
+| CLI | 默认路径 |
+|-----|-------------|
+| Claude Code | `~/.local/bin/claude`（symlink）+ `~/.local/share/claude`（binaries） |
+| opencode | `~/.opencode/bin/opencode` |
+| Codex | `~/.local/bin/codex` |
+
+daemon 会在启动时自动检测 `PATH` 中可见的 CLI，不需要额外配置。如果某个 CLI 安装在非标准路径，请在 `docker-compose.linux.yml` 中添加 volume，并把它的目录放到 `PATH` 最前面，然后重启：
+
+```yaml
+environment:
+  PATH: /mnt/host-mycli:/mnt/host-local-bin:/mnt/host-opencode:/usr/local/bin:/usr/bin:/bin
+volumes:
+  - /opt/mycli/bin:/mnt/host-mycli:ro
+```
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.linux.yml up -d --no-build
+```
+
+如果即使有 `libc6-compat`，某个 CLI 仍因为 `symbol not found` 或 relocation errors 失败，compose 文件会以 read-only 方式从宿主机挂载 `/lib/x86_64-linux-gnu` 和 `/lib64`，为要求更高的 binaries 提供完整 glibc。这些路径**仅适用于 amd64**；在 arm64 上请替换为 `/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:ro`。
+
+**从旧安装升级：**如果你之前用另一个 user 运行 container（例如 `node`，uid 1000），daemon 写入 data volume 前可能需要修正 ownership：
+
+```bash
+docker run --rm -v open-design_open_design_data:/data alpine chown -R 1001:1001 /data
+```
+
+通过 `.env` 传入 provider API keys：
+
+```bash
+DEEPSEEK_API_KEY=sk-…
+ANTHROPIC_API_KEY=sk-ant-…
+OPENAI_API_KEY=sk-…
+```
+
 If you install Codex inside an unprivileged Linux container and it fails while
 creating its `workspace-write` sandbox, opt into Codex's full-access mode for
 all Codex runs in that deployment:
