@@ -1,5 +1,7 @@
 ---
 name: webgl-raymarched-hero
+en_name: "Raymarched Hero"
+zh_name: "光线步进主视觉"
 description: |
   A real-time raymarched 3D hero — soft-shadowed morphing metaballs with a
   fresnel rim light, sphere-traced per pixel in a fragment shader with a slow
@@ -8,6 +10,20 @@ description: |
   field", "SDF", "3D hero", "metaballs", "blobs", or a shader-based 3D scene.
   Open Design serves this in powered-preview mode so the GPU stack actually
   runs.
+en_description: |
+  A real-time raymarched 3D hero — soft-shadowed morphing metaballs with a
+  fresnel rim light, sphere-traced per pixel in a fragment shader with a slow
+  camera orbit. No meshes, no textures. Rendered as a single self-contained
+  `index.html`. Use when the brief asks for a "raymarch", "signed distance
+  field", "SDF", "3D hero", "metaballs", "blobs", or a shader-based 3D scene.
+  Open Design serves this in powered-preview mode so the GPU stack actually
+  runs.
+zh_description: |
+  实时光线步进 3D 主视觉：带柔和阴影、不断形变的元球配有菲涅尔轮廓光，
+  镜头缓慢环绕，片元着色器逐像素进行球体追踪。无需网格或纹理。产出为
+  单个自包含的 `index.html`。适用于需求中出现“光线步进”、“有符号距离场”、
+  “SDF”、“3D 主视觉”、“元球”、“团块”或基于着色器的 3D 场景。
+  Open Design 会以 powered-preview 模式运行它，让完整 GPU 栈真正可用。
 triggers:
   - "raymarch"
   - "raymarching"
@@ -18,6 +34,8 @@ triggers:
   - "blobs"
   - "光线步进"
   - "有向距离场"
+  - "有符号距离场"
+  - "元球"
 od:
   mode: prototype
   platform: web

@@ -1,8 +1,8 @@
-# Input Format
+# 输入格式
 
-Use this transcript format before generating the scene spec.
+生成场景规格前，先使用以下聊天记录格式。
 
-## Minimal Form
+## 最简格式
 
 ```text
 title: 闺蜜群（6）
@@ -16,7 +16,7 @@ time: 星期二 22:19
 老婆|我说他们这种不便秘的人不了解我们
 ```
 
-## Full Form
+## 完整格式
 
 ```text
 title: 飞书项目群
@@ -31,39 +31,39 @@ Hermes|left|male-penguin-blue|再补食物、运动和体重趋势
 我|right|male-bear-mint|行，先给我能看的版本
 ```
 
-## Message Rules
+## 消息规则
 
-- Metadata lines support `title`, `time`, `start`, `gap`, `hold`.
-- Message lines support:
+- 元数据行支持 `title`、`time`、`start`、`gap`、`hold`。
+- 消息行支持：
   - `name|text`
   - `name|text|highlight`
   - `name|side|text`
   - `name|side|avatar|text`
   - `name|side|avatar|text|highlight`
-- Valid sides: `left`, `right`, `左`, `右`.
-- Valid flag: `highlight`.
-- If side is missing, the first speaker defaults to left and the second to right.
-- If avatar is missing, the spec builder auto-assigns one per participant.
-- The same speaker must stay on the same side throughout the transcript. If a transcript or screenshot implies conflicting sides for one speaker, stop and ask the user to confirm.
-- Avatar selection is participant-first: use the participant config when provided, otherwise use the transcript avatar hint, otherwise auto-assign a preset.
-- For screenshots, use visible avatars as clues for participant count and message grouping, but default to preset render avatars. Do not crop or recreate screenshot avatar images unless the user explicitly asks for screenshot-derived avatars.
+- 有效的侧边值：`left`、`right`、`左`、`右`。
+- 有效的标记：`highlight`。
+- 如果未指定侧边，第一位发言者默认在左侧，第二位默认在右侧。
+- 如果未指定头像，规格构建器会为每位参与者自动分配一个头像。
+- 同一位发言者在整份聊天记录中必须始终位于同一侧。如果聊天记录或截图显示同一位发言者出现在相互冲突的侧边，请停止并要求用户确认。
+- 选择头像时，参与者配置优先：如果提供了参与者配置，则使用该配置；否则使用聊天记录中的头像提示；再否则自动分配一个预设头像。
+- 对于截图，可将可见头像作为判断参与者数量和消息分组的线索，但默认使用预设头像渲染。除非用户明确要求使用截图中的头像，否则不要裁剪或重建截图中的头像。
 
-## Screenshot Workflow
+## 截图处理流程
 
-When the user gives a screenshot:
+当用户提供截图时：
 
-1. Read the messages in display order.
-2. Infer side from bubble placement.
-3. Infer participants from repeated nicknames, repeated avatar visuals, bubble grouping, and side placement.
-4. Keep the same participant on the same side; ask for confirmation if the screenshot suggests otherwise.
-5. Record title and timestamp if visible.
-6. Keep uncertain OCR fragments explicit instead of inventing cleaner text.
-7. Convert the result into the transcript format above before running the script.
+1. 按显示顺序读取消息。
+2. 根据气泡位置推断侧边。
+3. 根据重复出现的昵称、头像外观、气泡分组和侧边位置推断参与者。
+4. 同一位参与者应保持在同一侧；如果截图显示的情况并非如此，请要求用户确认。
+5. 如果标题和时间戳可见，则将其记录下来。
+6. 明确保留不确定的 OCR 片段，不要自行编造更整洁的文本。
+7. 运行脚本前，将结果转换为上方的聊天记录格式。
 
-## Screenshot Avatar Policy
+## 截图头像策略
 
-- Default: use preset avatars for all inferred participants.
-- Use screenshot avatars as visual evidence for participant count and message grouping, especially in group chats.
-- If the user wants exact rendered avatars, first ask them to provide avatar image files or cropped avatar assets.
-- Only attempt to crop or recreate avatars from the screenshot when the user explicitly requests it and accepts that recognition may be imperfect.
-- Participant identity should come from nickname, repeated avatar visuals, message grouping, and side consistency together; do not rely on avatar visuals alone when ambiguous.
+- 默认：为所有推断出的参与者使用预设头像。
+- 将截图头像作为判断参与者数量和消息分组的视觉依据，尤其是在群聊中。
+- 如果用户希望精确还原头像，请先让他们提供头像图片文件或裁剪好的头像资源。
+- 只有当用户明确要求，并接受识别结果可能不完美时，才尝试从截图中裁剪或重建头像。
+- 应结合昵称、重复出现的头像外观、消息分组和侧边一致性来判断参与者身份；存在歧义时，不要只依赖头像外观。

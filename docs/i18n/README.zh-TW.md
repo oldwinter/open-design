@@ -117,6 +117,7 @@ Open Design 是這樣誕生的：當 Anthropic 隨 Claude Design 推出的那套
 |---|:---:|---|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | ✅ 已支援 | `od mcp install claude` |
 | [Codex CLI](https://github.com/openai/codex) | ✅ 已支援 | `od mcp install codex` |
+| [DeepSeek Reasonix](https://github.com/esengine/DeepSeek-Reasonix) | ✅ 已支援 | `od mcp install reasonix` |
 | [Cursor](https://www.cursor.com/cli) | ✅ 已支援 | `od mcp install cursor` |
 | [VS Code + GitHub Copilot](https://github.com/features/copilot) | ✅ 已支援 | `od mcp install copilot` |
 | [GitHub Copilot CLI](https://github.com/features/copilot/cli) | ✅ 已支援 | `od mcp install copilot` |
@@ -303,12 +304,13 @@ Open Design（OD）就是那個開源的替代方案。同樣的迴圈、同樣�
 你完全不必打開 GUI 也能使用 Open Design——在 Claude Code、Codex、Cursor、Copilot、OpenClaw、Antigravity、Hermes、Kimi 等等之中，把它當成 skill、外掛或 MCP server 來呼叫。
 
 ```bash
-# One-line install into the agent you're using:
+# 一行指令安裝到你正在使用的 agent：
 od mcp install <agent>
-# <agent> = claude | codex | cursor | copilot | openclaw | antigravity | gemini
-#         | pi | vibe | hermes | cline | kimi | trae | opencode
+# <agent> = claude | codex | reasonix | cursor | copilot | openclaw
+#         | antigravity | gemini | pi | vibe | hermes | cline | kimi
+#         | trae | opencode
 
-# Hosted equivalent for curl-based setup:
+# 透過 curl 進行 hosted 安裝的等效方式：
 curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
 ```
 

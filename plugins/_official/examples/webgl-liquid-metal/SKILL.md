@@ -1,5 +1,7 @@
 ---
 name: webgl-liquid-metal
+en_name: "Liquid Metal"
+zh_name: "液态金属"
 description: |
   A real-time liquid-metal shader — a domain-warped noise field shaded as
   molten chrome, with a sweeping specular highlight over an iridescent
@@ -8,6 +10,20 @@ description: |
   "molten chrome", "iridescent", "holographic", "metallic", "thin-film", or a
   reflective flowing surface. Open Design serves this in powered-preview mode
   so the GPU stack actually runs.
+en_description: |
+  A real-time liquid-metal shader — a domain-warped noise field shaded as
+  molten chrome, with a sweeping specular highlight over an iridescent
+  thin-film (cosine-palette) sheen. No textures. Rendered as a single
+  self-contained `index.html`. Use when the brief asks for "liquid metal",
+  "molten chrome", "iridescent", "holographic", "metallic", "thin-film", or a
+  reflective flowing surface. Open Design serves this in powered-preview mode
+  so the GPU stack actually runs.
+zh_description: |
+  一个实时液态金属着色器：将经域扭曲的噪声场着色为熔融铬质感，并让镜面高光
+  扫过带虹彩的薄膜（cosine-palette）光泽。无需纹理。渲染为单个自包含的
+  `index.html`。适用于需求中出现“液态金属”、“熔融铬”、“虹彩”、“全息”、“金属质感”、
+  “薄膜”，或要求反光流动表面的场景。Open Design 会以 powered-preview 模式
+  运行它，让 GPU 栈真正可用。
 triggers:
   - "liquid metal"
   - "molten chrome"
@@ -18,6 +34,9 @@ triggers:
   - "chrome"
   - "液态金属"
   - "镭射"
+  - "熔融铬"
+  - "虹彩薄膜"
+  - "金属流体"
 od:
   mode: prototype
   platform: web

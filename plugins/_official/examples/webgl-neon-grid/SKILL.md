@@ -1,5 +1,7 @@
 ---
 name: webgl-neon-grid
+en_name: "Neon Grid"
+zh_name: "霓虹网格"
 description: |
   A real-time synthwave scene — a perspective floor grid scrolling toward a
   banded retro sun under a neon starfield, all from one fragment shader. No
@@ -7,6 +9,19 @@ description: |
   brief asks for "synthwave", "outrun", "retro 80s", "neon grid", "perspective
   grid", "vaporwave", or a retro-futuristic hero. Open Design serves this in
   powered-preview mode so the GPU stack actually runs.
+en_description: |
+  A real-time synthwave scene — a perspective floor grid scrolling toward a
+  banded retro sun under a neon starfield, all from one fragment shader. No
+  textures. Rendered as a single self-contained `index.html`. Use when the
+  brief asks for "synthwave", "outrun", "retro 80s", "neon grid", "perspective
+  grid", "vaporwave", or a retro-futuristic hero. Open Design serves this in
+  powered-preview mode so the GPU stack actually runs.
+zh_description: |
+  一个实时合成波场景：透视地面网格朝带状复古太阳滚动，上方铺陈霓虹星空，
+  全部由单个片段着色器生成。无需纹理。渲染为单个自包含的 `index.html`。
+  适用于需求中出现“合成波”、“Outrun”、“80 年代复古”、“霓虹网格”、“透视网格”、
+  “蒸汽波”，或要求复古未来主义首屏视觉的场景。Open Design 会以
+  powered-preview 模式运行它，让 GPU 栈真正可用。
 triggers:
   - "synthwave"
   - "outrun"
@@ -17,6 +32,9 @@ triggers:
   - "retrowave"
   - "赛博"
   - "蒸汽波"
+  - "霓虹网格"
+  - "透视网格"
+  - "复古未来主义"
 od:
   mode: prototype
   platform: web

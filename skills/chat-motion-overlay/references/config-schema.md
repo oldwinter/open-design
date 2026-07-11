@@ -1,8 +1,8 @@
-# Config Schema
+# 配置结构
 
-Provide a JSON file when the user wants anything beyond the defaults.
+当用户需要默认值以外的设置时，提供一个 JSON 文件。
 
-## Example
+## 示例
 
 ```json
 {
@@ -26,23 +26,23 @@ Provide a JSON file when the user wants anything beyond the defaults.
 }
 ```
 
-## Fields
+## 字段
 
 - `container`
-  - `none`: standalone bubbles only
-  - `wechat`: WeChat-style UI shell
-  - `telegram`: Telegram-like UI shell
-  - `messenger`: Facebook Messenger-like UI shell
+  - `none`: 仅显示独立气泡
+  - `wechat`: 微信风格界面外壳
+  - `telegram`: Telegram 风格界面外壳
+  - `messenger`: Facebook Messenger 风格界面外壳
 
 - `avatarMode`
-  - `preset`: use only bundled preset avatars
-  - `upload`: require uploaded avatar files for all participants
-  - `mixed`: combine preset and uploaded avatars across participants
+  - `preset`: 仅使用工程包内置的预设头像
+  - `upload`: 要求所有参与者都使用上传的头像文件
+  - `mixed`: 在不同参与者之间混合使用预设头像和上传头像
 
 - `deviceFrame`
   - `none`
   - `iphone-dynamic-island`
-  - `container: none` only supports `deviceFrame: none`; phone framing is available for app containers
+  - `container: none` 仅支持 `deviceFrame: none`；应用容器可以使用手机边框
 
 - `nicknameMode`
   - `hidden`
@@ -61,14 +61,14 @@ Provide a JSON file when the user wants anything beyond the defaults.
   - boolean
 
 - `participants`
-  - Keys are speaker names from the transcript or screenshot.
-  - `side`: `left` or `right`; the same participant must stay on the same side.
-  - `preset`: optional bundled preset avatar key.
-  - `uploadPath`: optional local avatar file path used during bundle preparation.
-  - If omitted, participants are inferred from the transcript and assigned stable preset avatars.
-  - In generated bundles, local `uploadPath` values are removed and only copied `uploadAsset` names are retained.
+  - 键是聊天记录或截图中的发言者姓名。
+  - `side`：`left` 或 `right`；同一位参与者必须始终位于同一侧。
+  - `preset`：可选的内置预设头像键。
+  - `uploadPath`：可选的本地头像文件路径，在准备工程包时使用。
+  - 如果省略，则从聊天记录中推断参与者，并为其分配固定的预设头像。
+  - 在生成的工程包中，会移除本地 `uploadPath` 值，只保留复制后的 `uploadAsset` 名称。
 
-## Preset Avatar Keys
+## 预设头像键
 
 - `female-bunny-pink`
 - `female-cat-orange`

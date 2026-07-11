@@ -1,10 +1,19 @@
 ---
 name: webgl-voronoi-cells
+en_name: "Voronoi Cells"
+zh_name: "Voronoi 单元"
 description: |
   A self-contained WebGL2 hero: a living Voronoi network with drifting feature points, palette-keyed cells and glowing boundaries; move the cursor to push the cells.
+en_description: |
+  A self-contained WebGL2 hero: a living Voronoi network with drifting feature points, palette-keyed cells and glowing boundaries; move the cursor to push the cells.
+zh_description: |
+  一个自包含的 WebGL2 主视觉：由漂移特征点、按调色板着色的单元与发光边界
+  构成的动态 Voronoi 网络；移动光标即可推挤这些单元。
 triggers:
   - "voronoi cells"
   - "webgl hero"
+  - "Voronoi 单元"
+  - "沃罗诺伊单元"
 od:
   mode: prototype
   platform: web

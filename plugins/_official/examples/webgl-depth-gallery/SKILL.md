@@ -1,10 +1,17 @@
 ---
 name: webgl-depth-gallery
+en_name: "Depth Gallery"
+zh_name: "纵深画廊"
 description: |
   A scroll-reactive 3D image gallery in Three.js: Z-stacked images crossfade over per-image mood backgrounds with velocity breath, a glowing cursor trail and an editorial CMYK/RGB/HEX/PMS color card.
+en_description: |
+  A scroll-reactive 3D image gallery in Three.js: Z-stacked images crossfade over per-image mood backgrounds with velocity breath, a glowing cursor trail and an editorial CMYK/RGB/HEX/PMS color card.
+zh_description: |
+  一个随滚动响应的 Three.js 3D 图像画廊：沿 Z 轴层叠的图像在各自的氛围背景上交叉渐变，并随滚动速度产生呼吸感，配有发光光标轨迹和编辑风格的 CMYK/RGB/HEX/PMS 色彩卡。
 triggers:
   - "depth gallery"
   - "webgl gallery"
+  - "纵深画廊"
 od:
   mode: prototype
   platform: web

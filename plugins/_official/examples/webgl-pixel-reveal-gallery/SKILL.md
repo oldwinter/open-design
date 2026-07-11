@@ -1,10 +1,18 @@
 ---
 name: webgl-pixel-reveal-gallery
+en_name: "Pixel Reveal Gallery"
+zh_name: "像素显影画廊"
 description: |
   A scroll-reactive masonry gallery (Three.js + GSAP) where each image develops from a pixel/grid dissolve on viewport entry, with a split-text heading and click-to-fullscreen Flip.
+en_description: |
+  A scroll-reactive masonry gallery (Three.js + GSAP) where each image develops from a pixel/grid dissolve on viewport entry, with a split-text heading and click-to-fullscreen Flip.
+zh_description: |
+  一个随滚动响应的瀑布流画廊（Three.js + GSAP）：每张图像进入视口时
+  会通过像素/网格溶解效果逐步显影，并配有拆分文字标题动画和点击全屏的 Flip 动画。
 triggers:
   - "pixel reveal gallery"
   - "webgl gallery"
+  - "像素显影画廊"
 od:
   mode: prototype
   platform: web

@@ -1,35 +1,35 @@
-# Question Strategy
+# 提问策略
 
-Use this policy when the user triggers `$chat-motion-overlay` without enough detail.
+当用户触发 `$chat-motion-overlay` 但提供的细节不足时，使用此策略。
 
-## Principle
+## 原则
 
-Ask only for decisions that materially change the result. Infer the rest.
+只询问会实质性改变结果的决策，其余内容自行推断。
 
-## Default Behavior
+## 默认行为
 
-- Infer `container=wechat` when the user says "微信聊天" or gives a WeChat-like screenshot.
-- Infer `avatarMode=preset` when no avatar preference is given.
-- For screenshot inputs, use visible avatars to help count and group participants, but use preset render avatars unless the user asks for custom or screenshot-derived avatars.
-- Infer `deviceFrame=iphone-dynamic-island` only when the user explicitly asks for a phone frame or the prior context strongly implies phone mockup output.
-- Infer `nicknameMode=hidden` for one-to-one chat clips unless the user asks to preserve identity or the content is clearly a group chat proof scene.
-- Infer `deliveryFormat=mov` when the user says they want to use the result in editing software or says "透明视频片段".
+- 当用户说“微信聊天”或提供类似微信的截图时，推断为 `container=wechat`。
+- 未给出头像偏好时，推断为 `avatarMode=preset`。
+- 对于截图输入，使用可见头像辅助判断参与者数量和消息分组；但除非用户要求使用自定义头像或从截图提取头像，否则渲染时使用预设头像。
+- 只有当用户明确要求手机边框，或先前上下文强烈暗示要输出手机样机时，才推断为 `deviceFrame=iphone-dynamic-island`。
+- 对于一对一聊天片段，推断为 `nicknameMode=hidden`；除非用户要求保留身份信息，或内容明显属于群聊举证场景。
+- 当用户表示要在剪辑软件中使用结果，或说“透明视频片段”时，推断为 `deliveryFormat=mov`。
 
-## When To Ask
+## 何时提问
 
-Ask when any of these are missing and would significantly change the output:
+当以下任一信息缺失且会显著改变输出时，进行提问：
 
-1. Container style
-2. Avatar source
-3. Device frame presence
-4. Delivery format
-5. Nickname display mode
+1. 容器样式
+2. 头像来源
+3. 是否包含设备边框
+4. 交付格式
+5. 昵称显示模式
 
-## Preferred User-Facing Questions
+## 建议使用的面向用户问题
 
-### Delivery format
+### 交付格式
 
-Ask:
+询问：
 
 - `MOV（透明背景，可直接导入剪映 / PR / FCP 叠加）`
 - `WebM（透明背景，适合网页 / 浏览器播放）`
@@ -38,57 +38,57 @@ Ask:
 - `JSON 数据（适合程序处理 / 自定义渲染）`
 - `预览图 / 预览工程（适合先确认效果）`
 
-Do not ask with internal terms such as `mov-alpha`, `json-spec`, or `hyperframe-ready`.
+不要使用 `mov-alpha`、`json-spec` 或 `hyperframe-ready` 等内部术语提问。
 
-### Container style
+### 容器样式
 
-Ask:
+询问：
 
 - `纯对话气泡`
 - `微信`
 - `Telegram`
 - `Messenger`
 
-### Avatar source
+### 头像来源
 
-Ask:
+询问：
 
 - `预设头像`
 - `上传头像`
 - `部分角色上传头像`
 
-For screenshot inputs, phrase the default clearly:
+对于截图输入，应清楚说明默认选项：
 
 - `默认用预设头像（更稳定）`
 - `我提供头像图片`
 - `尝试从截图裁头像（可能不准）`
 
-### Device frame
+### 设备边框
 
-Ask:
+询问：
 
 - `不加手机边框`
 - `iPhone 灵动岛边框`
 
-### Nickname mode
+### 昵称模式
 
-Ask:
+询问：
 
 - `不显示昵称`
 - `首次出现时显示昵称`
 - `每条消息都显示昵称`
 
-## Question Limits
+## 提问数量限制
 
-- Ask at most 3 items in one turn.
-- If more than 3 items are missing, ask for the highest-impact ones first:
-  1. delivery format
-  2. container style
-  3. avatar source
+- 每轮最多询问 3 项。
+- 如果缺失的信息超过 3 项，优先询问影响最大的项目：
+  1. 交付格式
+  2. 容器样式
+  3. 头像来源
 
-## If The User Does Not Care
+## 用户不在意具体选择时
 
-If the user responds with "随便", "默认就行", or equivalent:
+如果用户回复 "随便"、"默认就行" 或同等含义的内容：
 
-- continue with defaults
-- list the chosen defaults briefly in the result
+- 使用默认设置继续
+- 在结果中简要列出所选默认设置

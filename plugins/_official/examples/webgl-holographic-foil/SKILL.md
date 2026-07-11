@@ -1,10 +1,17 @@
 ---
 name: webgl-holographic-foil
+en_name: "Holographic Foil"
+zh_name: "全息箔片"
 description: |
   A self-contained WebGL2 hero: thin-film interference over a crushed-foil surface whose palette shifts with the viewing angle; move the cursor to tilt the film.
+en_description: |
+  A self-contained WebGL2 hero: thin-film interference over a crushed-foil surface whose palette shifts with the viewing angle; move the cursor to tilt the film.
+zh_description: |
+  一个自包含的 WebGL2 首屏视觉：薄膜干涉覆于褶皱箔片表面，色彩随视角变化；移动光标即可倾斜薄膜。
 triggers:
   - "holographic foil"
   - "webgl hero"
+  - "全息箔片"
 od:
   mode: prototype
   platform: web

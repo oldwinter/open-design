@@ -1,10 +1,17 @@
 ---
 name: webgl-halftone-drift
+en_name: "Halftone Drift"
+zh_name: "半色调漂移"
 description: |
   A self-contained WebGL2 hero: a flowing field screened through a rotated halftone dot grid into a duotone print aesthetic; move the cursor to bend the drift.
+en_description: |
+  A self-contained WebGL2 hero: a flowing field screened through a rotated halftone dot grid into a duotone print aesthetic; move the cursor to bend the drift.
+zh_description: |
+  一个自包含的 WebGL2 首屏视觉：流动场穿过旋转的半色调网点栅格，形成双色印刷质感；移动光标即可改变漂移轨迹。
 triggers:
   - "halftone drift"
   - "webgl hero"
+  - "半色调漂移"
 od:
   mode: prototype
   platform: web

@@ -1,7 +1,13 @@
 ---
 name: open-design-homepage
+en_name: "Open Design Homepage"
+zh_name: "Open Design 主页"
 title: Open Design Homepage
 description: A pixel-faithful, self-contained mirror of the live open-design.ai homepage — an interactive React Three Fiber / Next.js hero with a real-time 3D wordmark, sticker collage, variable fonts, and scroll-driven motion. First-party showcase of the visual ceiling for interactive web marketing surfaces.
+en_description: A pixel-faithful, self-contained mirror of the live open-design.ai homepage — an interactive React Three Fiber / Next.js hero with a real-time 3D wordmark, sticker collage, variable fonts, and scroll-driven motion. First-party showcase of the visual ceiling for interactive web marketing surfaces.
+zh_description: open-design.ai 线上主页的像素级忠实、自包含镜像：一个基于 React Three Fiber / Next.js 的交互式首屏，包含实时 3D 立体字、贴纸拼贴、可变字体与滚动驱动动效。这是展示交互式 Web 营销界面视觉上限的第一方示例。
+triggers:
+  - "Open Design 主页"
 license: MIT
 ---
 

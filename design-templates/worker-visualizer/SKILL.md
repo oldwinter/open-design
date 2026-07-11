@@ -1,5 +1,7 @@
 ---
 name: worker-visualizer
+en_name: "Build a Worker-Powered Real-Time Visualizer"
+zh_name: "构建 Web Worker 驱动的实时可视化"
 description: |
   A real-time data/particle/simulation visualizer whose heavy compute runs in
   a Web Worker (off the main thread), optionally sharing memory with the UI via
@@ -8,6 +10,21 @@ description: |
   "simulation", "particle system", "physics", "off-main-thread", "fractal",
   "real-time compute", or "audio/data visualizer". Open Design serves this in
   powered-preview mode so Workers and SharedArrayBuffer actually work.
+en_description: |
+  A real-time data/particle/simulation visualizer whose heavy compute runs in
+  a Web Worker (off the main thread), optionally sharing memory with the UI via
+  SharedArrayBuffer, and renders to a canvas at 60fps. Produced as a single
+  self-contained `index.html`. Use when the brief asks for a "web worker",
+  "simulation", "particle system", "physics", "off-main-thread", "fractal",
+  "real-time compute", or "audio/data visualizer". Open Design serves this in
+  powered-preview mode so Workers and SharedArrayBuffer actually work.
+zh_description: |
+  实时数据、粒子或模拟可视化器：将繁重计算放入 Web Worker（离开主线程），
+  可选通过 SharedArrayBuffer 与界面共享内存，并以 60fps 渲染到画布。
+  产出为单个自包含的 `index.html`。适用于需求中出现“Web Worker”、“模拟”、
+  “粒子系统”、“物理”、“离主线程”、“分形”、“实时计算”或
+  “音频/数据可视化器”的场景。
+  Open Design 会以 powered-preview 模式运行它，让 Worker 和 SharedArrayBuffer 真正可用。
 triggers:
   - "web worker"
   - "worker"
@@ -19,8 +36,12 @@ triggers:
   - "sharedarraybuffer"
   - "real-time compute"
   - "visualizer"
+  - "构建 Web Worker 驱动的实时可视化"
   - "多线程"
   - "粒子"
+  - "粒子模拟"
+  - "离主线程计算"
+  - "实时数据可视化"
 od:
   mode: prototype
   platform: web

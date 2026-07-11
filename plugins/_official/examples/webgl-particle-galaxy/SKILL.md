@@ -1,5 +1,7 @@
 ---
 name: webgl-particle-galaxy
+en_name: "Particle Galaxy"
+zh_name: "粒子星系"
 description: |
   A real-time particle galaxy — tens of thousands of additive-blended GPU
   points spiraling around a bright core, their orbits solved entirely in the
@@ -9,6 +11,22 @@ description: |
   points", "starfield", "GPU particles", or a swirling generative point
   system. Open Design serves this in powered-preview mode so the GPU stack
   actually runs.
+en_description: |
+  A real-time particle galaxy — tens of thousands of additive-blended GPU
+  points spiraling around a bright core, their orbits solved entirely in the
+  vertex shader (from gl_VertexID), so the whole cloud draws in one call.
+  Rendered as a single self-contained `index.html`. Use when the brief asks
+  for a "particle field", "particle galaxy", "point cloud", "instanced
+  points", "starfield", "GPU particles", or a swirling generative point
+  system. Open Design serves this in powered-preview mode so the GPU stack
+  actually runs.
+zh_description: |
+  实时粒子星系：数万个使用加法混合的 GPU 点围绕明亮核心螺旋运动，
+  轨道完全在顶点着色器中根据 `gl_VertexID` 求解，因此整片粒子云只需
+  一次 draw call 即可绘制。产出为单个自包含的 `index.html`。
+  适用于需求中出现“粒子场”、“粒子星系”、“点云”、“实例化点”、
+  “星空”、“GPU 粒子”或旋转的生成式点系统的场景。Open Design 会以
+  powered-preview 模式运行它，让完整 GPU 栈真正可用。
 triggers:
   - "particle"
   - "particles"
@@ -19,6 +37,8 @@ triggers:
   - "gpu particles"
   - "粒子"
   - "粒子星系"
+  - "点云"
+  - "GPU 粒子"
 od:
   mode: prototype
   platform: web

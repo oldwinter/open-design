@@ -310,14 +310,14 @@ od mcp install <agent>
 #         | antigravity | gemini | pi | vibe | hermes | cline | kimi
 #         | trae | opencode
 
-# Hosted equivalent for curl-based setup:
+# 使用 curl 进行托管安装的等效方式：
 curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
 ```
 
 `install.sh` 是 `od mcp install` 外的一层轻量 shell wrapper；它的作用是让托管 URL 返回 shell，而不是落到 landing-page HTML fallback，并且当你的 shell 解析到了非 Open Design 的 `od` 二进制时快速失败。
 
 > **WSL2 用户：** 如果你的 coding-agent CLI 运行在 WSL2 内，请先阅读
-> [`WSL2 setup guide`](docs/wsl-setup.md)。Linux 自带的 `/usr/bin/od` 可能遮蔽 Open Design 的 `od` 命令。
+> [`WSL2 设置指南`](docs/wsl-setup.md)。Linux 自带的 `/usr/bin/od` 可能遮蔽 Open Design 的 `od` 命令。
 
 然后在 Agent 内：
 

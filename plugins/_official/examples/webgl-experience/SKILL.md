@@ -1,5 +1,7 @@
 ---
 name: webgl-experience
+en_name: "Build a Real-Time WebGL Experience"
+zh_name: "构建实时 WebGL 视觉体验"
 description: |
   A full-screen, real-time WebGL/WebGL2 experience — animated shaders, 3D
   scenes, generative visuals, particle fields — rendered live on the GPU with
@@ -8,6 +10,20 @@ description: |
   "interactive canvas", "hero animation", or "real-time visual" experience.
   Open Design serves this in powered-preview mode so the GPU stack actually
   runs.
+en_description: |
+  A full-screen, real-time WebGL/WebGL2 experience — animated shaders, 3D
+  scenes, generative visuals, particle fields — rendered live on the GPU with
+  a typographic overlay. Produced as a single self-contained `index.html`.
+  Use when the brief asks for a "WebGL", "shader", "3D", "generative", "GPU",
+  "interactive canvas", "hero animation", or "real-time visual" experience.
+  Open Design serves this in powered-preview mode so the GPU stack actually
+  runs.
+zh_description: |
+  全屏实时 WebGL/WebGL2 视觉体验：在 GPU 上实时渲染动态着色器、3D 场景、
+  生成式视觉和粒子场，并叠加排版文字。产出为单个自包含的 `index.html`。
+  适用于需求中出现“WebGL”、“着色器”、“3D”、“生成式”、“GPU”、
+  “交互式画布”、“主视觉动画”或“实时视觉”的场景。
+  Open Design 会以 powered-preview 模式运行它，让完整 GPU 栈真正可用。
 triggers:
   - "webgl"
   - "webgl2"
@@ -18,8 +34,11 @@ triggers:
   - "raymarch"
   - "particle field"
   - "interactive canvas"
+  - "构建实时 WebGL 视觉体验"
   - "着色器"
   - "webgl 效果"
+  - "生成式视觉"
+  - "交互式画布"
 od:
   mode: prototype
   platform: web

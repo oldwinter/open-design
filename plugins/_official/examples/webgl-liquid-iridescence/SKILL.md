@@ -1,10 +1,17 @@
 ---
 name: webgl-liquid-iridescence
+en_name: "Liquid Iridescence"
+zh_name: "液态虹彩"
 description: |
   A self-contained WebGL2 hero: a living oil-on-water field brightened into iridescent caustic filaments; move the cursor to bend the flow.
+en_description: |
+  A self-contained WebGL2 hero: a living oil-on-water field brightened into iridescent caustic filaments; move the cursor to bend the flow.
+zh_description: |
+  一个自包含的 WebGL2 首屏视觉：鲜活流动的水面油膜场亮起虹彩焦散丝线；移动光标即可改变流动方向。
 triggers:
   - "liquid iridescence"
   - "webgl hero"
+  - "液态虹彩"
 od:
   mode: prototype
   platform: web

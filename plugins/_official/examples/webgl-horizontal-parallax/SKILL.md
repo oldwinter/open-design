@@ -1,10 +1,17 @@
 ---
 name: webgl-horizontal-parallax
+en_name: "Horizontal Parallax Gallery"
+zh_name: "横向视差画廊"
 description: |
   A horizontal-scroll WebGL gallery (Three.js): frames glide sideways with lerp smoothing and each image parallaxes its texture (UV shift) by its position in the viewport.
+en_description: |
+  A horizontal-scroll WebGL gallery (Three.js): frames glide sideways with lerp smoothing and each image parallaxes its texture (UV shift) by its position in the viewport.
+zh_description: |
+  一个横向滚动的 WebGL 画廊（Three.js）：各个画框通过 lerp 平滑横向滑动，每张图像的纹理都会根据其在视口中的位置产生视差（UV 偏移）。
 triggers:
   - "horizontal parallax gallery"
   - "webgl gallery"
+  - "横向视差画廊"
 od:
   mode: prototype
   platform: web

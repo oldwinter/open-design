@@ -241,7 +241,7 @@ Adapter 通过 `capabilities().nativeSkillLoading` 和私有 `skillInjectionStra
 
 ### 5.13 Plain stream artifact handoff
 
-Adapters with `streamFormat: 'plain'` do not expose structured file-write tool calls to the daemon. Their stdout is still a valid artifact handoff when the model emits Anthropic-style source blocks:
+使用 `streamFormat: 'plain'` 的 adapter 不会向 daemon 暴露结构化 file-write tool calls。当 model 输出 Anthropic 风格的 source blocks 时，它们的 stdout 仍然是有效的 artifact handoff：
 
 ```html
 <artifact identifier="landing-page" type="text/html" title="Landing page">
@@ -250,7 +250,7 @@ Adapters with `streamFormat: 'plain'` do not expose structured file-write tool c
 </artifact>
 ```
 
-At run completion, the daemon scans the captured plain stdout for `<artifact>` blocks with supported text types and writes them through the normal project artifact path:
+Run 完成时，daemon 会扫描 captured plain stdout 中采用受支持 text types 的 `<artifact>` blocks，并通过正常的 project artifact path 写入：
 
 | Artifact type | Project file |
 |---|---|
@@ -259,7 +259,7 @@ At run completion, the daemon scans the captured plain stdout for `<artifact>` b
 | `image/svg+xml` or `svg` | `<identifier>.svg` |
 | `text/markdown`, `text/x-markdown`, `markdown`, or `md` | `<identifier>.md` |
 
-The identifier is slugged before use, collisions receive `-2`, `-3`, etc., and outputs without a supported `<artifact>` block are left unchanged. This daemon-side extraction keeps headless runs and web-attached runs aligned: the project file exists even when no browser is present to parse the chat stream.
+Identifier 会在使用前 slug 化；发生 collision 时追加 `-2`、`-3` 等后缀；不含受支持 `<artifact>` block 的输出保持不变。这项 daemon-side extraction 让 headless runs 与 web-attached runs 保持一致：即使没有 browser 解析 chat stream，project file 也会存在。
 
 ## 6. Capability-driven UI
 

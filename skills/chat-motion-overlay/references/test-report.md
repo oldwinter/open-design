@@ -1,32 +1,32 @@
-# Test Report
+# 测试报告
 
-Date: 2026-07-01
+日期：2026-07-01
 
-## Scope
+## 范围
 
-Validated the new `$chat-motion-overlay` skill across:
+对新的 `$chat-motion-overlay` 技能进行了以下验证：
 
-- transcript -> spec generation
-- config validation
-- bundle preparation
-- preset avatar asset copying
-- uploaded avatar asset copying
-- generated bundle sanitization for uploaded avatar paths
-- collision-proof uploaded avatar asset names
-- group chat participant-level avatar assignment
-- bubble-only right-side alignment
-- participant side consistency validation
-- Remotion template type safety
-- representative still rendering
-- documented question strategy for incomplete requests
+- 聊天记录 → 规格生成
+- 配置校验
+- 工程包准备
+- 预设头像资源复制
+- 上传头像资源复制
+- 清除生成的工程包中的上传头像路径
+- 不会发生冲突的上传头像资源名称
+- 群聊参与者级头像分配
+- 纯气泡模式下的右侧对齐
+- 参与者所在侧一致性校验
+- Remotion 模板类型安全
+- 代表性静态帧渲染
+- 针对信息不完整请求的提问策略文档
 
-## Matrix Result
+## 矩阵结果
 
-- Total cases: 18
-- Passed: 18
-- Failed: 0
+- 用例总数：18
+- 通过：18
+- 失败：0
 
-## Covered Cases
+## 覆盖的用例
 
 1. `default_wechat_phone_preset_hidden`
 2. `plain_bubbles_no_frame_first_message`
@@ -48,84 +48,84 @@ Validated the new `$chat-motion-overlay` skill across:
 17. `invalid_force_dangerous_output_dir`
 18. `invalid_bubble_only_phone_frame`
 
-## Issues Found And Fixed
+## 已发现并修复的问题
 
-1. `chatSpec.ts` generated readonly arrays while template types expected mutable arrays.
-   - Fix: changed template `ChatSpec` types to use `ReadonlyArray`.
+1. `chatSpec.ts` 生成的是只读数组，而模板类型预期可变数组。
+   - 修复：将模板 `ChatSpec` 类型改为使用 `ReadonlyArray`。
 
-2. Config validation for `avatarMode=upload` and `avatarMode=mixed` was too loose.
-   - Fix: added explicit validation in `build_chat_overlay_spec.py`.
-   - Update: `avatarMode=upload` now requires uploaded avatar paths on participant configs.
+2. 对 `avatarMode=upload` 和 `avatarMode=mixed` 的配置校验过于宽松。
+   - 修复：在 `build_chat_overlay_spec.py` 中添加显式校验。
+   - 更新：`avatarMode=upload` 现在要求参与者配置提供上传头像路径。
 
-3. New skill needed bundled preset avatar assets available in generated Remotion bundles.
-   - Fix: added avatar library copying in `prepare_chat_overlay_bundle.py`.
+3. 新技能需要让生成的 Remotion 工程包包含可用的预设头像资源。
+   - 修复：在 `prepare_chat_overlay_bundle.py` 中添加头像库复制逻辑。
 
-4. User-facing output choices were too technical.
-   - Fix: replaced direct `output` selection with `deliveryFormat`, then mapped it internally to render targets and artifact modes.
+4. 面向用户的输出选项过于技术化。
+   - 修复：用 `deliveryFormat` 取代直接选择 `output`，再在内部将其映射到渲染目标和产物模式。
 
-5. Incomplete user requests needed a consistent clarification strategy.
-   - Fix: added a documented question policy with defaults, question limits, and user-facing wording.
+5. 信息不完整的用户请求需要一致的澄清策略。
+   - 修复：添加提问策略文档，其中包含默认值、提问数量限制和面向用户的措辞。
 
-6. Missing uploaded avatar files could silently fall back to preset avatars during bundle preparation.
-   - Fix: made `prepare_chat_overlay_bundle.py` fail fast when a configured upload path does not exist, and added bundle-stage coverage for that case.
+6. 工程包准备期间，缺失的上传头像文件可能会静默回退到预设头像。
+   - 修复：当配置的上传路径不存在时，让 `prepare_chat_overlay_bundle.py` 快速失败，并为该情况添加工程包阶段的覆盖。
 
-7. Group chats needed participant-level avatars instead of only side-level avatars.
-   - Fix: replaced side-level avatar assignment with participant-level preset and upload assignment support.
+7. 群聊需要参与者级头像，而不只是按所在侧分配的头像。
+   - 修复：将按所在侧分配头像替换为支持按参与者分配预设头像和上传头像。
 
-8. One speaker could be interpreted on both sides if the transcript conflicted.
-   - Fix: added participant side consistency validation.
+8. 如果聊天记录存在冲突，同一发言者可能会被识别为同时位于两侧。
+   - 修复：添加参与者所在侧一致性校验。
 
-9. Distinct participant names could normalize to the same slug and overwrite uploaded avatar assets.
-   - Fix: generated stable unique participant ids and added a collision test with two uploaded avatars.
+9. 不同参与者的姓名可能会标准化为相同的 slug，并覆盖上传头像资源。
+   - 修复：生成稳定且唯一的参与者 ID，并添加包含两个上传头像的冲突测试。
 
-10. Bubble-only overlays needed explicit right-side row alignment.
-    - Fix: split row alignment from avatar/bubble ordering, and added a style assertion for the plain bubble case.
+10. 纯气泡叠加层需要明确的右侧行对齐。
+    - 修复：将行对齐与头像/气泡排序分离，并为纯气泡用例添加样式断言。
 
-11. Transcript-provided avatar keys that are not in the preset library could silently fall back to a default avatar.
-    - Fix: validate transcript avatar hints against `PRESET_KEYS` before storing the participant.
+11. 聊天记录提供但不在预设库中的头像键可能会静默回退到默认头像。
+    - 修复：存储参与者前，根据 `PRESET_KEYS` 校验聊天记录中的头像提示。
 
-12. `avatarMode=preset` configs with a participant `uploadPath` could render uploaded files instead of preset avatars.
-    - Fix: reject `uploadPath` when `avatarMode` is `preset`, only carry upload paths for `upload` and `mixed` modes.
+12. 包含参与者 `uploadPath` 的 `avatarMode=preset` 配置可能会渲染上传文件，而不是预设头像。
+    - 修复：当 `avatarMode` 为 `preset` 时拒绝 `uploadPath`，仅在 `upload` 和 `mixed` 模式下传递上传路径。
 
-13. Transcript avatar hints took precedence over explicit participant config presets, so config could not override transcript-derived or OCR-derived hints.
-    - Fix: changed avatar selection order to config-first (`configured.get("preset") or message["avatar"] or auto...`), consistent with `references/input-format.md`.
+13. 聊天记录头像提示优先于显式的参与者配置预设，因此配置无法覆盖从聊天记录或 OCR 得到的提示。
+    - 修复：将头像选择顺序改为配置优先（`configured.get("preset") or message["avatar"] or auto...`），与 `references/input-format.md` 保持一致。
 
-14. `--force` could recursively delete arbitrary existing directories when `--output-dir` was mistyped.
-    - Fix: reject dangerous targets up front, and only allow `--force` overwrites for previously generated bundle directories marked with `.chat-motion-overlay-bundle`.
+14. 当 `--output-dir` 输入错误时，`--force` 可能会递归删除任意现有目录。
+    - 修复：预先拒绝危险目标，并且只允许 `--force` 覆盖带有 `.chat-motion-overlay-bundle` 标记、先前生成的工程包目录。
 
-15. A failed uploaded-avatar copy could leave a partial bundle behind with `src/chatSpec.ts` still containing local `uploadPath` values.
-    - Fix: validate upload sources before copying, delay `chatSpec.ts` writing until sanitization succeeds, and remove the generated bundle if preparation fails mid-run.
+15. 上传头像复制失败后，可能会留下不完整的工程包，其中 `src/chatSpec.ts` 仍包含本地 `uploadPath` 值。
+    - 修复：复制前校验上传源，将 `chatSpec.ts` 的写入推迟到清理成功后，并在准备过程中途失败时移除生成的工程包。
 
-16. The documented MOV/WebM export commands and shipped package scripts omitted `src/index.ts`, so Remotion would treat the composition id as the entry file.
-    - Fix: update both package scripts and `references/output-modes.md` to use `remotion render src/index.ts ChatMotionOverlay ...`, and keep that path checked in the matrix.
+16. 文档中的 MOV/WebM 导出命令和随附的软件包脚本遗漏了 `src/index.ts`，因此 Remotion 会将合成项 ID 视为入口文件。
+    - 修复：更新软件包脚本和 `references/output-modes.md`，使二者都使用 `remotion render src/index.ts ChatMotionOverlay ...`，并在矩阵中持续检查该路径。
 
-17. `container=none` could still be combined with `deviceFrame=iphone-dynamic-island`, which let a 1080x1920 bubble-only scene render into the smaller phone viewport and clip right-side content.
-    - Fix: reject that unsupported combination during config validation, and document it in the config schema, visual rules, and matrix.
+17. `container=none` 仍可与 `deviceFrame=iphone-dynamic-island` 组合，导致 1080x1920 的纯气泡场景被渲染到更小的手机视口中，并裁切右侧内容。
+    - 修复：在配置校验期间拒绝这一不受支持的组合，并在配置结构、视觉规则和矩阵中记录该限制。
 
-18. Bubble wrapping logic introduced `useMemo` calls after a frame-based early return, which could change hook order when playback crossed a message `appearAt` frame.
-    - Fix: replace those `useMemo` calls with plain local calculations, and extend render coverage to include frames on both sides of the first message boundary.
+18. 气泡换行逻辑在基于帧的提前返回之后引入了 `useMemo` 调用，播放跨越消息的 `appearAt` 帧时可能会改变 Hook 调用顺序。
+    - 修复：用普通的局部计算替换这些 `useMemo` 调用，并扩展渲染覆盖范围，使其包含第一条消息边界两侧的帧。
 
-## Verification Notes
+## 验证说明
 
-- Representative bundles were rendered to still images successfully.
-- Invalid config cases failed with the expected validation errors.
-- Invalid uploaded-avatar file paths failed during bundle preparation with a clear error.
-- Generated `chatSpec.ts` bundles kept only participant `uploadAsset` entries and did not leak local `uploadPath` values.
-- Uploaded avatar assets stayed unique when participant display names slugified to the same base id.
-- Group chat participants resolved to distinct participant avatars instead of sharing side-level avatars.
-- Bubble-only transparent overlays explicitly align right-side rows to the right edge.
-- Side conflicts for a single participant failed with a clear validation error.
-- Bundle type checking passed with `tsc --noEmit`.
-- Config participant presets correctly override transcript avatar hints.
-- Transcript avatar hints that are not valid preset keys fail with a clear validation error.
-- `avatarMode=preset` configs that include `uploadPath` fail with a clear validation error.
-- Dangerous `--force` output targets are rejected before any recursive deletion occurs.
-- Failed uploaded-avatar copies do not leave a generated `chatSpec.ts` containing local upload paths.
-- Shipped Remotion render scripts keep `src/index.ts` before the composition id.
-- `container=none + deviceFrame=iphone-dynamic-island` fails with a clear validation error before any bundle or render step.
-- Representative render coverage now crosses a message `appearAt` frame boundary instead of checking only a later still.
+- 具有代表性的工程包已成功渲染为静态图像。
+- 无效配置用例因预期的校验错误而失败。
+- 无效的上传头像文件路径在工程包准备期间失败，并给出清晰的错误。
+- 生成的工程包中，`chatSpec.ts` 只保留参与者的 `uploadAsset` 条目，不会泄露本地 `uploadPath` 值。
+- 当参与者显示名称转换为相同的基础 ID 时，上传头像资源仍保持唯一。
+- 群聊参与者会解析为各自不同的参与者头像，而不是共享按所在侧分配的头像。
+- 纯气泡透明叠加层会明确将右侧行与右边缘对齐。
+- 同一参与者的所在侧冲突会因清晰的校验错误而失败。
+- 工程包类型检查已通过 `tsc --noEmit`。
+- 配置中的参与者预设会正确覆盖聊天记录头像提示。
+- 不是有效预设键的聊天记录头像提示会因清晰的校验错误而失败。
+- 包含 `uploadPath` 的 `avatarMode=preset` 配置会因清晰的校验错误而失败。
+- 危险的 `--force` 输出目标会在发生任何递归删除前被拒绝。
+- 上传头像复制失败后，不会留下包含本地上传路径的已生成 `chatSpec.ts`。
+- 随附的 Remotion 渲染脚本会将 `src/index.ts` 保持在合成项 ID 之前。
+- `container=none + deviceFrame=iphone-dynamic-island` 会在任何工程包准备或渲染步骤前因清晰的校验错误而失败。
+- 代表性渲染覆盖现在会跨越消息的 `appearAt` 帧边界，而不只是检查稍后的静态帧。
 
-## References
+## 参考
 
-- Test matrix: `references/test-matrix.md`
-- Test runner: `scripts/run_test_matrix.py`
+- 测试矩阵：`references/test-matrix.md`
+- 测试运行器：`scripts/run_test_matrix.py`

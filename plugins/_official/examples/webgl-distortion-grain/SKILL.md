@@ -1,10 +1,17 @@
 ---
 name: webgl-distortion-grain
+en_name: "Distortion & Grain"
+zh_name: "扭曲与颗粒"
 description: |
   A vertical gallery (Three.js) where planes bend with scroll velocity, ripple under the cursor via simplex noise, and carry a film grain.
+en_description: |
+  A vertical gallery (Three.js) where planes bend with scroll velocity, ripple under the cursor via simplex noise, and carry a film grain.
+zh_description: |
+  一个 Three.js 纵向画廊：平面随滚动速度弯曲，利用 simplex noise 在光标下泛起涟漪，并叠加胶片颗粒质感。
 triggers:
   - "distortion & grain"
   - "webgl gallery"
+  - "扭曲与颗粒"
 od:
   mode: prototype
   platform: web

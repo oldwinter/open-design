@@ -1,10 +1,17 @@
 ---
 name: webgl-caustic-pool
+en_name: "Caustic Pool"
+zh_name: "焦散水池"
 description: |
   A self-contained WebGL2 hero: animated water caustics woven from domain-warped ripples; click the water to drop a ripple. No meshes, no textures.
+en_description: |
+  A self-contained WebGL2 hero: animated water caustics woven from domain-warped ripples; click the water to drop a ripple. No meshes, no textures.
+zh_description: |
+  一个自包含的 WebGL2 首屏视觉：经域扭曲的涟漪交织成动态水面焦散；点击水面即可激起涟漪。无需网格或纹理。
 triggers:
   - "caustic pool"
   - "webgl hero"
+  - "焦散水池"
 od:
   mode: prototype
   platform: web

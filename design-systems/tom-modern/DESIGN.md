@@ -1,82 +1,82 @@
 # Tom Modern Design
 
 > Category: Starter
-> Editorial-technical design system. Neutral canvas, single vermillion accent, sharp corners, Geist typography, hard shadows, structured composition.
+> 编辑式技术设计系统。中性画布、单一朱红强调色、锐利直角、Geist 字体、硬偏移阴影、结构化构图。
 
-## 1. Visual Theme & Atmosphere
+## 1. Visual Theme & Atmosphere / 视觉主题与氛围
 
-Tom Modern Design is an editorial-technical design family: structured, sharp, restrained, premium, intentional, anti-generic. It reads like a deliberate design — not a mass-generated startup template.
+Tom Modern Design 是一种编辑式技术设计风格：结构严谨、锐利、克制、高级、意图明确且拒绝泛化。它呈现为经过深思熟虑的设计，而不是批量生成的初创公司模板。
 
-The system sits on a near-white neutral canvas (`#fafafa`) with deep ink text (`#27272a`). One primary accent — vermillion (`#ff5a00`) — carries all interactive emphasis. Typography is Geist Sans for body and Geist Mono for labels, metadata, and technical notes. Every corner is sharp (0px radius). Shadows are hard-offset, never soft.
+系统以近白中性画布（`#fafafa`）为基础，搭配深墨色文本（`#27272a`）。唯一的主要强调色朱红（`#ff5a00`）承载所有交互强调。正文使用 Geist Sans，标签、元数据和技术说明使用 Geist Mono。所有转角都保持锐利（0px 圆角）。阴影采用硬偏移，绝不柔化。
 
-Atmosphere comes from a subtle 30px grid overlay on the page background, structural lines, and the contrast between quiet white zones and dense information bands. The design avoids decorative noise — no blobs, no gradients, no glow effects.
+页面背景上的细腻 30px 网格、结构线条，以及安静白色区域与密集信息带之间的对比共同塑造氛围。设计避免装饰性噪声：不使用有机团块、不使用渐变，也不使用发光效果。
 
-**Key signals:**
-- Neutral near-white canvas with strong ink contrast
-- Single vermillion accent reserved for CTAs, links, and highlights
-- Sharp 0px corners throughout — rectangular silhouette is the brand
-- Hard offset shadows (`8px 8px 0`) for elevation
-- Geist Sans/Mono typography with strong hierarchy
-- Editorial split layouts with asymmetric composition
-- Uppercase compact labels for eyebrows and metadata
+**关键信号：**
+- 高对比深墨色文本搭配中性近白画布
+- 单一朱红强调色，仅用于 CTA、链接和高亮
+- 全局采用锐利的 0px 转角，矩形轮廓即品牌特征
+- 使用硬偏移阴影（`8px 8px 0`）表现层级
+- Geist Sans/Mono 字体搭配清晰层级
+- 采用非对称构图的编辑式分栏布局
+- 眉题和元数据使用大写紧凑标签
 
-**Anti-patterns to avoid:**
-- Generic centered startup heroes
-- Purple gradients by default
-- Rounded cards and buttons
-- Beige or cream backgrounds
-- Blob-based decorative elements
-- Repetitive identical card grids
+**应避免的反模式：**
+- 泛化的居中式初创公司主视觉
+- 默认使用紫色渐变
+- 圆角卡片和按钮
+- 米色或奶油色背景
+- 有机团块式装饰元素
+- 重复且完全相同的卡片网格
 
-## 2. Color Palette & Roles
+## 2. Color Palette & Roles / 色彩与角色
 
-### Primary
+### 主要色
 
-| Token | Hex | Role |
+| Token | 十六进制值 | 角色 |
 |---|---|---|
-| `--accent` | `#ff5a00` | Primary accent — CTAs, links, interactive highlights, accent words |
+| `--accent` | `#ff5a00` | 主要强调色：CTA、链接、交互高亮、强调词 |
 
-### Surfaces
+### 表面
 
-| Token | Hex | Role |
+| Token | 十六进制值 | 角色 |
 |---|---|---|
-| `--bg` | `#fafafa` | Page background — neutral near-white, never warm |
-| `--surface` | `#ffffff` | Card and panel surfaces |
-| `--surface-warm` | `var(--surface)` | Alternate surface for section rhythm (aliases to surface) |
+| `--bg` | `#fafafa` | 页面背景：中性近白色，绝不偏暖 |
+| `--surface` | `#ffffff` | 卡片和面板表面 |
+| `--surface-warm` | `var(--surface)` | 用于章节节奏的替代表面（作为表面别名） |
 
-### Text
+### 文本
 
-| Token | Hex | Role |
+| Token | 十六进制值 | 角色 |
 |---|---|---|
-| `--fg` | `#27272a` | Primary text — headlines, body, buttons |
-| `--fg-2` | `#52525b` | Secondary text — descriptions, lead paragraphs |
-| `--muted` | `#71717a` | Muted text — captions, labels, metadata |
+| `--fg` | `#27272a` | 主要文本：标题、正文、按钮 |
+| `--fg-2` | `#52525b` | 次要文本：描述、导语段落 |
+| `--muted` | `#71717a` | 弱化文本：说明文字、标签、元数据 |
 
-### Borders
+### 边框
 
-| Token | Hex | Role |
+| Token | 十六进制值 | 角色 |
 |---|---|---|
-| `--border` | `#969696` | Primary borders — card outlines, structural lines |
-| `--border-soft` | `#d4d4d8` | Muted borders — subtle separators |
+| `--border` | `#969696` | 主要边框：卡片轮廓、结构线 |
+| `--border-soft` | `#d4d4d8` | 弱化边框：细微分隔线 |
 
-### Shadows (brand-specific)
+### 阴影（品牌专属）
 
-| Token | Value | Role |
+| Token | 值 | 角色 |
 |---|---|---|
-| `--tm-shadow-hard` | `8px 8px 0 rgba(150,150,150,0.12)` | Hard offset shadow — hover states, emphasis |
-| `--tm-shadow-soft` | `4px 4px 0 rgba(150,150,150,0.1)` | Soft offset shadow — default card state |
+| `--tm-shadow-hard` | `8px 8px 0 rgba(150,150,150,0.12)` | 硬偏移阴影：悬停状态、强调 |
+| `--tm-shadow-soft` | `4px 4px 0 rgba(150,150,150,0.1)` | 软偏移阴影：默认卡片状态 |
 
-### Code Window (brand-specific)
+### 代码窗口（品牌专属）
 
-| Token | Hex | Role |
+| Token | 十六进制值 | 角色 |
 |---|---|---|
-| `--tm-code-bg` | `#111517` | Code window background |
-| `--tm-code-panel` | `#151a1d` | Code window header |
-| `--tm-code-text` | `#d8dee9` | Code text |
+| `--tm-code-bg` | `#111517` | 代码窗口背景 |
+| `--tm-code-panel` | `#151a1d` | 代码窗口标题栏 |
+| `--tm-code-text` | `#d8dee9` | 代码文本 |
 
-### Background Pattern
+### 背景图案
 
-The page background uses a 30px grid:
+页面背景使用 30px 网格：
 ```css
 background-image:
     linear-gradient(rgba(150, 150, 150, 0.04) 1px, transparent 1px),
@@ -84,224 +84,222 @@ background-image:
 background-size: 30px 30px;
 ```
 
-## 3. Typography Rules
+## 3. Typography Rules / 字体规则
 
-### Font Families
+### 字体家族
 
-- **Primary:** Geist Sans — body, headlines, buttons, navigation
-- **Mono:** Geist Mono — labels, metadata, code, technical notes
+- **主要字体：** Geist Sans：正文、标题、按钮、导航
+- **等宽字体：** Geist Mono：标签、元数据、代码、技术说明
 
-### Hierarchy
+### 层级
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
+| Token | 字号 | 字重 | 行高 | 字距 | 用途 |
 |---|---|---|---|---|---|
-| Display | `clamp(2.3rem, 5vw, 4.8rem)` | 700 | 0.96 | -0.04em | Hero headlines |
-| Section | `clamp(21px, 2vw, 25px)` | 700 | 1.15 | -0.03em | Section titles |
-| Card | 18px | 700 | 1.38 | -0.03em | Card titles |
-| Body | 14px | 400 | 1.6 | 0 | Body text |
-| Caption | 12px | 400 | 1.4 | 0 | Captions, fine print |
-| Eyebrow | 12px | 700 | 1 | 0.14em | Uppercase labels |
-| Button | 13px | 700 | 1 | 0.08em | Button labels |
-| Mono | 12px | 700 | 1 | 0.14em | Technical labels |
+| 展示 | `clamp(2.3rem, 5vw, 4.8rem)` | 700 | 0.96 | -0.04em | 主视觉标题 |
+| 章节 | `clamp(21px, 2vw, 25px)` | 700 | 1.15 | -0.03em | 章节标题 |
+| 卡片 | 18px | 700 | 1.38 | -0.03em | 卡片标题 |
+| 正文 | 14px | 400 | 1.6 | 0 | 正文文本 |
+| 说明文字 | 12px | 400 | 1.4 | 0 | 说明文字、细则 |
+| 眉题 | 12px | 700 | 1 | 0.14em | 大写标签 |
+| 按钮 | 13px | 700 | 1 | 0.08em | 按钮标签 |
+| 等宽 | 12px | 700 | 1 | 0.14em | 技术标签 |
 
-### Principles
+### 原则
 
-- **Geist Sans** runs across every surface — display, body, UI, buttons
-- **Geist Mono** is reserved for labels, metadata, code, and technical microcopy
-- Display headlines use weight 700 with tight line-height (0.96–1.15)
-- Body text uses weight 400 with generous line-height (1.6)
-- Uppercase labels use 0.14em letter-spacing for the "machined" feel
-- One accent word per headline: `<span class="title-highlight">word</span>`
+- **Geist Sans** 贯穿所有表面：展示文本、正文、UI、按钮
+- **Geist Mono** 仅用于标签、元数据、代码和技术微文案
+- 展示标题使用 700 字重并搭配紧凑行高（0.96–1.15）
+- 正文使用 400 字重并搭配宽松行高（1.6）
+- 大写标签使用 0.14em 字距，营造“机械加工”质感
+- 每个标题只使用一个强调词：`<span class="title-highlight">word</span>`
 
-### Font Substitutes
+### 字体替代方案
 
-If Geist is unavailable:
-- **Inter** at weights 400/500/600/700 — slightly narrower; bump font-size by ~3%
-- **Manrope** at weights 400/500/600/700 — closer proportion, gentler curves
-- **IBM Plex Sans** at weights 400/500/600/700 — wider, more mechanical feel
+如果 Geist 不可用：
+- **Inter**，字重 400/500/600/700：略窄；字号增加约 3%
+- **Manrope**，字重 400/500/600/700：比例更接近，曲线更柔和
+- **IBM Plex Sans**，字重 400/500/600/700：更宽，机械感更强
 
-## 4. Component Stylings
+## 4. Component Stylings / 组件样式
 
-### Buttons
+### 按钮
 
-- **Primary:** Dark fill (`--fg`), white text, 0px radius, hard shadow on hover
-- **Secondary:** Transparent, dark text, 1px border, white fill on hover
-- **Block:** Full-width variant of any button
+- **主要按钮：** 深色填充（`--fg`）、白色文本、0px 圆角，悬停时显示硬阴影
+- **次要按钮：** 透明背景、深色文本、1px 边框，悬停时使用白色填充
+- **块级按钮：** 任意按钮的全宽变体
 
-### Cards
+### 卡片
 
-- **Frame:** White surface, 1px border, soft shadow
-- **Panel:** White surface, 1px border, hard shadow, accent top-border (4px)
-- **Feature card:** 2-column grid with optional full-width variant
-- **Feature 3-card:** 3-column grid with icon headers
+- **框架：** 白色表面、1px 边框、软阴影
+- **面板：** 白色表面、1px 边框、硬阴影、强调色顶部边框（4px）
+- **功能卡片：** 2 列网格，可选全宽变体
+- **三列功能卡片：** 带图标标题的 3 列网格
 
-### Navigation
+### 导航
 
-- **Header:** Sticky, blurred background (`rgba(250,250,250,0.88)`), 1px bottom border
-- **Nav links:** Geist Sans, secondary text color
-- **CTA button:** Dark fill, same as primary button
+- **页眉：** 吸顶、模糊背景（`rgba(250,250,250,0.88)`）、1px 底部边框
+- **导航链接：** Geist Sans、次要文本色
+- **CTA 按钮：** 深色填充，与主要按钮一致
 
-### Forms
+### 表单
 
-- **Input:** White background, 1px border, 44px height, accent border on focus
-- **Textarea:** Same as input, resizable
-- **Label:** Mono font, uppercase, muted color
+- **输入框：** 白色背景、1px 边框、44px 高度，聚焦时使用强调色边框
+- **文本区域：** 与输入框一致，可调整大小
+- **标签：** 等宽字体、大写、弱化色
 
-### Premium Components
+### 高级组件
 
-- **Token Card:** Dark gradient (`#14192B` → `#1B2A3D` → `#11393A`), holographic sheen animation, mono typography, perforation line with circular cutouts
-- **Code Window:** Dark background (`#111517`), macOS-style traffic light dots, atmospheric gradient overlay, 7 syntax highlighting tokens
+- **Token 卡片：** 深色渐变（`#14192B` → `#1B2A3D` → `#11393A`）、全息光泽动画、等宽字体、带圆形切口的打孔线
+- **代码窗口：** 深色背景（`#111517`）、macOS 风格交通灯圆点、氛围渐变叠层、7 个语法高亮 token
 
-### Tabs
+### 标签页
 
-- **Tab nav:** Horizontal, mono font, uppercase, accent bottom-border on active
-- **Tab panel:** Hidden by default, shown with `.is-active` class
+- **标签页导航：** 水平排列、等宽字体、大写，激活时显示强调色底部边框
+- **标签页面板：** 默认隐藏，添加 `.is-active` 类后显示
 
-### FAQ
+### 常见问题
 
-- **Item:** Frame with expandable answer
-- **Question:** Full-width button, plus/minus icon
-- **Answer:** Hidden by default, shown when `.is-open`
+- **条目：** 带可展开答案的框架
+- **问题：** 全宽按钮、加号/减号图标
+- **答案：** 默认隐藏，添加 `.is-open` 后显示
 
-## 5. Layout Principles
+## 5. Layout Principles / 布局原则
 
-### Container
+### 容器
 
-- Max width: 1240px
-- Padding: `min(100% - 40px, 1240px)`
-- Centered with `margin: 0 auto`
+- 最大宽度：1240px
+- 内边距：`min(100% - 40px, 1240px)`
+- 使用 `margin: 0 auto` 居中
 
-### Section
+### 章节
 
-- Vertical padding: 96px
-- Alternate sections use `rgba(255,255,255,0.72)` background with 1px borders
+- 垂直内边距：96px
+- 交替章节使用 `rgba(255,255,255,0.72)` 背景和 1px 边框
 
-### Grid System
+### 网格系统
 
-- **Hero:** 2-column split (0.92fr / 1.08fr) with 42px gap
-- **Feature grid:** 2-column with optional full-width cards
-- **Feature 3-col:** 3-column with icon headers
-- **Updates/Pain:** 3-column grid
-- **Pricing/Contact:** 2-column split
-- **Footer:** 3-column (2fr / 1fr / 1fr)
+- **主视觉：** 2 列分栏（0.92fr / 1.08fr），间距 42px
+- **功能网格：** 2 列，可选全宽卡片
+- **三列功能区：** 带图标标题的 3 列布局
+- **更新/痛点：** 3 列网格
+- **定价/联系：** 2 列分栏
+- **页脚：** 3 列（2fr / 1fr / 1fr）
 
-### Section Rhythm
+### 章节节奏
 
-Sections alternate between:
-1. White background (`--bg`)
-2. Alternate surface (`rgba(255,255,255,0.72)` with borders)
+章节在以下两种样式之间交替：
+1. 白色背景（`--bg`）
+2. 替代表面（带边框的 `rgba(255,255,255,0.72)`）
 
-This creates visual rhythm without color changes.
+这能在不改变颜色的情况下形成视觉节奏。
 
-## 6. Depth & Elevation
+## 6. Depth & Elevation / 深度与层级
 
-| Level | Treatment | Use |
+| 层级 | 处理方式 | 用途 |
 |---|---|---|
-| 0 — Flat | No shadow, no border | Body text, section backgrounds |
-| 1 — Border | 1px `--border` border | Cards, panels, inputs |
-| 2 — Soft shadow | `4px 4px 0 rgba(150,150,150,0.1)` | Default card state |
-| 3 — Hard shadow | `8px 8px 0 rgba(150,150,150,0.12)` | Hover states, emphasis |
-| 4 — Code shadow | `0 28px 90px rgba(22,22,22,0.14)` | Code window only |
+| 0 — 平面 | 无阴影、无边框 | 正文文本、章节背景 |
+| 1 — 边框 | 1px `--border` 边框 | 卡片、面板、输入框 |
+| 2 — 软阴影 | `4px 4px 0 rgba(150,150,150,0.1)` | 默认卡片状态 |
+| 3 — 硬阴影 | `8px 8px 0 rgba(150,150,150,0.12)` | 悬停状态、强调 |
+| 4 — 代码阴影 | `0 28px 90px rgba(22,22,22,0.14)` | 仅用于代码窗口 |
 
-The system uses **color contrast** (surface vs. background) rather than shadow depth for hierarchy. Shadows are reserved for interactive feedback and premium components.
+系统依靠**色彩对比**（表面与背景的对比）而非阴影深度建立层级。阴影仅用于交互反馈和高级组件。
 
-## 7. Do's and Don'ts
+## 7. Do's and Don'ts / 应做与禁忌
 
-### Do
+### 应做
 
-- Use `{colors.primary}` for CTAs, links, and interactive highlights — keep it reserved
-- Set display headlines in Geist Sans at weight 700 with tight line-height
-- Keep body copy at weight 400 — the contrast between heavy display and light body is the typographic signature
-- Use `{rounded.none}` (0px) by default — the sharp rectangular silhouette IS the brand
-- Align spacing to `{spacing.section}` (96px) between major bands
-- Frame product photography inside `{rounded.xl}` containers
-- Set button labels in uppercase with 0.08em letter-spacing
-- Use hard shadows for hover effects, soft shadows for default state
-- Use `{typography.button}` for all button labels
+- 将 `{colors.primary}` 用于 CTA、链接和交互高亮，并保持克制
+- 展示标题使用 Geist Sans、700 字重和紧凑行高
+- 正文保持 400 字重：粗重展示文本与轻量正文的对比是字体标志
+- 默认使用 `{rounded.none}`（0px）：锐利的矩形轮廓就是品牌
+- 主要内容带之间的间距与 `{spacing.section}`（96px）对齐
+- 将产品摄影放在 `{rounded.xl}` 容器内
+- 按钮标签使用大写和 0.08em 字距
+- 悬停效果使用硬阴影，默认状态使用软阴影
+- 所有按钮标签使用 `{typography.button}`
 
-### Don't
+### 禁忌
 
-- Don't introduce accent colors outside the detected palette — the system is closed by design
-- Don't bold body type — body stays at weight 400
-- Don't add soft drop-shadows or atmospheric gradients — the brand uses hard borders and flat fills
-- Don't round buttons above `{rounded.sm}` — a soft button reads as a different brand
-- Don't use beige or cream backgrounds — the canvas must be neutral (`#fafafa`)
-- Don't use decorative motion everywhere — animation must be purposeful
-- Don't drop ink text opacity to create hierarchy — switch surface or shift to `{colors.muted}`
-- Don't use multiple accent words in one heading — one per section maximum
+- 不要引入检测到的调色板之外的强调色：这个系统有意保持封闭
+- 不要加粗正文：正文保持 400 字重
+- 不要添加柔和投影或氛围渐变：品牌使用硬边框和平面填充
+- 按钮圆角不要超过 `{rounded.sm}`：柔软的按钮会呈现为另一个品牌
+- 不要使用米色或奶油色背景：画布必须保持中性（`#fafafa`）
+- 不要到处使用装饰性动效：动画必须有明确目的
+- 不要通过降低深墨色文本的不透明度建立层级：切换表面或改用 `{colors.muted}`
+- 一个标题中不要使用多个强调词：每个章节最多一个
 
-## 8. Responsive Behavior
+## 8. Responsive Behavior / 响应式行为
 
-### Breakpoints
+### 断点
 
-| Name | Width | Key Changes |
+| 名称 | 宽度 | 主要变化 |
 |---|---|---|
-| Mobile | < 560px | Single column, compact padding (24px), smaller type |
-| Tablet | 560–980px | 2-column grids, stacked hero |
-| Desktop | > 980px | Full layout, 1240px max-width |
+| Mobile | < 560px | 单列、紧凑内边距（24px）、较小字号 |
+| Tablet | 560–980px | 2 列网格、主视觉堆叠 |
+| Desktop | > 980px | 完整布局、最大宽度 1240px |
 
-### Touch Targets
+### 触摸目标
 
-- Minimum 44×44px for all interactive elements
-- Buttons: 44px height + 24px horizontal padding
-- Nav links: extend tap area to full row height
+- 所有交互元素的最小尺寸为 44×44px
+- 按钮：44px 高度 + 24px 水平内边距
+- 导航链接：将点击区域扩展到整行高度
 
-### Collapsing Strategy
+### 折叠策略
 
-- **Hero:** Stacks to single column below 980px
-- **Feature grids:** 2-col → 1-col below 980px
-- **3-col grids:** 3-col → 2-col → 1-col
-- **Footer:** 3-col → 2-col → 1-col
-- **Navigation:** Hamburger menu on mobile (not included in CSS — implement per project)
+- **主视觉：** 低于 980px 时堆叠为单列
+- **功能网格：** 低于 980px 时从 2 列变为 1 列
+- **三列网格：** 3 列 → 2 列 → 1 列
+- **页脚：** 3 列 → 2 列 → 1 列
+- **导航：** 移动端使用汉堡菜单（CSS 中未包含，请按项目实现）
 
-### Image Behavior
+### 图像行为
 
-- Hero photography fills full width
-- Product thumbnails maintain aspect ratio
-- Lifestyle photography uses horizontal cropping on mobile
+- 主视觉摄影占满全部宽度
+- 产品缩略图保持宽高比
+- 生活方式摄影在移动端使用横向裁剪
 
-## 9. Agent Prompt Guide
+## 9. Agent Prompt Guide / 智能体提示指南
 
-### Quick Color Reference
-
-```
-Background:  #fafafa (neutral near-white)
-Surface:     #ffffff (pure white)
-Text:        #27272a (near-black)
-Secondary:   #52525b
-Muted:       #71717a
-Accent:      #ff5a00 (vermillion)
-Border:      #969696
-Border-muted: #d4d4d8
-```
-
-### Ready-to-Use Prompt
+### 快速色彩参考
 
 ```
-Create a landing page in Tom Modern Design style:
-
-- Background: #fafafa with 30px grid overlay
-- Typography: Geist Sans for body, Geist Mono for labels
-- Colors: #27272a text, #ff5a00 accent, #ffffff surfaces
-- Corners: 0px (sharp, never rounded)
-- Shadows: 8px 8px 0 rgba(150,150,150,0.12) on hover
-- Layout: split hero, 2-col feature grid, structured sections
-- Buttons: uppercase, 0.08em letter-spacing, dark fill primary
-- Cards: white surface, 1px border, soft shadow
-- Sections: alternate between white and rgba(255,255,255,0.72)
-- One accent word per headline using <span class="title-highlight">
-- Eyebrows: uppercase mono labels above section titles
+背景：      #fafafa（中性近白色）
+表面：      #ffffff（纯白色）
+文本：      #27272a（近黑色）
+次要文本：  #52525b
+弱化文本：  #71717a
+强调色：    #ff5a00（朱红）
+边框：      #969696
+弱化边框：  #d4d4d8
 ```
 
-### Required Font Loading
+### 可直接使用的提示词
 
-When generating HTML with Tom Modern, load Geist explicitly. `tokens.css`
-declares the `Geist Sans` and `Geist Mono` family names, but generated
-artifacts do not automatically inherit the `@font-face` block from
-`components.html`.
+```
+使用 Tom Modern Design 风格创建一个落地页：
 
-Use this loader before any generated CSS that references `--font-display`,
-`--font-body`, or `--font-mono`:
+- 背景：#fafafa，叠加 30px 网格
+- 字体：正文使用 Geist Sans，标签使用 Geist Mono
+- 颜色：文本使用 #27272a，强调色使用 #ff5a00，表面使用 #ffffff
+- 转角：0px（锐利，绝不使用圆角）
+- 阴影：悬停时使用 8px 8px 0 rgba(150,150,150,0.12)
+- 布局：分栏主视觉、2 列功能网格、结构化章节
+- 按钮：大写、0.08em 字距、主要按钮使用深色填充
+- 卡片：白色表面、1px 边框、软阴影
+- 章节：在白色与 rgba(255,255,255,0.72) 之间交替
+- 每个标题使用一个强调词，并用 <span class="title-highlight"> 包裹
+- 眉题：章节标题上方使用大写等宽标签
+```
+
+### 必需的字体加载
+
+使用 Tom Modern 生成 HTML 时，必须显式加载 Geist。`tokens.css`
+声明了 `Geist Sans` 和 `Geist Mono` 字体家族名称，但生成的
+artifact 不会自动继承 `@font-face` block；该 block 位于 `components.html` 中。
+
+在任何引用 `--font-display`、`--font-body` 或 `--font-mono` 的生成 CSS 之前使用以下加载器：
 
 ```css
 @font-face {
@@ -319,10 +317,10 @@ Use this loader before any generated CSS that references `--font-display`,
 }
 ```
 
-If the host project can self-serve fonts, prefer bundling equivalent local
-woff2 files under `fonts/` while keeping the same family names.
+如果宿主项目能够自行提供字体，优先将等效的本地
+woff2 文件打包到 `fonts/` 下，同时保持字体家族名称不变。
 
-### Component Classes
+### 组件类
 
 ```css
 /* Layout */
