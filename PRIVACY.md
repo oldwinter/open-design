@@ -6,9 +6,9 @@ Open Design 是 **local-first**。你的项目、生成文件和 BYOK API keys �
 
 ## Telemetry 是 opt-out
 
-Usage telemetry 默认**开启**。首次运行时，应用会显示隐私披露横幅，让你在执行其他操作前了解会收集哪些内容。它是带有单个 **I get it** 确认按钮的知情披露提示，而不是 opt-in gate；由于 telemetry 已启用，应用可能会从首次启动开始发送 events（例如 onboarding 和 UI-interaction events）。
+Usage telemetry 默认**开启**。首次运行时，应用会显示隐私披露横幅，让你在执行其他操作前了解会收集哪些内容。横幅会让你选择 **Share** 或 **Don't share**：选择 **Share** 会保持 telemetry 开启，选择 **Don't share** 则会将其关闭。
 
-你仍然保持控制权：横幅 footer 会说明 sharing 已开启，并指向 **Settings → Privacy**，你可以在那里关闭 telemetry，并单独切换下列每个类别；也可以随时修改决定。
+你始终拥有控制权：横幅会指向 **Settings → Privacy**，你可以在那里关闭 telemetry，并单独切换下列每个类别；也可以随时修改决定。
 
 ## 会收集什么
 

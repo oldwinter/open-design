@@ -183,7 +183,7 @@ design-systems/your-brand/
 }
 ```
 
-就是这样。Daemon 会在 `PATH` 上检测到它，picker 会显示它，chat path 也会工作。如果该 CLI 会输出**类型化事件**（类似 Claude Code 的 `--output-format stream-json`），请在 [`apps/daemon/src/claude-stream.ts`](apps/daemon/src/claude-stream.ts) 中接入 parser，并把 `streamFormat` 设为 `'claude-stream-json'`。
+就是这样。Daemon 会在 `PATH` 上检测到它，picker 会显示它，chat path 也会工作。如果该 CLI 会输出**类型化事件**（类似 Claude Code 的 `--output-format stream-json`），请在 [`apps/daemon/src/runtimes/claude-stream.ts`](apps/daemon/src/runtimes/claude-stream.ts) 中接入 parser，并把 `streamFormat` 设为 `'claude-stream-json'`。
 
 合并标准：
 

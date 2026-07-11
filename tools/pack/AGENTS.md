@@ -55,6 +55,7 @@ Runtime updater 默认读取 `https://releases.open-design.ai/<channel>/latest/m
 - Windows 选择 `platforms.win.artifacts.installer`。
 - Artifact 必须有 checksum，最好是 `sha256Url`；updater 会先验证 bytes，再暴露 install action。
 - `OD_UPDATE_CURRENT_VERSION` 可以为 tests 覆盖 packaged version，但 user-flow package validation 应优先用目标 `--app-version` 构建 package。
+- 更新后的“What's New”亮点**不**放在 release `metadata.json` 中。Daemon 的 `/api/whats-new` 会从专用 R2 bucket 获取一份人工维护的文档（`https://whatsnew.open-design.ai/whats-new.json`，可用 `OD_WHATS_NEW_URL` 覆盖）；Web 首页会根据该文档的 `id` 显示一次性卡片，而不是根据正在运行的版本判断。运营人员在 release 后编辑这一个文件；没有按版本发布的工具链。
 
 ### Channel identity rules
 

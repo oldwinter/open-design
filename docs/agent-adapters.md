@@ -239,6 +239,28 @@ Adapter 通过 `capabilities().nativeSkillLoading` 和私有 `skillInjectionStra
 - Models: 提供 `deepseek-v4-pro` 与 `deepseek-v4-flash` 作为 fallback hints（1M-token context windows、native thinking-mode streaming）。用户可在 Settings dialog 的 custom-model input 中粘贴任意其他 id（例如 `nvidia-nim/deepseek-v4-pro`、`fireworks/deepseek-v4-flash`）。
 - **Gotcha — auth state is not auto-detected.** DeepSeek TUI 从 `~/.deepseek/config.toml` 或 `DEEPSEEK_API_KEY` 读取 API key。如果用户未运行 `deepseek auth set --provider deepseek`（或设置 env var），第一次 run 会报一个不可操作的错误。当前 detection 只根据 binary 在 PATH 上报告 `available: true`；后续可通过 `deepseek doctor --json` 暴露 auth state。
 
+### 5.13 Plain stream artifact handoff
+
+Adapters with `streamFormat: 'plain'` do not expose structured file-write tool calls to the daemon. Their stdout is still a valid artifact handoff when the model emits Anthropic-style source blocks:
+
+```html
+<artifact identifier="landing-page" type="text/html" title="Landing page">
+<!doctype html>
+<html>...</html>
+</artifact>
+```
+
+At run completion, the daemon scans the captured plain stdout for `<artifact>` blocks with supported text types and writes them through the normal project artifact path:
+
+| Artifact type | Project file |
+|---|---|
+| `text/html` or `html` | `<identifier>.html` |
+| `text/css` or `css` | `<identifier>.css` |
+| `image/svg+xml` or `svg` | `<identifier>.svg` |
+| `text/markdown`, `text/x-markdown`, `markdown`, or `md` | `<identifier>.md` |
+
+The identifier is slugged before use, collisions receive `-2`, `-3`, etc., and outputs without a supported `<artifact>` block are left unchanged. This daemon-side extraction keeps headless runs and web-attached runs aligned: the project file exists even when no browser is present to parse the chat stream.
+
 ## 6. Capability-driven UI
 
 Web UI 读取 `agents.capabilities()`，并禁用 active adapter 不支持的功能：

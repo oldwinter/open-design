@@ -117,6 +117,7 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
 |---|:---:|---|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | ✅ 支持 | `od mcp install claude` |
 | [Codex CLI](https://github.com/openai/codex) | ✅ 支持 | `od mcp install codex` |
+| [DeepSeek Reasonix](https://github.com/esengine/DeepSeek-Reasonix) | ✅ 支持 | `od mcp install reasonix` |
 | [Cursor](https://www.cursor.com/cli) | ✅ 支持 | `od mcp install cursor` |
 | [VS Code + GitHub Copilot](https://github.com/features/copilot) | ✅ 支持 | `od mcp install copilot` |
 | [GitHub Copilot CLI](https://github.com/features/copilot/cli) | ✅ 支持 | `od mcp install copilot` |
@@ -127,6 +128,7 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
 | [Cline](https://github.com/cline/cline) | ✅ 支持 | `od mcp install cline` |
 | [Trae](https://www.trae.ai/) | ✅ 支持 | `od mcp install trae` |
 | [Kimi CLI](https://github.com/MoonshotAI/kimi-cli) | ✅ 支持 | `od mcp install kimi` |
+| [Kiro](https://kiro.dev) | ✅ 支持 | `od mcp install kiro` |
 | [Pi Agent](https://github.com/badlogic/pi-mono) | ✅ 支持 | `od mcp install pi` |
 | [Mistral Vibe CLI](https://github.com/mistralai/mistral-vibe) | ✅ 支持 | `od mcp install vibe` |
 | [Hermes Agent](https://github.com/nousresearch/hermes-agent) | ✅ 支持 | `od mcp install hermes` |
@@ -304,8 +306,9 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 ```bash
 # 一行命令安装到你正在使用的 Agent：
 od mcp install <agent>
-# <agent> = claude | codex | cursor | copilot | openclaw | antigravity | gemini
-#         | pi | vibe | hermes | cline | kimi | trae | opencode
+# <agent> = claude | codex | reasonix | cursor | copilot | openclaw
+#         | antigravity | gemini | pi | vibe | hermes | cline | kimi
+#         | trae | opencode
 
 # Hosted equivalent for curl-based setup:
 curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
