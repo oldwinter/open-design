@@ -24,6 +24,7 @@ export type TutorialLongformI18n = Record<
 >;
 
 import { entry as e_open_design_31_skills_72_systems_popular_ai } from './tutorials-longform/open-design-31-skills-72-systems-popular-ai';
+import { entry as e_open_design_ai_ppt_tutorial } from './tutorials-longform/open-design-ai-ppt-tutorial';
 import { entry as e_open_design_claude_design_alternative_local_ai_fire_academy } from './tutorials-longform/open-design-claude-design-alternative-local-ai-fire-academy';
 import { entry as e_open_design_claude_design_alternative_open_source_brendan_o_connell } from './tutorials-longform/open-design-claude-design-alternative-open-source-brendan-o-connell';
 import { entry as e_open_design_design_engine_codedigipt } from './tutorials-longform/open-design-design-engine-codedigipt';
@@ -66,6 +67,7 @@ import { entry as e_open_design_alternativa_gratis_claude_design_maestros_da_ia 
 
 export const tutorialsLongformI18n: TutorialLongformI18n = {
   "open-design-31-skills-72-systems-popular-ai": e_open_design_31_skills_72_systems_popular_ai,
+  "open-design-ai-ppt-tutorial": e_open_design_ai_ppt_tutorial,
   "open-design-claude-design-alternative-local-ai-fire-academy": e_open_design_claude_design_alternative_local_ai_fire_academy,
   "open-design-claude-design-alternative-open-source-brendan-o-connell": e_open_design_claude_design_alternative_open_source_brendan_o_connell,
   "open-design-design-engine-codedigipt": e_open_design_design_engine_codedigipt,

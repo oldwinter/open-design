@@ -15,18 +15,15 @@ const SUBPAGE_FOOTER = new URL("../app/_components/site-footer.astro", import.me
 // homepage footer expresses differently; it is legitimately sub-page-only.
 const SUBPAGE_ONLY_LABELS = new Set(["allSolutions"]);
 
-// Extract the keys of the `en: { company: ... }` footer-label object literal.
-function footerEnLabelKeys(source: string): string[] {
-  const anchor = source.indexOf("en: { company:");
-  assert.ok(anchor >= 0, "could not find the `en: { company: ... }` footer dict");
-  const open = source.indexOf("{", anchor);
-  const close = source.indexOf("}", open);
-  assert.ok(open >= 0 && close > open, "malformed footer dict object literal");
-  return source
-    .slice(open + 1, close)
-    .split(",")
-    .map((pair) => pair.split(":")[0]?.trim())
-    .filter((key): key is string => Boolean(key));
+// Both footers now read their labels from footer-legal-i18n.ts. Compare the
+// properties each renderer actually consumes so adding a shared dictionary
+// entry cannot hide a missing link in either footer.
+function footerLabelKeys(source: string, variable: string): string[] {
+  const pattern = new RegExp(`\\b${variable}\\.([A-Za-z][A-Za-z0-9]*)`, "g");
+  return [...source.matchAll(pattern)].flatMap((match) => {
+    const key = match[1];
+    return key ? [key] : [];
+  });
 }
 
 describe("footer parity", () => {
@@ -36,12 +33,12 @@ describe("footer parity", () => {
       readFile(SUBPAGE_FOOTER, "utf8"),
     ]);
 
-    const homeKeys = new Set(footerEnLabelKeys(homepage));
-    const subKeys = footerEnLabelKeys(subpage);
+    const homeKeys = new Set(footerLabelKeys(homepage, "footL"));
+    const subKeys = new Set(footerLabelKeys(subpage, "l"));
 
     // Every sub-page footer label (minus the intentionally sub-page-only ones)
     // must also exist on the homepage footer.
-    const expected = subKeys.filter((key) => !SUBPAGE_ONLY_LABELS.has(key)).sort();
+    const expected = [...subKeys].filter((key) => !SUBPAGE_ONLY_LABELS.has(key)).sort();
     assert.deepEqual(
       [...homeKeys].sort(),
       expected,

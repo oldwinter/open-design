@@ -95,6 +95,8 @@
 .od-community ::selection { background: var(--brand-bg); color: var(--text-strong); }
 .od-community a { color: inherit; text-decoration: none; }
 .od-community img { display: block; max-width: 100%; }
+:lang(zh) .od-community :where(p,h1,h2,h3),
+:lang(zh) .od-events :where(p,h1,h2,strong) { word-break: auto-phrase; text-wrap: pretty; }
 .od-community .ri {
   font-family: "Remix Icon Full";
   font-style: normal;

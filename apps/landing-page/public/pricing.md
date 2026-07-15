@@ -17,23 +17,23 @@ Apache-2.0 许可，并支持 BYOK：你可以免费安装，只为自己的 age
 ## Plus — managed
 - Price：**$20 / month**（或 $168 / year，30% off）
 - Included model usage credits：$20 / month
-- Cloud deploys：最多 3 次 / month
+- Cloud deploys：最多 3 次 / month（up to 3 / month）
 - For：偏好 bundled credits 而非 BYOK 的个人用户
 
 ## Pro — managed（recommended）
 - Price：**$100 / month**（或 $720 / year，40% off）
 - Included model usage credits：$100 / month
-- Cloud deploys：最多 20 次 / month
+- Cloud deploys：最多 20 次 / month（up to 20 / month）
 - For：定期 shipping 的专业用户
 
 ## Max — managed
 - Price：**$200 / month**（或 $1,176 / year，51% off）
 - Included model usage credits：$200 / month
-- Cloud deploys：最多 50 次 / month
+- Cloud deploys：最多 50 次 / month（up to 50 / month）
 - For：重度用户和 teams
 
 ## Notes
 - 开源桌面应用始终免费；付费套餐是可选 managed service（bundled model credits + hosted cloud deploys），不是使用 Open Design 的必要条件。
-- 超出套餐月度额度的 cloud deploys：每次 $2。
+- 超出套餐月度额度的 cloud deploys：每次 $2（$2 each）。
 - Intro/promotional pricing 和当前 annual discounts 可能不同；最新数字以实时 pricing page 为准：https://open-design.ai/pricing/
 - License：https://www.apache.org/licenses/LICENSE-2.0

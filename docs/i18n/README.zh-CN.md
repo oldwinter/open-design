@@ -139,7 +139,7 @@ Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agen
   <img src="https://repo-assets.open-design.ai/resources/images/coding-agents.png" alt="Open Design 支持的 22 个编码 Agent CLI — Claude Code · Codex · OpenCode · Hermes · Antigravity · Gemini · Grok Build · Kimi · Cursor Agent · Qwen · Qoder · GitHub Copilot · Pi · Kiro · Kilo · Mistral Vibe · DeepSeek · Reasonix · Aider · Devin · Trae" width="100%" />
 </p>
 
-**未安装任何 CLI？** `POST /api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream` 的 BYOK 代理提供同样的循环（无需 spawn 进程）——粘贴 `baseUrl` + `apiKey` + `model`，支持 OpenAI、Anthropic、Azure OpenAI、Google Gemini、Ollama、LM Studio、vLLM 或任何 OpenAI 兼容端点。每个目标的 SSRF 防护在守护进程边缘拦截内网 IP / link-local / CGNAT。
+**未安装任何 CLI？** `POST /api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream` 的 BYOK 代理提供同样的循环（无需 spawn 进程）——粘贴 `baseUrl` + `apiKey` + `model`，预设支持 OpenAI、Atlas Cloud、Anthropic、Azure OpenAI、Google Gemini、Ollama、LM Studio、vLLM 或任何 OpenAI 兼容端点。Atlas Cloud 使用 `https://api.atlascloud.ai/v1`，配合你自己的密钥和 OpenAI 兼容模型 ID，例如 `qwen/qwen3.5-flash`。每个目标的 SSRF 防护在守护进程边缘拦截内网 IP / link-local / CGNAT。
 
 适配器契约和流解析器位于 [`apps/daemon/src/agents.ts`](../../apps/daemon/src/agents.ts)。添加新 CLI 只需一条记录——参见 [`docs/agent-adapters.md`](../../docs/agent-adapters.md)。
 
@@ -303,13 +303,24 @@ Open Design (OD) 是开源替代品。同样的循环，同样的工件优先心
 
 你可以在完全不打开 GUI 的情况下使用 Open Design——在 Claude Code、Codex、Cursor、Copilot、OpenClaw、Antigravity、Hermes、Kimi 等中作为技能、插件或 MCP 服务器调用。
 
+如果你通过 DMG 或 Homebrew cask 安装了 macOS 桌面应用，shell 仍可能把 `od`
+解析为 Apple 内置的八进制转储工具 `/usr/bin/od`。遇到这种情况，请在桌面应用中打开
+**设置 → MCP 服务器**，复制对应客户端的代码片段；该片段使用绝对路径，不依赖直接调用 `od`。
+
 ```bash
 # 一行命令安装到你正在使用的 Agent：
 od mcp install <agent>
 # <agent> = claude | codex | reasonix | cursor | copilot | openclaw
 #         | antigravity | gemini | pi | vibe | hermes | cline | kimi
 #         | trae | opencode
+
+# 使用 curl 进行托管安装的等效方式：
+curl -fsSL https://open-design.ai/install.sh | sh -s <agent>
 ```
+
+`install.sh` 是 `od mcp install` 外的一层轻量 shell wrapper；它的作用是让托管 URL 返回 shell，而不是落到 landing-page HTML fallback，并且当你的 shell 解析到了非 Open Design 的 `od` 二进制时快速失败。
+
+> **macOS / WSL2 用户：** `/usr/bin/od` 是系统自带的八进制转储命令，可能遮蔽 Open Design 的 `od` 命令。桌面应用用户应优先使用**设置 → MCP 服务器**中的代码片段；WSL2 用户请先阅读 [`WSL2 设置指南`](../../docs/wsl-setup.md)。
 
 然后在 Agent 内：
 
@@ -377,7 +388,7 @@ od skill list --scenario marketing
 
 **为什么选择 MCP？** 每次迭代都导出并重新附加 zip 会打断流程。MCP 直接暴露设计源文件——Agent 始终看到实时文件。
 
-**对于从零开始的 Agent**，安装器会放置 `~/.config/<agent>/open-design.json`（或平台等效路径）以及可复制粘贴的 MCP 代码片段。Cursor 获得一键深层链接；Claude Code 获得 `claude mcp add-json` 一行命令；其他所有 Agent 获得其配置所需 schema 格式的 JSON。完整的逐 Agent 流程 → 桌面应用中的**设置 → MCP 服务器**，或 [`docs/agent-adapters.md`](../../docs/agent-adapters.md)。
+**对于从零开始的 Agent**，安装器会放置 `~/.config/<agent>/open-design.json`（或平台等效路径）以及可复制粘贴的 MCP 代码片段。Cursor 获得一键深层链接；Claude Code 获得 `claude mcp add-json` 一行命令；其他所有 Agent 获得其配置所需 schema 格式的 JSON。在 macOS 桌面安装场景中，请优先使用设置中的代码片段，不要在终端直接输入 `od mcp install <agent>`，因为 PATH 上的 `/usr/bin/od` 可能优先命中。完整的逐 Agent 流程 → 桌面应用中的**设置 → MCP 服务器**，或 [`docs/agent-adapters.md`](../../docs/agent-adapters.md)。
 
 **安全模型。** 默认只读，守护进程绑定到 `127.0.0.1`，SSRF 在代理边缘拦截。局域网暴露需要 `OD_BIND_HOST` 显式启用加 `OD_ALLOWED_ORIGINS`。连接器凭证和实时工件预览路由无论如何都保持仅本地回环。
 
@@ -576,7 +587,7 @@ pnpm guard && pnpm --filter @open-design/plugin-runtime typecheck
 - [x] Web 应用 + 聊天 + 问题表单 + 5 方向选择器 + 待办进度 + 沙箱预览
 - [x] 100+ 技能 · 150 设计系统 · 5 视觉方向 · 5 设备外框
 - [x] SQLite 支撑的项目 · 会话 · 消息 · 标签页 · 模板
-- [x] 多供应商 BYOK 代理（`/api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream`）+ SSRF 防护
+- [x] 多供应商 BYOK 代理（`/api/proxy/{anthropic,openai,azure,google,ollama,senseaudio}/stream`），内置包括 Atlas Cloud 在内的 OpenAI 兼容预设，并提供 SSRF 防护
 - [x] Claude Design ZIP 导入（`/api/import/claude-design`）
 - [x] Sidecar 协议 + Electron 桌面 + IPC 自动化
 - [x] 工件 Lint API + 五维自评预输出门控

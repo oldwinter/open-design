@@ -268,7 +268,7 @@ location /api/ {
 | 模式 | picker 中的值 | 請求流轉路徑 |
 |---|---|---|
 | **Local CLI**（daemon 偵測到 agent 時的預設模式） | "Local CLI" | 前端 → daemon `/api/chat` → `spawn(<agent>, ...)` → stdout → SSE → artifact 解析器 → 預覽 |
-| **API 模式**（fallback / 未安裝 CLI） | "Anthropic API" / "OpenAI API" / "Azure OpenAI" / "Google Gemini" | 前端 → daemon `/api/proxy/{provider}/stream` → provider SSE 歸一化為 `delta/end/error` → artifact 解析器 → 預覽 |
+| **API 模式**（fallback / 未安裝 CLI） | "Anthropic API" / "OpenAI API" / "Atlas Cloud" / "Azure OpenAI" / "Google Gemini" | 前端 → daemon `/api/proxy/{provider}/stream` → provider SSE 歸一化為 `delta/end/error` → artifact 解析器 → 預覽 |
 
 兩種模式都會傳入**同一個** `<artifact>` 解析器與**同一個**沙箱 iframe。區別僅在於傳輸層和 system prompt 的投遞方式（本地 CLI 沒有獨立的 system 通道，因此組合好的 prompt 會被摺疊進 user message）。
 

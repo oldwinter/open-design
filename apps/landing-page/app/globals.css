@@ -5184,7 +5184,7 @@ footer .container {
 }
 .sub-footer .sub-footer-inner {
   max-width: none;
-  padding-inline: 238px;
+  padding-inline: clamp(96px, 12vw, 238px);
 }
 .sub-footer-grid {
   display: grid;
@@ -5236,6 +5236,7 @@ footer .container {
   transition: color 0.16s ease;
 }
 .sub-footer-col a:hover { color: var(--coral); }
+:lang(zh) .sub-footer-col a { word-break: auto-phrase; }
 
 /* ---------- footer bottom bar ----------
  *
@@ -5280,6 +5281,7 @@ footer .container {
 
 /* Tablet: 7 columns get cramped — drop to a 4-wide grid. */
 @media (max-width: 1080px) {
+  .sub-footer .sub-footer-inner { padding-inline: clamp(24px, 5vw, 56px); }
   .sub-footer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 

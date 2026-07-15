@@ -16,6 +16,7 @@ import {
   type HeaderCopy,
   type LandingLocaleCode,
 } from '../i18n';
+import { getCommunityEventsCopy } from '../community-events-i18n';
 import { getSolutionPageCopy } from '../solution-pages-i18n';
 import type { SolutionPageKey } from '../solution-pages-i18n/types';
 
@@ -176,6 +177,7 @@ export function Header({
   const href = (path: string) => localizedHref(path, locale);
   const homeBrandHref = brandHref === '/' ? href('/') : brandHref;
   const productMenuCopy = getHeaderProductMenuCopy(locale);
+  const eventsCopy = getCommunityEventsCopy(locale);
 
   return (
     <header className='nav' data-od-id='nav'>
@@ -272,20 +274,6 @@ export function Header({
               >
                 <li className='nav-dropdown-group'>
                   <span className='nav-dropdown-group-label'>
-                    {productMenuCopy.tools}
-                  </span>
-                </li>
-                {TOOL_ENTRIES.map(({ href: toolHref, key }) => (
-                  <li key={key}>
-                    <a href={href(toolHref)}>
-                      <span className='dropdown-name'>
-                        {getSolutionPageCopy(locale, key).breadcrumb}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-                <li className='nav-dropdown-group'>
-                  <span className='nav-dropdown-group-label'>
                     {productMenuCopy.useCases}
                   </span>
                 </li>
@@ -305,6 +293,20 @@ export function Header({
                   <li key={name}>
                     <a href={href(ROLE_HREFS[index]!)}>
                       <span className='dropdown-name'>{name}</span>
+                    </a>
+                  </li>
+                ))}
+                <li className='nav-dropdown-group'>
+                  <span className='nav-dropdown-group-label'>
+                    {productMenuCopy.tools}
+                  </span>
+                </li>
+                {TOOL_ENTRIES.map(({ href: toolHref, key }) => (
+                  <li key={key}>
+                    <a href={href(toolHref)}>
+                      <span className='dropdown-name'>
+                        {getSolutionPageCopy(locale, key).breadcrumb}
+                      </span>
                     </a>
                   </li>
                 ))}
@@ -459,7 +461,7 @@ export function Header({
               </ul>
             </li>
 
-            {/* Community — Contributors / Ambassadors / Moderators. These
+            {/* Community — Contributors / Ambassadors / Moderators / Events. These
                 pages are now localized Astro routes, so link through `href()`
                 to keep visitors on their language variant. */}
             <li className='has-dropdown'>
@@ -490,6 +492,11 @@ export function Header({
                     <span className='dropdown-name'>
                       {productMenuCopy.communityItems.moderators}
                     </span>
+                  </a>
+                </li>
+                <li>
+                  <a href={href('/community/events/')}>
+                    <span className='dropdown-name'>{eventsCopy.navLabel}</span>
                   </a>
                 </li>
                 <li>
