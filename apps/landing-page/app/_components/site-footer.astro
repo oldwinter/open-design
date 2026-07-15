@@ -179,9 +179,11 @@ const l = getFooterLegalCopy(locale);
     <div class='foot-bar'>
       <div class='foot-bar-left'>
         <span class='foot-copy'>© 2026 Powerformer, Inc. · Apache-2.0</span>
-        <a href={href('/privacy/')}>{l.privacy}</a>
-        <span class='foot-dot' aria-hidden='true'>·</span>
-        <a href={href('/terms/')}>{l.terms}</a>
+        <span class='foot-legal-links'>
+          <a href={href('/privacy/')}>{l.privacy}</a>
+          <span class='foot-dot' aria-hidden='true'>·</span>
+          <a href={href('/terms/')}>{l.terms}</a>
+        </span>
       </div>
       <div class='foot-social'>
         <a href={X_TWITTER} target='_blank' rel='noopener' aria-label='X'>
@@ -232,6 +234,12 @@ const l = getFooterLegalCopy(locale);
     }
     .foot-bar-left a:hover {
       text-decoration: underline;
+    }
+    .foot-legal-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
     }
     .foot-dot {
       opacity: 0.5;

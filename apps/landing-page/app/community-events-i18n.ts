@@ -67,7 +67,8 @@ const CHINESE_EVENTS_COPY = {
   title: 'Open Design 活动',
   description: '面向 Open Design 创作者的社区活动、活动回顾和即将举行的动手实践。',
   heroKicker: '社区 · 活动',
-  heroTitle: '在活动现场，把 Open Design 真正用起来。',
+  heroTitle:
+    '在活动现场，把 <span class="events-phrase">Open Design</span> <span class="events-phrase">真正用起来。</span>',
   heroDescription:
     '这里有各地线下活动回顾，也有即将举办的实践场次；开发者、设计师、教育工作者和社区组织者会一起制作可编辑的 AI 工件。',
   latestKicker: '最新回顾',
@@ -99,7 +100,8 @@ const TRADITIONAL_CHINESE_EVENTS_COPY = {
   title: 'Open Design 活動',
   description: '面向 Open Design 創作者的社群活動、活動回顧和即將舉行的動手實作。',
   heroKicker: '社群 · 活動',
-  heroTitle: '在活動現場，把 Open Design 真正用起來。',
+  heroTitle:
+    '在活動現場，把 <span class="events-phrase">Open Design</span> <span class="events-phrase">真正用起來。</span>',
   heroDescription:
     '這裡有各地線下活動回顧，也有即將舉辦的實作場次；開發者、設計師、教育工作者和社群組織者會一起製作可編輯的 AI 工件。',
   latestKicker: '最新回顧',

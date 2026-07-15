@@ -115,7 +115,6 @@ const localizedCategory = (category: string) => {
 // localized placeholder so the short catalogue entries keep current behavior.
 const localizedLongform =
   locale === DEFAULT_LOCALE ? undefined : getLocalizedTutorial(entry.id, locale);
-const pptCoverVideoUrl = isPptArticle ? '/tutorials/open-design-ai-ppt-motion-demo.mp4' : undefined;
 const tutorialCopy =
   locale === DEFAULT_LOCALE
     ? {
@@ -149,6 +148,9 @@ const tutorialCopy =
             ),
           ),
         };
+const pptSummaryParts = locale === 'zh' && isPptArticle
+  ? tutorialCopy.summary.split('素材')
+  : undefined;
 ---
 
 <!doctype html>
@@ -186,27 +188,32 @@ const tutorialCopy =
                       <span class='tut-badge-official'>{ui.tutorials.official}</span>
                     )}
                   </span>
-                  <h1 class='tut-detail-title'>{tutorialCopy.title}</h1>
-                  <p class='tut-detail-summary'>{tutorialCopy.summary}</p>
+                  <h1 class='tut-detail-title'>
+                    {locale === 'zh' ? (
+                      <>
+                        {'如何用 '}<span class='tut-title-phrase'>Open Design</span>{' 创建 '}
+                        <span class='tut-title-phrase'>AI 驱动的 PPT</span>{'：'}
+                        <span class='tut-title-phrase'>动手工作坊教程</span>
+                      </>
+                    ) : tutorialCopy.title}
+                  </h1>
+                  <p class='tut-detail-summary'>
+                    {pptSummaryParts ? (
+                      <>{pptSummaryParts[0]}<span class='ppt-nowrap'>素材</span>{pptSummaryParts[1]}</>
+                    ) : tutorialCopy.summary}
+                  </p>
                   <div class='tut-detail-meta'>
                     <span>{entry.data.author}</span>
                     <span>{fmtDate(entry.data.date)}</span>
                     <span>{entry.data.durationSeconds ? fmtDuration(entry.data.durationSeconds) : writtenGuideLabel}</span>
                   </div>
-                  {pptCoverVideoUrl && (
-                    <div class='ppt-cover-video'>
-                      <video
-                        src={pptCoverVideoUrl}
-                        poster={thumbnailUrl}
-                        autoplay
-                        muted
-                        loop
-                        playsinline
-                        preload='metadata'
-                        aria-label={ui.tutorials.thumbnailAlt(tutorialCopy.title)}
-                      />
-                    </div>
-                  )}
+                  <div class='ppt-cover-video'>
+                    <img
+                      src={thumbnailUrl}
+                      alt={ui.tutorials.thumbnailAlt(tutorialCopy.title)}
+                      loading='eager'
+                    />
+                  </div>
                 </div>
                 <div class='tut-body ppt-body'>
                   {tutorialCopy.bodyHtml ? <Fragment set:html={tutorialCopy.bodyHtml} /> : <Content />}
@@ -389,7 +396,7 @@ const tutorialCopy =
         background: rgba(255,255,255,.58);
         box-shadow: 0 18px 42px rgba(20,20,20,.08);
       }
-      .ppt-cover-video video {
+      .ppt-cover-video img {
         display: block;
         width: 100%;
         aspect-ratio: 16 / 9;
@@ -516,6 +523,10 @@ const tutorialCopy =
         font-family: var(--mono);
         font-size: .9em;
       }
+      .ppt-readable .ppt-nowrap,
+      .ppt-readable-head .ppt-nowrap {
+        white-space: nowrap;
+      }
       .ppt-readable .ppt-code-wrap {
         position: relative;
         margin: 28px 0 42px;
@@ -562,6 +573,16 @@ const tutorialCopy =
         .ppt-readable .ppt-body table {
           display: block;
           overflow-x: auto;
+        }
+      }
+      @media (max-width: 640px) {
+        .ppt-readable .ppt-body pre {
+          overflow-x: hidden;
+          padding: 58px 18px 20px;
+        }
+        .ppt-readable .ppt-body pre code {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
         }
       }
     </style>
@@ -742,6 +763,10 @@ const tutorialCopy =
         color: var(--ink);
         margin: 12px 0 18px;
       }
+      .tut-title-phrase {
+        display: inline-block;
+        white-space: nowrap;
+      }
       .tut-detail-summary {
         font-family: var(--serif);
         font-style: italic;
@@ -855,7 +880,7 @@ const tutorialCopy =
         color: var(--ink-faint, var(--ink-soft));
         font-style: italic;
       }
-      .tut-body :global(pre) {
+      .tut-body:not(.ppt-body) :global(pre) {
         background: var(--ink);
         color: #f3f1ea;
         border-radius: 10px;
@@ -865,7 +890,7 @@ const tutorialCopy =
         font-size: 14px;
         line-height: 1.6;
       }
-      .tut-body :global(pre code) {
+      .tut-body:not(.ppt-body) :global(pre code) {
         font-family: var(--mono, ui-monospace, monospace);
         background: none;
         padding: 0;

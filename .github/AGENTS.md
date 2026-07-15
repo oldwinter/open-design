@@ -24,8 +24,9 @@ GitHub automation 使用两层架构。
 Business layer：
 
 - Business workflows 决定发生了什么，以及下一步应该请求什么。
-- `ci.yml` 是主要的 low-privilege PR、merge-queue 和 manual validation gate。
+- `ci.yml` 是主要的 low-privilege PR、merge-queue 和 manual validation gate（仅作为应用合并门槛）。
 - `ci.yml` 应该运行 validation、决定 scopes，并产出 typed handoff artifacts。
+- Packaging checks 独立运行且位于 merge gate 之外：`nix.yml`（flake check）和 `docker-image.yml`（image validate + publish）。不要把它们重新挂回 `Validate workspace`。
 - 当 capability workflow 能完成 trusted writes 时，business workflows 不应直接写 PR comments 或 branches。
 
 Atomic capability layer：

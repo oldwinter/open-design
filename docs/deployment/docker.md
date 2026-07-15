@@ -93,5 +93,6 @@ curl -i http://127.0.0.1:7456/
 - `failed to connect to the docker API`：Docker Desktop 尚未运行
 - `address already in use`：Port `7456` 被其他进程占用
 - `curl: (7) Failed to connect`：container 仍在启动；等待 10-20 秒后重试
+- 拉取 `ghcr.io/nexu-io/od` 时出现 `pull access denied` 或 `authentication required`：`docker pull`、Docker Compose 和 Dokploy 的匿名拉取要求 GHCR 软件包处于公开状态。组织维护者必须打开 GitHub -> Packages -> `od` -> Package settings，将可见性改为 Public。
 - reverse proxy + `OD_API_TOKEN`：要么在 proxy 注入 `Authorization: Bearer <OD_API_TOKEN>`，要么仅当该 proxy 已认证每个请求且 daemon 没有被直接暴露时，设置 `OPEN_DESIGN_DISABLE_API_AUTH=1`。
 - macOS 上的 `Authorization: Bearer <OD_API_TOKEN> required`：Docker Desktop bridge networking 会让 daemon 把请求识别为 non-loopback。Host networking 解决办法见 [Docker Desktop on macOS](../../deploy/README.md#docker-desktop-on-macos)。

@@ -98,6 +98,7 @@ function buildPresenterFrameHtml(previewHtml: string): string {
 export function buildSpeakerNotesPresenterHtml(options: {
   previewHtml: string;
   previewHtmlBySlide?: readonly string[];
+  locale?: string;
   labels: SpeakerNotesPresenterLabels;
   title: string;
   projectId: string;
@@ -121,13 +122,28 @@ export function buildSpeakerNotesPresenterHtml(options: {
     slideCount: count,
     labels: options.labels,
   };
+  const presenterLocale = options.locale?.trim() || 'en';
+  const presenterDirection = /^(?:ar|fa)(?:-|$)/i.test(presenterLocale)
+    ? 'rtl'
+    : 'ltr';
+  const slideLabelAt = (index: number) =>
+    options.labels.slide
+      .replace('{current}', String(index + 1))
+      .replace('{total}', String(count));
+  const initialSlideLabel = slideLabelAt(data.initialSlideIndex);
+  const initialPreviousSlideLabel = data.initialSlideIndex > 0
+    ? slideLabelAt(data.initialSlideIndex - 1)
+    : options.labels.previous;
+  const initialNextSlideLabel = data.initialSlideIndex + 1 < count
+    ? slideLabelAt(data.initialSlideIndex + 1)
+    : options.labels.next;
 
   return `<!doctype html>
-<html>
+<html lang="${escapeHtml(presenterLocale)}" dir="${presenterDirection}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${escapeHtml(options.title)} - Presenter view</title>
+  <title>${escapeHtml(options.title)} - ${escapeHtml(options.labels.title)}</title>
   <style>
     * { box-sizing: border-box; }
     :root {
@@ -244,15 +260,15 @@ export function buildSpeakerNotesPresenterHtml(options: {
       <button type="button" id="reset"></button>
       <div class="counter" id="counter"></div>
     </div>
-    <div class="current"><iframe id="current" title="Current slide"></iframe></div>
+    <div class="current"><iframe id="current" title="${escapeHtml(initialSlideLabel)}" sandbox="allow-scripts"></iframe></div>
     <div class="filmstrip">
       <section id="previous-section">
         <div class="thumb-label" id="previous-label"></div>
-        <div class="thumb-frame"><iframe id="previous" title="Previous slide"></iframe></div>
+        <div class="thumb-frame"><iframe id="previous" title="${escapeHtml(initialPreviousSlideLabel)}" sandbox="allow-scripts"></iframe></div>
       </section>
       <section id="next-section">
         <div class="thumb-label" id="next-label"></div>
-        <div class="thumb-frame"><iframe id="next" title="Next slide"></iframe></div>
+        <div class="thumb-frame"><iframe id="next" title="${escapeHtml(initialNextSlideLabel)}" sandbox="allow-scripts"></iframe></div>
       </section>
     </div>
   </main>
@@ -317,6 +333,11 @@ export function buildSpeakerNotesPresenterHtml(options: {
       els.previousLabel.textContent = labels.previous || 'Previous';
       els.nextLabel.textContent = labels.next || 'Next';
       els.notesTitle.textContent = labels.title || 'Speaker notes';
+      function slideLabelAt(target){
+        return (labels.slide || 'Slide {current} / {total}')
+          .replace('{current}', String(target + 1))
+          .replace('{total}', String(count));
+      }
       function fmt(ms){
         var s = Math.max(0, Math.floor(ms / 1000));
         return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
@@ -397,9 +418,7 @@ export function buildSpeakerNotesPresenterHtml(options: {
       }
       function renderNotes(){
         var note = noteAt(index);
-        els.slideLabel.textContent = (labels.slide || 'Slide {current} / {total}')
-          .replace('{current}', String(index + 1))
-          .replace('{total}', String(count));
+        els.slideLabel.textContent = slideLabelAt(index);
         els.notesBody.textContent = '';
         if (editing) {
           var textarea = document.createElement('textarea');
@@ -443,9 +462,12 @@ export function buildSpeakerNotesPresenterHtml(options: {
       }
       function render(){
         els.counter.textContent = (index + 1) + ' / ' + count;
+        els.current.title = slideLabelAt(index);
         setFrame(els.current, index);
         var hasPrevious = setFrame(els.previous, index - 1);
         var hasNext = setFrame(els.next, index + 1);
+        els.previous.title = hasPrevious ? slideLabelAt(index - 1) : (labels.previous || 'Previous');
+        els.next.title = hasNext ? slideLabelAt(index + 1) : (labels.next || 'Next');
         if (els.previousSection) els.previousSection.hidden = !hasPrevious;
         if (els.nextSection) els.nextSection.hidden = !hasNext;
         renderNotes();

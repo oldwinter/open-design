@@ -4,7 +4,7 @@ export const entry: Partial<Record<string, LocalizedTutorialContent>> = {
   zh: {
     title: '如何用 Open Design 创建 AI 驱动的 PPT：动手工作坊教程',
     summary:
-      '一份可直接照做的文字工作坊指南：用 Open Design 将原始笔记转成可编辑的 AI PPT，并逐步完成视觉方向、Deck Mode、素材、图表、动效和最终质检。',
+      '一份可直接照做的文字工作坊指南：用 Open\u00a0Design 将原始笔记转成可编辑的 AI PPT，并逐步完成视觉方向、Deck Mode、素材、图表、动效和最终质检。',
     bodyHtml: `
 <blockquote><p><strong>核心思路：</strong>把 AI 演示文稿的制作拆成一组可控步骤：先选定风格，再构建可编辑的演示文稿，最后用素材、图表、动效和评论逐步打磨。</p></blockquote>
 
@@ -278,7 +278,7 @@ export const entry: Partial<Record<string, LocalizedTutorialContent>> = {
 
 <figure class="ppt-media">
   <img src="/tutorials/open-design-ai-ppt-ai-visual-example.webp" alt="使用 AI 生成视觉素材来支撑演示论点的幻灯片" width="1800" height="1087" loading="lazy" />
-  <figcaption>AI 生成视觉应强化幻灯片的论点，并让最终演示文稿更精致。</figcaption>
+  <figcaption>AI 生成视觉应强化幻灯片的论点，并让最终演示文稿<span class="ppt-nowrap">更精致。</span></figcaption>
 </figure>
 
 <h3><span id="prompt-6"></span>提示词 6：只在有用的位置生成辅助视觉</h3>

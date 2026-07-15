@@ -2,6 +2,7 @@
 .v4{width:100vw;margin-left:calc(50% - 50vw);background:var(--paper);color:var(--ink)}
 .v4 :is(h1,h2,h3,p,blockquote,cite,div,span,a){font-family:var(--sans)}
 .v4 .grn{color:var(--olive)}
+.v4 .v4nowrap{white-space:nowrap}
 .v4band{padding:68px 0}
 .v4band.alt{background:var(--bone)}
 .v4band.ink{background:var(--ink);color:#fff}

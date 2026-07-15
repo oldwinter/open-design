@@ -4,7 +4,7 @@ const zh: DeepPartial<CommunityCopy> = {
   hub: {
     title: '社区 — Open Design',
     desc: 'Open Design 社区：在公开场合交付作品的贡献者、在本地主理工坊的大使，以及让 Discord 始终热络的版主。',
-    heroTitle: '开放的设计，<em>在你交付时</em><br/>才真正成形。',
+    heroTitle: '开放的设计，<em class="od-phrase">在你交付时</em><br/>才真正成形。',
     heroLead:
       'Open Design 由人构建，在公开场合完成。Skills、DESIGN.md 系统、插件、文档：每一次提交都是一笔。选下面的一扇门，找到属于你的房间。',
     cardMetaH: '首次合并时自动铸造',

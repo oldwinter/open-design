@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OpenDesignHostUpdaterStatusSnapshot } from '@open-design/host';
 import { installMockOpenDesignHost } from '@open-design/host/testing';
 import { en } from '../../src/i18n/locales/en';
+import { zhCN } from '../../src/i18n/locales/zh-CN';
 
 function optionNames(container: HTMLElement): string[] {
   return within(container).getAllByRole('option').map((option) => {
@@ -106,7 +107,10 @@ vi.mock('../../src/analytics/provider', () => ({
 import { SettingsDialog } from '../../src/components/SettingsDialog';
 import { IntegrationsView } from '../../src/components/IntegrationsView';
 import type { AgentRefreshOptions, SettingsSection } from '../../src/components/SettingsDialog';
-import { reconcileAmrModelChoice } from '../../src/components/SettingsDialog';
+import {
+  localizeSiliconFlowProviderLabel,
+  reconcileAmrModelChoice,
+} from '../../src/components/SettingsDialog';
 import { reconcileAmrProfileEnv } from '../../src/components/SettingsDialog';
 import { providerModelsCacheKey } from '../../src/components/providerModelsCache';
 import { I18nProvider } from '../../src/i18n';
@@ -277,10 +281,14 @@ function renderSettingsDialog(
     appVersionInfo?: AppVersionInfo | null;
     providerModelsCache?: Record<string, ProviderModelOption[]>;
     welcome?: boolean;
+    onSilentUpdatePreferenceChange?: (allowSilentUpdates: boolean) => Promise<void>;
   } = {},
 ) {
   const onPersist = vi.fn();
   const onPersistComposioKey = vi.fn();
+  const onSilentUpdatePreferenceChange: (allowSilentUpdates: boolean) => Promise<void> =
+    options.onSilentUpdatePreferenceChange
+    ?? (async () => undefined);
   const onClose = vi.fn();
   const onRefreshAgents = options.onRefreshAgents ?? vi.fn<OnRefreshAgents>();
 
@@ -294,13 +302,21 @@ function renderSettingsDialog(
       providerModelsCache={options.providerModelsCache}
       welcome={options.welcome}
       onPersist={onPersist}
+      onSilentUpdatePreferenceChange={onSilentUpdatePreferenceChange}
       onPersistComposioKey={onPersistComposioKey}
       onClose={onClose}
       onRefreshAgents={onRefreshAgents}
     />,
   );
 
-  return { onPersist, onPersistComposioKey, onClose, onRefreshAgents, ...view };
+  return {
+    onPersist,
+    onSilentUpdatePreferenceChange,
+    onPersistComposioKey,
+    onClose,
+    onRefreshAgents,
+    ...view,
+  };
 }
 
 function renderIntegrationsView(
@@ -344,6 +360,32 @@ function renderLanguageSettingsDialog(initialLocale: Parameters<typeof I18nProvi
   );
 
   return { onPersist, onClose };
+}
+
+function renderExecutionSettingsDialogForLocale(
+  initialLocale: Parameters<typeof I18nProvider>[0]['initial'],
+) {
+  render(
+    <I18nProvider initial={initialLocale}>
+      <SettingsDialog
+        initial={{
+          ...baseConfig,
+          apiProtocol: 'openai',
+          baseUrl: 'https://api.openai.com/v1',
+          model: 'gpt-4o',
+          apiProviderBaseUrl: 'https://api.openai.com/v1',
+        }}
+        agents={availableAgents}
+        daemonLive={true}
+        appVersionInfo={null}
+        initialSection="execution"
+        onPersist={vi.fn()}
+        onPersistComposioKey={vi.fn()}
+        onClose={vi.fn()}
+        onRefreshAgents={vi.fn()}
+      />
+    </I18nProvider>,
+  );
 }
 
 async function waitForPersist(
@@ -452,6 +494,58 @@ beforeEach(() => {
 afterEach(() => {
   restoreOpenDesignHost?.();
   restoreOpenDesignHost = null;
+});
+
+describe('SiliconFlow provider labels', () => {
+  it('localizes region labels for Simplified and Traditional Chinese', () => {
+    // Given / When / Then
+    expect(localizeSiliconFlowProviderLabel('SiliconFlow (CN)', 'zh-CN')).toBe(
+      'SiliconFlow（中国区）',
+    );
+    expect(localizeSiliconFlowProviderLabel('SiliconFlow (CN)', 'zh-TW')).toBe(
+      'SiliconFlow（中國區）',
+    );
+    expect(localizeSiliconFlowProviderLabel('SiliconFlow (Global)', 'zh-TW')).toBe(
+      'SiliconFlow（全球）',
+    );
+  });
+
+  it('keeps stable English labels outside Chinese locales', () => {
+    // Given / When / Then
+    expect(localizeSiliconFlowProviderLabel('SiliconFlow (CN)', 'en')).toBe(
+      'SiliconFlow (CN)',
+    );
+    expect(localizeSiliconFlowProviderLabel('SiliconFlow (Global)', 'de')).toBe(
+      'SiliconFlow (Global)',
+    );
+  });
+
+  it('renders localized labels in both the provider tabs and gateway picker', () => {
+    // Given
+    renderExecutionSettingsDialogForLocale('zh-CN');
+
+    // When
+    fireEvent.click(
+      screen.getByRole('combobox', { name: zhCN['settings.providerPreset'] }),
+    );
+    const providerPopover = screen.getByTestId(
+      'settings-byok-provider-preset-popover',
+    );
+
+    // Then
+    expect(screen.getByRole('tab', { name: 'SiliconFlow（中国区）' })).toBeTruthy();
+    expect(screen.getByRole('tab', { name: 'SiliconFlow（全球）' })).toBeTruthy();
+    expect(
+      within(providerPopover).getByRole('option', {
+        name: 'SiliconFlow（中国区）',
+      }),
+    ).toBeTruthy();
+    expect(
+      within(providerPopover).getByRole('option', {
+        name: 'SiliconFlow（全球）',
+      }),
+    ).toBeTruthy();
+  });
 });
 
 describe('SettingsDialog privacy settings interactions', () => {
@@ -5064,7 +5158,8 @@ describe('SettingsDialog about interactions', () => {
     expect(install).toHaveBeenCalledTimes(1);
   });
 
-  it('toggles allowSilentUpdates on the about page and autosaves without crashing', async () => {
+  it('toggles allowSilentUpdates via the non-optimistic Settings path without crashing', async () => {
+    const onSilentUpdatePreferenceChange = vi.fn(async () => undefined);
     const { onPersist } = renderSettingsDialog(
       { mode: 'daemon', agentId: 'codex', allowSilentUpdates: false },
       {
@@ -5076,36 +5171,148 @@ describe('SettingsDialog about interactions', () => {
           platform: 'darwin',
           arch: 'arm64',
         },
+        onSilentUpdatePreferenceChange,
       },
     );
 
     const checkbox = screen.getByTestId('settings-allow-silent-updates') as HTMLInputElement;
     expect(checkbox.checked).toBe(false);
 
-    // Concurrent sibling updates (about-updater status subscription, autosave
-    // status) can defer the functional setCfg updater until after React has
-    // cleared event.currentTarget. Toggle twice to cover on → off.
     fireEvent.click(checkbox);
     expect(checkbox.checked).toBe(true);
-    expect(screen.getByTestId('settings-allow-silent-updates')).toBeTruthy();
-
-    await waitFor(() => {
-      expect(onPersist).toHaveBeenCalledWith(
-        expect.objectContaining({ allowSilentUpdates: true }),
-        expect.anything(),
-      );
-    });
+    await waitFor(() => expect(onSilentUpdatePreferenceChange).toHaveBeenCalledWith(true));
+    // Must not go through optimistic handleConfigPersist autosave.
+    expect(onPersist).not.toHaveBeenCalled();
 
     fireEvent.click(checkbox);
     expect(checkbox.checked).toBe(false);
-    expect(screen.getByTestId('settings-allow-silent-updates')).toBeTruthy();
+    await waitFor(() => expect(onSilentUpdatePreferenceChange).toHaveBeenCalledWith(false));
+  });
 
-    await waitFor(() => {
-      expect(onPersist).toHaveBeenCalledWith(
-        expect.objectContaining({ allowSilentUpdates: false }),
-        expect.anything(),
-      );
+  it('reverts the Settings silent-update toggle when the non-optimistic save fails', async () => {
+    let appConfigSilent: boolean | undefined = false;
+    const onSilentUpdatePreferenceChange = vi.fn(async (value: boolean) => {
+      throw new Error('daemon offline');
+      appConfigSilent = value;
     });
+    renderSettingsDialog(
+      { mode: 'daemon', agentId: 'codex', allowSilentUpdates: false },
+      {
+        initialSection: 'about',
+        appVersionInfo: {
+          version: '0.14.1',
+          channel: 'beta',
+          packaged: true,
+          platform: 'darwin',
+          arch: 'arm64',
+        },
+        onSilentUpdatePreferenceChange,
+      },
+    );
+
+    const checkbox = screen.getByTestId('settings-allow-silent-updates') as HTMLInputElement;
+    fireEvent.click(checkbox);
+    await waitFor(() => expect(onSilentUpdatePreferenceChange).toHaveBeenCalledWith(true));
+    await waitFor(() => {
+      expect((screen.getByTestId('settings-allow-silent-updates') as HTMLInputElement).checked).toBe(false);
+    });
+    // App-wide preference must not keep the rejected value.
+    expect(appConfigSilent).toBe(false);
+  });
+
+  it('disables the Settings silent-update checkbox while a save is in flight', async () => {
+    let resolveSave: (() => void) | null = null;
+    const onSilentUpdatePreferenceChange = vi.fn(
+      () => new Promise<void>((resolve) => {
+        resolveSave = resolve;
+      }),
+    );
+    renderSettingsDialog(
+      { mode: 'daemon', agentId: 'codex', allowSilentUpdates: false },
+      {
+        initialSection: 'about',
+        appVersionInfo: {
+          version: '0.14.1',
+          channel: 'beta',
+          packaged: true,
+          platform: 'darwin',
+          arch: 'arm64',
+        },
+        onSilentUpdatePreferenceChange,
+      },
+    );
+
+    const checkbox = screen.getByTestId('settings-allow-silent-updates') as HTMLInputElement;
+    fireEvent.click(checkbox);
+    await waitFor(() => expect(onSilentUpdatePreferenceChange).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(checkbox.disabled).toBe(true));
+
+    await act(async () => {
+      resolveSave?.();
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(checkbox.disabled).toBe(false));
+    expect(onSilentUpdatePreferenceChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('still autosaves an unrelated edit that lands during a silent-update save', async () => {
+    // Regression: success must only advance autosaveLastSavedRef for
+    // allowSilentUpdates. Spreading the whole latest draft would mark a
+    // concurrent theme (etc.) change as already saved and skip onPersist.
+    let resolveSave: (() => void) | null = null;
+    const onSilentUpdatePreferenceChange = vi.fn(
+      () => new Promise<void>((resolve) => {
+        resolveSave = resolve;
+      }),
+    );
+    const { onPersist } = renderSettingsDialog(
+      {
+        mode: 'daemon',
+        agentId: 'codex',
+        allowSilentUpdates: false,
+        theme: 'light',
+        accentColor: '#2563eb',
+      },
+      {
+        initialSection: 'about',
+        appVersionInfo: {
+          version: '0.14.1',
+          channel: 'beta',
+          packaged: true,
+          platform: 'darwin',
+          arch: 'arm64',
+        },
+        onSilentUpdatePreferenceChange,
+      },
+    );
+
+    fireEvent.click(screen.getByTestId('settings-allow-silent-updates'));
+    await waitFor(() => expect(onSilentUpdatePreferenceChange).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(
+        (screen.getByTestId('settings-allow-silent-updates') as HTMLInputElement).disabled,
+      ).toBe(true);
+    });
+    expect(onPersist).not.toHaveBeenCalled();
+
+    // Concurrent persisted edit while the silent-update request is in flight.
+    fireEvent.click(screen.getByRole('button', { name: /Appearance/i }));
+    fireEvent.click(screen.getByRole('radio', { name: '#059669' }));
+
+    // Resolve silent-update AFTER the concurrent edit is in draft. The success
+    // path must not stamp this accent into autosaveLastSavedRef.
+    await act(async () => {
+      resolveSave?.();
+      await Promise.resolve();
+    });
+
+    await waitForPersist(
+      onPersist,
+      expect.objectContaining({
+        accentColor: '#059669',
+      }),
+      {},
+    );
   });
 
   it('does not read event.currentTarget inside the silent-updates setCfg updater', async () => {

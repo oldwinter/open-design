@@ -31,6 +31,8 @@ OPEN_DESIGN_IMAGE=ghcr.io/nexu-io/od:latest docker compose up -d --no-build
 
 使用 `ghcr.io/nexu-io/od:latest` 获取最新 stable image，或用 `ghcr.io/nexu-io/od:<version>` 固定到某个 supported release。
 
+发布到 `ghcr.io/nexu-io/od` 的软件包必须设为公开，匿名 `docker pull`、Docker Compose 和 Dokploy 安装才能正常工作。如果从 GHCR 拉取这个镜像时返回 `authentication required` 或 `pull access denied`，组织维护者必须打开 GitHub -> Packages -> `od` -> Package settings，将可见性改为 Public。GitHub 将容器软件包的可见性修改视为单向操作，因此切换前请确认该软件包应长期保持公开。
+
 默认值：
 
 - Host port：`127.0.0.1:7456`（`OPEN_DESIGN_PORT=8080` 会发布到 `127.0.0.1:8080`）

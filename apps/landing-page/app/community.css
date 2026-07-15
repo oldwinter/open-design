@@ -130,6 +130,7 @@
   color: var(--text-strong);
 }
 .od-community .h-display em { font-style: italic; font-weight: 700; color: var(--brand-text); }
+.od-community .od-phrase { display: inline-block; white-space: nowrap; }
 .od-community .lead {
   font-size: var(--font-size-18);
   line-height: 125%;

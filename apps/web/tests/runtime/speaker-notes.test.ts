@@ -372,4 +372,102 @@ describe('speaker notes HTML helpers', () => {
     expect(html).toContain('window.resizeTo(nextWidth, nextHeight)');
     expect(html).toContain("window.addEventListener('resize', scheduleMinimumWindowSize)");
   });
+
+  it('sandboxes the presenter slide iframes to an opaque origin', () => {
+    const html = buildSpeakerNotesPresenterHtml({
+      previewHtml: '<section class="slide">One</section>',
+      title: 'Deck',
+      projectId: 'project-1',
+      fileName: 'deck.html',
+      notes: ['Intro'],
+      initialSlideIndex: 0,
+      slideCount: 1,
+      labels: {
+        title: 'Speaker notes',
+        edit: 'Edit',
+        save: 'Save notes',
+        pause: 'Pause',
+        resume: 'Resume',
+        reset: 'Reset',
+        previous: 'Previous',
+        next: 'Next',
+        empty: 'Empty',
+        slide: 'Slide {current} / {total}',
+      },
+    });
+    // The srcdoc loaded into each frame is the full, untrusted deck (scripts
+    // included); the frames must run it in an opaque origin so it cannot reach
+    // the app's storage or daemon.
+    for (const id of ['current', 'previous', 'next']) {
+      const tag = html.match(new RegExp(`<iframe id="${id}"[^>]*>`))?.[0] ?? '';
+      expect(tag).toContain('sandbox="allow-scripts"');
+      expect(tag).not.toContain('allow-same-origin');
+    }
+  });
+
+  it('uses the caller-provided labels for presenter chrome', () => {
+    // Given / When
+    const html = buildSpeakerNotesPresenterHtml({
+      previewHtml: '<section class="slide">One</section>',
+      locale: 'zh-CN',
+      title: '季度回顾',
+      projectId: 'project-1',
+      fileName: 'deck.html',
+      notes: ['开场', '进展', '总结'],
+      initialSlideIndex: 1,
+      slideCount: 3,
+      labels: {
+        title: '演讲者备注',
+        edit: '编辑',
+        save: '保存备注',
+        pause: '暂停',
+        resume: '继续',
+        reset: '重置',
+        previous: '上一页',
+        next: '下一页',
+        empty: '这一页还没有演讲者备注。',
+        slide: '第 {current} / {total} 页',
+      },
+    });
+
+    // Then
+    expect(html).toContain('<html lang="zh-CN" dir="ltr">');
+    expect(html).toContain('<title>季度回顾 - 演讲者备注</title>');
+    expect(html).toContain('id="current" title="第 2 / 3 页"');
+    expect(html).toContain('id="previous" title="第 1 / 3 页"');
+    expect(html).toContain('id="next" title="第 3 / 3 页"');
+    expect(html).not.toContain('Presenter view');
+    expect(html).not.toContain('Current slide');
+    expect(html).not.toContain('Previous slide');
+    expect(html).not.toContain('Next slide');
+  });
+
+  it('sets right-to-left document metadata for RTL presenter locales', () => {
+    // Given / When
+    const html = buildSpeakerNotesPresenterHtml({
+      previewHtml: '<section class="slide">One</section>',
+      locale: 'ar',
+      title: 'عرض',
+      projectId: 'project-1',
+      fileName: 'deck.html',
+      notes: ['مقدمة'],
+      initialSlideIndex: 0,
+      slideCount: 1,
+      labels: {
+        title: 'ملاحظات المتحدث',
+        edit: 'تحرير',
+        save: 'حفظ الملاحظات',
+        pause: 'إيقاف مؤقت',
+        resume: 'استئناف',
+        reset: 'إعادة ضبط',
+        previous: 'السابق',
+        next: 'التالي',
+        empty: 'لا توجد ملاحظات.',
+        slide: 'الشريحة {current} / {total}',
+      },
+    });
+
+    // Then
+    expect(html).toContain('<html lang="ar" dir="rtl">');
+  });
 });

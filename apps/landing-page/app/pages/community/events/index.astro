@@ -24,7 +24,7 @@ const jsonLd = {
     <section class="events-hero">
       <div class="events-wrap">
         <p class="events-kicker">{copy.heroKicker}</p>
-        <h1>{copy.heroTitle}</h1>
+        <h1 set:html={copy.heroTitle} />
         <p>{copy.heroDescription}</p>
       </div>
     </section>
@@ -128,6 +128,11 @@ const jsonLd = {
     .events-hero h1 {
       max-width: 900px;
       font-size: clamp(44px, 5.2vw, 72px);
+    }
+
+    .events-phrase {
+      display: inline-block;
+      white-space: nowrap;
     }
 
     .events-hero p:not(.events-kicker) {
