@@ -107,10 +107,10 @@ const en: HomeExtra = {
 };
 
 const zh: HomeExtra = {
-  heroLead: '从想法到原型、网页、Slides、HTML 视频——产品设计全流程，在你自己的设备上完成。',
-  heroTitleSub: 'Claude Design最佳开源平替',
+  heroLead: '从想法到原型、网\u2060页、Slides、HTML 视频——产品设计全流程，在你自己的设\u2060备\u2060上\u2060完\u2060成。',
+  heroTitleSub: 'Claude Design 最佳开源平替',
   heroSub:
-    'Open Design 是开源、本地的 vibe design workspace——把你已经在用的 coding agent 变成设计引擎，从想法到原型、网页、Slides、HTML 视频，全流程在你自己的设备上完成。\nAgent-native，接入 21 个 Coding Agent、{systems} 个 Design System，Apache-2.0。',
+    'Open Design 是开源、本地的 vibe design workspace——把你已经在用的 Coding\u00a0Agent 变成设计引擎，从想法到原型、网\u2060页、Slides、HTML 视频，全流程在你自己的设\u2060备\u2060上\u2060完\u2060成。\nAgent-native，接入 21 个 Coding\u00a0Agent、{systems} 个 Design System，Apache-2.0。',
   aboutKicker: '为什么选择 Open Design？',
   aboutStatement:
     'Open Design 是开源、agentic 的 vibe design workspace——把你已经在用的 coding agent 变成一台产出完全归你的设计引擎。当 LLM 第一次证明它能真正做设计——是真的设计稿，不是写文案——这份能力却是闭源、托管、锁模型的。Open Design 把它打开：本地、BYOK、Apache-2.0。',

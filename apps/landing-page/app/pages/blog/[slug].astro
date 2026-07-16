@@ -456,6 +456,15 @@ const author = getBlogAuthor((post.data as { author?: string }).author);
         max-width: 56ch;
         margin-bottom: 28px;
       }
+      :global(:lang(zh)) .post-title {
+        word-break: auto-phrase;
+        text-wrap: balance;
+      }
+      :global(:lang(zh)) .post-summary {
+        font-style: normal;
+        word-break: auto-phrase;
+        text-wrap: pretty;
+      }
       .post-meta {
         display: flex;
         flex-wrap: wrap;

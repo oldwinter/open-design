@@ -219,7 +219,7 @@ CI 相关 GitHub automation 使用两层架构：
 
 ## Asking the user questions
 
-- 澄清用户意图只有一个机制：model inline 产出的 `<question-form>` markdown artifact。Chat 通过 `QuestionsBanner` entry point（`AssistantMessage.tsx`）展示入口；表单本身在右侧 Questions tab（`QuestionsPanel` + `QuestionFormView`）渲染；答案作为下一条用户消息回流（`apps/web/src/artifacts/question-form.ts` 中的 `formatFormAnswers` -> `POST /api/chat`）。没有 inline interactive tool card。
+- 澄清用户意图只有一个机制：model inline 产出的 `<question-form>` markdown artifact。`AssistantMessage.tsx` 会把 `QuestionFormView` 直接渲染在发起问题的 assistant message 内；答案作为下一条用户消息回流（`apps/web/src/artifacts/question-form.ts` 中的 `formatFormAnswers` -> `POST /api/chat`）。没有独立的 Questions tab，也没有 native tool card。
 - `<question-form>` 在任何 turn 都有效，不只限于 turn-1 discovery。它既用于 turn-1 discovery briefs，也用于对话中途澄清（例如模糊 annotation）。System-prompt guidance 位于 `apps/daemon/src/prompts/system.ts` 和 `discovery.ts`；API/BYOK 模式文案通过 `packages/contracts/src/prompts/system.ts` mirrored。
 - `run-artifacts.ts:runAskedUserQuestion` 通过扫描 run 流式文本中的 `<question-form` marker（跨 `text_delta` chunks 重组）来驱动 `run_finished.asked_user_question` analytics signal，而不是检测任何 tool call。
 
@@ -227,7 +227,7 @@ CI 相关 GitHub automation 使用两层架构：
 
 - `apps/web/src/components/file-viewer-render-mode.ts` 决定 HTML previews 使用 URL-load 还是 srcDoc。Bridges（deck、comment/inspect selection、palette、edit、tweaks）**只能**通过 srcDoc path 注入。任何 feature 需要 srcDoc-only bridge 时，都要给 `UrlLoadDecision` 添加新的 disqualifier；适当时基于 source-content heuristic 从 `FileViewer.tsx` 传入（例如 `hasTweaksTemplate`）。Host 会同时保持两个 iframes mounted，并交换 CSS visibility，因此切换 render mode 不会造成 iframe reload flash；`iframeRef.current` 通过 `useEffect` 与 active iframe 保持一致。Receive filters 用 `isOurIframe(ev.source)` 接受来自任一 iframe 的 messages，但那些**只能**来自 active iframe 的 signals（例如 `od:tweaks-available`）会再次检查 `ev.source === iframeRef.current?.contentWindow`。
 - TodoWrite UI 通过 `ChatPane.tsx` 中的 `PinnedTodoSlot` 把一个 canonical task list pin 在 chat composer 上方。该 slot 通过 `latestTodoWriteInputFromMessages`（`apps/web/src/runtime/todos.ts`）读取 conversation 中最新的 TodoWrite snapshot。`AssistantMessage.stripTodoToolGroups` 会从 per message rendering 中移除所有 TodoWrite tool groups，让屏幕上正好只有一个 TodoCard。Progress count 同时包含 `completed` 和 `in_progress` items（1/4 表示 "one underway"，不是 "zero finished"）。Done button dismissal 以 snapshot 的 JSON 为 key，因此 agent 发出的 fresh TodoWrite 会自动重新显示 card。`PinnedTodoSlot` 位于 `.chat-log` scroll container **外部**，所以 auto-scroll 需要显式覆盖：`ChatPane` 的 `ResizeObserver` 从 `PinnedTodoSlot` 接受 `containerRef` 并直接 observe 该元素，pane-level `MutationObserver`（chat pane ancestor 上的 `childList: true`）会在新 TodoWrite snapshots 使 slot mount/unmount 时重新同步该 observation。
-- 澄清问题通过 `<question-form>` artifact 和 Questions tab 渲染，而不是 inline tool card。见上方 "Asking the user questions"。
+- 澄清问题通过 `<question-form>` artifact 直接在 chat 内渲染。见上方 "Asking the user questions"。
 - Tool group rendering 使用 `dedupeSnapshotToolRetries` 折叠 `TodoWrite` snapshots（只保留最近一次 call，因为每次 call 都是 state replace）。`SNAPSHOT_TOOL_NAMES` 列出 snapshot-style tools；non-snapshot tools 原样通过。
 
 ## Web CSS ownership

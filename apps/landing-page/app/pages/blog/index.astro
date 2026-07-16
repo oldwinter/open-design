@@ -82,7 +82,10 @@ const categoryValue = (category: string) => category.toLowerCase().replace(/[^a-
 // Cover art for each post. Unified "Figma-selection" editorial style: near-white
 // ground, ink-black line-art, a single acid-green selection frame, and a soft 3D
 // design-tool object. Generated via the `od-site-illustration` skill.
-const postImages: Record<string, { src: string; alt: string }> = {
+const postImages: Record<
+  string,
+  { src: string; alt: string; altByLocale?: Partial<Record<string, string>> }
+> = {
   'claude-ppt-skills': {
     src: '/blog/claude-ppt-skills-cover.webp',
     alt: 'A clean editorial illustration of a fanned stack of presentation slides on a near-white desk, the top slide held in a green selection frame with corner handles, beside a soft matte 3D cursor and pen, with a dot grid and golden spiral',
@@ -118,6 +121,20 @@ const postImages: Record<string, { src: string; alt: string }> = {
   'ppt-master': {
     src: '/blog/ppt-master-cover.webp',
     alt: 'A clean illustration of a document turning into an editable slide made of native shape blocks, the slide held in a green selection frame with corner handles, on a near-white dot-grid ground',
+  },
+  'open-design-0-14-0-inspiration-time-machine': {
+    src: '/blog/open-design-0-14-0-inspiration-time-machine-cover.webp',
+    alt: 'A warm editorial illustration of a hand-drawn idea sketch with a lightbulb becoming a calm sage-green planning workspace with a structured outline and a version-history timeline, beside soft plants and a coffee mug',
+    altByLocale: {
+      zh: '暖色编辑插画：带灯泡的手绘创意草图逐渐变成宁静的鼠尾草绿色方案工作区，其中包含结构化提纲和版本历史时间线，旁边摆着柔和的植物与咖啡杯',
+    },
+  },
+  'open-design-0-15-0-cost-less-ship-faster': {
+    src: '/blog/open-design-0-15-0-cost-less-ship-faster-cover.webp',
+    alt: 'A warm editorial illustration of a hand-drawn deck sketch becoming a calm sage-green slide workspace shipping fast beside a timer, on a near-white paper desk with soft plants and a coffee mug',
+    altByLocale: {
+      zh: '暖色编辑插画：手绘演示文稿草图逐渐变成宁静的鼠尾草绿色幻灯片工作区，计时器表现快速交付；近白色纸张桌面上摆着柔和的植物与咖啡杯',
+    },
   },
   'how-to-use-claude-code-for-frontend-design': {
     src: '/blog/how-to-use-claude-code-for-frontend-design-cover.webp',
@@ -237,6 +254,10 @@ const postImages: Record<string, { src: string; alt: string }> = {
   },
 };
 const getPostImage = (id: string) => postImages[id];
+const getPostImageAlt = (id: string) => {
+  const image = getPostImage(id);
+  return image?.altByLocale?.[locale] ?? image?.alt ?? '';
+};
 // Prefer a per-locale readingTime when a localized bodyHtml differs in length
 // from the English body (mirrors the detail page in `[slug].astro`), so cards
 // on non-English blog indexes show an accurate estimate.
@@ -318,7 +339,7 @@ const localizedPostField = (
                   {getPostImage(featuredPost.id) ? (
                     <img
                       src={getPostImage(featuredPost.id)?.src}
-                      alt={getPostImage(featuredPost.id)?.alt}
+                      alt={getPostImageAlt(featuredPost.id)}
                       loading='eager'
                     />
                   ) : (
@@ -385,7 +406,7 @@ const localizedPostField = (
                         {getPostImage(post.id) ? (
                           <LazyImg
                             src={getPostImage(post.id)!.src}
-                            alt={getPostImage(post.id)?.alt ?? ''}
+                            alt={getPostImageAlt(post.id)}
                             loading={idx < 4 ? 'eager' : 'precise'}
                           />
                         ) : (
