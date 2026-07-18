@@ -8,7 +8,7 @@
 - 中文 fork：`oldwinter/open-design`
 - Runtime：桌面应用、Web 应用、daemon、CLI、MCP server，以及应用内可发现的 skills、design systems 和 templates
 - 主要中文入口：根目录中文文档、`docs/i18n/*zh-CN*`、`apps/web/src/i18n/locales/zh-CN.ts`、landing page 中文 locale，以及已有中文 runtime skill
-- 当前同步上游 commit：`ad89fc615f30c931df3076903f55650bb4c5de5c`
+- 当前同步上游 commit：`6b90486c97967633bfcfb0cd4d3c9b3314bf0caf`
 
 ## 本地化目标
 

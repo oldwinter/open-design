@@ -41,7 +41,7 @@ od:
 
 ## Background
 
-此 skill 的 8 个 dimensions 来自对 Open Design 捆绑的 71 个 design systems 的分析。`design-systems/` 中的每个 DESIGN.md 至少都会解析出：color palette、accent、typography、display font、layout model 和 component style。我们将它们提炼为 8 个 orthogonal dimensions，覆盖 designer 在放置任何 pixel 前需要做出的决策。Mood 和 density 被加入，是因为它们是 natural language briefs 中最常见的两类歧义来源（"make it clean" 对不同人意味着不同东西）。
+此 skill 的 8 个 dimensions 来自 Open Design 最初的 71 套 design system catalog；71 是研究样本数，不是当前捆绑的 design system 数量。`design-systems/` 中的每个 DESIGN.md 仍至少都会解析出：color palette、accent、typography、display font、layout model 和 component style。我们将它们提炼为 8 个 orthogonal dimensions，覆盖 designer 在放置任何 pixel 前需要做出的决策。Mood 和 density 被加入，是因为它们是 natural language briefs 中最常见的两类歧义来源（"make it clean" 对不同人意味着不同东西）。
 
 刻意排除在 brief level 之外的 dimensions：animation timing、responsive strategy 和 accessibility contrast。这些由各个 skills 在 template level 强制执行（例如 `saas-landing` 处理自己的 responsive logic），不过生成的 DESIGN.md 会包含合理的 breakpoint defaults 供下游消费。
 

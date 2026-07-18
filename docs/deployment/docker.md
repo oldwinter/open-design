@@ -46,7 +46,7 @@ OPEN_DESIGN_ALLOWED_ORIGINS=https://yourdomain.com
 ## Step 3: Start Open Design
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 预期现象：
@@ -56,7 +56,7 @@ docker-compose up -d
 ## Step 4: Confirm Container Health
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 成功状态类似：

@@ -1,25 +1,15 @@
 # Skills
 
-Skill 是 Open Design 中设计能力的原子单元：一个文件夹、一份 `SKILL.md`，可选附带 `assets/` 与 `references/`。Daemon 启动时会扫描此目录；放入一个文件夹、重启，picker 就会显示它。
+本目录存放**功能型 skill**：agent 在处理用户输入时调用的能力，例如 brief、audit、utility 和 asset packager。每个文件夹都包含一份 `SKILL.md`，并可按需附带 `assets/` 或 `references/`。
 
-## 添加新 skill
+用于渲染 prototype、deck、document、image、video 和 audio 的形态属于 [`design-templates/`](../design-templates/)，不放在这里。分类规则与迁移历史见 [`specs/current/skills-and-design-templates.md`](../specs/current/skills-and-design-templates.md)。
 
-→ **[`docs/skills-contributing.md`](../docs/skills-contributing.md)**：贡献者指南。包含 quick start、结构说明、本地开发循环、合并标准、PR template 和常见拒绝模式。
+## 添加 skill
 
-→ **[`docs/skills-protocol.md`](../docs/skills-protocol.md)**：协议 spec。包含 frontmatter 语法、发现规则、mode 语义。
+先阅读 [`docs/skills-protocol.md`](../docs/skills-protocol.md)，了解 frontmatter、discovery、precedence 和 mode semantics。复制最接近需求的功能型 skill，保持文件夹自包含，并为处理用户输入的工作设置合适、明确的 `od.mode`。
 
-最快路径是复制一个最接近你想法的现有 skill，编辑 `SKILL.md` 和 `example.html`，并在打开 PR 前阅读贡献者指南。我们对 skill 很挑剔，因为它们是用户直接看到的 surface；合并标准是真实存在的，贡献者指南会把它写清楚。
-
-## 已随仓库发布的 skills
-
-每个 skill 的 `SKILL.md` 中的 `mode` 和 `featured` 标记决定它在 picker 中出现的位置。下面的列表只是快速定位；如果想找“从零开始时照着抄”的精选示例，请看 [`docs/skills-contributing.md`](../docs/skills-contributing.md) 中的 **References** 章节。
-
-```bash
-# 从 CLI 浏览 registry：
-ls skills/
-# 54+ 个 skill，覆盖 prototype、deck、template、design-system、image、video、audio 等模式
-```
+如果要添加渲染 template，请改为遵循 [`docs/skills-contributing.md`](../docs/skills-contributing.md) 与 [`design-templates/AGENTS.md`](../design-templates/AGENTS.md)。
 
 ## License
 
-除非各自的 `LICENSE` 另有说明，本目录中的 skills 均为 Apache-2.0。值得注意的 MIT 例外包括 [`skills/guizang-ppt/`](guizang-ppt/)（从 [op7418/guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 原样打包）以及 [`skills/web-clone/`](web-clone/)（改编自 [Jane-xiaoer/claude-skill-web-clone](https://github.com/Jane-xiaoer/claude-skill-web-clone)）。
+除非各自的 `LICENSE` 另有说明，本目录中的 skill 均采用 Apache-2.0。[`web-clone/`](web-clone/) 改编自 [Jane-xiaoer/claude-skill-web-clone](https://github.com/Jane-xiaoer/claude-skill-web-clone)。采用 MIT 许可证的 `guizang-ppt` 渲染 template 位于 [`design-templates/guizang-ppt/`](../design-templates/guizang-ppt/)。

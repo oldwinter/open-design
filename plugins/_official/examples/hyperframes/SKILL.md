@@ -427,7 +427,7 @@ Failures 通常意味着 text 溢出了 bubble/card、fixed-size label 裁掉了
 完成 animations 后，运行 animation map 验证 choreography：
 
 ```bash
-node skills/hyperframes/scripts/animation-map.mjs <composition-dir> \
+node design-templates/hyperframes/scripts/animation-map.mjs <composition-dir> \
   --out <composition-dir>/.hyperframes/anim-map
 ```
 

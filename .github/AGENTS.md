@@ -1,10 +1,10 @@
 # GitHub automation guide
 
-这个目录仍然只做了部分标准化。若干历史 workflow 和 helper 位置还没有统一形态。不要盲目复制旧模式。对于新工作、bug 修复和清理，除非 maintainer 明确选择另一条边界，否则以 `ci.yml` + `comment.atom.yml` + `autofix.atom.yml` + `report.atom.yml` + `.github/scripts/handoff.py` 体系作为参考 topology。
+This directory is still only partially standardized. Several historical workflows and helper locations do not yet follow one uniform shape. Do not copy old patterns blindly. For new work, bug fixes, and cleanup, use the `ci.yml` + `comment.atom.yml` + `autofix.atom.yml` + `report.atom.yml` + `.github/scripts/handoff.py` system as the reference topology unless a maintainer explicitly chooses a different boundary.
 
 ## Required reading
 
-修改 GitHub automation 前，阅读当前版本：
+Before changing GitHub automation, read the current versions of:
 
 - `.github/workflows/ci.yml`
 - `.github/workflows/comment.atom.yml`
@@ -13,154 +13,154 @@
 - `.github/scripts/handoff.py`
 - `scripts/scopes.ts`
 - `e2e/tests/packaged-smoke-workflow.test.ts`
-- 触碰 fork PR approval behavior 时，还要读 `scripts/approve-fork-pr-workflows.ts` 和 `scripts/approve-fork-pr-workflows.test.ts`
+- `scripts/approve-fork-pr-workflows.ts` and `scripts/approve-fork-pr-workflows.test.ts` when touching fork PR approval behavior
 
-如果变更影响 cross-workflow behavior，更新 topology tests，不要只依赖 workflow YAML review。
+If the change affects cross-workflow behavior, update the topology tests instead of relying only on workflow YAML review.
 
 ## Architecture
 
-GitHub automation 使用两层架构。
+GitHub automation uses two layers.
 
-Business layer：
+Business layer:
 
-- Business workflows 决定发生了什么，以及下一步应该请求什么。
-- `ci.yml` 是主要的 low-privilege PR、merge-queue 和 manual validation gate（仅作为应用合并门槛）。
-- `ci.yml` 应该运行 validation、决定 scopes，并产出 typed handoff artifacts。
-- Packaging checks 独立运行且位于 merge gate 之外：`nix.yml`（flake check）和 `docker-image.yml`（image validate + publish）。不要把它们重新挂回 `Validate workspace`。
-- 当 capability workflow 能完成 trusted writes 时，business workflows 不应直接写 PR comments 或 branches。
+- Business workflows decide what happened and what should be requested next.
+- `ci.yml` is the main low-privilege PR, merge-queue, and manual validation gate (application merge bar only).
+- `ci.yml` should run validation, decide scopes, and produce typed handoff artifacts.
+- Packaging checks are standalone and outside the merge gate: `nix.yml` (flake check) and `docker-image.yml` (image validate + publish). Do not re-attach them to `Validate workspace`.
+- Business workflows should not perform trusted writes to PR comments or branches when a capability workflow can do it.
 
-Atomic capability layer：
+Atomic capability layer:
 
-- Capability workflows 从定义清晰的 inputs 执行可复用 trusted operations。
-- `comment.atom.yml` 消费 `handoff-comment-*` artifacts，并 upsert 纯文本 PR comments。
-- `autofix.atom.yml` 消费 `handoff-autofix-*` artifacts，并应用 same-repository patches。
-- `report.atom.yml` 消费 `handoff-report-*` artifacts，处理需要 trusted materialization 的 advanced comments，例如 dependency install、R2 access、artifact processing，或 upsert 前的 report generation。
-- `.github/scripts/handoff.py` 拥有 `comment`、`autofix` 和 `report` handoffs 的 artifact names、directory layout、discovery 和 contract validation。
+- Capability workflows perform reusable trusted operations from well-defined inputs.
+- `comment.atom.yml` consumes `handoff-comment-*` artifacts and upserts pure text PR comments.
+- `autofix.atom.yml` consumes `handoff-autofix-*` artifacts and applies same-repository patches.
+- `report.atom.yml` consumes `handoff-report-*` artifacts and handles advanced comments that need trusted materialization, such as dependency install, R2 access, artifact processing, or report generation before upsert.
+- `.github/scripts/handoff.py` owns artifact names, directory layout, discovery, and contract validation for `comment`, `autofix`, and `report` handoffs.
 
-默认规则：在某个 flow 已经针对这些现有 atomic capabilities 测试过之前，不要新增 `foo.comment.atom.yml`、`foo.autofix.atom.yml` 或 `foo.report.atom.yml` 这类 domain-specific follow-on workflow。
+Default rule: do not add a new domain-specific follow-on workflow such as `foo.comment.atom.yml`, `foo.autofix.atom.yml`, or `foo.report.atom.yml` until the flow has been tested against these existing atomic capabilities.
 
 ## Directory conventions
 
-- `.github/workflows/` 包含 GitHub Actions workflow entrypoints。
-- `.github/actions/` 包含 workflow setup steps 用的 reusable composite actions。
-- `.github/scripts/` 包含 workflow-owned scripts 和 contracts；它们不是通用 repo developer commands。
-- `.github/workflow/scripts/` 当前包含较旧的 release workflow implementation scripts。把它视为现有 release infrastructure，不要把它当成新 CI handoff helpers 的默认位置。
-- Root `scripts/` 仍用于 repo-level developer checks、product scripts 和 guard/test logic。不要只为了显得更通用，就把 workflow-only handoff glue 移到那里。
+- `.github/workflows/` contains GitHub Actions workflow entrypoints.
+- `.github/actions/` contains reusable composite actions for workflow setup steps.
+- `.github/scripts/` contains workflow-owned scripts and contracts that are not general repo developer commands.
+- `.github/scripts/release/` contains release workflow implementation helpers. Keep release-only helpers there and CI handoff helpers at `.github/scripts/`.
+- Root `scripts/` remains for repo-level developer checks, product scripts, and guard/test logic. Do not move workflow-only handoff glue there just to make it look more general.
 
-新的 workflow-owned helpers 通常应放在 `.github/scripts/`。Project-owned scripts 通常优先使用 TypeScript，但当 stdlib portability 和低 setup cost 很重要时，小型 GitHub runner glue 可以使用 Python。保持这类例外狭窄，并受 `pnpm guard` policy 覆盖。
+New workflow-owned helpers should usually live under `.github/scripts/`. Prefer TypeScript for project-owned scripts in general, but Python is acceptable for small GitHub runner glue when stdlib portability and low setup cost matter. Keep such exceptions narrow and covered by `pnpm guard` policy.
 
 ## Handoff contract
 
-所有 CI follow-on artifact names 和 paths 都使用 `.github/scripts/handoff.py`。Canonical layout 是：
+Use `.github/scripts/handoff.py` for all CI follow-on artifact names and paths. The canonical layout is:
 
-- `handoff/comment/<id>/metadata.json` 加 `body.md`
-- `handoff/autofix/<id>/metadata.json` 加 `patch.diff`
+- `handoff/comment/<id>/metadata.json` plus `body.md`
+- `handoff/autofix/<id>/metadata.json` plus `patch.diff`
 - `handoff/report/<id>/metadata.json`
 
-Artifact names 必须来自 `handoff.py artifact-name <kind> <id>`，download patterns 必须来自 `handoff.py artifact-pattern <kind>`。
+Artifact names must come from `handoff.py artifact-name <kind> <id>`, and download patterns must come from `handoff.py artifact-pattern <kind>`.
 
-`metadata.json` 总是标识目标 PR、head SHA、base SHA、CI run id、handoff kind 和 handoff id。Capability-specific fields 属于对应 capability 的 metadata，并且必须由 `handoff.py` validate。
+`metadata.json` always identifies the target PR, head SHA, base SHA, CI run id, handoff kind, and handoff id. Capability-specific fields belong in that capability's metadata and must be validated by `handoff.py`.
 
-不要在 workflows 中手写 artifact name prefixes、替代 directory layouts 或一次性 metadata parsers。先扩展 `handoff.py`，再让 producers 和 consumers 使用新 contract。
+Do not hand-roll artifact name prefixes, alternate directory layouts, or one-off metadata parsers in workflows. Extend `handoff.py` first, then use the new contract from producers and consumers.
 
 ## Capability rules
 
 ### `comment.atom.yml`
 
-`comment.atom.yml` 只用于纯文本 PR comments。
+Use `comment.atom.yml` for pure text PR comments only.
 
-- Input 是已经最终确定的 `body.md`。
-- Body 必须包含 stable marker。
-- Workflow 在 upsert 前 validate PR state、draft state、head SHA 和 base SHA。
-- 它通过 `jq -n --rawfile body ...` 和 `gh api --input` 写入 GitHub API payload。
-- 它不得安装 dependencies、访问 R2、执行 report scripts、理解 Nix、理解 visual diffs，或 checkout PR code。
+- Input is an already-final `body.md`.
+- The body must contain a stable marker.
+- The workflow validates PR state, draft state, head SHA, and base SHA before upsert.
+- It writes the GitHub API payload through `jq -n --rawfile body ...` and `gh api --input`.
+- It must not install dependencies, access R2, execute report scripts, understand Nix, understand visual diffs, or checkout PR code.
 
 ### `autofix.atom.yml`
 
-`autofix.atom.yml` 用于 same-repository patch application。
+Use `autofix.atom.yml` for same-repository patch application.
 
-- Input 是 `patch.diff` 加 metadata，其中包括 `allowed_paths` 和 `commit_message`。
-- Fork PRs 必须 skip，而不是 fail。
-- Closed、draft、stale head 和 stale base cases 必须 skip，而不是 fail。
-- 只有在 validate live PR state 后，才 apply patches。
-- Verify resulting changed files 正好匹配 `allowed_paths`。
-- 优先使用配置好的 bot app token push，这样 follow-up CI 会按预期触发。
-- 不要把这个 workflow 用于 arbitrary commands、generated scripts 或 PR-head code execution。
+- Input is `patch.diff` plus metadata including `allowed_paths` and `commit_message`.
+- Fork PRs must skip, not fail.
+- Closed, draft, stale head, and stale base cases must skip, not fail.
+- Apply patches only after validating the live PR state.
+- Verify the resulting changed files exactly match `allowed_paths`.
+- Prefer the configured bot app token for pushes so follow-up CI is triggered as expected.
+- Do not use this workflow for arbitrary commands, generated scripts, or PR-head code execution.
 
 ### `report.atom.yml`
 
-`report.atom.yml` 用于 advanced comments，也就是 comment body 不是纯文本 input 的场景。
+Use `report.atom.yml` for advanced comments, meaning comment bodies that are not pure text inputs.
 
-例如需要：
+Examples include reports that need:
 
-- 下载并合并 artifacts，
-- 安装 dependencies，
-- 访问 R2 或其他 trusted secrets，
-- 渲染 media 或 diffs，
-- 从 trusted base code 生成 rich markdown body。
+- downloading and combining artifacts,
+- installing dependencies,
+- accessing R2 or other trusted secrets,
+- rendering media or diffs,
+- generating a rich markdown body from trusted base code.
 
-`report.atom.yml` 是 trusted writer 和 materializer。它可以直接 upsert comments，因为这是 advanced comment capability 的一部分，但必须使用与 `comment.atom.yml` 相同的 file-backed payload hygiene。
+`report.atom.yml` is a trusted writer and materializer. It may upsert comments directly because that is part of the advanced comment capability, but it must do so with the same file-backed payload hygiene as `comment.atom.yml`.
 
-规则：
+Rules:
 
-- 将所有 PR-produced artifacts 视为 untrusted data。
-- 不要在 `report.atom.yml` 中 checkout 或执行 PR-head code。
-- 运行 repository scripts 前 checkout trusted base/default code。
-- 在 secret use 前 validate PR state、draft state、head SHA 和 base SHA；实际可行时，在 comment upsert 前再次 validate。
-- 保持 report type dispatch 显式。如果多个 report types 增长，添加清晰的 handler boundary，不要把 branching 埋在 shell fragments 里。
+- Treat all PR-produced artifacts as untrusted data.
+- Do not checkout or execute PR-head code in `report.atom.yml`.
+- Checkout trusted base/default code before running repository scripts.
+- Validate PR state, draft state, head SHA, and base SHA before secret use and again before comment upsert when practical.
+- Keep report type dispatch explicit. If multiple report types grow, add a clear handler boundary instead of burying branching in shell fragments.
 
 ## Fork PR approval
 
-`fork-pr-workflow-approval.yml` 和 `scripts/approve-fork-pr-workflows.ts` 是独立 security boundary。它们可以 approve low-risk fork PR `pull_request` runs，但不得 approve trusted `workflow_run` capability workflows。
+`fork-pr-workflow-approval.yml` and `scripts/approve-fork-pr-workflows.ts` are a separate security boundary. They may approve low-risk fork PR `pull_request` runs, but must not approve trusted `workflow_run` capability workflows.
 
-除非 maintainer 明确扩展 allowlist，否则让 `.github/workflows/ci.yml` 保持唯一 approved workflow path。`comment.atom.yml`、`autofix.atom.yml`、`report.atom.yml`、release workflows、deployment workflows，以及任何带 trusted secrets 或 write permissions 的 workflow，都必须保持在 fork auto-approval 之外。
+Keep `.github/workflows/ci.yml` as the only approved workflow path unless a maintainer explicitly expands the allowlist. `comment.atom.yml`, `autofix.atom.yml`, `report.atom.yml`, release workflows, deployment workflows, and any workflow with trusted secrets or write permissions must stay outside fork auto-approval.
 
 ## Common iteration flow
 
-1. Classify the change。
-   - Validation 或 business decision：从 `ci.yml` 开始。
-   - Pure text PR comment：产出 `handoff/comment`，让 `comment.atom.yml` 消费。
-   - Same-repo patch：产出 `handoff/autofix`，让 `autofix.atom.yml` 消费。
-   - Rich/generated comment：产出 `handoff/report`，让 `report.atom.yml` materialize 并 upsert。
-   - New naming、paths 或 metadata：更新 `.github/scripts/handoff.py`。
-2. 当某个 workflow/script 应触发 validation lane 时，更新 `scripts/scopes.ts` 中的 scope routing。
-3. 更新 `e2e/tests/packaged-smoke-workflow.test.ts` 或相关 script test 中的 topology coverage。
-4. 运行 focused checks：
+1. Classify the change.
+   - Validation or business decision: start in `ci.yml`.
+   - Pure text PR comment: produce `handoff/comment` and let `comment.atom.yml` consume it.
+   - Same-repo patch: produce `handoff/autofix` and let `autofix.atom.yml` consume it.
+   - Rich/generated comment: produce `handoff/report` and let `report.atom.yml` materialize and upsert it.
+   - New naming, paths, or metadata: update `.github/scripts/handoff.py`.
+2. Update scope routing in `scripts/scopes.ts` when a workflow/script should trigger a validation lane.
+3. Update topology coverage in `e2e/tests/packaged-smoke-workflow.test.ts` or the relevant script test.
+4. Run the focused checks:
    - `python3 .github/scripts/handoff.py self-check`
    - `actionlint -color`
    - `pnpm --filter @open-design/e2e test tests/packaged-smoke-workflow.test.ts`
-5. 交付前运行 repo-level checks：
+5. Run repo-level checks before handing off:
    - `pnpm guard`
    - `pnpm typecheck`
 
-完成 workflow edits 前使用 `git diff --check`。
+Use `git diff --check` before finishing workflow edits.
 
 ## FAQ
 
 ### Should I add a new `*.comment.atom.yml` workflow?
 
-通常不要。如果 body 已经是 final markdown，产出 `handoff/comment` 并使用 `comment.atom.yml`。如果 body 必须从 artifacts、secrets 或 report code 生成，产出 `handoff/report` 并使用 `report.atom.yml`。
+Usually no. If the body is already final markdown, produce `handoff/comment` and use `comment.atom.yml`. If the body must be generated from artifacts, secrets, or report code, produce `handoff/report` and use `report.atom.yml`.
 
 ### Why not put rich visual report generation in `comment.atom.yml`?
 
-因为 `comment.atom.yml` 是 pure text comment shell。安装 dependencies、使用 R2 secrets、下载 screenshots 和生成 diffs 都属于 advanced comment materialization，应放在 `report.atom.yml`。
+Because `comment.atom.yml` is the pure text comment shell. Installing dependencies, using R2 secrets, downloading screenshots, and generating diffs are advanced comment materialization, which belongs in `report.atom.yml`.
 
 ### Why can `report.atom.yml` upsert comments directly?
 
-`report.atom.yml` 不是 pure producer。它是 auditable advanced comment capability：materialize 一个 non-pure text comment 并发布。关键边界在于这份权力集中在一个 workflow 中，并具备 trusted inputs、stale checks 和 file-backed payload hygiene。
+`report.atom.yml` is not a pure producer. It is the auditable advanced comment capability: materialize a non-pure text comment and publish it. The key boundary is that this power is explicit in one workflow with trusted inputs, stale checks, and file-backed payload hygiene.
 
 ### Why does `autofix.atom.yml` skip fork PRs?
 
-Fork PR branches 在同一 trust model 下不可由 base repository 写入，向 forks push generated changes 需要不同的 permission 和 ownership design。Skip fork PRs，并用 comments 或 report output 提供 contributor guidance。
+Fork PR branches are not writable by the base repository in the same trust model, and pushing generated changes to forks would require a different permission and ownership design. Skip fork PRs and use comments or report output for contributor guidance.
 
 ### Can trusted `workflow_run` workflows checkout PR code?
 
-默认不可以。它们可以把 PR artifacts 作为 data 下载，但不得执行 PR-provided code 或 scripts。运行 repository scripts 前 checkout trusted base/default code。
+No, not by default. They may download PR artifacts as data, but must not execute PR-provided code or scripts. Checkout trusted base/default code before running repository scripts.
 
 ### Why centralize handoff names in `handoff.py`?
 
-GitHub artifact behavior 很容易 drift：artifact names 在每次 upload 中必须唯一，consumers 也需要 stable patterns。集中 names、paths 和 validation 可以让 producers 与 consumers 对齐，并让 topology tests 有意义。
+GitHub artifact behavior is easy to drift: artifact names must be unique per upload, and consumers need stable patterns. Centralizing names, paths, and validation keeps producers and consumers aligned and makes topology tests meaningful.
 
 ### Where should tests live?
 
-当 tests 观察 repository-level behavior 时，cross-workflow topology tests 属于 `e2e/tests/`。Script-specific behavior 可以留在现有 script tests 附近。不要只是因为存在 workflow helper 就新增一次性的 `*.test.ts` 文件；当现有 topology coverage 和 helper self-checks 足够时，优先使用它们。
+Cross-workflow topology tests belong in `e2e/tests/` when they observe repository-level behavior. Script-specific behavior can stay next to the script's existing tests. Do not add one-off `*.test.ts` files just because a workflow helper exists; prefer existing topology coverage and helper self-checks when that is enough.

@@ -1,20 +1,20 @@
 # Skills Protocol
 
-**父文档：** [`spec.md`](spec.md) · **同级文档：** [`skills-contributing.md`](skills-contributing.md) · [`architecture.md`](architecture.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
+**Parent:** [`spec.md`](spec.md) · **Siblings:** [`skills-contributing.md`](skills-contributing.md) · [`architecture.md`](architecture.md) · [`agent-adapters.md`](agent-adapters.md) · [`modes.md`](modes.md)
 
-> 想把一个 skill 发到 upstream，而不是阅读协议 spec？请看 [`skills-contributing.md`](skills-contributing.md)：quick start、merge bar、PR template、common rejections 都在那里。本文档定义 **what**（frontmatter 语法、发现规则、mode 语义）；那份文档说明 **how**（从 clone 到 merged PR）。
+> Want to ship a skill upstream rather than read the protocol spec? See [`skills-contributing.md`](skills-contributing.md) — quick start, merge bar, PR template, common rejections. This file is the **what** (frontmatter grammar, discovery rules, mode semantics); that file is the **how** (clone to merged PR).
 
-**Skill** 是 OD 中设计能力的原子单元。我们原样采用 Claude Code 的 `SKILL.md` 约定作为基础格式，然后增加一些可选字段，用于设计相关能力（preview type、input schema、slider parameters）。为纯 Claude Code 编写的 skill 可以在 OD 中运行。不使用 OD 扩展的 OD skill 也可以在纯 Claude Code 中运行。
+A **Skill** is an atomic functional capability in OD. A **design template** is a rendering-catalogue entry. Both use Claude Code's `SKILL.md` convention as their portable instruction format and may add `od:` metadata, but they have different ownership and APIs: functional skills live in `skills/` and `/api/skills`; rendering templates live in `design-templates/` and `/api/design-templates`.
 
-> **兼容性承诺：** 像 [`guizang-ppt-skill`](https://github.com/op7418/guizang-ppt-skill) 这样的 skill 可以在 OD 中**无需修改**地工作。只要放进 `~/.claude/skills/`，OD 就会发现它。
+> **Compatibility promise:** A bundle that contains `SKILL.md` remains readable by agents that support the Agent Skills format. Installation and catalogue placement are separate concerns: the bundled guizang integration is maintained under `design-templates/guizang-ppt/`, while external distribution normally uses the plugin system.
 
 ---
 
-## 1. Base format（与 Claude Code 保持一致）
+## 1. Base format (unchanged from Claude Code)
 
-每个 skill 至少是一个包含 `SKILL.md` 的目录：
+Every skill is a directory containing at minimum a `SKILL.md`:
 
-```text
+```
 <skill-root>/
 ├── SKILL.md              # manifest + workflow instructions
 ├── assets/               # templates, images, boilerplate the skill writes
@@ -25,7 +25,7 @@
     └── …
 ```
 
-`SKILL.md` front-matter（YAML）：
+`SKILL.md` front-matter (YAML):
 
 ```yaml
 ---
@@ -46,13 +46,13 @@ triggers:
 ---
 ```
 
-正文是自由 Markdown，描述 agent 应遵循的 workflow，通常是带原则说明的编号步骤列表。[guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) 就是这种形态。
+Body is free-form Markdown that describes the workflow the agent should follow — typically a numbered step list plus principles. This is what [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill) does.
 
-**OD 会原样读取所有这些内容。** 不需要任何改动。
+**OD reads all of this as-is.** No changes required.
 
-## 2. OD extensions（可选）
+## 2. OD extensions (optional)
 
-Skills 可以声明额外 front-matter 字段，以解锁 OD 专属 UI。所有字段都是可选的；缺失时回退到合理默认值。
+Skills can declare additional front-matter fields to unlock OD-specific UI. All fields are optional; absent fields fall back to sensible defaults.
 
 ```yaml
 ---
@@ -63,177 +63,186 @@ triggers: […]
 # --- OD extensions below this line ---
 
 od:
-  mode: deck                        # one of: prototype | deck | template | design-system
+  mode: deck                        # prototype | deck | template | design-system | image | video | audio
+  surface: web                      # web | image | video | audio
+  scenario: marketing               # gallery/filter hint
+  category: presentations           # free-form lowercase filter slug
   preview:
-    type: html                      # html | jsx | pptx | markdown
-    entry: index.html               # relative path produced by the skill
-    reload: debounce-100            # how the preview refreshes
+    type: html                      # registry preview hint
   example_prompt: "Create a magazine-style web deck from my content."
   example_prompt_i18n:
     zh-CN: "用杂志风网页 PPT 模板把我的内容做成横向翻页 deck。"
   design_system:
-    requires: true                  # this skill reads the active DESIGN.md
-    sections: [color, typography]   # which sections it actually uses (for prompt pruning)
+    requires: true                  # compose the complete active design-system context
   craft:                            # universal, brand-agnostic craft references
     requires: [typography, color, anti-ai-slop]
-  inputs:                           # typed inputs the user can fill in the UI
-    - name: title
-      type: string
-      required: true
-    - name: slide_count
-      type: integer
-      default: 8
-      min: 4
-      max: 20
-    - name: theme
-      type: enum
-      values: [editorial, minimal, brutalist, dark-glass, warm]
-      default: editorial
-  parameters:                       # live-tweakable sliders after first generation
-    - name: accent_hue
-      type: hue                     # hue | spacing | font-scale | opacity
-      default: 18
-      range: [0, 360]
-    - name: section_spacing
-      type: spacing
-      default: 48
-      range: [16, 128]
-  outputs:
-    primary: index.html
-    secondary: [slides.json]        # for PPTX export
-  capabilities_required:
-    - surgical_edit                 # comment mode needs this
-    - file_write
+  critique:
+    policy: opt-in                  # required | opt-in | opt-out
 ---
 ```
 
-### 2.1 OD 如何使用每个字段
+### 2.1 What OD uses each field for
 
 | Field | Used by |
 |---|---|
-| `zh_name` / `en_name` | 本地化 picker title；fallback 到 `name` |
-| `zh_description` / `en_description` | 本地化 picker description；fallback 到 `description` |
-| `od.mode` | routing（skill 出现在哪个 mode picker 下） |
-| `od.preview.type` | 选择正确 iframe renderer |
-| `od.example_prompt` | picker CTA 使用的英文 fallback starter prompt |
-| `od.example_prompt_i18n` | 本地化 starter prompt map（例如 `zh-CN`） |
-| `od.design_system.requires` | 是否注入 `DESIGN.md` |
-| `od.design_system.sections` | 只注入相关 DESIGN.md sections（节省 tokens） |
-| `od.craft.requires` | 要注入哪些 brand-agnostic `craft/<slug>.md` references（例如 `typography`、`color`、`anti-ai-slop`）；注入位置在 DESIGN.md 与 skill body 之间 |
-| `od.inputs` | 在 sidebar 渲染 typed form，而不是只有 free-text |
-| `od.parameters` | 渲染 live sliders，变化时重新 prompt |
-| `od.outputs.primary` | iframe 加载哪个文件 |
-| `od.outputs.secondary` | export pipelines 读取哪些文件（例如 PPTX 读取 `slides.json`） |
-| `od.capabilities_required` | gating：如果 active agent 缺少 surgical edit，则该 skill 的 comment mode 被禁用 |
+| `zh_name` / `en_name` | localized picker title; falls back to `name` |
+| `zh_description` / `en_description` | localized picker description; falls back to `description` |
+| `od.mode` | registry classification and creation-surface filtering |
+| `od.surface` | web/image/video/audio surface filtering; defaults from media mode or to `web` |
+| `od.platform` | optional desktop/mobile gallery hint |
+| `od.scenario` / `od.category` | scenario and category filter hints |
+| `od.preview.type` | picking the right iframe renderer |
+| `od.example_prompt` | English fallback starter prompt used by picker CTA |
+| `od.example_prompt_i18n` | localized starter prompt map (for example `zh-CN`) |
+| `od.design_system.requires` | whether to compose the active design-system package into the prompt |
+| `od.craft.requires` | which brand-agnostic `craft/<slug>.md` references to inject between design-system context and the skill body |
+| `od.default_for`, `od.featured` | creation defaults and gallery ordering hints |
+| `od.fidelity`, `od.speaker_notes`, `od.animations` | optional fast-create defaults for matching template kinds |
+| `od.critique.policy` | per-skill Critique Theater override (`required`, `opt-in`, or `opt-out`) |
 
-### 2.2 如果 skill 完全省略 `od:`
+Older bundles may also carry fields such as `od.inputs`, `od.parameters`,
+`od.outputs`, or `od.capabilities_required`. The skill registry preserves the
+portable `SKILL.md` body but does not use those fields to render forms, sliders,
+choose output files, or gate an agent. The Agent-Skill-to-plugin adapter can
+translate or retain some of that metadata; plugin behavior is specified in
+[`plugins-spec.md`](plugins-spec.md), not by this registry protocol.
 
-默认值：
+### 2.2 If a skill omits `od:` entirely
 
-- `mode`：根据 name/description 推断（best-effort keyword match），否则为 `prototype`
-- `preview.type`：嗅探 `*.html` → html、`*.jsx` → jsx，否则为 `markdown`
-- `preview.entry`：第一个匹配嗅探类型的文件
-- `design_system.requires`：如果 skill body 提到 “design system” 或 “DESIGN.md”，则为 true
-- `inputs`、`parameters`：无（只使用 free-text prompt）
+Defaults:
+- `mode`: inferred from description and body, falling back to `prototype`
+- `surface`: the media mode for image/video/audio entries, otherwise `web`
+- `preview.type`: `html`
+- `design_system.requires`: `true`; author `false` explicitly for bundles that
+  must not receive brand context
+- `example_prompt`: the first sentence of `description`, capped for the picker
+- `scenario`: inferred from description/body, falling back to `general`
 
-目标是：现有 Claude Code skills **zero-config compatibility**。
+The goal: **zero-config compatibility** for existing Claude Code skills.
 
 ## 3. Skill discovery & precedence
 
-Daemon 的 skill registry 扫描三个位置：
+The daemon keeps functional skills and rendering templates in separate
+registries:
 
-| Location | Priority | Purpose |
+| Registry | Roots, highest priority first | API |
 |---|---|---|
-| `./.claude/skills/` | 1（最高） | project-private skills，不提交 |
-| `./skills/` | 2 | project-committed skills |
-| `~/.claude/skills/` | 3 | user-global skills |
+| Functional skills | user-managed skills, then bundled `skills/` | `/api/skills` |
+| Design templates | user-managed templates, then bundled `design-templates/` | `/api/design-templates` |
 
-同名 `name` 冲突时，高优先级位置胜出。开发模式下用 `chokidar` watch 所有位置，生产模式下收到 `SIGHUP` 时重新扫描。
+The user-managed roots derive from the resolved daemon data root; this file
+intentionally does not restate a concrete path. A duplicate frontmatter `name`
+in the first root shadows the bundled entry without deleting it. Each listing
+request rescans its roots, so local changes appear without a watcher, `SIGHUP`,
+or daemon restart. Chat-time lookup spans both registries so projects saved
+against a design-template id continue to compose its instructions.
 
-### Symlink strategy（借鉴 [cc-switch](https://github.com/farion1231/cc-switch)）
+### Runtime resource staging
 
-`cc-switch` 维护一个 central skill dir，并 symlink 到每个 agent 预期的位置（`~/.claude/skills/`、`~/.codex/skills/` 等）。OD 可以选择采用同一模型，但本协议不得定义 Open Design daemon data paths。修改或记录任何 Open Design-owned storage location 前，先阅读根目录 `AGENTS.md` 的 **Daemon data directory contract** section。
+Open Design does not distribute an active bundle by symlinking it into every
+agent's global configuration. Before a project run, the daemon makes a real
+copy of every active skill/template with side files under the project's
+`.od-skills/` alias. The prompt preamble advertises that CWD-relative copy and
+an absolute fallback. This keeps references and assets reachable across
+agents, including filesystems where symlink or cross-device rename semantics
+differ. A local library installation may itself be represented by a managed
+link, but that storage detail is separate from per-run staging.
 
-一次安装 → 每个 agent 都能看到该 skill。这是可选机制；只使用一个 agent 的用户不需要它。
+## 4. Registry modes
 
-## 4. Skill types（按 mode）
+The daemon normalizes `od.mode` to one of seven values. These values classify both functional skills and design-template bundles; they are not the same thing as the six New Project tabs described in [`modes.md`](modes.md).
 
-每种 mode 期待的 skill shape 略有不同。必需 outputs 和预期 workflow 也不同。
+### 4.1 `prototype`
 
-### 4.1 `prototype-skill`
+- **Purpose:** single-screen interactive prototype.
+- **Preview:** `html` or `jsx`.
+- **Primary output:** `index.html` or `Prototype.jsx`.
+- **Typical workflow:** clarify brief → resolve design tokens → write component tree → write file.
+- **Example templates:** interface and responsive-flow bundles under `design-templates/`.
 
-- **Purpose:** 单屏交互式 prototype。
-- **Preview:** `html` 或 `jsx`。
-- **Primary output:** `index.html` 或 `Prototype.jsx`。
-- **Typical workflow:** clarify brief → resolve design tokens → write component tree → write file。
-- **Example skills:** `saas-landing`、`dashboard`、`login-flow`、`empty-states`。
+### 4.2 `deck`
 
-### 4.2 `deck-skill`
+- **Purpose:** multi-slide presentation.
+- **Preview:** `html` (single-file deck with in-page navigation).
+- **Primary output:** `index.html`.
+- **Secondary output:** `slides.json` (for PPTX export).
+- **Typical workflow:** clarify topic + slide count → pick theme → populate slides from layout catalog → self-check against quality rubric.
+- **Reference implementation:** the bundled [`design-templates/guizang-ppt/`](../design-templates/guizang-ppt/) integration.
 
-- **Purpose:** 多页 presentation。
-- **Preview:** `html`（带页面内导航的单文件 deck）。
-- **Primary output:** `index.html`。
-- **Secondary output:** `slides.json`（用于 PPTX export）。
-- **Typical workflow:** clarify topic + slide count → pick theme → populate slides from layout catalog → self-check against quality rubric。
-- **Reference implementation:** [guizang-ppt-skill](https://github.com/op7418/guizang-ppt-skill)，v1 可基于它 fork。
+### 4.3 `template`
 
-### 4.3 `template-skill`
+- **Purpose:** start from a pre-built artifact; agent only personalizes content, doesn't design from scratch.
+- **Preview:** inherits from the template bundle (`html` typically).
+- **Primary output:** a populated copy of the template.
+- **Typical workflow:** copy `assets/template/` to artifact dir → replace content placeholders → optionally tweak tokens to match design system.
+- **Why separate from `prototype`:** it starts from a pre-built shape rather than a blank artifact.
 
-- **Purpose:** 从预构建 artifact 开始；agent 只个性化内容，不从零设计。
-- **Preview:** 继承 template bundle（通常为 `html`）。
-- **Primary output:** 填充后的 template 副本。
-- **Typical workflow:** copy `assets/template/` to artifact dir → replace content placeholders → optionally tweak tokens to match design system。
-- **Why separate from `prototype-skill`:** 更快（不做 design decisions），质量下限更高，但上限更低。
+### 4.4 `design-system`
 
-### 4.4 `design-system-skill`
+- **Purpose:** classify a functional workflow that creates, extracts, audits,
+  or transforms design-system material.
+- **Output:** defined by the skill. A portable workflow may emit only
+  `DESIGN.md`; current Open Design import/create flows build a package with
+  `manifest.json`, `DESIGN.md`, `tokens.css`, and optional rich resources.
+- **Schema:** no fixed nine headings. Repository packages require substantive
+  coverage and keep prose synchronized with the token contract; see
+  [`design-systems/README.md`](../design-systems/README.md).
 
-- **Purpose:** 根据 inputs（brand brief、screenshot、URL）生成 `DESIGN.md`。
-- **Preview:** `markdown`（渲染生成的 DESIGN.md，并带 sample-components preview）。
-- **Primary output:** `DESIGN.md`。
-- **Typical workflow:** analyze input → draft 9 sections per awesome-claude-design schema → generate sample component preview → finalize。
-- **Post-run:** OD 提示用户把这份 DESIGN.md 设置为 project 的 active design system。
+### 4.5 `image`, `video`, and `audio`
 
-## 5. DESIGN.md 作为 skill context
+- **Purpose:** classify media-generation instruction bundles for the Media creation surface.
+- **Surface:** defaults to the matching media kind unless `od.surface` overrides it.
+- **Inputs:** provider/model controls and media-specific metadata are owned by the Media UI and shared contracts.
+- **Design system:** media bundles normally opt out because prompt templates, rather than interface tokens, drive these provider-backed generations.
 
-所有非 design-system skill（mode 1–3）都可以消费 active `DESIGN.md`。OD 会这样注入它：
+## 5. The DESIGN.md as skill context
 
-1. **System-prompt prefix**（按 `od.design_system.sections` 只注入必需 sections）。
-2. **CWD 中可用文件**，命名为 `DESIGN.md`，skills 可通过自己的 agent 直接 `Read` 它。
-3. **Template variable** `{{ design_system }}`，如果 skill body 用 Mustache-style 引用它。
+Any bundle may declare whether it consumes the active design system. Interface,
+deck, and template bundles commonly opt in; media bundles commonly opt out.
+When enabled, the daemon composes the available package material directly into
+the system prompt, in this order:
 
-9-section DESIGN.md format **不是 OD 发明的**；它来自 [awesome-claude-design](https://github.com/VoltAgent/awesome-claude-design) 约定。为方便阅读，复制如下：
+1. package-specific `USAGE.md` guidance (or the default usage contract);
+2. the complete `DESIGN.md` body;
+3. import-mode guidance, when declared;
+4. `tokens.css`;
+5. a compact component manifest, or `components.html` when no manifest can be
+   produced;
+6. a manifest-derived index of rich files that the agent may pull on demand;
+7. craft references; then
+8. the active skill/template body.
 
-```markdown
-# <Brand Name>
-
-## Visual Theme & Atmosphere
-## Color Palette & Roles
-## Typography Rules
-## Component Stylings
-## Layout Principles
-## Depth & Elevation
-## Do's and Don'ts
-## Responsive Behavior
-## Agent Prompt Guide
-```
-
-示例：[`docs/examples/DESIGN.sample.md`](examples/DESIGN.sample.md)。
+Design systems are not copied into the run CWD, section-pruned through
+`od.design_system.sections`, or substituted through a
+`{{ design_system }}` variable. Missing rich files preserve compatibility with
+legacy `DESIGN.md`-only folders. The historical nine-heading upstream sample
+remains useful as an interoperability example at
+[`docs/examples/DESIGN.sample.md`](examples/DESIGN.sample.md), but it is not
+the current repository package schema.
 
 ## 5.5 Craft references (`craft/`)
 
-一些 craft knowledge 是**通用的**，与品牌无关。ALL CAPS 总是需要 ≥0.06em letter-spacing；`var(--accent)` 每屏最多出现 2 次；`#6366f1` 总是 AI-default tell。这些规则不属于任何单一 `DESIGN.md`，因为它们横跨所有品牌。
+Some craft knowledge is **universal** — true regardless of brand. ALL CAPS always needs ≥0.06em letter-spacing; `var(--accent)` should appear at most 2 times per screen; `#6366f1` is always the AI-default tell. These rules don't belong in any one `DESIGN.md` because they apply across every brand.
 
-OD 把它们作为第三个轴发布在 `<projectRoot>/craft/`：
+OD ships these as a separate packaged resource tree:
 
-```text
+```
 craft/
 ├── README.md
-├── typography.md
+├── accessibility-baseline.md
+├── animation-discipline.md
+├── anti-ai-slop.md
 ├── color.md
-└── anti-ai-slop.md
+├── form-validation.md
+├── laws-of-ux.md
+├── rtl-and-bidi.md
+├── state-coverage.md
+├── typography.md
+├── typography-hierarchy.md
+└── typography-hierarchy-editorial.md
 ```
 
-Skill 通过列出所需 slugs 来 opt in：
+A skill opts in by listing the slugs it needs:
 
 ```yaml
 od:
@@ -241,57 +250,64 @@ od:
     requires: [typography, color, anti-ai-slop]
 ```
 
-Compose 时的解析流程：
+Resolution at compose time:
 
-1. `apps/daemon/src/skills.ts` 从 front-matter 读取 `od.craft.requires`，并把它暴露在 skill record 上。
-2. `apps/daemon/src/craft.ts` 从 `CRAFT_DIR` 读取每个 `<slug>.md`。缺失文件会静默丢弃；skill 可以在我们正式发布 `craft/motion.md` 前 forward-reference 它。Canonical slug list 和静默 fallback 的理由见 [`craft/README.md`](../craft/README.md)。
-3. `apps/daemon/src/prompts/system.ts` 把拼接后的 craft body 注入到 active DESIGN.md 与 skill body **之间**。冲突时 DESIGN.md 中的 brand tokens 优先；craft rules 覆盖 DESIGN.md 未覆盖的部分。
+1. `apps/daemon/src/skills.ts` reads `od.craft.requires` from front-matter and surfaces it on the skill record.
+2. `apps/daemon/src/craft.ts` reads each `<slug>.md` from `CRAFT_DIR`. Runtime
+   loading remains tolerant of absent files for compatibility.
+3. `apps/daemon/src/prompts/system.ts` injects the concatenated craft body **between** the active DESIGN.md and the skill body. Brand tokens in DESIGN.md win on conflict; craft rules cover everything DESIGN.md does not override.
 
-这种拆分让 DESIGN.md 作者不必重复 universal craft，也让 craft 作者不被 brand-specific drift 干扰。
+Repository authoring is stricter than runtime loading: `pnpm lint:craft` and
+`pnpm guard` reject invalid or unresolved references unless the slug is
+explicitly listed in `craft/FUTURE_SECTIONS.md`. See
+[`craft/README.md`](../craft/README.md) for the canonical list.
 
-## 6. Skill installation
+The split keeps DESIGN.md authors free of universal-craft duplication and keeps craft authors free of brand-specific drift.
+
+## 6. Skill inspection and distribution
 
 ```sh
-od skill add https://github.com/op7418/guizang-ppt-skill
-# → installs into daemon-managed storage; read root AGENTS.md -> "Daemon data directory contract" before documenting paths
-# → symlinks into ~/.claude/skills/ (and any other active agent dirs)
-# → re-indexes registry
+od skills list
+# → id and display label for entries returned by /api/skills
 
-od skill add ./path/to/my-skill
-# → symlinks local dir (no copy) into skills registry
-
-od skill list
-# → table: name, mode, source, agent compatibility
-
-od skill remove <name>
-# → unlinks; does not delete the source
+od skills show <id>
+# → the daemon's JSON representation of one skill
 ```
 
-## 7. Worked example：在 OD 中运行 `guizang-ppt-skill`
+The current `od skills` surface is read-only; it does not ship `add` or
+`remove` subcommands. Installable marketplace bundles use `od plugin`, while
+repository-owned functional skills and rendering templates live under
+`skills/` and `design-templates/` respectively. Do not document a concrete
+daemon-managed install path here; the root `AGENTS.md` **Daemon data directory
+contract** is the only path authority.
 
-该 skill 保持不变。完整路径如下：
+## 7. Worked example — running the bundled guizang deck template
 
-1. User: `od skill add https://github.com/op7418/guizang-ppt-skill`
-2. Registry 为它建立索引。Front-matter 中没有 `od:` block → 应用默认值：
-   - `mode`：从 body 中提到 “PPT” 推断为 `deck`。
-   - `preview.type`：从 `assets/template.html` 嗅探为 `html`。
-   - `preview.entry`：`index.html`（约定）。
-   - `design_system.requires`：false（skill body 没提到 DESIGN.md）。
-3. 用户在 Web UI 中切换到 `deck` mode；该 skill 出现在 skill picker 中。
-4. 用户输入：“给我做一份杂志风 8 页投资人 PPT”。
-5. Daemon dispatch 到 active agent（Claude Code），附带：
-   - system message: skill 的 `SKILL.md` body
-   - cwd: daemon-managed artifact workspace。本协议不得定义 daemon data paths；修改或记录 artifact storage 前，先阅读根目录 `AGENTS.md` -> **Daemon data directory contract**。
-   - 已放入 cwd 的文件：`template.html`（来自 skill 的 `assets/`）
-6. Agent 运行自己的 6-step workflow（clarify → copy template → populate → self-check → preview → refine）。
-7. OD 把 agent 的 tool calls 流式转换为 UI events；artifact dir 持续增长。
-8. Agent signal done；daemon 把 preview iframe 设置为 `index.html`。
-9. 用户点击 “Export PPTX”：export pipeline 发现该 skill 没有 `slides.json` output（upstream skill 不生成它）。OD fallback 到 “print to PDF then page-to-slide PPTX”，效果更粗糙但可用。这是按 skill 记录的已知限制。
+The upstream-inspired bundle ships at
+[`design-templates/guizang-ppt/`](../design-templates/guizang-ppt/) with its
+license preserved and Open Design metadata applied:
 
-## 8. Writing a new skill：最小示例
+1. The daemon lists it through `/api/design-templates`, independently of the
+   functional `/api/skills` registry.
+2. The user opens the Deck creation tab and selects the guizang template from
+   the rendering catalogue.
+3. Open Design stores the selected template id as the project's primary
+   `skillId`. The daemon's combined skill-like resolver loads that template's
+   `SKILL.md` and resources; it does not also inject the Deck tab's default
+   functional skill.
+4. The agent follows the template workflow, writes the deck files into the
+   project workspace, and performs its checklist before final handoff.
+5. File writes stream into the UI, `index.html` becomes previewable, and the
+   deck export surfaces consume the produced project files.
 
-```text
-saas-landing-skill/
+The protocol intentionally does not define the workspace's concrete path; read
+the root `AGENTS.md` **Daemon data directory contract** before changing or
+documenting artifact storage.
+
+## 8. Writing a rendering template — minimal example
+
+```
+design-templates/saas-landing/
 ├── SKILL.md
 └── assets/
     └── base.html
@@ -308,55 +324,42 @@ triggers:
   - "marketing page"
 od:
   mode: prototype
+  surface: web
+  scenario: marketing
   preview:
     type: html
-    entry: index.html
   design_system:
     requires: true
-    sections: [color, typography, layout, components]
-  inputs:
-    - name: product_name
-      type: string
-      required: true
-    - name: tagline
-      type: string
-      required: true
-    - name: has_pricing
-      type: boolean
-      default: true
-  parameters:
-    - name: hero_density
-      type: spacing
-      default: 96
-      range: [48, 200]
+  craft:
+    requires: [typography, color, anti-ai-slop, accessibility-baseline]
 ---
 
 # Workflow
 
-1. Read DESIGN.md from cwd. Adopt its color/typography/layout rules.
-2. Copy `assets/base.html` to `index.html` in cwd.
-3. Fill sections: hero, features (3–6), social proof, pricing (if `has_pricing`), CTA, footer.
+1. Apply the active design-system context supplied above this skill.
+2. Copy `.od-skills/saas-landing/assets/base.html` to `index.html` in the project workspace.
+3. Fill sections: hero, features (3–6), social proof, pricing, CTA, footer.
 4. Inline all CSS. Use system font stack as fallback if DESIGN.md typography fails to load.
-5. Respect `hero_density` parameter as the hero section's vertical padding in px.
-6. Write `index.html`. Done.
+5. Write `index.html`. Done.
 ```
 
 ## 9. Testing skills
 
-Skill 可以附带可选 test inputs，供 OD 在 CI 中使用：
-
-```text
-<skill-root>/
-└── tests/
-    ├── basic.prompt
-    ├── basic.expected.manifest.json   # assertions: files produced, preview.type, etc.
-    └── basic.expected.regex.txt       # text regex assertions against the primary output
-```
-
-`od skill test <name>` 会用便宜 model（例如 Haiku 4.5）针对每个 case 运行该 skill，并对 manifest + regex 做断言。保真度不高，但能抓结构性 regressions。
+There is no `od skills test` command and no runtime contract for a
+`tests/basic.prompt` tree. Repository-owned entries are checked by the root
+guard, localized-content coverage, registry tests, and any focused tests for
+their assets or prompt behavior. Run at least `pnpm guard` and
+`pnpm typecheck`, plus the package-scoped checks appropriate to the files
+changed. Plugin bundles have their own validation and doctor surfaces.
 
 ## 10. Open questions
 
-- **Skill signing。** 能否验证 skill 在 publish 与 install 之间未被篡改？最简单答案：`od skill add` 记录 git commit SHA；reinstall-on-update 在 signature 变化时 warning。推迟到 v1。
-- **Skill composition。** `prototype-skill` 能不能调用 `deck-skill` 生成 sub-artifact？v1 不支持；skills 是 leaf-level。Composition 需要 meta-skill 概念，目前仍属 speculative。
-- **Parameter stability。** Slider 变化时，agent 应该 re-plan 还是只 re-render？倾向：re-render（fast path），并为较大变化提供 “also re-plan” 按钮。
+- **Skill provenance.** Functional skills do not currently have a standalone
+  install command. External distribution should use the plugin trust and
+  provenance model rather than inventing an unverified `od skills add` flow.
+- **Skill composition.** Can a prototype-mode instruction bundle invoke a
+  deck-mode bundle for a sub-artifact? The current registries treat them as
+  leaf-level inputs; composition requires an explicit orchestration contract.
+- **Richer skill inputs.** Typed apply-time inputs and deferred parameters now
+  belong to the plugin manifest contract. A future skill-native form should
+  reuse that contract rather than reviving a second slider schema.

@@ -32,7 +32,7 @@ Agent 的 CWD 是用户的 OD 项目根目录。生成任何东西之前，**先
 
 从推导出的内容选择稳定的 plugin id：小写字母、数字、短横线、下划线、点号。优先使用 brand-spec 或 artifact metadata 暗示的名称，不要凭空发明。
 
-如果某个字段真的无法推导（例如没有 artifact.json、没有 brand-spec、项目太空），才询问用户，并且只发起**一次**合并的 `AskUserQuestion`，不要逐字段追问。把已经推导出的信息作为默认答案，让用户可以一路确认。
+如果某个字段确实无法推导（例如不存在 artifact.json、没有 brand-spec、project 内容太少），才询问用户；只输出**一个**合并的 `<question-form>` block，不要用散文逐字段追问。把已经推导出的信息作为默认答案，让用户可以直接在渲染后的 form 中确认建议值。`<question-form>` 是由 Open Design 渲染的 assistant text markup，不是 native tool call。
 
 ## 报告前先本地验证 plugin
 
@@ -58,7 +58,7 @@ Agent 的 CWD 是用户的 OD 项目根目录。生成任何东西之前，**先
 
 ## 语言
 
-任何 `AskUserQuestion` 标签、状态更新和错误说明都要镜像用户的聊天语言。生成的 artifact（manifest 字段、SKILL.md body、PR / commit messages、branch names）必须保持英文，无论聊天语言是什么；这是 OD plugins-spec 约定，也与 `plugins/_official/scenarios/` 下已有 scenario 保持一致。
+`<question-form>` 的 title、label、description、option、helper text，以及 status update 和 error explanation，都要使用与用户聊天相同的语言。生成的 artifact（manifest 字段、SKILL.md body、PR / commit messages、branch names）必须保持英文，无论聊天语言是什么；这是 OD plugins-spec 约定，也与 `plugins/_official/scenarios/` 下已有 scenario 保持一致。
 
 ## 建议文件夹形态
 

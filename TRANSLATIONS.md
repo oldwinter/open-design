@@ -1,91 +1,79 @@
-# Translation Guide
+# 翻译指南
 
-> **贡献者快速开始：** 本指南帮助你用约 2 小时而不是约 8 小时为 Open Design 添加新语言翻译。按 checklist 操作，避开常见错误，自信提交 PR。
+> **贡献者快速入门：** 本指南帮助你用约 2 小时而不是约 8 小时为 Open Design 添加一种新语言。按清单操作、避开常见错误，然后提交 PR。
 
-通用贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。其中的 "Localization maintenance" section 记录了 translated surfaces 与 agent-facing source material 之间的边界。本文件说明**如何**在贡献者最常触碰的 surfaces 上添加和维护 locale：UI chrome、root READMEs、core docs 和 display metadata。
+通用贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)。“本地化维护”一节说明翻译内容与 agent 执行源材料之间的边界。本文件讲解如何在贡献者最常接触的内容中添加和维护 locale：UI 文案、README、核心文档和展示元数据。
 
-> **为什么单独成文？** i18n contributors 通常只需要这个 surface；把 locale workflow 从主贡献指南中分离出来，可以避免 BCP-47、fallback chains、regional glossaries 等术语干扰更广泛的 code-workflow audience。`CONTRIBUTING.md` 会 cross-link 到这里，方便发现。
+> **为什么单独成文？** i18n 贡献者通常只需要这些内容。把 locale 工作流从主贡献指南中分离出来，可以避免 BCP-47、fallback chain、区域术语表等概念干扰更广泛的代码贡献流程。`CONTRIBUTING.md` 会链接到这里。
+>
+> **中文 fork 说明：** 以下流程描述上游仓库的约定，上游只在根目录保留英文文档。本 fork 额外把根目录 README、Quickstart、Contributing、Privacy 与本指南作为简体中文入口维护。
 
 ---
 
-## 🚀 Quick Start: Adding Your Language in 5 Steps
+<a id="-quick-start-adding-your-language-in-5-steps"></a>
+## 🚀 快速入门：5 步添加您的语言
 
-**第一次贡献翻译？** 从这里开始。这个 checklist 覆盖 80% 的常见情况。
+**翻译贡献新手？** 从这里开始。该清单涵盖了 80% 的情况。
 
-### Step 1: Choose Your Language Code
+### 第 1 步：选择您的语言代码
 
-选择标准 code：
-- 多数语言使用 two-letter code：`de`、`fr`、`it`、`sv`
-- 需要时使用 regional variants：`pt-BR`、`zh-CN`、`zh-TW`、`es-ES`
-- 使用 hyphens，不用 underscores：`zh-CN` ✅，不是 `zh_CN` ❌
+选择一个标准代码：
+- 大多数语言的两个字母：`de`、`fr`、`sv`、`vi`
+- 需要时的区域变体：`pt-BR`、`zh-CN`、`zh-TW`、`es-ES`
+- 使用连字符，而不是下划线：`zh-CN` ✅ 而不是 `zh_CN` ❌
 
-### Step 2: Translate the README
+### 第 2 步：翻译 README
 
-翻译文件位于 `docs/i18n/`；只有英文 `README.md` 留在 repo root（GitHub 会把根目录 README 渲染为项目主页）。
+翻译在 `docs/i18n/` 进行；只有英文 `README.md` 保留在仓库根目录中（GitHub 将根目录 README 呈现为项目主页）。
 
 ```bash
-# 复制并翻译
-cp README.md docs/i18n/README.it.md
-# 在编辑器中编辑 docs/i18n/README.it.md
+# Copy and translate
+cp README.md docs/i18n/README.sv.md
+# Edit docs/i18n/README.sv.md in your editor
 ```
 
-**需要翻译：**
-- ✅ 所有文本、headings、descriptions
-- ✅ Alt text：`alt="Open Design banner"`
-- ✅ Link text：`[Quickstart](../../QUICKSTART.md)` → `[Guida rapida](QUICKSTART.it.md)`（路径相对于 `docs/i18n/`：有翻译版 core doc 时链接 sibling filename；否则 fallback 到英文目标 `../../QUICKSTART.md`）
+**要翻译的内容：**
+- ✅ 所有文字、标题、描述
+- ✅ 替代文字：`alt="Open Design banner"`
+- ✅ 链接文本：`[Quickstart](../../QUICKSTART.md)` → `[Snabbstart](QUICKSTART.sv.md)`（路径相对于 `docs/i18n/`：将翻译后的核心文档链接为同级文件名，或回退到 `../../QUICKSTART.md` 的英文目标）
 
-**不要翻译：**
-- ❌ Code snippets、commands、file paths
-- ❌ URLs、GitHub usernames、repo names
-- ❌ Brand names："Open Design"、"Claude Code"
-- ❌ Technical terms：CLI、API、BYOK、daemon
+**不翻译的内容：**
+- ❌ 代码片段、命令、文件路径
+- ❌ URL、GitHub 用户名、仓库名称
+- ❌ 品牌名称：“Open Design”、“Claude Code”
+- ❌ 技术术语：CLI、API、BYOK、daemon
 
-### Step 3: Update ALL Language Switchers (Critical!)
+<a id="step-3-update-all-language-switchers-critical"></a>
+### 第 3 步：更新所有语言切换器（至关重要！）
 
-**这是最常被忘记的一步。** 你必须更新以下位置的 language switcher：
-1. 新增的 `docs/i18n/README.it.md`（把你的语言加粗）
-2. **每个现有 README**：repo root 中的英文 `README.md`，以及每个 `docs/i18n/README.*.md`（把你的语言作为 link 加进去）
+**这是最常被遗忘的步骤。** 您必须在以下位置更新语言切换器：
+1. 您的新 `docs/i18n/README.sv.md`（将你的语言加粗）
+2. **每个现有的 README** — 仓库根目录中的英语 `README.md` *和*每个 `docs/i18n/README.*.md`（将您的语言添加为链接）
 
-Switcher 会根据所在文件使用两种 link conventions：
+切换器使用两种链接约定，具体取决于它所在的文件：
 
-- **英文根目录 `README.md`**：加粗 `English`；翻译文件链接带 `docs/i18n/` prefix：
+- **根目录英文 `README.md`** — 将 `English` 加粗；翻译链接使用 `docs/i18n/` 前缀：
   ```html
-  <p align="center"><b>English</b> · <a href="docs/i18n/README.es.md">Español</a> · ... · <a href="docs/i18n/README.it.md">Italiano</a></p>
+  <p align="center"><b>English</b> · <a href="docs/i18n/README.es.md">Español</a> · ... · <a href="docs/i18n/README.sv.md">Svenska</a></p>
   ```
-- **翻译版 `docs/i18n/README.xx.md`**：加粗自己的语言；英文链接用 `../../README.md`，其他翻译用 sibling filenames：
+- **翻译为 `docs/i18n/README.xx.md`** — 粗体显示您自己的语言；将英语与 `../../README.md` 和其他翻译链接为同级文件名：
   ```html
-  <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · ... · <b>Italiano</b></p>
+  <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · ... · <b>Svenska</b></p>
   ```
 
-**需要更新的文件：** `README.md`（root）、`docs/i18n/README.ar.md`、`docs/i18n/README.de.md`、`docs/i18n/README.es.md`、`docs/i18n/README.fr.md`、`docs/i18n/README.ja-JP.md`、`docs/i18n/README.ko.md`、`docs/i18n/README.pt-BR.md`、`docs/i18n/README.ru.md`、`docs/i18n/README.tr.md`、`docs/i18n/README.uk.md`、`docs/i18n/README.zh-CN.md`、`docs/i18n/README.zh-TW.md`
+**要更新的文件：** 仓库根目录中的 `README.md` 以及 `git ls-files 'docs/i18n/README.*.md'` 返回的每个文件。不要在此处维护复制的文件名列表； `pnpm i18n:check` 验证每个切换器都有相同的设置。
 
-### Step 4: Add UI Dictionary (Optional but Recommended)
+### 第 4 步：添加 UI 字典（可选但推荐）
 
-创建 `apps/web/src/i18n/locales/it.ts`：
+复制 `en.ts` 创建 `apps/web/src/i18n/locales/sv.ts`，然后翻译每个 value，并原样保留所有 key 与 placeholder。Locale 字典必须是完整、显式的 `Dict` 实现；不要用 `...en` 掩盖缺失的 key。
 
-```typescript
-import type { Dict } from '../types';
-import { en } from './en';
+> **注意：** `Dict` 类型和 `apps/web/tests/i18n/locales.test.ts` 会强制与 `en.ts` 对齐，包括 placeholder 名称。Runtime 的英文 fallback 只是防御性兼容边界，不代表可以提交不完整字典。
 
-export const it: Dict = {
-  ...en, // Fallback to English for missing keys
-  // Translate these UI strings
-  'common.create': 'Crea',
-  'common.cancel': 'Annulla',
-  'settings.language': 'Lingua',
-  'entry.tabDesigns': 'Design',
-  'entry.tabTemplates': 'Modelli',
-  // ... see en.ts for full list
-};
-```
+然后在 `apps/web/src/i18n/index.tsx` 和 `apps/web/src/i18n/types.ts` 中注册它（参见[下面的详细步骤](#adding-a-new-locale)）。
 
-> **Note:** `Dict` type 会强制所有 keys 与 `en.ts` 中的 keys 匹配。像 `'nav.home'` 这样 invented keys 会导致 TypeScript compilation 失败。
+**不要忘记更新测试 fixture：** 把 locale code 加入 `apps/web/tests/i18n/locales.test.ts` 的 `EXPECTED_LOCALES`，并增加 `LOCALE_LABEL` 断言（例如 `expect(LOCALE_LABEL.sv).toBe('Svenska');`）。运行 `pnpm --filter @open-design/web test` 验证。
 
-然后在 `apps/web/src/i18n/index.tsx` 和 `apps/web/src/i18n/types.ts` 中注册它（见下方 [detailed steps](#adding-a-new-locale)）。
-
-**不要忘记更新 test fixtures：** 把你的 locale code 加到 `apps/web/tests/i18n/locales.test.ts` 中的 `EXPECTED_LOCALES`，并添加 `LOCALE_LABEL` assertion（例如 `expect(LOCALE_LABEL.it).toBe('Italiano');`）。运行 `pnpm --filter @open-design/web test` 验证。
-
-### Step 5: Test and Submit
+### 第 5 步：测试并提交
 
 ```bash
 # Type check
@@ -94,212 +82,191 @@ pnpm typecheck
 # Run i18n checks
 pnpm i18n:check
 
-# 视觉检查：在 GitHub preview 中打开 docs/i18n/README.it.md
-# 确认所有 links 可用、images 能加载、language switcher 显示正确
+# Visual check: open your docs/i18n/README.sv.md in GitHub preview
+# Verify all links work, images load, language switcher displays correctly
 ```
 
-**PR title:** `feat(i18n): add Italian translation`
+**PR 标题：** `feat(i18n): add Swedish translation`
 
-**PR checklist:**
-- [ ] README translated
-- [ ] Language switcher updated in ALL existing READMEs
-- [ ] UI dictionary added (if applicable)
-- [ ] All links tested
-- [ ] `pnpm i18n:check` passes
+**PR 清单：**
+- [ ] README 翻译
+- [ ] 所有现有 READMEs 中更新了语言切换器
+- [ ] 添加 UI 字典（如果适用）
+- [ ] 所有已测试链接
+- [ ] `pnpm i18n:check` 通过
 
 ---
 
-## 📋 Supported Languages
+## 📋 支持的语言
 
-Open Design 当前在不同 surfaces 上支持 **19 种语言**：
+Open Design 目前在不同内容入口中支持 **19 种语言**：
 
-| Language             | Code    | README | UI Dict | Core Docs | Status |
+| 语言                 | 代码    | README | UI 字典 | 核心文档 | 状态 |
 | -------------------- | ------- | ------ | ------- | --------- | ------ |
-| English              | `en`    | ✅     | ✅      | ✅        | source |
-| العربية (Arabic)     | `ar`    | ✅     | ✅      | —         | active |
-| Deutsch              | `de`    | ✅     | ✅      | ✅        | active |
-| Español              | `es-ES` | ✅     | ✅      | —         | active |
-| فارسی (Persian)      | `fa`    | —      | ✅      | —         | active |
-| Français             | `fr`    | ✅     | ✅      | ✅        | active |
-| Magyar (Hungarian)   | `hu`    | —      | ✅      | —         | active |
-| Bahasa Indonesia     | `id`    | —      | ✅      | —         | active |
-| Italiano             | `it`    | —      | ✅      | —         | active |
-| 日本語 (Japanese)    | `ja`    | ✅     | ✅      | ✅        | active |
-| 한국어 (Korean)      | `ko`    | ✅     | ✅      | ✅        | active |
-| Polski (Polish)      | `pl`    | —      | ✅      | —         | active |
-| Português (Brasil)   | `pt-BR` | ✅     | ✅      | ✅        | active |
-| Русский (Russian)    | `ru`    | ✅     | ✅      | —         | active |
-| ภาษาไทย (Thai)       | `th`    | —      | ✅      | —         | active |
-| Türkçe (Turkish)     | `tr`    | ✅     | ✅      | —         | active |
-| Українська           | `uk`    | ✅     | ✅      | —         | active |
-| 简体中文             | `zh-CN` | ✅     | ✅      | ✅        | active |
-| 繁體中文             | `zh-TW` | ✅     | ✅      | —         | active |
+| English              | `en`    | ✅     | ✅      | ✅        | 源语言 |
+| العربية (Arabic)     | `ar`    | ✅     | ✅      | —         | 活跃 |
+| Deutsch              | `de`    | ✅     | ✅      | ✅        | 活跃 |
+| Español              | `es-ES` | ✅     | ✅      | —         | 活跃 |
+| فارسی (Persian)      | `fa`    | —      | ✅      | —         | 活跃 |
+| Français             | `fr`    | ✅     | ✅      | ✅        | 活跃 |
+| Magyar (Hungarian)   | `hu`    | —      | ✅      | —         | 活跃 |
+| Bahasa Indonesia     | `id`    | —      | ✅      | —         | 活跃 |
+| Italiano             | `it`    | —      | ✅      | —         | 活跃 |
+| 日本語 (Japanese)    | `ja`    | ✅     | ✅      | ✅        | 活跃 |
+| 한국어 (Korean)      | `ko`    | ✅     | ✅      | ✅        | 活跃 |
+| Polski (Polish)      | `pl`    | —      | ✅      | —         | 活跃 |
+| Português (Brasil)   | `pt-BR` | ✅     | ✅      | ✅        | 活跃 |
+| Русский (Russian)    | `ru`    | ✅     | ✅      | —         | 活跃 |
+| ภาษาไทย (Thai)       | `th`    | ✅     | ✅      | ✅        | 活跃 |
+| Türkçe (Turkish)     | `tr`    | ✅     | ✅      | —         | 活跃 |
+| Українська           | `uk`    | ✅     | ✅      | —         | 活跃 |
+| 简体中文             | `zh-CN` | ✅     | ✅      | ✅        | 活跃 |
+| 繁體中文             | `zh-TW` | ✅     | ✅      | —         | 活跃 |
 
-**Translation surfaces:**
-- **README**：项目 README，翻译到 `docs/i18n/README.{lang}.md`（英文 source 留在 root `README.md`）
-- **UI Dict**：Web interface strings（`apps/web/src/i18n/locales/{lang}.ts`）
-- **Core Docs**：`docs/i18n/QUICKSTART.{lang}.md`、`docs/i18n/CONTRIBUTING.{lang}.md`（英文 sources 留在 root `QUICKSTART.md`、`CONTRIBUTING.md`）
+**翻译内容：**
+- **README**：项目 README，翻译到 `docs/i18n/README.{lang}.md`（英文源位于根目录 `README.md`）
+- **UI Dict**：Web 界面字符串（`apps/web/src/i18n/locales/{lang}.ts`）
+- **核心文档**：`docs/i18n/QUICKSTART.{lang}.md`、`docs/i18n/CONTRIBUTING.{lang}.md`（英文源位于根 `QUICKSTART.md`、`CONTRIBUTING.md`）
 
-> **Note:** 可以贡献这些 surfaces 的任意子集。先从 README 开始（影响最大），有时间再添加 UI dictionary 和 core docs。
+> **注意：** 这些内容可以分批贡献。先从 README（影响最大）开始，有余力时再添加 UI 字典和核心文档。
 
-### File Locations
+### 文件位置
 
 - **UI dictionaries**：[`apps/web/src/i18n/locales/`](apps/web/src/i18n/locales/)
-- **English sources**：[`README.md`](README.md)、[`QUICKSTART.md`](QUICKSTART.md)、[`CONTRIBUTING.md`](CONTRIBUTING.md)、[`MAINTAINERS.md`](MAINTAINERS.md) 留在 project root
-- **Translated docs**：[`docs/i18n/`](docs/i18n/) 存放所有 `README.{lang}.md`、`QUICKSTART.{lang}.md`、`CONTRIBUTING.{lang}.md` 和 `MAINTAINERS.{lang}.md`
-- **Display metadata**：`apps/web/src/i18n/content*.ts`（可选，用于 gallery/examples）
+- **英文来源**： [`README.md`](README.md)、[`QUICKSTART.md`](QUICKSTART.md)、[`CONTRIBUTING.md`](CONTRIBUTING.md)、[`MAINTAINERS.md`](MAINTAINERS.md) 保留在项目根目录中
+- **翻译文档**：[`docs/i18n/`](docs/i18n/) 包含每个 `README.{lang}.md`、`QUICKSTART.{lang}.md`、`CONTRIBUTING.{lang}.md` 和 `MAINTAINERS.{lang}.md`
+- **显示元数据**：`apps/web/src/i18n/content*.ts`（可选，用于图库/示例）
 
-[`apps/web/src/i18n/types.ts`](apps/web/src/i18n/types.ts) 中的 `LOCALES` array 是 UI dictionaries 的权威列表。README language switchers 覆盖所有在 `docs/i18n/` 中拥有 README translation 的 locale；这个集合可以和 `LOCALES` 不同。
+[`apps/web/src/i18n/types.ts`](apps/web/src/i18n/types.ts)中的`LOCALES`数组是UI dictionaries的权威列表。 README语言切换器涵盖了每个在`docs/i18n/`中有README翻译的locale；该集合可能与 `LOCALES` 不同。
 
 ---
 
-## 📖 Detailed Guide
+## 📖 详细指南
 
-### Adding a new locale
+<a id="adding-a-new-locale"></a>
+### 添加新的 locale
 
-**适用于 UI dictionary + README translation：**
+**对于 UI 词典 + README 翻译：**
 
-1. **选择 BCP-47 code。** 当 variant 重要时使用 regional form（`pt-BR`、`es-ES`、`zh-TW`）；不重要时使用 bare code（`fr`、`ru`、`it`）。`pt-BR` 和假设中的 `pt-PT` 会作为 separate locales 共存；如果 contributor 想维护 `en-US` / `en-GB`，也遵循同样 precedent。
+1. **选择 BCP-47 代码。** 当变体很重要时，请使用区域形式（`pt-BR`、`es-ES`、`zh-TW`）；如果没有，则使用裸代码（`fr`、`ru`、`it`）。 `pt-BR` 和假设的 `pt-PT` 将作为单独的 locales 共存 - 如果贡献者想要同时维护两者，则相同的先例适用于 `en-US` / `en-GB`。
 
-2. **更新 [`apps/web/src/i18n/types.ts`](apps/web/src/i18n/types.ts)：**
-   - 用你的 code 扩展 `Locale` union
-   - 把你的 code append 到 `LOCALES` array
-   - 添加 `LOCALE_LABEL[<code>]` entry，使用该语言的 **native name**（`Italiano`、`日本語`，不是 `it`、`ja`）
+2. **更新[`apps/web/src/i18n/types.ts`](apps/web/src/i18n/types.ts)：**
+   - 使用您的代码扩展 `Locale` 联合
+   - 将代码附加到 `LOCALES` 数组
+   - 添加 `LOCALE_LABEL[<code>]` 条目 - 使用该语言的**本地名称**（`Svenska`、`日本語`，而不是 `sv`、`ja`）
 
    ```typescript
-   export type Locale = 'en' | 'de' | 'fr' | 'it' | /* ... */;
+   export type Locale = 'en' | 'de' | 'fr' | 'sv' | /* ... */;
    
-   export const LOCALES: Locale[] = ['en', 'de', 'fr', 'it', /* ... */];
+   export const LOCALES: Locale[] = ['en', 'de', 'fr', 'sv', /* ... */];
    
    export const LOCALE_LABEL: Record<Locale, string> = {
      en: 'English',
      de: 'Deutsch',
      fr: 'Français',
-     it: 'Italiano',
+     sv: 'Svenska',
      // ...
    };
    ```
 
-   **然后更新 test fixtures：** 在 [`apps/web/tests/i18n/locales.test.ts`](apps/web/tests/i18n/locales.test.ts) 中，把你的 locale 加到 `EXPECTED_LOCALES` array，并添加 `LOCALE_LABEL` assertion：
+   **然后更新测试 fixture：** 在 [`apps/web/tests/i18n/locales.test.ts`](apps/web/tests/i18n/locales.test.ts) 中，将 locale 添加到 `EXPECTED_LOCALES` 数组并添加 `LOCALE_LABEL` 断言：
    
    ```typescript
-   const EXPECTED_LOCALES = ['en', 'id', 'de', /* ... */, 'it', /* ... */];
+   const EXPECTED_LOCALES = ['en', 'id', 'de', /* ... */, 'sv', /* ... */];
    
    // In the test body:
-   expect(LOCALE_LABEL.it).toBe('Italiano');
+   expect(LOCALE_LABEL.sv).toBe('Svenska');
    ```
 
-   **如果你的 locale 是 RTL（Arabic、Hebrew、Persian、Urdu 等）：** 还要把 code append 到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 中的 `RTL_LOCALES`。这个 array 控制 runtime 上 `<html>` 的 `dir="rtl"` attribute；没有它，web UI 无论语言如何都会按 LTR 渲染。当前列表是：
+   **如果您的 locale 是 RTL（阿拉伯语、希伯来语、波斯语、乌尔都语等）：** 还将您的代码附加到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 中的 `RTL_LOCALES`。该数组控制 runtime 处 `<html>` 上的 `dir="rtl"` 属性 — 没有它，无论语言如何，Web UI 都会呈现 LTR。当前的列表是：
 
    ```typescript
    const RTL_LOCALES: Locale[] = ['ar', 'fa'];
    ```
 
-3. **在 `apps/web/src/i18n/locales/<code>.ts` 创建 dictionary：**
-   - 从 `en.ts` copy 并翻译 values
-   - Keys 必须与 `en.ts` 精确匹配
-   - Missing keys 会在 runtime fallback 到 English
-   - Partial translations 使用 `...en` spread
+3. **在 `apps/web/src/i18n/locales/<code>.ts` 创建字典**：
+   - 从 `en.ts` 复制并转换值
+   - 显式声明每个 key； keys 和 placeholder 名称必须与 `en.ts` 完全匹配
+   - 不要将 `en` 扩展为部分 locale。 Typecheck 和 locale 测试旨在在审核时暴露遗漏
+   - 译者仍然有一个英文fallback作为防御性runtime边界，但维护的dictionaries不得依赖它
+
+4. **在 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 中注册您的字典**：
 
    ```typescript
-   import type { Dict } from '../types';
-   import { en } from './en';
-
-  export const it: Dict = {
-    ...en, // Fallback for untranslated keys
-    'common.create': 'Crea',
-    'common.cancel': 'Annulla',
-    'common.save': 'Salva',
-    'settings.language': 'Lingua',
-    'entry.tabDesigns': 'Design',
-    'entry.tabTemplates': 'Modelli',
-    // ... translate all keys from en.ts
-  };
-   ```
-
-4. **在 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 注册 dictionary：**
-
-   ```typescript
-   import { it } from './locales/it';
+   import { sv } from './locales/sv';
    // ...
    const DICTS: Record<Locale, Dict> = {
      en,
      de,
      fr,
-     it, // Add your locale here
+     sv, // Add your locale here
      // ...
    };
    ```
 
-5. **翻译 README：**
-   - 将 `README.md` 复制到 `docs/i18n/README.<code>.md`（translations 位于 `docs/i18n/`；英文 `README.md` 是 repo root 中唯一的 README）
-   - Repo precedent 可能使用与 UI dict code 不同的 documentation-region code，例如 `README.ja-JP.md` 对应 UI locale `ja`，或 `README.es.md` 对应 UI locale `es-ES`
-   - 翻译所有 prose、headings、alt text 和 link text
-   - 保留 code snippets、URLs 和 brand names 的英文
-   - 修正新位置下的 relative paths：指向 repo-root resources（`apps/`、`docs/`、`LICENSE`、英文 `README.md` 等）的 links 需要 `../../` prefix；指向 sibling translated core doc 的 links 保持 bare filename。示例：如果存在对应翻译，则 `[Quickstart](../../QUICKSTART.md)` → `[Guida rapida](QUICKSTART.it.md)`，否则用 `[Guida rapida](../../QUICKSTART.md)`
+5. **翻译README：**
+   - 将 `README.md` 复制到 `docs/i18n/README.<code>.md` （翻译位于 `docs/i18n/` 下；英文 `README.md` 是仓库根目录中唯一的翻译）
+   - 当 UI 字典代码是熟悉的文档文件名时，仓库先例可能会使用与 UI 字典代码不同的文档区域代码，例如 `README.ja-JP.md` 与 UI locale `ja` 或 `README.es.md` 与 UI locale `es-ES`
+   - 翻译所有正文、标题、替代文本和链接文本
+   - 保留英文代码片段、URL 和品牌名称
+   - 修复新位置的相对路径：指向 repo-root 资源（`apps/`、`docs/`、`LICENSE`、英文 `README.md` 等）的链接需要 `../../` 前缀；指向同级翻译核心文档的链接保留为裸文件名。示例：`[Quickstart](../../QUICKSTART.md)` → `[Snabbstart](QUICKSTART.sv.md)`（如果该翻译存在），否则 `[Snabbstart](../../QUICKSTART.md)`
 
-6. **更新每个 README 中的 language switcher**：root `README.md` 以及每个 `docs/i18n/README.*.md`（每个文件约第 25 行）：
-   - 匹配 English README 使用的顺序
-   - 到处包含同一组语言
-   - 当前语言加粗：`<b>Italiano</b>`
-   - link 形式会因文件位置不同而不同（见下方）
+6. **更新每个 README 中的语言切换器** — 根 `README.md` 和每个 `docs/i18n/README.*.md`（每行 ~25 行）：
+   - 匹配英文README中使用的顺序
+   - 到处都包含相同的集合
+   - 将当前语言加粗：`<b>Svenska</b>`
+   - 链接形式因文件位置而异（见下文）
 
-   **英文 root `README.md`**：加粗 `English`，翻译 links 使用 `docs/i18n/` prefix：
-   ```html
-   <p align="center"><b>English</b> · <a href="docs/i18n/README.es.md">Español</a> · <a href="docs/i18n/README.pt-BR.md">Português</a> · <a href="docs/i18n/README.de.md">Deutsch</a> · <a href="docs/i18n/README.fr.md">Français</a> · <a href="docs/i18n/README.zh-CN.md">简体中文</a> · <a href="docs/i18n/README.zh-TW.md">繁體中文</a> · <a href="docs/i18n/README.ko.md">한국어</a> · <a href="docs/i18n/README.ja-JP.md">日本語</a> · <a href="docs/i18n/README.ar.md">العربية</a> · <a href="docs/i18n/README.ru.md">Русский</a> · <a href="docs/i18n/README.uk.md">Українська</a> · <a href="docs/i18n/README.tr.md">Türkçe</a> · <a href="docs/i18n/README.it.md">Italiano</a></p>
-   ```
+   **根目录英文 `README.md`** — 粗体 `English`，用 `docs/i18n/` 前缀链接翻译。从 `README.md` 复制当前切换器，附加新的 `docs/i18n/README.<code>.md` 链接，并保持英文粗体。签入的切换器是要复制的源；不要复制本指南中的硬编码语言列表。
 
-   **翻译版 `docs/i18n/README.<code>.md`**：英文用 `../../README.md` 链接，其他翻译用 sibling filenames，并加粗自己的语言：
-   ```html
-   <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja-JP.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <b>Italiano</b></p>
-   ```
+   **翻译的 `docs/i18n/README.<code>.md`** — 将英语与 `../../README.md` 链接，其他翻译作为同级文件名，将您自己的翻译加粗。复制当前翻译的切换器，添加新的 locale，并将新语言加粗。 `pnpm i18n:check` 验证结果。
 
-7. **（可选）翻译 core docs：**
-   - Copy `QUICKSTART.md` → `docs/i18n/QUICKSTART.<code>.md`
-   - Copy `CONTRIBUTING.md` → `docs/i18n/CONTRIBUTING.<code>.md`
-   - 参考既有 examples：`docs/i18n/QUICKSTART.fr.md`、`docs/i18n/CONTRIBUTING.pt-BR.md`、`docs/i18n/CONTRIBUTING.ja-JP.md`
-   - 应用同样的 `../../`-for-root-resources 规则；`docs/i18n/` 中 translated docs 之间的 links 保持 bare sibling filenames
-   - 更新 translated README 中指向 translated core docs 的 links
+7. **（可选）翻译核心文档：**
+   - 复制 `QUICKSTART.md` → `docs/i18n/QUICKSTART.<code>.md`
+   - 复制 `CONTRIBUTING.md` → `docs/i18n/CONTRIBUTING.<code>.md`
+   - 遵循现有示例：`docs/i18n/QUICKSTART.fr.md`、`docs/i18n/CONTRIBUTING.pt-BR.md`、`docs/i18n/CONTRIBUTING.ja-JP.md`
+   - 应用相同的 `../../`-for-root-resources 规则； `docs/i18n/` 中翻译文档之间的链接保持为裸同级文件名
+   - 更新从翻译的 README 到翻译的核心文档的链接
 
-8. **（可选）翻译 `apps/web/src/i18n/content*.ts` 中的 display metadata：**
-   - 仅限 examples、gallery cards 和 localized content chrome 的 display-only metadata
-   - Agent-executed prompts、skill instructions、design systems 和 prompt bodies 保持 source language，以便 prompt QA 集中维护
+8. **（可选）翻译 `apps/web/src/i18n/content*.ts` 中的显示元数据**：
+   - 将此保留为仅显示元数据，例如示例、图库卡和本地化内容镶边
+   - Agent 执行的 prompts、skill 指令、design systems 和 prompt 主体保留其源语言，因此 prompt QA 保持集中化
 
-9. **运行 checks：**
+9. **运行检查：**
    ```bash
    pnpm typecheck  # Confirms locale union and DICTS map agree
    pnpm i18n:check  # Enforces UI locale registration and README switcher consistency
    pnpm --filter @open-design/web test  # Covers locale/content drift tests
    ```
 
-### Translation Best Practices
+### 翻译最佳实践
 
-**需要翻译：**
-- ✅ 所有 prose text、headings、descriptions
-- ✅ 图片 alt text：`alt="Open Design banner"` → `alt="Banner di Open Design"`
-- ✅ 适当时翻译 badge labels：`discord-join` → `discord-unisciti`
-- ✅ examples 中有教学意义的 code comments
-- ✅ Link text：`[Quickstart](../../QUICKSTART.md)` → `[Guida rapida](QUICKSTART.it.md)`（如果 `docs/i18n/` 中存在 sibling translation 就指向它；否则保留英文目标 `../../QUICKSTART.md`）
+**要翻译的内容：**
+- ✅ 所有正文文本、标题、描述
+- ✅ 图像中的替代文本：`alt="Open Design banner"` → `alt="Banner di Open Design"`
+- ✅ 适当的徽章标签：`discord-join` → `discord-unisciti`
+- ✅ 示例中的代码注释（如果有指导意义）
+- ✅ 链接文本：`[Quickstart](../../QUICKSTART.md)` → `[Snabbstart](QUICKSTART.sv.md)`（`docs/i18n/` 中的同级翻译（如果存在）；否则保留英文目标 `../../QUICKSTART.md`）
 
-**不要翻译：**
-- ❌ Code snippets（commands、file paths、variable names）
-- ❌ URLs 和 domain names
-- ❌ GitHub usernames 和 repository names
-- ❌ Brand names："Open Design"、"Claude Code"、"Anthropic"、"Vercel"
-- ❌ 没有标准译法的 technical terms：CLI、API、SDK、BYOK、daemon、sidecar、monorepo、artifact、iframe
-- ❌ Command output（保持 terminal output 与实际软件中的英文一致）
+**不翻译的内容：**
+- ❌ 代码片段（命令、文件路径、变量名）
+- ❌ URL 和域名
+- ❌ GitHub 用户名和仓库名称
+- ❌ 品牌名称：“Open Design”、“Claude Code”、“Anthropic”、“Vercel”
+- ❌ 无标准翻译的技术术语：CLI、API、SDK、BYOK、daemon、sidecar、monorepo、artifact、iframe
+- ❌ 命令输出（保持终端输出为英文，与实际软件中显示的一样）
 
-**Terminology guidelines：**
-- 如果没有标准译法，首次使用时用英文术语并在括号里简短解释：
+**术语指南：**
+- 如果不存在标准翻译，则首次使用时请使用英文术语并在括号中进行简要说明：
   ```
   Open Design è un'alternativa open-source (codice aperto) a Claude Design.
   ```
-- 对 regional variants（zh-CN vs zh-TW、pt-BR vs pt-PT），选择目标受众最能理解的变体
-- 具体 glossaries 见 [Regional terminology](#regional-terminology) section
+- 对于区域变体（zh-CN 与 zh-TW、pt-BR 与 pt-PT），请为您的目标受众选择最广泛理解的变体
+- 有关特定术语表，请参阅[区域术语](#regional-terminology) 部分
 
-### Badge Translation
+### 徽章翻译
 
-README 中的一些 badges 可以通过修改 badge URL 来本地化：
+README 中的某些徽章可以通过更改徽章 URL 进行本地化：
 
 ```markdown
 <!-- English -->
@@ -309,49 +276,55 @@ README 中的一些 badges 可以通过修改 badge URL 来本地化：
 <a href="https://discord.gg/mHAjSMV6gz"><img alt="Discord" src="https://img.shields.io/badge/discord-unisciti-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
 ```
 
-**翻译这些 badge labels：**
-- Download button：`download` → 你的语言
-- Quickstart badge：`quickstart` → 你的语言
+**翻译这些徽章标签：**
+- 下载按钮：`download` → 您的语言
+- Quickstart 徽章：`quickstart` → 您的语言
 - Discord：`join` → 你的语言
 
-**这些 badges 保持英文：**
-- GitHub stats（stars、forks、issues、PRs、contributors、commits）
-- Version numbers 和 release info
-- License
-- Technical counts（agents、skills、design systems）
+**保留这些徽章的英文版本：**
+- GitHub 统计信息（星星、分叉、问题、PR、贡献者、提交）
+- 版本号和发布信息
+- 执照
+- 技术计数（agents、skills、design systems）
 
 ---
 
-## 🌍 Regional Terminology
+<a id="regional-terminology"></a>
+## 🌍 地区术语
 
-### General Guidelines
+### 一般准则
 
-Translations 应遵循目标地区 tech writing community 的惯例。Maintainers 信任 contributors 做出 idiomatic choices，不会在 style 上 gate-keep。
+翻译遵循目标地区技术写作社区的惯例。维护者相信贡献者会做出惯用的选择，并且不会对风格进行把关。
 
-**保持英文的 technical terms：**
+**要保留英文的技术术语：**
 - Open Design、Claude Code、Claude Design
 - Skills、Design Systems
-- BYOK (Bring Your Own Key)
+- BYOK（自带Key）
 - CLI、API、SDK
 - Daemon、sidecar
 - Monorepo、workspace
 - Artifact、iframe
-- Git、GitHub、Vercel
+- git，GitHub，Vercel
 
-**有标准译法时翻译：**
-- "local-first" → 对应语言的等价说法
-- "open-source" → 对应语言的等价说法
-- "installation" → 对应语言的等价说法
-- "quickstart" → 对应语言的等价说法
-- "settings" → 对应语言的等价说法
+**标准存在时要翻译的术语：**
+- “local-first” → 您语言的等效项
+- “开源” → 您的语言的等效项
+- “安装” → 您语言的等效项
+- “quickstart” → 您语言的等效项
+- “设置” → 您的语言的等效项
 
-### French (`fr`) Glossary
+### 法语 (`fr`) 词汇表
 
-French UI copy 应让 technical product audience 自然阅读，同时不要把 product/runtime terms 翻成模糊的法语近似。以下规则在 `apps/web/src/i18n/locales/fr.ts`、French core docs 和 French display metadata 中保持稳定。
+法文版 UI 应该适合技术产品受众自然阅读，而无需
+将 Product/runtime 术语转换为模糊的法语近似值。保留这些
+规则在 `apps/web/src/i18n/locales/fr.ts`、法语核心文档和
+法语显示元数据。
 
-#### Keep in English
+#### 保留英文
 
-Names、protocols、commands、environment variables、code identifiers、package names、file extensions，以及用英文更清晰的 technical runtime nouns 保持 exact English/token form：
+保留名称、协议、命令、环境的准确英文/令牌形式
+变量、代码标识符、包名称、文件扩展名和技术信息
+runtime 英语中更清晰的名词：
 
 | English source | French usage |
 | -------------- | ------------ |
@@ -372,15 +345,16 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | `OD_DATA_DIR`, `OD_WEB_PORT`, `{provider}` | `OD_DATA_DIR`, `OD_WEB_PORT`, `{provider}` |
 | `.zip`, `.html`, `.md`, `.json` | `.zip`, `.html`, `.md`, `.json` |
 
-在保留术语周围使用 French grammar：
+在保留术语周围使用法语语法：
 
-- `le daemon local`, `un runtime`, `des plugins`, `les prompts`
-- `l’API`, `un endpoint REST`, `un flux SSE`
-- `la CLI locale`, `un serveur MCP`
+- `le daemon local`、`un runtime`、`des plugins`、`les prompts`
+- `l’API`、`un endpoint REST`、`un flux SSE`
+- `la CLI locale`、`un serveur MCP`
 
-#### Translate When Standard
+#### 标准时翻译
 
-当存在自然 French equivalent 时，翻译普通 UI terms、workflow labels 和非 identifier 的 product copy：
+翻译普通 UI 术语、工作流程标签和非标识符产品副本
+当存在自然法语对应词时：
 
 | English source | French |
 | -------------- | ------ |
@@ -406,26 +380,26 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | Engineering handoff | Transmission aux ingénieurs |
 | Shipped (product/software status) | Livré |
 
-#### Context-Sensitive Choices
+#### 上下文相关的选择
 
-- 当 `Skill` 指 Open Design/Claude skill format 时保持 `Skill`。只有 "ability" 或 "capability" 这类泛义 prose 才翻译为 `capacité`。
-- 当 `fork` 指 Open Design conversation-fork feature 或相关 product/CLI 文案时保持 `fork`。Git branches 翻译为 `branche`，但不要把 product action 改写成 branch。
-- 当 `Design System` 指 product registry/object name 时可以保持 `Design System`。在解释性 prose 中，如果能提升可读性，也可用 `système de design`。
-- 当 `Craft` 指 repository 的 `craft/` extension point 或匹配的 UI label 时保持 `Craft`。不要把这个 feature name 翻成 generic polish/finishing pass。
-- 当 `SOTA Harness` 和 `Harness` 指 Open Design product/runtime harness concept 或匹配的 marketing label 时保持英文。
-- Motion-design jargon，例如 `motion`、`timing`、`easing`、`fallback` 和 `timeline`，在 compact UI labels 或 agent-workflow prompts 中可保持英文，因为这些术语是 design-domain vocabulary。
-- `runtime` 作为 noun 时保持 `runtime`。像 "execution mode" 这样的 labels 仍可用 `mode d’exécution`。
-- Provenance labels 中的 `source` 可保持 `source`，但普通 "data source" 翻译为 `source de données`。
-- 不要翻译 command output 或用户应在 terminal 中精确看到的 examples。
-- 不要翻译 UI input hints 中 copy-paste-safe 的 parser tokens 或 operators。当用户可能把 `kind`、`limit`、`scale`、`selector`、`columns`、`maxWidth` 和 `gap` 这类 literals 粘贴进字段时，保持原样。
+- `Skill` 指 Open Design / Claude skill 格式时保留英文；只有泛指“能力”或“功能”时才译为 `capacité`。
+- `fork` 指 Open Design 的对话分叉功能或对应产品/CLI 文案时保留英文。Git branch 可译为 `branche`，但不要把产品动作改写成 branch。
+- `Design System` 指产品 registry / object 名称时可以保留英文；解释性正文中也可使用 `système de design`，以自然易读为准。
+- `Craft` 指仓库的 `craft/` extension point 或对应 UI label 时保留英文，不要把这个功能名译成普通的润色或收尾过程。
+- `SOTA Harness` 与 `Harness` 指 Open Design 的产品/runtime 概念或对应营销 label 时保留英文。
+- `motion`、`timing`、`easing`、`fallback`、`timeline` 等动效设计术语，在紧凑 UI label 或 agent workflow prompt 中可以保留英文。
+- `runtime` 作为名词时保留英文；“execution mode”等 label 仍可译为 `mode d’exécution`。
+- `source` 用作 provenance label 时可以保留；普通的“data source”译为 `source de données`。
+- 不要翻译用户应在 terminal 中原样看到的 command output 或示例。
+- 不要翻译 UI 输入提示里可直接复制粘贴的 parser token 或 operator。用户可能把 `kind`、`limit`、`scale`、`selector`、`columns`、`maxWidth`、`gap` 直接粘贴到输入框，因此必须保持原样。
 
-### zh-CN ↔ zh-TW Glossary
+### zh-CN ↔ zh-TW 术语表
 
-在 Simplified 和 Traditional Chinese 之间转换时，zh-TW 优先使用台湾特定说法，而不是只做字符转换。此列表来自 [PR #194](https://github.com/nexu-io/open-design/pull/194)，是起点而非硬性 rulebook。
+在简体中文和繁体中文之间进行转换时，更喜欢使用 zh-TW 中的台湾特定措辞，而不是仅进行字符转换。该列表源自 [PR #194](https://github.com/nexu-io/open-design/pull/194)，旨在作为起点，而不是规则手册。
 
-**Tooling:** [OpenCC](https://github.com/BYVoid/OpenCC) 搭配 `s2twp.json` 能自动处理多数核心术语。下面的 idiomatic table 是需要 human review 的部分。
+**工具：** [OpenCC](https://github.com/BYVoid/OpenCC) 与 `s2twp.json` 自动处理大多数核心术语。下面的惯用表是人工审核的回报所在。
 
-#### Core terms (automated by OpenCC)
+#### 核心术语（由 OpenCC 自动化）
 
 | English      | zh-CN  | zh-TW   |
 | ------------ | ------ | ------- |
@@ -450,9 +424,9 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | desktop      | 桌面端 | 桌面版  |
 | mobile       | 移动端 | 行動版  |
 
-#### Idiomatic / domain-specific (requires human judgment)
+#### 惯用/特定领域（需要人类判断）
 
-这些 mappings 在 #194 中需要 human judgment；OpenCC 不会捕捉它们。它们**最值得记录**，因为下一个 translator 会遇到同样选择：
+这些映射在 #194 中需要人工判断 - OpenCC 不会捕获它们，并且它们是**最有用的记录**，因为下一个翻译器将做出相同的选择：
 
 | English / context        | zh-CN     | zh-TW     |
 | ------------------------ | --------- | --------- |
@@ -466,9 +440,9 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | crash, screw up (slang)  | 翻车      | 出包      |
 | go viral (slang)         | 出圈      | 爆紅      |
 
-### Portuguese: pt-BR vs pt-PT
+### 葡萄牙语：pt-BR vs pt-PT
 
-**Brazilian Portuguese (`pt-BR`)** 与 European Portuguese 差异很大：
+**巴西葡萄牙语 (`pt-BR`)** 与欧洲葡萄牙语差异显著：
 
 | English    | pt-BR      | pt-PT (avoid) |
 | ---------- | ---------- | ------------- |
@@ -478,11 +452,11 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | mouse      | mouse      | rato          |
 | to click   | clicar     | clicar        |
 
-`pt-BR` translations 使用 Brazilian Portuguese。如果 contributor 想添加 European Portuguese，使用 code `pt-PT`。
+使用巴西葡萄牙语进行 `pt-BR` 翻译。如果贡献者想要添加欧洲葡萄牙语，请使用代码 `pt-PT`。
 
-### Spanish: `es-ES` (Spain)
+### 西班牙语：`es-ES`（西班牙）
 
-已发布 UI locale 是 **`es-ES`**，label 为 `Español (España)`，因此 dictionary 和 root README 面向 European Spanish。README filename `README.es.md` 是 docs-precedent code，与 UI code 不同（见 [adding a new locale](#adding-a-new-locale) step 对该 pattern 的说明）；两个 surfaces 描述的都是同一个 Spain Spanish locale。
+当前发布的 UI locale 是 **`es-ES`**，label 为 `Español (España)`，因此 dictionary 和根目录 README 都面向欧洲西班牙语。README 文件名 `README.es.md` 沿用文档侧的既有 code，与 UI code 不同（参见记录此模式的[添加新 locale](#adding-a-new-locale)步骤）；两处内容描述的是同一个西班牙（欧洲）locale。
 
 | English    | es-ES (use)  | Avoid (Latin American) |
 | ---------- | ------------ | ---------------------- |
@@ -492,76 +466,76 @@ Names、protocols、commands、environment variables、code identifiers、packag
 | file       | archivo      | fichero (dated Spain)  |
 | mobile     | móvil        | celular (LatAm)        |
 
-如果 contributor 想添加 neutral 或 Latin American Spanish，请在 follow-up PR 中提出 separate locale（例如 `es-419`）。不要让 `es-ES` drift 到另一个 regional variant；既有 `Español (España)` label 已经设定 reader expectations。
+如果贡献者想要中性或拉丁美洲西班牙语，请在后续 PR 中提出单独的 locale（例如 `es-419`） - 不要将 `es-ES` 转向不同的区域变体，因为现有的 `Español (España)` 标签设定了读者的期望。
 
-### Arabic: RTL and Technical Terms
+### 阿拉伯语：RTL 和技术术语
 
-**Arabic (`ar`)** 使用所有 Arabic-speaking regions 都能理解的 Modern Standard Arabic (MSA)：
+**阿拉伯语 (`ar`)** 使用所有阿拉伯语地区都能理解的现代标准阿拉伯语 (MSA)：
 
-- 使用 right-to-left (RTL) text direction；**Markdown 会自动处理 `README.*.md` files**
-- **web UI 需要手动注册**：把 locale code append 到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 中的 `RTL_LOCALES`（当前为 `['ar', 'fa']`），否则 `<html dir="rtl">` 永远不会设置，UI 会按 LTR 渲染
-- Technical terms 通常保留英文并附 Arabic explanation
-- Technical content 中 numbers 和 dates 可以使用 Western Arabic numerals（0-9）
-- Code blocks 和 URLs 保持 left-to-right
+- 使用从右到左 (RTL) 文本方向 — **Markdown 会自动为 `README.*.md` 文件处理此问题**
+- **web UI 需要手动注册**：将您的 locale 代码附加到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx)（当前为 `['ar', 'fa']`）中的 `RTL_LOCALES`，否则 `<html dir="rtl">` 永远不会设置，并且 UI 呈现 LTR
+- 技术术语通常以英语保存，并附有阿拉伯语解释
+- 数字和日期可以使用西方阿拉伯数字（0-9）作为技术内容
+- 保持代码块和 URL 从左到右
 
-**Example:**
+**例子：**
 ```markdown
 Open Design هو البديل مفتوح المصدر لـ Claude Design
 ```
 
-### Other Languages
+### 其他语言
 
-其他 CJK / RTL glossaries 可随着 locales 成熟扩展本 section。不要预先填空表；当 contributor 真的遇到未来 PRs 也会遇到的 terminology choice 时，再添加一行。
+随着 locales 的成熟，其他 CJK/RTL 术语表可以扩展本节。不要先发制人地填充空表——当贡献者遇到未来 PR 将面临的真正术语选择时添加一行。
 
 ---
 
-## ✅ Testing Your Translation
+## ✅ 测试您的翻译
 
-提交 PR 前，先验证：
+在提交您的 PR 之前，请验证：
 
-### 1. Visual Check
+### 1.目视检查
 
-在 GitHub preview 或本地 Markdown viewer 中打开 translated README：
-- ✅ Language switcher 显示正确
-- ✅ 所有 links 可用（无 404）
-- ✅ Images 能加载
-- ✅ Code blocks 正常渲染
-- ✅ Tables 对齐
-- ✅ Badges 显示
-- ✅ RTL text 正确流动（Arabic、Persian 等）
+在 GitHub 的预览或本地 Markdown 查看器中打开翻译后的 README：
+- ✅ 语言切换器显示正确
+- ✅ 所有链接均有效（无 404）
+- ✅ 图片加载
+- ✅ 代码块正确渲染
+- ✅ 表格对齐
+- ✅ 徽章展示
+- ✅ RTL 文本正确流动（阿拉伯语、波斯语等）
 
-### 2. Link Validation
+### 2. 链接验证
 
-检查所有 internal links 指向存在的文件：
+检查所有指向现有文件的内部链接：
 
 ```bash
-# Example: verify Italian links (translations live in docs/i18n/)
-grep -o 'README\.[a-z-]*\.md' docs/i18n/README.it.md | sort -u
-grep -o 'QUICKSTART\.[a-z-]*\.md' docs/i18n/README.it.md | sort -u
-grep -o 'CONTRIBUTING\.[a-z-]*\.md' docs/i18n/README.it.md | sort -u
+# Example: verify Swedish links (translations live in docs/i18n/)
+grep -o 'README\.[a-z-]*\.md' docs/i18n/README.sv.md | sort -u
+grep -o 'QUICKSTART\.[a-z-]*\.md' docs/i18n/README.sv.md | sort -u
+grep -o 'CONTRIBUTING\.[a-z-]*\.md' docs/i18n/README.sv.md | sort -u
 ```
 
-所有 linked files 都应存在于 repository 中。Sibling translations 相对于 `docs/i18n/` 解析；English sources 通过 `../../` prefix 解析。如果 translated file 尚不存在，就链接到 `../../` 下的 English version。
+所有链接的文件都应该存在于仓库中。同级翻译相对于 `docs/i18n/` 进行解析；英文源通过 `../../` 前缀解析。如果翻译文件尚不存在，请链接至 `../../` 的英文版本。
 
-### 3. Language Switcher Audit
+### 3. 语言切换器审核
 
-验证新文件中的 language switcher：
-- ✅ 列出所有 supported languages
-- ✅ 当前语言加粗：`<b>Italiano</b>`
-- ✅ 其他所有语言都是 links（从 `docs/i18n/` 文件指向 sibling `<a href="README.es.md">`；从 root `README.md` 指向带 `docs/i18n/` prefix 的路径）
-- ✅ Links 使用正确 file names（例如 `README.ja-JP.md`，不是 `README.ja.md`）
-- ✅ 顺序匹配 standard order
+验证新文件中的语言切换器：
+- ✅ 列出所有支持的语言
+- ✅ 当前语言加粗：`<b>Svenska</b>`
+- ✅ 所有其他语言都是链接（来自 `docs/i18n/` 文件的同级 `<a href="README.es.md">`；来自根 `README.md` 的 `docs/i18n/` 前缀）
+- ✅ 链接使用正确的文件名（例如，`README.ja-JP.md` 而不是 `README.ja.md`）
+- ✅ 订单符合标准订单
 
-### 4. Consistency Check
+### 4. 一致性检查
 
-与 English version 比较结构：
-- ✅ section 数量相同
-- ✅ heading hierarchy 相同（H1、H2、H3）
-- ✅ code examples 相同（不翻译）
-- ✅ images 和 badges 相同（alt text 已翻译）
-- ✅ 没有缺失或额外内容
+与英文版结构对比：
+- ✅ 相同数量的部分
+- ✅ 相同的标题层次结构（H1、H2、H3）
+- ✅ 相同的代码示例（未翻译）
+- ✅ 相同的图像和徽章（带有翻译后的替代文本）
+- ✅ 没有遗漏或多余的内容
 
-### 5. Run Automated Checks
+### 5. 运行自动检查
 
 ```bash
 # Type check (if you added UI dictionary)
@@ -574,24 +548,23 @@ pnpm i18n:check
 pnpm --filter @open-design/web test
 ```
 
-提交 PR 前，所有 checks 必须通过。
+在提交您的 PR 之前，所有检查都必须通过。
 
 ---
 
-## 📤 Submitting Your Translation
+## 📤 提交您的翻译
 
-### PR Title Format
+### PR 标题格式
 
 ```
 feat(i18n): add [Language] translation
 ```
 
-**Examples:**
-- `feat(i18n): add Italian translation`
+**示例：**
 - `feat(i18n): add Swedish translation`
 - `feat(i18n): add Vietnamese translation`
 
-### PR Description Template
+### PR 描述模板
 
 ```markdown
 ## Summary
@@ -607,18 +580,7 @@ Adds [Language] translation for Open Design documentation.
 ## Files Modified
 Updated language switcher in:
 - [x] README.md (root)
-- [x] docs/i18n/README.ar.md
-- [x] docs/i18n/README.de.md
-- [x] docs/i18n/README.es.md
-- [x] docs/i18n/README.fr.md
-- [x] docs/i18n/README.ja-JP.md
-- [x] docs/i18n/README.ko.md
-- [x] docs/i18n/README.pt-BR.md
-- [x] docs/i18n/README.ru.md
-- [x] docs/i18n/README.tr.md
-- [x] docs/i18n/README.uk.md
-- [x] docs/i18n/README.zh-CN.md
-- [x] docs/i18n/README.zh-TW.md
+- [x] Every existing translation returned by `git ls-files 'docs/i18n/README.*.md'`
 
 ## Translation Notes
 [Any regional choices, terminology decisions, or context for reviewers]
@@ -641,116 +603,90 @@ Example:
 - [ ] `pnpm i18n:check` passes
 ```
 
-### Review Process
+### 审核流程
 
-**强烈偏好 native-speaker review，但它不是 blocking。** 如果约 7 天内没有 native speaker review，且 CI passes，maintainers 可以带 `nit` label merge locale PR。后续修正欢迎作为 separate PR 提交。
+**强烈推荐母语人士审核，但不会阻止。** 如果没有母语人士在约 7 天内进行审核并且 CI 通过，维护者可以将 locale PR 与 `nit` 标签合并。欢迎将后续修复作为单独的 PR。
 
-> 7-day window 只是起点，不是硬 policy。请根据 locale contributor availability 和 change size 调整。
+> 7天的窗口期是一个起点，而不是硬性政策。根据您的 locale 贡献者的可用性和更改的大小进行调整。
 
-## 🔄 Maintaining Existing Translations
+## 🔄 维护现有翻译
 
-### When English Content Changes
+### 当英语内容发生变化时
 
-English source 改变时，translations **不会自动更新**。这是有意设计；我们宁愿保留稍微过时的翻译，也不想接受 machine-translated 内容。
+当英文源发生变化时，翻译**不会自动更新**。这是有意为之的——与机器翻译的翻译相比，我们更喜欢稍微过时的翻译。
 
-**如果发现 outdated content：**
-1. 检查 English version 的 recent commits
-2. 更新 changed translated sections
-3. 提交 PR，title 为：`fix(i18n): update [Language] translation`
+**如果您发现过时的内容：**
+1. 查看英文版最近的提交
+2. 更新已更改的翻译部分
+3. 提交标题为 PR 的 `fix(i18n): update [Language] translation`
 
-**你不需要：**
-- 持续监控 English changes
-- 立刻更新 translations
-- 翻译每个 minor edit
+**您不需要：**
+- 持续监控英语变化
+- 立即更新翻译
+- 翻译每一个细微的编辑
 
-### Maintenance Workflow
+### 维护工作流程
 
-当 PR 改动 English copy 时，检查哪个 surface 变化了，并有意识地更新匹配的 translated surfaces：
+当 PR 更改英文文案时，先确认变更属于哪类内容，再明确更新对应翻译：
 
-- **UI chrome:** 先更新 `apps/web/src/i18n/locales/en.ts`，然后在该 PR 拥有此次 refresh 时，把 translated values 加到 active locale dictionaries。Partial dictionaries 可以通过 `...en` 继承 English。
-- **README:** 保持 root `README.md` 和每个 `docs/i18n/README.*.md` 中的 language switchers 同步。Refresh 时，对照 English `README.md` 检查 badge counts、Quickstart links、supported agent lists 和 release/download links。
-- **Core docs:** 当 locale 维护这些 docs 时，让 translated `docs/i18n/QUICKSTART.*.md` 和 `docs/i18n/CONTRIBUTING.*.md` 与 English source（root 中的 `QUICKSTART.md`、`CONTRIBUTING.md`）保持一致。
-- **Display metadata:** 当 locale 维护 display metadata 时，随着 `content.ts` 一起更新 `apps/web/src/i18n/content*.ts`。
+- **UI chrome：** 首先更新 `apps/web/src/i18n/locales/en.ts`，然后将相同的显式 keys 和匹配的 placeholders 添加到每个 locale 字典中。不要使用 `...en` 使不完整的字典显得完整。
+- **README：** 保持根 `README.md` 和每个 `docs/i18n/README.*.md` 之间的语言切换器同步。在刷新期间检查徽章计数、Quickstart 链接、支持的 agent 列表以及针对英文 `README.md` 的发布/下载链接。
+- **核心文档：** 当 locale 拥有这些文档时，保持翻译后的 `docs/i18n/QUICKSTART.*.md` 和 `docs/i18n/CONTRIBUTING.*.md` 与其英文源（`QUICKSTART.md`、`CONTRIBUTING.md` 在根中）保持一致。
+- **显示元数据：** 当 locale 维护显示元数据时，与 `content.ts` 一起更新 `apps/web/src/i18n/content*.ts`。
 
-### Automated Checks
+### 自动检查
 
-**P0 check（CI 中 hard-fail）：**
+**P0 检查（CI 中的硬故障）：**
 ```bash
 pnpm i18n:check
 ```
 
-它会强制检查：
-- UI locale registration
-- Root README switcher consistency
-- Root README links to translated core docs
+这强制执行：
+- UI locale 注册
+- 根目录 README切换器一致性
+- 根 README 链接到翻译的核心文档
 
-这些是 structural issues，merge 前必须修复。
+这些是合并前必须解决的结构性问题。
 
-### Known Drift
-
-若干 translated READMEs 当前在以下方面落后 English：
-- Badge counts
-- Supported agent lists
-- Quickstart/download links
-
-这些会在 focused PRs 中清理。见下方 [Backport policy](#backport-policy)。
+locale 测试验证每个注册词典中 key 和 placeholder 的精确一致性。具体译文仍需人工语言审校；结构对等并不能证明翻译质量。
 
 ---
 
-## 📋 Backport Policy
+## 📋 回补策略
 
-当 English README 或 UI dict 获得新 sections/keys 时，contributors **不要求** backport。Runtime 中 English fallback 会覆盖 missing keys。Locale maintainers（volunteers，通常是最初作者）建议在 follow-up PR 中 refresh。
+当英文版 README 新增章节时，locale 维护者可能会在有针对性的后续更新中更新正文。 UI 字典 keys 是不同的：每个注册的 locale 必须在同一更改中添加每个新的 key，以便 typecheck 和 `apps/web/tests/i18n/locales.test.ts` 继续通过。 runtime fallback 是防御边界，而不是维护策略。
 
-**保持 refresh PRs 聚焦：每个 PR 一个 locale，不混入 feature work。**
+**保持刷新 PR 的重点：每个 locale 一个 PR，没有混合功能工作。**
 
-### Drift Threshold
+### 漂移处理
 
-当满足以下任一条件时，locale 被视为 drifted：
+- 缺失或额外的 UI、keys 和 placeholder 不匹配是硬故障，而不是过时状态阈值。
+- 意外复制到 locale 中的英文 value 属于语义翻译缺陷。发现后应修复；对高风险 UI 文案可酌情增加针对性 assertion。
+- README 和核心文档正文仍然可以独立漂移，因为这些文档是手动维护的。将 locale 与其英文源进行比较，并在更改技术声明之前使用代码/历史证据。
 
-- 与 `en.ts` 相比有 **≥20 untranslated UI keys**（目前用 key-diff 手动检查；CI warning 作为 follow-up 跟踪，见 [Open questions](#open-questions)），**或**
-- English README 或 dict 已改变，但 **6+ months 没有 refresh PR**
+### 部分翻译
 
-这些是把 locale 移到 **stale** status（见下方）的 tripwires；它们不是 auto-rejection rules。
+最初只翻译 README 是可以的。稍后当您有时间时添加 QUICKSTART 和 CONTRIBUTING。
 
-### Stale Locales
-
-我们不删除 locales。当 locale 触发上述 drift tripwire：
-
-1. 在 [Supported Languages](#-supported-languages) table 中该行添加 `⚠️ Stale (last refreshed YYYY-MM)` cell。
-2. 在该 locale 的 `.ts` file 顶部加 frontmatter comment：
-
-   ```typescript
-   // ⚠️ Stale: last refreshed 2025-09. See TRANSLATIONS.md.
-   export const fr: Dict = { ... };
-   ```
-
-3. Locale 继续 compile 和 render；读者仍能得到部分翻译 UI，这比移除它更好。
-
-新的 contributor 可以通过提交 refresh PR 接手；当 drift threshold 回到可控范围内时，markers 移除。
-
-### Partial Translations
-
-一开始只翻译 README 也可以。之后有时间再添加 QUICKSTART 和 CONTRIBUTING。
-
-**在 PR 中标记 partial translations：**
+**在您的 PR 中标记部分翻译：**
 ```markdown
 ## Translation Status
-- [x] docs/i18n/README.it.md (complete)
-- [ ] docs/i18n/QUICKSTART.it.md (planned)
-- [ ] docs/i18n/CONTRIBUTING.it.md (planned)
+- [x] docs/i18n/README.sv.md (complete)
+- [ ] docs/i18n/QUICKSTART.sv.md (planned)
+- [ ] docs/i18n/CONTRIBUTING.sv.md (planned)
 ```
 
 ---
 
-## ❓ FAQ
+## ❓ 常见问题解答
 
-### Q: Which file should I translate first?
+### 问：我应该先翻译哪个文件？
 
-**A:** 永远从 `README.md` 开始。它是用户首先看到的文件，影响最大。然后添加 UI dictionary，再添加 QUICKSTART，最后添加 CONTRIBUTING。
+**答：** 始终以 `README.md` 开头。这是用户首先看到的东西，并且影响最大。然后添加 UI 字典，然后添加 QUICKSTART，然后添加 CONTRIBUTING。
 
-### Q: Do I need to translate code comments in examples?
+### Q：示例中的代码注释需要翻译吗？
 
-**A:** 如果它们是 instructional，就需要；如果它们是实际 code output 的一部分，就不需要。
+**答：** 是的，如果它们具有指导意义的话。不，如果它们是实际代码输出的一部分。
 
 ```bash
 # English
@@ -760,9 +696,9 @@ pnpm tools-dev  # Start the development server
 pnpm tools-dev  # Avvia il server di sviluppo
 ```
 
-### Q: Should I translate command output?
+### 问：我应该翻译命令输出吗？
 
-**A:** 不要。Command output 保持与实际软件中显示的一样，即英文。
+**答：** 否。请保留实际软件中显示的英文终端输出。
 
 ```bash
 # Keep this in English
@@ -771,21 +707,21 @@ Starting daemon on port 17456...
 Web server running at http://localhost:17573
 ```
 
-### Q: What if my language doesn't have a word for "open-source"?
+### 问：如果我的语言中没有“开源”一词怎么办？
 
-**A:** 首次使用时保留英文并在括号里简短解释：
+**答：** 首次使用时使用英文术语，并在括号中附上简短解释：
 
 ```markdown
 Open Design è un'alternativa open-source (codice aperto) a Claude Design.
 ```
 
-首次之后，可以只使用英文术语。
+第一次使用后，您可以只使用英文术语。
 
-### Q: How do I handle right-to-left (RTL) languages like Arabic?
+### 问：如何处理从右到左 (RTL) 的语言，例如阿拉伯语？
 
-**README:** Markdown 和 GitHub 会自动处理 RTL text direction；自然使用你的语言书写，并保持 code blocks / URLs left-to-right。
+**README：** Markdown 和 GitHub 自动处理 RTL 文本方向 - 只需用您的语言自然地编写并保持代码块/URL 从左到右即可。
 
-**UI locale:** web app 不会 auto-detect。你必须把 locale code append 到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx) 中的 `RTL_LOCALES`（当前为 `['ar', 'fa']`）。没有这一步，`<html dir="rtl">` attribute 永远不会设置，UI 会按 LTR 渲染。见 [detailed steps](#adding-a-new-locale) step 2。
+**UI locale：** Web 应用程序自动检测支持的操作系统/浏览器语言并保留明确的用户选择。方向性单独注册：将新的 RTL locale 附加到 [`apps/web/src/i18n/index.tsx`](apps/web/src/i18n/index.tsx)（当前为 `['ar', 'fa']`）中的 `RTL_LOCALES`，以便设置 `<html dir="rtl">`。请参阅步骤 2 下的[详细步骤](#adding-a-new-locale)。
 
 ```markdown
 <!-- README: Arabic text flows RTL automatically -->
@@ -797,101 +733,100 @@ pnpm tools-dev
 ```
 ```
 
-### Q: Can I use machine translation?
+### 问：我可以使用机器翻译吗？
 
-**A:** Machine translation 可以作为起点，但你**必须**仔细 review 和 edit。目标是 native-quality translation。Reviewers 会检查 machine-translation artifacts，例如：
-- 不自然的 phrasing
-- 错误 technical terms
-- 缺少 context
-- 不通顺的 literal translations
+**答：** 可以用机器翻译打底，但**必须**仔细审校。目标是达到母语写作水准。Reviewer 会检查以下机器翻译痕迹：
+- 不自然的措辞
+- 技术术语不正确
+- 缺少上下文
+- 直译没有意义
 
-### Q: What if I find an error in the English version?
+### 问：如果我发现英文版本有错误怎么办？
 
-**A:** 先在 separate PR 中修复 English version，再更新 translations。不要传播错误。
+**答：** 首先在单独的 PR 中修复英文版本，然后更新翻译。不要传播错误。
 
-### Q: Should I translate the CHANGELOG?
+### 问：我应该翻译变更日志吗？
 
-**A:** 不要。CHANGELOG 只保持英文。它是面向 maintainers 的 technical document。
+**答：** 不。CHANGELOG 仅保留英文版本。这是维护人员的技术文档。
 
-### Q: How do I handle version numbers and dates?
+### 问：如何处理版本号和日期？
 
-**A:** Version numbers 保持英文格式（`v1.0.0`）。Dates 可以本地化：
-- English：`2026-05-12` 或 `May 12, 2026`
-- Italian：`12 maggio 2026`
-- Japanese：`2026年5月12日`
-- Spanish：`12 de mayo de 2026`
+**答：** 保留英文格式的版本号 (`v1.0.0`)。日期可以本地化：
+- 英语: `2026-05-12` 或 `May 12, 2026`
+- 意大利语: `12 maggio 2026`
+- 日语：`2026年5月12日`
+- 西班牙语: `12 de mayo de 2026`
 
-### Q: What about the language switcher order?
+### 问：语言切换顺序如何？
 
-**A:** 遵循 [Step 3](#step-3-update-all-language-switchers-critical) 中显示的 standard order。新语言放到末尾。
+**答：** 请遵循[步骤 3](#step-3-update-all-language-switchers-critical) 中所示的标准顺序。新语言放在最后。
 
-### Q: Can I add a language that's not on the list?
+### 问：我可以添加列表中没有的语言吗？
 
-**A:** 可以。按本指南操作并提交 PR。我们欢迎所有语言。
+**答：** 是的！按照本指南并提交 PR。我们欢迎所有语言。
 
-### Q: Who reviews translation PRs?
+### 问：谁审查翻译 PR？
 
-**A:** 理想情况下由 native speaker 或 fluent reviewer review。如果没有 native reviewer，maintainers 会检查结构，并在约 7 天后根据 community feedback merge。
+**答：** 最好是母语人士或流利的审阅者。如果没有可用的本地审阅者，维护人员将在大约 7 天后根据社区反馈检查结构和合并。
 
-### Q: What if I only want to translate the README, not the UI dictionary?
+### 问：如果我只想翻译 README，而不是 UI 词典怎么办？
 
-**A:** 完全可以。README-only translations 也很有价值。你可以稍后添加 UI dictionary，也可以由其他 contributor 添加。
+**答：** 完全没问题。只翻译 README 也有价值；UI 字典可以以后再补，也可以由其他贡献者完成。
 
-### Q: How do I know if my translation is good enough?
+### 问：我如何知道我的翻译是否足够好？
 
-**A:** 问自己：
-- Native speaker 能自然理解吗？
-- 它听起来像是用这种语言写成的，而不是翻译腔吗？
-- Technical terms 使用正确吗？
-- 我愿意把它展示给同事看吗？
+**答：** 问问自己：
+- 母语人士会自然地理解这一点吗？
+- 听起来像是用这种语言写的，而不是翻译的吗？
+- 技术术语的使用是否正确？
+- 我愿意将其展示给我的同事吗？
 
-如果这些答案都是 yes，就足够好了。
+如果四项答案都是肯定的，质量就足够提交 review。
 
-### Q: Can I update an existing translation that has errors?
+### 问：我可以更新有错误的现有翻译吗？
 
-**A:** 可以。提交 title 为 `fix(i18n): improve [Language] translation` 的 PR，并在 description 中说明修复了什么。
-
----
-
-## 🆘 Getting Help
-
-- **有问题？** 开一个 [GitHub Discussion](https://github.com/nexu-io/open-design/discussions)
-- **发现 issue？** 开一个 [GitHub Issue](https://github.com/nexu-io/open-design/issues)
-- **想聊天？** 加入我们的 [Discord](https://discord.gg/mHAjSMV6gz)
-- **需要 review？** 在 PR 中 tag `@nexu-io/maintainers`
+**答：** 是的！提交标题为 `fix(i18n): improve [Language] translation` 的 PR 并解释您在描述中修复的内容。
 
 ---
 
-## 🎯 Open Questions
+## 🆘 寻求帮助
 
-真正尚未决定的问题；列在这里是为了让 contributors 知道它们仍是 live design discussions：
-
-- **Source-of-truth drift CI.** 一个 `pnpm i18n:diff` script，对比每个 locale 的 keys 和 `en.ts`，当 locale 超过 20-key drift threshold 时 warn（不 fail）。此 doc 落地后作为 follow-up 跟踪。
-- **README freshness signal.** 在每个 `README.<code>.md` 上添加小 badge 或 front-matter timestamp，可能帮助读者判断翻译的新鲜程度。
-- **Native-speaker review window.** `~7 days` 对较小语言社区来说是否太短；如果真实数据表明需要调整，就调整。
-
-如果你对上述任一问题有意见，请 open an issue，或在 [#195](https://github.com/nexu-io/open-design/issues/195) comment。
+- **有问题吗？** 打开 [GitHub 讨论](https://github.com/nexu-io/open-design/discussions)
+- **发现问题？** 打开 [GitHub 问题](https://github.com/nexu-io/open-design/issues)
+- **想聊天吗？** 加入我们的 [Discord](https://discord.gg/mHAjSMV6gz)
+- **需要审核？** 在您的 PR 中标记 `@nexu-io/maintainers`
 
 ---
 
-## 🚧 Deferred Decisions
+## 🎯 待讨论问题
 
-这些事项已**决定 defer**；团队同意现在不采取行动，并列出大致 revisiting triggers：
+以下问题确实尚未决定，列在这里是为了让贡献者知道这些讨论仍在进行：
 
-- **Translation memory tooling**（Crowdin / Weblate / Lingui）。当 project 达到约 12-15 个 active locales，**或** contributors 开始明显在 PRs 之间重复劳动时，重新评估。
-- **README template-driven generation**（例如 [NRG](https://github.com/nanolaba/readme-generator)、custom `.src.md` build scripts、All Contributors-style tooling）。当 project 达到 ≥15 locales，**或** README structural edits 比每月一次更频繁时，重新评估。[#195](https://github.com/nexu-io/open-design/issues/195) 中的讨论：template-driven generation 能解决“在 10 个 README variants 中更新第 27 行”的脆弱性，但会强制共享结构，而今天的 locale variants 有意存在差异（例如 `README.zh-TW.md` 的 "上手體驗" section，以及 pt-BR / pt-PT 在 content-level 而不只是 translation-level 上存在差异的 precedent）。等 locale voice 更稳定，或手动更新成本更高时，值得重新讨论。
+- **README 新鲜度信号。** 每个 `README.<code>.md` 上的小徽章或头条时间戳可以帮助读者判断翻译的最新程度。
+- **母语人士审阅窗口。** `~7 days` 对于较小的语言社区来说是否太短 - 如果实际数据显示相反，请进行调整。
 
----
-
-## 🙏 Credits
-
-感谢所有 translation contributors！🌍
-
-每一份翻译都让 Open Design 能被全球更多 developers 使用。
-
-**当前 contributors：**
-- 完整列表见 [Contributors](https://github.com/nexu-io/open-design/graphs/contributors)
+如果您对上述任何内容有意见，请在 [#195](https://github.com/nexu-io/open-design/issues/195) 上提出问题或发表评论。
 
 ---
 
-**准备贡献了吗？** 选择一种语言，按 [Quick Start](#-quick-start-adding-your-language-in-5-steps) 操作，然后提交 PR。我们很期待看到你的语言版本的 Open Design！🚀
+## 🚧 推迟的决定
+
+尽管仓库现在已经包含 19 个 UI locale，以下决定仍然维持推迟状态。超过旧的 locale 数量阈值并不等于自动采用某种工具或生成 contract；任何一项变更都需要维护者明确决定：
+
+- **翻译记忆工具**（Crowdin / Weblate / Lingui）。
+- **README 模板驱动生成**（例如 [NRG](https://github.com/nanolaba/readme-generator)、自定义 `.src.md` 构建脚本、所有贡献者风格的工具）。 [#195](https://github.com/nexu-io/open-design/issues/195) 中的讨论体现了切换器维护和 locale 特定结构之间的权衡。
+
+---
+
+## 🙏 致谢
+
+感谢我们所有的翻译贡献者！ 🌍
+
+每一次翻译都让全球更多开发者能够接触到 Open Design。
+
+**当前贡献者：**
+- 完整列表请参见[贡献者](https://github.com/nexu-io/open-design/graphs/contributors)
+
+---
+
+**准备好贡献了吗？** 选择一种语言，按照[快速入门](#-quick-start-adding-your-language-in-5-steps) 操作，然后提交您的 PR。我们迫不及待地想看到您语言版本的 Open Design！ 🚀
