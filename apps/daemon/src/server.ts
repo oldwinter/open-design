@@ -200,7 +200,10 @@ import {
 import { loadMmdRouteLaunchEnv } from './runtimes/mmd-routes.js';
 import { preparePromptFileForAgent } from './runtimes/prompt-file.js';
 import { TerminalControlSequenceStripper } from './runtimes/terminal-control.js';
-import { buildOpenCodeByokProviderConfig } from './runtimes/byok-opencode.js';
+import {
+  buildOpenCodeByokProviderConfig,
+  BYOK_OPENCODE_PROVIDER_REQUIRED_MESSAGE,
+} from './runtimes/byok-opencode.js';
 import {
   persistPlainStreamArtifacts,
   plainStdoutFromRunEvents,
@@ -315,6 +318,7 @@ import {
   restoreProjectSnapshotLink,
   resolvePluginSnapshot,
   runPipelineForRun,
+  isSafePluginId,
   runStageWithRegistry,
   startSnapshotGc,
   uninstallPlugin,
@@ -3415,6 +3419,7 @@ export async function startServer({
       listInstalledPlugins,
       getInstalledPlugin,
       installPlugin,
+      isSafePluginId,
       uninstallPlugin,
       installFromLocalFolder,
       applyPlugin,
@@ -3467,6 +3472,7 @@ export async function startServer({
       listInstalledPlugins,
       getInstalledPlugin,
       installPlugin,
+      isSafePluginId,
       uninstallPlugin,
       installFromLocalFolder,
       applyPlugin,
@@ -4271,7 +4277,7 @@ export async function startServer({
       return design.runs.fail(
         run,
         'BYOK_PROVIDER_REQUIRED',
-        'BYOK OpenCode requires a provider, API key, and model for this run.',
+        BYOK_OPENCODE_PROVIDER_REQUIRED_MESSAGE,
       );
     }
     // Validate the checked-in `inactivityTimeoutMs` hint immediately
@@ -5324,10 +5330,20 @@ export async function startServer({
         attemptCount > 0
           ? { ...decision, retryAttemptIndex: attemptCount }
           : decision;
+      // A successful retry has no current failure classification or error code.
+      // Fall back to the failure that caused attempt 0 to be retried so success
+      // recovery can still be attributed by root cause. Failed/suppressed retry
+      // events retain their existing current-attempt semantics.
+      const eventFailure = retryResult === 'success'
+        ? run.retryOriginFailure ?? failure
+        : failure;
+      const eventErrorCode = retryResult === 'success'
+        ? run.retryOriginErrorCode ?? errorCode
+        : errorCode;
       run.retryFinalResult = retryResult;
       run.retrySuppressedReason = retrySuppressedReason;
       design.runs.emit(run, 'run_retry_finished', {
-        ...retryAnalyticsBase(eventDecision, failure, errorCode),
+        ...retryAnalyticsBase(eventDecision, eventFailure, eventErrorCode),
         retry_result: retryResult,
         ...(retrySuppressedReason
           ? { retry_suppressed_reason: retrySuppressedReason }
@@ -5393,6 +5409,10 @@ export async function startServer({
         sideEffects,
       });
       if (decision.shouldRetry && !design.runs.isTerminal(run.status)) {
+        if ((run.retryAttemptCount ?? 0) === 0) {
+          run.retryOriginFailure = failure ? { ...failure } : null;
+          run.retryOriginErrorCode = errorCode ?? null;
+        }
         run.retryAttemptCount = decision.retryAttemptIndex;
         run.retryFinalResult = undefined;
         run.retrySuppressedReason = undefined;

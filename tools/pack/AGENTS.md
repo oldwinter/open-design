@@ -40,10 +40,13 @@
 
 - `apps/desktop/src/main/updater.ts` 拥有 updater state、release metadata parsing、artifact selection、checksum verification、download-store ownership、progress events，以及打开下载好的 installer。它是纯 main-process logic，并在 `apps/desktop/tests/main/updater.test.ts` 下测试。
 - `apps/desktop/src/main/runtime.ts` 通过 `od:update:status|check|download|install|quit` 向 renderer 暴露 updater IPC，并发出 `od:update:status-changed`。保持 installer launch 与 process shutdown 分离；quit 是 explicit post-installer action。
-- `apps/desktop/src/main/index.ts` 连接 scheduler。Native menu update actions 有意不是 user-facing surface；web updater UI 拥有 discovery 和 action prompts。
+- `apps/desktop/src/main/index.ts` 连接 scheduler 和 packaged macOS app-menu update item。Native item 镜像 updater state，并打开 renderer-owned update dialog；它不得创建第二套 updater 或 native result dialog。Windows 和 Linux menus 不暴露 update actions。
 - `apps/web/src/lib/updater.ts` 将 host updater snapshots 归一化为 UI-ready state。
-- `apps/web/src/components/UpdaterPopup.tsx` 是左侧 rail 中可见的 updater surface。所有 visible copy 必须经过 `apps/web/src/i18n`。
-- `apps/packaged/src/index.ts` 将 packaged `appVersion` 和 namespace-scoped `updateRoot` 传入 desktop main。
+- `apps/web/src/components/UpdaterPopup.tsx` 仍是左侧 rail 中 ready-update surface。`apps/web/src/components/UpdateDialog.tsx` 拥有显式 macOS app-menu check flow。所有 visible copy 和 native menu labels 必须经过 `apps/web/src/i18n`。
+- `packages/launcher-proto` 拥有 launcher pointer、attempt、desktop-handoff journal shapes 和 payload selection。`runtime.json` 与 `attempt.json` 共同构成唯一的 payload-version state machine。
+- `apps/packaged/src/index.ts` 会在初始化 outer Electron runtime 前委派给 selected payload desktop；只有 outer 自身必须运行时，才把 packaged `appVersion` 和 namespace-scoped `updateRoot` 传入 desktop main。
+- `apps/daemon/src/sidecar/payload-desktop-handoff.ts` 是 historical outer 无法委派时使用的 isolated compatibility bridge。它会使用真实 previous pointer 重新 arm selected payload，在旧 outer 退出后启动该 payload desktop，并持久化一份小型 desktop-binding journal，供后续 shortcut cold starts 使用。该 journal 不是第二个 version selector。
+- `install.json` 继续标识用于 recovery 的 physically installed outer executable。Payload activation 或 handoff 不得把它改写为 versioned payload executable。
 - `tools/serve` 只拥有 deterministic local updater fixtures。它不得包含 product updater runtime logic。
 - `tools/pack` 拥有 packaged build/install/start/inspect/logs/uninstall/cleanup 和 platform installer harness，包括 Windows NSIS registry observation 与 cleanup。
 
@@ -51,8 +54,7 @@
 
 Runtime updater 默认读取 `https://releases.open-design.ai/<channel>/latest/metadata.json`，除非 `OD_UPDATE_METADATA_URL` 覆盖它。对于 package-launcher updates：
 
-- mac 选择 `platforms.mac.artifacts.dmg`。
-- Windows 选择 `platforms.win.artifacts.installer`。
+- 有效 packaged-launcher context 优先选择 `platforms.<platform>.artifacts.payload`；platform installer（macOS 的 `dmg` 或 Windows 的 `installer`）仍是 recovery/fallback path。
 - Artifact 必须有 checksum，最好是 `sha256Url`；updater 会先验证 bytes，再暴露 install action。
 - `OD_UPDATE_CURRENT_VERSION` 可以为 tests 覆盖 packaged version，但 user-flow package validation 应优先用目标 `--app-version` 构建 package。
 - 发布元数据可以包含 `releaseNote.content`，其中带有 `defaultLocale`，以及包含 `url`、`mediaType`、`sha256` 和 `size` 的各语言描述符。更新器目前不会读取该区块；`tools-release` 独立于更新器界面行为，负责其发布和验证。
@@ -125,9 +127,11 @@ C:\odtp-beta-release-fixed\out\win\namespaces\release-beta-win\builder\Open Desi
 - User 启动 `Open Design Beta`。
 - App 自动检查真实 beta feed，并在 package-launcher context 有效时选择最新 Windows launcher payload。当 payload artifact 或 launcher context 不可用时，installer 是 fallback path。
 - Payload path 下，app 下载 `platforms.win.artifacts.payload`，验证 sha256，将 payload 准备到 `%APPDATA%\Open Design\launcher\channels\beta\namespaces\release-beta-win\versions\<version>\payload`，并显示 web updater popup。
-- Native File menu 不得暴露 update actions。
+- Native Windows File menu 不得暴露 update actions。macOS app menu 会暴露 state-aware update item，并打开 renderer update dialog，但不得让 background checks 变得 intrusive。
 - Updater popup 使用 i18n strings，download progress 不得在真实 bytes 到达前闪到 100%。
-- 应用 payload update 应退出并重新启动到已准备好的 payload version，然后把 launcher `active` 和 `lastSuccessful` 标记到该 version。
+- 应用 payload update 应退出，并重新启动 prepared version 的 `payload` directory 下的精确 executable，随后把 launcher `active` 和 `lastSuccessful` 标记到该 version，并清除 `attempt.json`。
+- Historical outer 最初可能产生 mixed generation。其 daemon-sidecar compatibility handoff 必须用精确 payload desktop executable 替换 historical desktop，保留真实 previous pointer 以便 recovery，并让 handoff journal 最终不存在或处于 `confirmed`，绝不能停留在 `prepared` 或 `armed`。
+- 完整 stop 后，再次启动 installed shortcut/outer 时仍必须 converge 到同一个 active payload desktop，并保留 daemon/API behavior，包括真实 PPTX export。
 - 如果 updater fallback 到 installer path，点击 `Open installer` 会打开真实下载的 beta installer。安装它应覆盖同一个 `Open Design-release-beta-win` registry key，而不是创建第二个 beta key。
 
 5. beta.6 更新后的 registry 和 launcher sanity check：
@@ -141,7 +145,7 @@ Get-Content "$env:APPDATA\Open Design\launcher\channels\beta\namespaces\release-
 ```
 
 干净的 beta channel 结果应只有一个 beta entry，`PSChildName` 为 `Open Design-release-beta-win`，且 `DisplayVersion` 为 latest。
-Payload path 下，还应看到 launcher `active.version` 和 `lastSuccessful.version` 与 latest beta version 一致。
+Payload path 下，还应看到 launcher `active.version` 和 `lastSuccessful.version` 与 latest beta version 一致、`attempt.json` 不存在，且 running desktop executable 位于该 version 的 `payload` directory 下。Current outer 可以没有 `desktop-handoff.json`；historical outer 的该文件可以是 `confirmed`，但 `prepared` 和 `armed` 都不是成功终态。
 Windows Settings > Apps 可能在当前 view 内缓存 uninstall metadata。如果 registry query 正确后 Settings 仍显示之前的 beta version，请切换离开 Apps view 再回来，或重开 Settings，再把它视为 installer failure。上面的 registry query 是该 harness 的 source of truth。
 
 6. 避免留下 validation residue。先停止正在运行的 app processes，然后对 tool-managed namespaces 使用 tools-pack uninstall/cleanup。只有在验证 resolved path 确实是预期目录后，才删除 explicit temp roots。
@@ -172,3 +176,4 @@ pnpm typecheck
 ```
 
 当变更触及真实 release feed selection、channel identity、Windows registry/install behavior、installer opening 或 visible updater UI behavior 时，请运行 high-confidence local user-flow acceptance。
+Launcher payload 或 handoff changes 还必须运行 platform full spec。Full profile 必须验证精确 desktop executable identity、真实 PPTX response、完整 stop 后的 installed-outer cold start，并在 restart 后再次运行相同检查。Windows beta full validation 必须使用 `release-beta-win`；beta-like local namespace 不能作为等价 delivery evidence。
