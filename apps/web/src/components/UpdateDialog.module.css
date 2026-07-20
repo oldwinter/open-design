@@ -4,7 +4,8 @@
   z-index: 2200;
   display: grid;
   place-items: center;
-  padding: 24px;
+  box-sizing: border-box;
+  padding: 24px 16px;
   background: color-mix(in srgb, #111 28%, transparent);
   backdrop-filter: blur(2px);
   animation: updateBackdropIn 160ms ease-out;
@@ -12,7 +13,7 @@
 
 .dialog {
   position: relative;
-  width: min(420px, calc(100vw - 32px));
+  width: min(420px, 100%);
   box-sizing: border-box;
   padding: 26px 28px 20px;
   border: 1px solid var(--border);

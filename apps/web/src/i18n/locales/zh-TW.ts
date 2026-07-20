@@ -3923,9 +3923,9 @@ export const zhTW: Dict = {
   "notify.successBody": "一輪回答已經寫完。",
   "notify.failureBody": "本輪任務出錯，請查看錯誤訊息。",
   "updater.available": "有可用更新",
-  "updater.activeRunsTitle": "Open Design 仍在執行任務",
-  "updater.activeRunsBody": "仍有 {count} 個任務正在執行。現在重新啟動會中斷這些任務。",
-  "updater.activeRunsUnknownBody": "Open Design 無法確認是否仍有任務執行。現在重新啟動可能會中斷進行中的工作。",
+  "updater.activeRunsTitle": "Open Design 仍有任務正在執行",
+  "updater.activeRunsBody": "仍有 {count} 個任務正在執行。\n現在安裝並重新啟動會中斷這些任務。",
+  "updater.activeRunsUnknownBody": "Open Design 無法確認是否仍有任務執行。\n現在安裝並重新啟動可能會中斷進行中的工作。",
   "updater.availableBody":
     "Open Design {version} 可用。下載完成後即可開啟安裝器。",
   "updater.checking": "正在檢查更新",
@@ -3941,7 +3941,7 @@ export const zhTW: Dict = {
   "updater.allowSilentUpdates": "允許以後自動安裝應用內更新",
   "updater.openFailedFallback": "無法開啟安裝器。",
   "updater.installRestart": "安裝並重新啟動",
-  "updater.installingRestart": "Installing and restarting...",
+  "updater.installingRestart": "正在安裝並重新啟動…",
   "updater.openInstaller": "安裝更新",
   "updater.opening": "正在開啟安裝器…",
   "updater.dialogAvailableGeneric": "發現新版本。\n下載後即可安裝。",
@@ -3954,9 +3954,9 @@ export const zhTW: Dict = {
   "updater.dialogUnsupported":
     "目前環境不支援應用程式內更新。\n可前往發布頁面手動下載。",
   "updater.payloadReadyGeneric":
-    "A new Open Design update is ready. Open Design will close and restart automatically.",
+    "Open Design 更新已就緒。Open Design 會關閉並自動重新啟動。",
   "updater.payloadReadyVersion":
-    "Open Design {version} is ready. Open Design will close and restart automatically.",
+    "Open Design {version} 已就緒。Open Design 會關閉並自動重新啟動。",
   "updater.quitButton": "結束 Open Design",
   "updater.quitFailedBody":
     "安裝器已開啟，但 Open Design 無法結束。替換應用程式前請先結束 Open Design。",
@@ -3969,7 +3969,7 @@ export const zhTW: Dict = {
   "updater.upToDate": "您已經是最新版本啦",
   "updater.viewVersionFeatures": "查看新版本特色",
   "updater.manualDownload": "手動下載",
-  "updater.restartAnyway": "仍然重新啟動",
+  "updater.restartAnyway": "仍要安裝並重新啟動",
 
   "whatsNew.cta": "看看有什麼新功能",
   "whatsNew.dismissAria": "關閉更新亮點",
