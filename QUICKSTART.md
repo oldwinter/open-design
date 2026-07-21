@@ -326,11 +326,20 @@ open-design/
 
 ## 排障
 
+- **`better-sqlite3` 在 Node.js 版本变更后加载失败或出现 ABI 不匹配** —— `pnpm install` 会自动重新运行 `postinstall`，为当前 Node.js 重建 native addon。要手动重建或验证修复，请先运行 `pnpm --filter @open-design/daemon rebuild better-sqlite3`，再运行 `pnpm --filter @open-design/daemon exec node -e "require('better-sqlite3')"`。需要安装 `python3`、`make`、`g++`（或 `clang++`）等构建工具。如果你的 `.npmrc` 使用 `ignore-scripts=true`（AUR package 中很常见），请在 `pnpm install` 后运行 `pnpm bootstrap`。
 - **"no agents found on PATH"** —— 安装 [`apps/daemon/src/runtimes/registry.ts`](apps/daemon/src/runtimes/registry.ts) 中注册的任一本地 runtime，确认 daemon 能找到其可执行文件，然后在 **Settings → Execution mode** 中执行 **Rescan**；也可以在 Settings 中配置 BYOK runtime。
+- **Claude Code 以 code 1 退出** —— Open Design 已能启动 `claude`，但派生的非交互运行在产生响应前失败。请在启动 Open Design 的同一 shell 或应用环境中检查：
+  ```bash
+  claude --version
+  claude auth status --text
+  printf 'hello' | claude -p --output-format stream-json --verbose --permission-mode bypassPermissions
+  ```
+  如果 smoke test 报告 `401`、`apiKeySource: "none"` 或其他认证错误，且没有配置自定义 endpoint，请运行 `claude`、使用 `/login` 登录、退出 Claude 后重试 Open Design。若使用多个 Claude profile，请将 **Settings -> Execution mode -> Claude Code config directory** 设置为对应 profile 路径，例如 `~/.claude-2`。若设置了 `ANTHROPIC_BASE_URL` 或 proxy，请检查 endpoint URL、proxy credentials、endpoint auth environment 和 model access；只有在希望改回标准 Claude Code 认证时才移除自定义 endpoint。在 Windows 上，原生 PowerShell 与 WSL 使用不同的 Claude 安装和 credential store；请在 Open Design 实际使用的同一环境中重新认证，如果 `/login` 无法修复原生 Windows 凭据，再检查 Windows Credential Manager。
 - **daemon 在 /api/chat 上返回 500** —— 查看 daemon 终端的 stderr 尾部；通常是 CLI 拒绝了传入的参数。不同 CLI 的 argv 结构各异；如需调整，请查看 `apps/daemon/src/runtimes/defs/` 中对应的定义。
 - **媒体生成报错 `OD_BIN` 缺失、或 daemon URL 为 `:0`** —— 运行上述媒体 dispatcher 排查步骤。请勿复用已有的 CLI 会话；从 Open Design 应用中重新打开 project，daemon 才会注入新的 `OD_*` 变量。
 - **Codex 加载的插件上下文过多** —— 使用 `OD_CODEX_DISABLE_PLUGINS=1 pnpm tools-dev` 启动 Open Design，daemon 启动 Codex 时会传入 `--disable plugins`。
 - **artifact 始终不渲染** —— 先确认本次运行的交付 profile。对于具备文件系统能力的本地 runtime，检查 agent 是否创建了可预览的项目文件、文件事件是否到达 daemon；该路径不应把源码放进 `<artifact>`。对于 plain/纯文本或 BYOK 运行，检查是否存在一个完整的 `<artifact>` 块，并在 daemon 日志中定位第一处失败边界。
+- **macOS 上要求 `Authorization: Bearer <OD_API_TOKEN>`** —— Docker Desktop 的 bridge networking 会让 daemon 将请求识别为非 loopback。请在 Docker Desktop 中启用 host networking，并使用 `network_mode: host`。参见 [`deploy/README.md` 的 Docker Desktop on macOS 章节](deploy/README.md#docker-desktop-on-macos)。
 
 ## 回到产品愿景
 
