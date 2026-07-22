@@ -1,0 +1,30 @@
+{
+  "$schema": "https://open-design.ai/schemas/plugin.v1.json",
+  "specVersion": "1.0.0",
+  "name": "atelier-zero-image-generation-prompt-pack-mrrxpegw",
+  "title": "Atelier Zero — Image Generation Prompt Pack",
+  "title_i18n": {
+    "en": "Atelier Zero — Image Generation Prompt Pack",
+    "zh-CN": "Atelier Zero — 图像生成 Prompt 包"
+  },
+  "version": "0.1.0",
+  "description": "This pack is consumed by the `open-design-landing` skill. Every page-level image is rendered with `gpt-image-fal` (preferred) or `gpt-image-azure`.",
+  "description_i18n": {
+    "en": "This pack is consumed by the `open-design-landing` skill. Every page-level image is rendered with `gpt-image-fal` (preferred) or `gpt-image-azure`.",
+    "zh-CN": "供 `open-design-landing` skill 使用的图像生成 Prompt 包。每个页面级图像优先用 `gpt-image-fal` 渲染，备选 `gpt-image-azure`。"
+  },
+  "od": {
+    "kind": "skill",
+    "taskKind": "new-generation",
+    "context": {
+      "skills": [
+        {
+          "path": "./SKILL.md"
+        }
+      ]
+    },
+    "capabilities": [
+      "prompt:inject"
+    ]
+  }
+}

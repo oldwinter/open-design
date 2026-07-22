@@ -387,7 +387,7 @@ interface Props {
   onAgentChange: (id: string) => void;
   onAgentModelChange: (
     id: string,
-    choice: { model?: string; reasoning?: string },
+    choice: { model?: string; reasoning?: string; serviceTier?: string },
   ) => void;
   onApiProtocolChange: (protocol: ApiProtocol) => void;
   onApiModelChange: (model: string) => void;
@@ -1312,7 +1312,7 @@ function OnboardingView({
   onAgentChange: (id: string) => void;
   onAgentModelChange: (
     id: string,
-    choice: { model?: string; reasoning?: string },
+    choice: { model?: string; reasoning?: string; serviceTier?: string },
   ) => void;
   onApiProtocolChange: (protocol: ApiProtocol) => void;
   onApiModelChange: (model: string) => void;
@@ -2743,7 +2743,10 @@ function OnboardingView({
                     }}
                     onSelectModel={(model) => {
                       if (!selectedAgent) return;
-                      onAgentModelChange(selectedAgent.id, { model });
+                      onAgentModelChange(selectedAgent.id, {
+                        model,
+                        serviceTier: undefined,
+                      });
                     }}
                     testState={visibleAgentTestState}
                     canTest={canTestAgent}
