@@ -58,6 +58,8 @@ Runtime updater 默认读取 `https://releases.open-design.ai/<channel>/latest/m
 - Artifact 必须有 checksum，最好是 `sha256Url`；updater 会先验证 bytes，再暴露 install action。
 - `OD_UPDATE_CURRENT_VERSION` 可以为 tests 覆盖 packaged version，但 user-flow package validation 应优先用目标 `--app-version` 构建 package。
 - 发布元数据可以包含 `releaseNote.content`，其中带有 `defaultLocale`，以及包含 `url`、`mediaType`、`sha256` 和 `size` 的各语言描述符。更新器目前不会读取该区块；`tools-release` 独立于更新器界面行为，负责其发布和验证。
+- 发布元数据可以包含 `control.launcher.version.{min, url}`，用作 installer-reinstall floor。Updater 会把 `min` 与**物理安装的 outer package 版本**比较；该版本在检查时通过 launcher launch path 从 outer bundle 的 `open-design-config.json` 读取，tests 可用 `OD_UPDATE_INSTALLED_VERSION` 覆盖。这里不能使用正在运行的 payload 版本，因为 payload 更新不会修改 outer bundle；即使 payload 已是最新，损坏的 outer generation 仍必须能进入 installer path。当 floor 触发，或设置了 `min` 但无法读取 outer 版本时，updater 会保守地选择 installer artifact；如果没有更高版本，则提供同版本 installer 重装。Snapshot 的 `reinstall` 字段包含 `{reason, installedVersion, minVersion, url}`，Web UI 会把可选的 operator `url` 显示为跳转链接，并用默认 i18n 文案兜底。每个 channel 用一对 repo vars 管理策略：`RELEASE_LAUNCHER_VERSION_MIN_<CHANNEL>` 和 `RELEASE_LAUNCHER_VERSION_MIN_URL_<CHANNEL>`；workflows 原样传递，不使用 YAML fallback expressions，由 `tools/release/src/storage/launcher-version-floor.ts` 的共享 resolver 统一解析。未设置自身策略的非 stable channel 会整对回退到 STABLE；格式、HTTPS 和 floor 校验也只在该处执行。若 `min` 高于 release version，`publish-metadata` 必须失败，否则同版本重装提示会永久出现；`verify-metadata` 会重新解析同一 channel policy 并核对已发布区块，`summary-metadata` 则把 floor 写入 step summary。
+- Updater 提供手动灾难恢复操作 `clear-cache`（IPC 为 `od:update:clear-cache`，sidecar action 为 `clear-cache`，Settings -> About 中显示带两阶段内联确认的“清除更新缓存”）。它会把一次性 update state（已下载 release、install freeze）重置为 `idle`，清理 `releases/`、`staging/`、`downloads/` 和 `.back/`，删除过期的 launcher `attempt.json`、所有非 `confirmed` 的 desktop-handoff journal，以及未保留的 launcher payload versions。Runtime 的 `active`/`lastSuccessful` 版本、显式 `retained` cleanup entries、`install.json` 和 `confirmed` handoff journal 永不删除；被锁定的文件通过现有 `cleanup.json` 重试机制延后处理。此前 install action 已启动的 installer helper 不会被取消。
 - 发布说明源文件位于 `docs/CHANGELOG/v<full-releaseVersion>/<locale>.md`。所有发布通道使用同一套发布流程；稳定版还要求在各平台开始构建前同时具备 `en` 和 `zh-CN`。
 - 更新后的“What's New”亮点**不**放在 release `metadata.json` 中。Daemon 的 `/api/whats-new` 会从专用 R2 bucket 获取一份人工维护的文档（`https://whatsnew.open-design.ai/whats-new.json`，可用 `OD_WHATS_NEW_URL` 覆盖）；Web 首页会根据该文档的 `id` 显示一次性卡片，而不是根据正在运行的版本判断。运营人员在 release 后编辑这一个文件；没有按版本发布的工具链。
 
@@ -159,7 +161,7 @@ pnpm tools-pack win cleanup --dir C:\odtp-beta-release-fixed --namespace release
 
 ### Validation matrix for updater changes
 
-运行与所触及 surface 匹配的窄 tests，然后运行 repo checks：
+`docs/testing/updater-lifecycle.md` 是完整的 lifecycle-to-test coverage map，也标明了刻意只做人工验证的节点。先用它找到所触及节点对应的 tests，再运行窄 tests 和 repo checks：
 
 ```bash
 pnpm --filter @open-design/desktop test -- tests/main/updater.test.ts tests/main/updater-host-boundary.test.ts tests/main/preload-host-boundary.test.ts

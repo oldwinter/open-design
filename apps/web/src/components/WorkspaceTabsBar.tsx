@@ -194,12 +194,12 @@ function uniqueIdForTab(tab: WorkspaceChromeTab): string {
 function normalizeTabsState(state: WorkspaceTabsState): WorkspaceTabsState {
   let sourceTabs = state.tabs.length > 0 ? state.tabs : [createEntryTab('home')];
 
-  // 对 entry tabs 去重（singleton constraint）：所有 sidebar sections
-  //（home / projects / tasks / design-systems / plugins / integrations）共享
-  // 一个 entry tab，并在原地切换 view。保留 canonical tab：
-  // 1. 其中是否有当前 active 的 tab？
-  // 2. 否则，选择 lastActiveAt 最高的那个。
-  // 3. 否则，选择第一个。
+  // Deduplicate entry tabs (singleton constraint): all sidebar sections
+  // (home / projects / tasks / design-systems / plugins / integrations) share
+  // ONE entry tab that switches its view in place. Keep the canonical one:
+  // 1. Is one of them currently active?
+  // 2. Otherwise, pick the one with highest lastActiveAt.
+  // 3. Otherwise, pick the first one.
   const entryTabs = sourceTabs.filter((tab) => tab.kind === 'entry');
   if (entryTabs.length > 1) {
     let canonicalEntry = entryTabs.find((tab) => tab.id === state.activeTabId);
@@ -209,16 +209,50 @@ function normalizeTabsState(state: WorkspaceTabsState): WorkspaceTabsState {
         entryTabs[0]!
       );
     }
-    // 删除其他 entry tabs；保留下来的 tab 维持自己的 view，以保留用户所在 section。
+    // Drop every other entry tab; the survivor keeps its own view so the
+    // section the user was on is preserved.
     sourceTabs = sourceTabs.filter(
       (tab) => tab.kind !== 'entry' || tab.id === canonicalEntry!.id,
     );
   }
 
-  // 将唯一 entry tab 固定在最左侧（Figma-style）。无论当前展示哪个 section，它都是
-  // 唯一永久且不可关闭的 tab；project / marketplace tabs 始终按插入顺序位于其右侧。
-  // 如果 normalization 后没有 entry tab 留下，例如用户从已保存的 `[project, ...]`
-  // workspace 重新打开，就创建一个，确保迁移后的状态也满足“entry tab 始终存在且在最左侧”。
+  // Coalesce duplicate project tabs (one-project/one-tab invariant): a
+  // workspace restored from localStorage can already hold several tabs for the
+  // same projectId if the user hit the duplicate-tab bug before upgrading.
+  // Keep one canonical tab per projectId — the active match, else the newest —
+  // and drop the rest. This runs on every normalize, so it repairs persisted
+  // state as well as preventing new corruption. See issue #2641.
+  const projectTabs = sourceTabs.filter((tab) => tab.kind === 'project');
+  if (projectTabs.length > 0) {
+    const canonicalByProject = new Map<string, WorkspaceChromeTab>();
+    for (const tab of projectTabs) {
+      const existing = canonicalByProject.get(tab.projectId);
+      if (!existing) {
+        canonicalByProject.set(tab.projectId, tab);
+        continue;
+      }
+      // Prefer the currently active tab; otherwise keep the most recently used.
+      const tabIsActive = tab.id === state.activeTabId;
+      const existingIsActive = existing.id === state.activeTabId;
+      const keepTab =
+        (tabIsActive && !existingIsActive) ||
+        (!existingIsActive && tab.lastActiveAt > existing.lastActiveAt);
+      if (keepTab) canonicalByProject.set(tab.projectId, tab);
+    }
+    const canonicalProjectIds = new Set(
+      Array.from(canonicalByProject.values()).map((tab) => tab.id),
+    );
+    sourceTabs = sourceTabs.filter(
+      (tab) => tab.kind !== 'project' || canonicalProjectIds.has(tab.id),
+    );
+  }
+
+  // Pin the single entry tab to the leftmost position (Figma-style). It is the
+  // one permanent, non-closable tab regardless of which section it currently
+  // shows; project / marketplace tabs always sit to its right in insertion
+  // order. If no entry tab survives normalization — e.g. a user who reopens on
+  // a saved `[project, ...]` workspace — create one so the invariant "an entry
+  // tab always exists and is leftmost" holds for migrated state too.
   const entryIndex = sourceTabs.findIndex((tab) => tab.kind === 'entry');
   if (entryIndex < 0) {
     sourceTabs = [createEntryTab('home'), ...sourceTabs];
@@ -311,9 +345,10 @@ function syncStateToRoute(state: WorkspaceTabsState, route: Route): WorkspaceTab
   const current = normalizeTabsState(state);
   const currentActive = current.tabs.find((tab) => tab.id === current.activeTabId) ?? null;
 
-  // 1. 如果导航到任意 entry view（home / projects / tasks / design-systems /
-  // plugins / integrations / onboarding），复用唯一 entry tab，并在原地切换它的 view；
-  // 所有 sidebar sections 都收敛到最左侧这一个 tab。只有不存在时才创建。
+  // 1. If we are navigating to any entry view (home / projects / tasks /
+  // design-systems / plugins / integrations / onboarding), reuse the single
+  // entry tab and switch its view IN PLACE — all sidebar sections collapse
+  // into the one leftmost tab. Only create one if none exists.
   if (route.kind === 'home') {
     const existingEntryTab = current.tabs.find((tab) => tab.kind === 'entry');
     if (existingEntryTab) {
@@ -356,9 +391,10 @@ function syncStateToRoute(state: WorkspaceTabsState, route: Route): WorkspaceTab
       });
     }
 
-    // 3. 如果正在导航到 project，且对应 project tab 不存在，但当前 active tab 是
-    //（唯一）entry tab，则不应替换它；无论它当前展示哪个 entry view，都追加一个新的
-    // project tab。
+    // 3. If we are navigating to a project, and the project tab does NOT exist,
+    // but the current active tab is the (single) entry tab, we should NOT
+    // replace it — append a new project tab instead, regardless of which entry
+    // view it currently shows.
     if (currentActive && currentActive.kind === 'entry') {
       const nextTab = tabFromRoute(route, timestamp);
       return normalizeTabsState({
@@ -551,9 +587,33 @@ export function WorkspaceTabsBar({ route, projects, onboardingCompleted = false 
       const detail = (event as CustomEvent<{ route?: Route }>).detail;
       const nextRoute = detail?.route;
       if (!nextRoute) return;
-      const nextTab = tabFromRoute(nextRoute);
       setState((current) => {
         const normalized = normalizeTabsState(current);
+        // Mirror syncStateToRoute: reuse an existing project tab for the same
+        // projectId instead of appending a duplicate on repeated opens.
+        if (nextRoute.kind === 'project') {
+          const existingProjectTab = normalized.tabs.find(
+            (tab) => tab.kind === 'project' && tab.projectId === nextRoute.projectId,
+          );
+          if (existingProjectTab) {
+            const timestamp = Date.now();
+            return normalizeTabsState({
+              ...normalized,
+              tabs: normalized.tabs.map((tab) =>
+                tab.id === existingProjectTab.id
+                  ? {
+                      ...tab,
+                      conversationId: nextRoute.conversationId ?? null,
+                      fileName: nextRoute.fileName,
+                      lastActiveAt: timestamp,
+                    }
+                  : tab,
+              ),
+              activeTabId: existingProjectTab.id,
+            });
+          }
+        }
+        const nextTab = tabFromRoute(nextRoute);
         return normalizeTabsState({
           tabs: [...normalized.tabs, nextTab],
           activeTabId: nextTab.id,
@@ -782,8 +842,8 @@ export function WorkspaceTabsBar({ route, projects, onboardingCompleted = false 
     const normalized = normalizeTabsState(state);
     const closingIndex = normalized.tabs.findIndex((tab) => tab.id === tabId);
     if (closingIndex < 0) return;
-    // 唯一 entry tab 是永久的；无论它当前展示哪个 section
-    //（home / projects / design-systems / ...），都不要关闭。
+    // The single entry tab is permanent — never close it, whatever section
+    // (home / projects / design-systems / …) it currently shows.
     const closingTab = normalized.tabs[closingIndex]!;
     if (closingTab.kind === 'entry') return;
     let nextRoute: Route | null = null;
@@ -822,9 +882,9 @@ export function WorkspaceTabsBar({ route, projects, onboardingCompleted = false 
     const strip = stripRef.current;
     if (!strip) return null;
 
-    // 唯一 entry tab 固定在最左侧：不要暴露会把其他 tab 放到它前面的 drop target。
-    // 将任何 'before entry' 边缘强制改为 'after entry'，让实时拖拽指示和持久化顺序
-    // 都保持它在第一位。
+    // The single entry tab is pinned leftmost: never expose a drop target that
+    // would place another tab before it. Coerce any 'before entry' edge to
+    // 'after entry' so the live drag indicator and persisted order keep it first.
     const entryTabId = state.tabs.find((tab) => tab.kind === 'entry')?.id;
     const resolveTarget = (target: TabDragTarget): TabDragTarget =>
       target.tabId === entryTabId && target.edge === 'before'
@@ -946,8 +1006,8 @@ export function WorkspaceTabsBar({ route, projects, onboardingCompleted = false 
         {state.tabs.map((tab) => {
           const display = displayTabById.get(tab.id) ?? displayTabFor(tab, projectById, t);
           const active = tab.id === state.activeTabId;
-          // 唯一 entry tab 是永久的并固定在最左侧：无论展示哪个 section，
-          // 它都不能被关闭，也不能从第一格拖走。
+          // The single entry tab is permanent and pinned leftmost: it cannot be
+          // closed or dragged out of the first slot, whatever section it shows.
           const isPinned = tab.kind === 'entry';
           const dragOverClass =
             dragOverTarget?.tabId === tab.id && draggingTabId !== tab.id
