@@ -8,12 +8,12 @@
 
 - 列在 `/api/design-templates` 下。该 shape mirror `/api/skills`（相同的 `SkillSummary`/`SkillDetail` types），因此 web client 可以为两个 surfaces 复用同一个 `SkillSummary[]` consumer。
 - Asset 和 example routes（`/api/skills/:id/example`、`/api/skills/:id/assets/*`）有意跨两个 registries：无论哪个 root 拥有 folder，example HTML 都会 rewrite 到 `/api/skills/<id>/...`，因此拆分后 URLs 仍可解析。
-- 在 EntryView Templates tab 和 New-project panel 中作为 rendering catalogue 展示。
+- 在 New-project panel 各 mode 的 “Start from” rail 中作为 rendering catalogue 展示；重新设计后的首页没有顶层 Templates tab。
 
 ## Adding a design template
 
 1. 创建 `design-templates/<my-template>/SKILL.md`，包含 `name`、`description`、`triggers`，以及显式 `od.mode`（`prototype`、`deck`、`template`、`image`、`video`、`audio` 之一）。
-2. 随附 baked `example.html`（以及任何 side files），让 EntryView gallery 有内容可 preview。
+2. 随附 baked `example.html`（以及任何 side files），让共享的 example 与 asset routes 有内容可 preview。
 3. 可选地把额外 baked samples 放到 `examples/<key>.html` 下，将它们展示为 derived `<parent>:<key>` cards。
 
 ## Deck preview navigation contract

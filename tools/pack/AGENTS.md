@@ -108,7 +108,7 @@ curl.exe --ssl-no-revoke -fsSL https://releases.open-design.ai/beta/latest/metad
 对 `release-beta-s`，改查内部 feed：
 
 ```bash
-curl.exe --ssl-no-revoke -fsSL https://s3.nexu.space/od-releases/beta/latest/metadata.json
+curl.exe --ssl-no-revoke -fsSL https://s3.nexu.space/od-releases/betas/latest/metadata.json
 ```
 
 2. 使用真实 beta namespace 和低于 latest 的 version 构建 non-portable Windows beta package：
