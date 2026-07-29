@@ -1,102 +1,91 @@
 ---
 name: clone-audit-mrlv3nl4
-description: Audit cloned or reimplemented websites for fidelity gaps, tracking scripts, source-brand and language residue, placeholders, and risky external dependencies. Use before handoff or deployment, or when asked to review a website clone for cleanup and readiness.
+description: 审计 clone 或重实现的网站，查找还原度差距、跟踪脚本、来源品牌与语言残留、占位内容和高风险外部依赖。在交付或部署前使用，或在用户要求检查网站 clone 的清理情况与就绪状态时使用。
 ---
 
-# Clone Audit
+# Clone 审计
 
-Audit the requested website-clone workspace and produce an evidence-based
-deployment-readiness report. Inspect the current target; never reuse findings
-from an earlier project or run.
+审计用户指定的网站 clone workspace，并产出基于证据的部署就绪报告。只检查当前目标；
+绝不能复用早期项目或早期 run 的 finding。
 
-## Establish scope
+## 明确范围
 
-1. Confirm the target root and the intended output language.
-2. Identify any supplied source site, screenshots, design tokens, or other
-   fidelity references. If none are available, mark visual fidelity as not
-   checked instead of guessing.
-3. Inventory relevant HTML, CSS, JavaScript or TypeScript, assets, metadata,
-   configuration, and dependency manifests. Respect explicit exclusions.
-4. Prefer static inspection. Do not execute untrusted project code, install
-   packages, or make network requests unless the user authorizes it.
+1. 确认目标 root 和预期输出语言。
+2. 识别用户提供的 source site、截图、design token 或其他 fidelity reference。如果没有可用
+   reference，就把视觉还原度标为“未检查”，不要猜测。
+3. 盘点相关 HTML、CSS、JavaScript 或 TypeScript、asset、metadata、configuration 和
+   dependency manifest。遵守明确的排除项。
+4. 优先做静态检查。未经用户授权，不得执行不受信任的项目代码、安装 package 或发起网络请求。
 
-Treat `references/source-1-CLONE_AUDIT.md` only as historical provenance. Do
-not copy its paths, counts, or findings into a new audit unless the current
-target independently confirms them.
+只把 `references/source-1-CLONE_AUDIT.md` 当作历史 provenance。除非当前目标独立确认，
+否则不要把其中的 path、count 或 finding 复制到新审计中。
 
-## Run the checks
+## 执行检查
 
-Inspect each category and record the evidence used:
+检查每个类别，并记录使用的证据：
 
-1. **Fidelity assets and styles** — compare against supplied references for
-   missing or substituted fonts and images, broken asset paths, incorrect
-   colors, and materially different layout or styling.
-2. **Tracking scripts and pixels** — find analytics, tag managers, advertising
-   pixels, telemetry beacons, and unexpected third-party scripts.
-3. **Source-brand residue** — find source brand names, domains, metadata,
-   social links, asset paths, comments, and copy that should have been replaced.
-4. **Language residue** — find unintended text in languages outside the target
-   locale, excluding code identifiers and legitimate proper nouns.
-5. **TODOs and placeholders** — find TODO or FIXME markers, lorem ipsum,
-   template copy, dummy links, test credentials, and unfinished states.
-6. **External dependencies and link risk** — inspect remote URLs, CDNs,
-   localhost or development endpoints, external fonts and media, package
-   downloads, and dependencies that may fail, leak data, or violate deployment
-   constraints.
+1. **还原度相关 asset 与 style** — 与用户提供的 reference 对比，查找缺失或被替换的 font
+   和 image、损坏的 asset path、错误 color，以及实质不同的 layout 或 style。
+2. **跟踪脚本与 pixel** — 查找 analytics、tag manager、advertising pixel、telemetry beacon
+   和意外的第三方脚本。
+3. **来源品牌残留** — 查找本应替换的来源品牌名、domain、metadata、social link、asset path、
+   comment 和 copy。
+4. **语言残留** — 查找目标 locale 之外的非预期文本；code identifier 和合理的专有名词除外。
+5. **TODO 与 placeholder** — 查找 TODO/FIXME marker、lorem ipsum、template copy、dummy link、
+   test credential 和未完成状态。
+6. **外部依赖与链接风险** — 检查 remote URL、CDN、localhost 或开发 endpoint、外部 font 和
+   media、package download，以及可能失败、泄露数据或违反部署约束的 dependency。
 
-Open the surrounding context before reporting a match. Deduplicate repeated
-instances that share one root cause, but list every affected file or meaningful
-location.
+报告 match 前先打开周边上下文。同一 root cause 的重复实例要去重，但必须列出每个受影响文件
+或有意义的位置。
 
-## Classify evidence
+## 归类证据
 
-For every finding, include:
+每个 finding 都必须包含：
 
-- severity: `blocker`, `high`, `medium`, or `low`;
-- a repository-relative `file:line` location when available;
-- the matched identifier or a short, non-sensitive excerpt;
-- why it matters; and
-- a concrete recommended action.
+- severity：`blocker`、`high`、`medium` 或 `low`；
+- 可用时提供 repository-relative `file:line`；
+- 匹配到的 identifier，或简短且不敏感的 excerpt；
+- 影响原因；
+- 具体的 recommended action。
 
-Keep these states distinct:
+必须区分以下状态：
 
-- **Confirmed finding** — directly supported by inspected evidence.
-- **Checked; none found** — the category was inspected and no issue was found.
-- **Not checked / unverifiable** — required context, reference material, or
-  access was unavailable.
+- **已确认 finding** — 有已检查证据直接支持。
+- **已检查，未发现问题** — 已检查该类别，未发现问题。
+- **未检查 / 无法验证** — 缺少必要的上下文、reference material 或访问权限。
 
-Never turn an unverified suspicion into a confirmed finding. Do not expose
-machine-local absolute paths, secrets, tokens, or personal data in the report.
+绝不能把未验证的怀疑写成已确认 finding。报告中不得暴露本机 absolute path、secret、
+token 或个人数据。
 
-## Produce the report
+## 生成报告
 
-Use this structure:
+使用以下结构：
 
 ```markdown
-# Clone Audit
+# Clone 审计
 
-## Scope and coverage
-- Target: <portable project label or repository-relative path>
-- Fidelity reference: <provided, not provided, or unavailable>
-- Exclusions or limitations: <items or none>
+## 范围与覆盖
+- 目标：<可移植的项目标签或仓库相对路径>
+- 还原度 reference：<已提供、未提供或不可用>
+- 排除项或限制：<具体项目或无>
 
-## Findings
-### <category>
-| Severity | Evidence | Why it matters | Recommended action |
+## Finding
+### <类别>
+| Severity | 证据 | 影响 | 建议操作 |
 | --- | --- | --- | --- |
-| <level> | `<relative/file:line>` — <identifier> | <impact> | <action> |
+| <级别> | `<relative/file:line>` — <identifier> | <影响> | <操作> |
 
-## Checked; none found
-- <category>
+## 已检查，未发现问题
+- <类别>
 
-## Not checked / unverifiable
-- <category>: <reason>
+## 未检查 / 无法验证
+- <类别>：<原因>
 
-## Deployment readiness
-<Ready, ready with follow-ups, or not ready> — <brief evidence-based reason>
+## 部署就绪状态
+<已就绪、需跟进后就绪或未就绪> — <基于证据的简短原因>
 ```
 
-Use **not ready** when confirmed unresolved findings can break the deployed
-experience, expose tracking or sensitive data unexpectedly, or leave material
-source-brand or placeholder content. Otherwise state any follow-ups and explain
-why they do or do not block deployment.
+若已确认但未解决的 finding 可能破坏部署体验、意外暴露跟踪或敏感数据，或留下实质性的
+来源品牌/placeholder 内容，就使用**未就绪**。否则列出跟进项，并说明它们为什么会或不会
+阻止部署。
