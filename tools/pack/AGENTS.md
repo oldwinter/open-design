@@ -2,6 +2,8 @@
 
 先遵循根目录 `AGENTS.md` 和 `tools/AGENTS.md`。此工具拥有 repo-external packaged build/start/stop/logs command surface。
 
+Read `tools/pack/CACHE.md` before changing any build-cache node key, adding a cache node, or changing what a cached node reads or writes. It is the source of truth for the build-graph cache under `--cache-dir`: determinant rules, materialization-time parameters, the signing boundary, and confidence grading.
+
 ## Owns
 
 - Packaged Open Design artifacts 的本地 packaging orchestration。
