@@ -362,6 +362,7 @@ export const de: Dict = {
   'settings.byokNoFileToolsNotice': 'BYOK kann Projektdateien nicht lesen, schreiben oder bearbeiten. Verwenden Sie die Local CLI, wenn Sie Codeänderungen benötigen.',
   'settings.byokDraftNotice': 'Diese Konfiguration bleibt ein Entwurf, bis alle Pflichtfelder ausgefüllt sind. Die aktuelle Ausführungskonfiguration bleibt aktiv.',
   'settings.codeAgent': 'Code-Agent',
+  'settings.byokSecureStorageUnavailable': 'Der sichere BYOK-Anmeldedatenspeicher ist für diese Konfiguration nicht verfügbar. Prüfen Sie den Provider und den lokalen Daemon und versuchen Sie es erneut.',
   'settings.codeAgentHint': 'Durch Scannen Ihres PATH erkannt. Wählen Sie die CLI, über die Generierungen laufen sollen.',
   'settings.rescan': '↻ Neu scannen',
   'settings.rescanTitle': 'PATH erneut scannen',

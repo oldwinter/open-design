@@ -362,6 +362,7 @@ export const tr: Dict = {
   'settings.byokNoFileToolsNotice': 'BYOK proje dosyalarını okuyamaz, yazamaz veya düzenleyemez. Kod değişiklikleri gerektiğinde Local CLI kullanın.',
   'settings.byokDraftNotice': 'Bu yapılandırma, gerekli alanlar tamamlanana kadar taslak olarak kalır. Mevcut yürütme yapılandırması etkin kalır.',
   'settings.codeAgent': 'Kod ajanı',
+  'settings.byokSecureStorageUnavailable': 'Güvenli BYOK kimlik bilgisi depolaması bu yapılandırma için kullanılamıyor. Sağlayıcıyı ve yerel daemon’ı kontrol edip yeniden deneyin.',
   'settings.codeAgentHint': 'Yerel PATH taranarak tespit edildi. Oluşum akışının yaşanacağı CLI aracınızı seçin.',
   'settings.rescan': '↻ Yeniden tara',
   'settings.rescanTitle': 'PATH’ı yeniden tara',

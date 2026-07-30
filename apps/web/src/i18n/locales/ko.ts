@@ -362,6 +362,7 @@ export const ko: Dict = {
   'settings.byokNoFileToolsNotice': 'BYOK는 프로젝트 파일을 읽거나 쓰거나 편집할 수 없습니다. 코드 변경이 필요한 경우 Local CLI를 사용하세요.',
   'settings.byokDraftNotice': '필수 항목을 모두 입력할 때까지 이 설정은 초안으로 유지됩니다. 현재 실행 설정은 계속 활성 상태로 유지됩니다.',
   'settings.codeAgent': '코드 에이전트',
+  'settings.byokSecureStorageUnavailable': '이 구성에서는 안전한 BYOK 자격 증명 저장소를 사용할 수 없습니다. 공급자와 로컬 daemon을 확인한 후 다시 시도하세요.',
   'settings.codeAgentHint': 'PATH 환경 변수 스캔을 통해 감지됩니다. 생성을 처리할 CLI를 선택하세요.',
   'settings.rescan': '↻ 다시 스캔',
   'settings.rescanTitle': 'PATH 다시 스캔',

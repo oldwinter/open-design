@@ -4,6 +4,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OpenDesignHostUpdaterStatusSnapshot } from '@open-design/host';
 import { installMockOpenDesignHost } from '@open-design/host/testing';
+import type { UpsertByokCredentialProfileRequest } from '@open-design/contracts';
 import { en } from '../../src/i18n/locales/en';
 import { zhCN } from '../../src/i18n/locales/zh-CN';
 
@@ -162,6 +163,8 @@ const amrAgent: AgentInfo = {
   supportsCustomModel: false,
 };
 
+const inFlightAuthAttemptId = '936da01f-9abd-4d9d-80c7-02af85c822a8';
+
 type OnRefreshAgents = (
   options?: AgentRefreshOptions,
 ) => void | AgentInfo[] | Promise<void | AgentInfo[]>;
@@ -286,6 +289,19 @@ function renderSettingsDialog(
 ) {
   const onPersist = vi.fn();
   const onPersistComposioKey = vi.fn();
+  const onPersistByokCredential = vi.fn(async (input: UpsertByokCredentialProfileRequest) => ({
+    id: input.id ?? 'byok-test-profile',
+    label: input.label,
+    protocol: input.protocol,
+    baseUrl: input.baseUrl,
+    model: input.model,
+    apiVersion: input.apiVersion,
+    requiresApiKey: input.requiresApiKey ?? true,
+    configured: true,
+    keyTail: input.apiKey?.slice(-4),
+    createdAt: 1,
+    updatedAt: 1,
+  }));
   const onSilentUpdatePreferenceChange: (allowSilentUpdates: boolean) => Promise<void> =
     options.onSilentUpdatePreferenceChange
     ?? (async () => undefined);
@@ -304,6 +320,7 @@ function renderSettingsDialog(
       onPersist={onPersist}
       onSilentUpdatePreferenceChange={onSilentUpdatePreferenceChange}
       onPersistComposioKey={onPersistComposioKey}
+      onPersistByokCredential={onPersistByokCredential}
       onClose={onClose}
       onRefreshAgents={onRefreshAgents}
     />,
@@ -313,6 +330,7 @@ function renderSettingsDialog(
     onPersist,
     onSilentUpdatePreferenceChange,
     onPersistComposioKey,
+    onPersistByokCredential,
     onClose,
     onRefreshAgents,
     ...view,
@@ -3340,6 +3358,7 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
               ? {
                   loggedIn: false,
                   loginInFlight: true,
+                  authAttemptId: inFlightAuthAttemptId,
                   profile: 'local',
                   user: null,
                   configPath: '/Users/test/.amr/config.json',
@@ -3347,6 +3366,7 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
               : {
                   loggedIn: false,
                   loginInFlight: false,
+                  authAttemptId: inFlightAuthAttemptId,
                   profile: 'local',
                   user: null,
                   configPath: '/Users/test/.amr/config.json',
@@ -3356,6 +3376,9 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
         );
       }
       if (url === '/api/integrations/vela/login/cancel' && init?.method === 'POST') {
+        expect(JSON.parse(String(init.body))).toEqual({
+          authAttemptId: inFlightAuthAttemptId,
+        });
         statusStage = 'signed-out';
         return new Response(JSON.stringify({ canceled: true }), {
           status: 200,
@@ -3379,7 +3402,13 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
 
     expect(await screen.findByText('Canceled')).toBeTruthy();
-    expect(fetchMock).toHaveBeenCalledWith('/api/integrations/vela/login/cancel', { method: 'POST' });
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/integrations/vela/login/cancel',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ authAttemptId: inFlightAuthAttemptId }),
+      }),
+    );
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Authorize' })).toBeTruthy();
@@ -3413,6 +3442,7 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
           JSON.stringify({
             loggedIn: false,
             loginInFlight: true,
+            authAttemptId: inFlightAuthAttemptId,
             profile: 'local',
             user: null,
             configPath: '/Users/test/.amr/config.json',
@@ -3421,6 +3451,9 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
         );
       }
       if (url === '/api/integrations/vela/login/cancel' && init?.method === 'POST') {
+        expect(JSON.parse(String(init.body))).toEqual({
+          authAttemptId: inFlightAuthAttemptId,
+        });
         cancelReceived = true;
         return new Response(JSON.stringify({ canceled: true }), {
           status: 200,
@@ -3477,31 +3510,37 @@ describe('SettingsDialog execution settings Local CLI interactions', () => {
             ? {
                 loggedIn: false,
                 loginInFlight: true,
+                authAttemptId: inFlightAuthAttemptId,
                 profile: 'local',
                 user: null,
                 configPath: '/Users/test/.amr/config.json',
               }
             : statusStage === 'signed-in'
               ? {
-                  loggedIn: true,
-                  loginInFlight: false,
-                  profile: 'local',
-                  user: { id: 'user-1', email: 'late@example.com' },
-                  configPath: '/Users/test/.amr/config.json',
-                }
+                loggedIn: true,
+                loginInFlight: false,
+                authAttemptId: inFlightAuthAttemptId,
+                profile: 'local',
+                user: { id: 'user-1', email: 'late@example.com' },
+                configPath: '/Users/test/.amr/config.json',
+              }
               : {
-                  loggedIn: false,
-                  loginInFlight: false,
-                  profile: 'local',
-                  user: null,
-                  configPath: '/Users/test/.amr/config.json',
-                };
+                loggedIn: false,
+                loginInFlight: false,
+                authAttemptId: inFlightAuthAttemptId,
+                profile: 'local',
+                user: null,
+                configPath: '/Users/test/.amr/config.json',
+              };
         return new Response(JSON.stringify(body), {
           status: 200,
           headers: { 'content-type': 'application/json' },
         });
       }
       if (url === '/api/integrations/vela/login/cancel' && init?.method === 'POST') {
+        expect(JSON.parse(String(init.body))).toEqual({
+          authAttemptId: inFlightAuthAttemptId,
+        });
         statusStage = 'signed-out';
         return new Response(JSON.stringify({ canceled: true }), {
           status: 200,

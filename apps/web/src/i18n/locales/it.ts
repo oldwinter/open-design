@@ -362,6 +362,7 @@ export const it: Dict = {
   'settings.byokNoFileToolsNotice': 'BYOK non può leggere, scrivere o modificare i file del progetto. Usa la Local CLI quando hai bisogno di modifiche al codice.',
   'settings.byokDraftNotice': 'Questa configurazione resta una bozza finché i campi obbligatori non sono completi. La configurazione di esecuzione attuale rimane attiva.',
   'settings.codeAgent': 'Agente di codice',
+  'settings.byokSecureStorageUnavailable': 'L’archiviazione sicura delle credenziali BYOK non è disponibile per questa configurazione. Controlla il provider e il daemon locale, quindi riprova.',
   'settings.codeAgentHint': 'Rilevato analizzando il tuo PATH. Scegli la CLI attraverso cui verranno eseguite le generazioni.',
   'settings.rescan': '↻ Rianalizza',
   'settings.rescanTitle': 'Rianalizza il PATH',

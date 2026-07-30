@@ -362,6 +362,7 @@ export const ar: Dict = {
   'settings.byokNoFileToolsNotice': 'لا يمكن لـ BYOK قراءة ملفات المشروع أو الكتابة فيها أو تعديلها. استخدم Local CLI عندما تحتاج إلى تغييرات في الكود.',
   'settings.byokDraftNotice': 'يظل هذا الإعداد مسودة حتى تكتمل الحقول المطلوبة. يظل إعداد التنفيذ الحالي نشطًا.',
   'settings.codeAgent': 'وكيل الكود',
+  'settings.byokSecureStorageUnavailable': 'تخزين بيانات اعتماد BYOK الآمن غير متاح لهذا الإعداد. تحقق من المزوّد والبرنامج الخفي المحلي، ثم أعد المحاولة.',
   'settings.codeAgentHint': 'تم اكتشافه عبر مسح PATH الخاص بك. اختر واجهة CLI التي تريد أن تمر الأجيال عبرها.',
   'settings.rescan': '↻ إعادة المسح',
   'settings.rescanTitle': 'إعادة مسح PATH',

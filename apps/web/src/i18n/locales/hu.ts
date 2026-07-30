@@ -362,6 +362,7 @@ export const hu: Dict = {
   'settings.byokNoFileToolsNotice': 'A BYOK nem tud projektfájlokat olvasni, írni vagy szerkeszteni. Ha kódmódosításra van szüksége, használja a Local CLI-t.',
   'settings.byokDraftNotice': 'Ez a beállítás piszkozat marad, amíg az összes kötelező mezőt ki nem tölti. A jelenlegi végrehajtási beállítás aktív marad.',
   'settings.codeAgent': 'Kód Agent',
+  'settings.byokSecureStorageUnavailable': 'A biztonságos BYOK-hitelesítőadat-tárolás ehhez a konfigurációhoz nem érhető el. Ellenőrizze a szolgáltatót és a helyi daemont, majd próbálja újra.',
   'settings.codeAgentHint': 'A PATH átvizsgálásával észlelve. Válaszd ki a CLI-t, amelyen át a generálásokat szeretnéd futtatni.',
   'settings.rescan': '↻ Újraellenőrzés',
   'settings.rescanTitle': 'PATH újraellenőrzése',

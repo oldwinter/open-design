@@ -12,6 +12,7 @@ import { DESIGN_SYSTEMS_USAGE, isDesignSystemsHelpArg } from './cli-help/index.j
 import { BRAND_USAGE, isBrandHelpArg } from './cli-help/index.js';
 import { parseDesignSystemRenameArgs } from './design-systems/rename-args.js';
 import { runLiveArtifactsToolCli } from './tools-live-artifacts-cli.js';
+import { runByokToolCli } from './tools-byok-cli.js';
 import { splitResearchSubcommand } from './research/cli-args.js';
 import { resolveDaemonUrl } from './daemon-url.js';
 import { requestJsonIpc } from '@open-design/sidecar';
@@ -333,6 +334,7 @@ const SUBCOMMAND_MAP = {
   artifacts: runArtifacts,
   media: runMedia,
   mcp: runMcp,
+  byok: runByok,
   amr: runAmr,
   'message-center': runMessageCenter,
   research: runResearch,
@@ -667,6 +669,10 @@ function printRootHelp() {
       Read and acknowledge message-center inbox items through the same
       daemon endpoints the bell UI uses.
 
+  od amr <login|status> [args]
+      通过本地 Open Design daemon 启动 Open Design Cloud 浏览器登录，
+      或查看当前账号状态。
+
   od memory tree <list|view|edit|move> [args]
       Inspect and edit the memory tree that is injected into agent prompts.
 
@@ -729,19 +735,52 @@ What the daemon does:
 async function runAmr(args) {
   const sub = args[0];
   if (!sub || sub === 'help' || args.includes('--help') || args.includes('-h')) {
-    console.log(`Usage:
+    console.log(`用法：
+  od amr login [--json]
   od amr status [--refresh] [--json]
 
-Options:
-  --daemon-url <url>   Open Design daemon HTTP base.
-  --refresh            Bypass the daemon's short wallet display cache.
-  --json               Emit raw JSON.`);
+命令：
+  login                启动 Open Design Cloud 浏览器登录。
+  status               查看当前账号状态。
+
+选项：
+  --daemon-url <url>   Open Design daemon 的 HTTP base URL。
+  --refresh            跳过 daemon 的短期余额显示缓存。
+  --json               输出原始 JSON。`);
     process.exit(sub === 'help' || args.includes('--help') || args.includes('-h') ? 0 : 2);
   }
   const rest = args.slice(1);
   const flags = parseFlags(rest, { string: AMR_STRING_FLAGS, boolean: AMR_BOOLEAN_FLAGS });
   const base = await cliDaemonBaseUrl(flags);
   switch (sub) {
+    case 'login': {
+      const loginResp = await fetch(`${base}/api/integrations/vela/login`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{}',
+      });
+      if (!loginResp.ok) return structuredHttpFailure(loginResp);
+      const started = await loginResp.json();
+      const statusResp = await fetch(`${base}/api/integrations/vela/status`);
+      if (!statusResp.ok) return structuredHttpFailure(statusResp);
+      const status = await statusResp.json();
+      if (flags.json) {
+        return process.stdout.write(JSON.stringify({ started, status }, null, 2) + '\n');
+      }
+      console.log(`Open Design Cloud 登录\t已启动`);
+      console.log(`环境配置\t${status?.profile ?? started?.profile ?? '-'}`);
+      if (status?.loggedIn) {
+        console.log(`状态\t已登录`);
+        return;
+      }
+      console.log(`状态\t${status?.loginInFlight ? '等待浏览器授权' : '等待登录'}`);
+      if (status?.activationUrl) console.log(`打开\t${status.activationUrl}`);
+      if (status?.userCode) console.log(`代码\t${status.userCode}`);
+      if (status?.browserOpenFailed) {
+        console.log(`说明\t无法自动打开浏览器，请使用上方链接`);
+      }
+      return;
+    }
     case 'status': {
       const query = flags.refresh ? '?refresh=1' : '';
       const statusResp = await fetch(`${base}/api/integrations/vela/status`);
@@ -1438,6 +1477,15 @@ files folder so the FileViewer can preview them immediately.`);
 }
 
 // ---------------------------------------------------------------------------
+// Subcommand: od byok
+// ---------------------------------------------------------------------------
+
+async function runByok(args) {
+  const result = await runByokToolCli(args);
+  if (result.exitCode !== 0) process.exit(result.exitCode);
+}
+
+// ---------------------------------------------------------------------------
 // Subcommand: od mcp
 // ---------------------------------------------------------------------------
 
@@ -1461,7 +1509,10 @@ async function runMcp(args) {
     return;
   }
 
-  const daemonUrl = await cliDaemonUrl(flags);
+  const { ensureMcpDaemonUrl } = await import('./mcp-bootstrap.js');
+  const daemonUrl = await ensureMcpDaemonUrl({
+    flagUrl: flags['daemon-url'],
+  });
 
   const { runMcpStdio } = await import('./mcp.js');
   await runMcpStdio({ daemonUrl });
@@ -1483,7 +1534,11 @@ Options:
                        discovers the live daemon URL at startup, so
                        MCP client configs stay valid across daemon
                        restarts even when the port is ephemeral. A
-                       running MCP server caches the URL; restart the
+                       packaged install also starts the signed Open
+                       Design app in --headless mode when its daemon
+                       is stopped; no Electron window is opened.
+                       Once running, the MCP server caches the URL;
+                       restart the
                        MCP client after a daemon restart to pick up a
                        new port.
 
