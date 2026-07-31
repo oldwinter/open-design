@@ -167,15 +167,6 @@ describe('i18n locales', () => {
     expect(zhTW['settings.byokDraftNotice']).toBe(
       '必填項補齊前，此設定只會儲存為草稿；目前的執行設定將繼續維持生效。',
     );
-    expect(en['settings.byokSecureStorageUnavailable']).toBe(
-      'Secure BYOK credential storage is unavailable for this configuration. Check the provider and local daemon, then try again.',
-    );
-    expect(zhCN['settings.byokSecureStorageUnavailable']).toBe(
-      '当前配置无法使用安全的 BYOK 凭据存储。请检查 Provider 和本地 daemon 后重试。',
-    );
-    expect(zhTW['settings.byokSecureStorageUnavailable']).toBe(
-      '目前設定無法使用安全的 BYOK 憑證儲存。請檢查 Provider 和本機 daemon 後重試。',
-    );
   });
 
   it('keeps Routines settings page copy translated in Chinese (issue #1372)', () => {

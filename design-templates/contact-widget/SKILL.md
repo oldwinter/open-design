@@ -97,10 +97,13 @@ od:
 
 ## 工作流
 
-1. 向用户询问：primary color、agent name、greeting text、online/offline state、要显示哪些 social links，以及可选 meeting URL。
+1. 根据请求和已知上下文确定 primary color、agent name、greeting text、online/offline state、social links 和可选 meeting URL。
+   使用文档中的默认值，并省略为空的可选链接。只有当缺失值会实质性改变请求的 widget，且无法安全使用默认值时，才发送一个合并后的表单。
+   Upstream contract: Ask one
+   consolidated form only if a missing value would materially change the requested widget.
 2. 生成一个 HTML 文件，把所有已提供值作为 literal 内联进去（不要 template engine，输出里不要 `{{ }}` 占位符）。
 3. 首次渲染默认打开 widget panel，让预览有用。
-4. 除非用户明确要求后端集成，**不要**添加任何指向第三方 SDK 的 `<script src="...">`。输出必须能从磁盘运行，除了 Google Fonts CSS 之外零网络请求。
+4. 除非用户明确要求后端集成，**不要**添加任何指向第三方 SDK 的 `<script src="…">`。输出必须能从磁盘运行，除了 Google Fonts CSS 之外零网络请求。
 
 ## 后端集成（可选，仅用户主动要求时）
 

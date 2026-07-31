@@ -362,7 +362,6 @@ export const id: Dict = {
   'settings.byokNoFileToolsNotice': 'BYOK tidak dapat membaca, menulis, atau mengedit file proyek. Gunakan Local CLI saat Anda perlu mengubah kode.',
   'settings.byokDraftNotice': 'Konfigurasi ini tetap sebagai draf hingga semua bidang wajib dilengkapi. Konfigurasi eksekusi saat ini tetap aktif.',
   'settings.codeAgent': 'Agent kode',
-  'settings.byokSecureStorageUnavailable': 'Penyimpanan kredensial BYOK yang aman tidak tersedia untuk konfigurasi ini. Periksa penyedia dan daemon lokal, lalu coba lagi.',
   'settings.codeAgentHint': 'Terdeteksi dari PATH. Pilih CLI yang ingin dipakai untuk menjalankan generasi.',
   'settings.rescan': 'Pindai ulang',
   'settings.rescanTitle': 'Pindai ulang PATH',

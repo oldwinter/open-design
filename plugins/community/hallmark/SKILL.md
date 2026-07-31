@@ -206,24 +206,17 @@ Hallmark 在写代码前知道三件事时效果最好：
 2. **Use case.** 这个 interface 要完成哪一个 job？用户应能执行的一个 action 是什么？
 3. **Tone.** 选择一个极端：*editorial, brutalist, soft, utilitarian, luxury, playful, technical, austere*。"Clean and modern" 不是 tone。
 
-**Always ask — answering is optional.** Hallmark 在 design 前**总是**提问。这个 bundled question 是用户在 pre-flight block 后看到的第一件事。即使 brief 只有五个词：*"design a podcast site"*、*"build a SaaS landing"*、*"make me a portfolio"*，也要问。尤其是这些 brief，因为 model 最容易在这里自行编造。
+先从 brief、项目证据、对话和当前设计系统中推断这些内容。如果 audience、use case 和 tone 已足够清晰，就用一行说明推断结果并继续。只有未解决的选择会实质性改变结果时才提问。
+   Upstream contract: Ask only when an unresolved choice
+would materially change the result.
 
-prompt format：
+确实需要澄清时，使用一个合并后的 `<question-form>`，只包含尚未确定的 audience、use-case 或 tone 字段。遵循当前表单协议，不要在此重复其 schema。
 
-> *Before I build, I need three things:*
->
-> *1. **Audience** — Who will use this? What do they care about?*
-> *2. **Use case** — What's the one action the page should drive? (Sign up? Subscribe? Read? Buy?)*
-> *3. **Tone** — Pick an extreme: editorial · brutalist · soft · utilitarian · luxury · playful · technical · austere. "Clean and modern" isn't a tone.*
->
-> *Or say **"go ahead"** and I'll infer from the brief — I'll tell you what I picked.*
+不要层层追问，也不要把表单重复为 markdown。如果用户回答了部分字段、跳过其他字段，把跳过字段视为 opt-out 并推断。如果用户说 "go ahead"、"you pick"、"just build it" 或 "don't ask"，就直接继续，不发送表单。
 
-只发送**一次** prompt，且放在一条 message 中。把三个 labels（Audience / Use case / Tone）加粗，方便用户扫描。不要连续追问；如果用户回答了部分字段、跳过其他字段，把跳过字段视为 opt-out 并推断。若用户说 "go ahead"、"you pick"、"just build it"、"don't ask"，或在一次 prompt 后没有回应，就启动下方 inference protocol。
+当确实需要澄清时，只发送**一次** prompt，并放在一条 message 中；不要连续追问。如果用户回答了部分字段、跳过其他字段，把跳过字段视为 opt-out 并推断。如果用户说 "go ahead"、"you pick"、"just build it" 或 "don't ask"，就直接继续，不发送表单。
 
-**唯一一个** gate 保持 silent 的例外：
-- skill 以 `audit`、`study` 或 `redesign --mood` 调用；这些 verbs 从 target 而不是用户处读取 context。
-
-没有 "the brief looks complete" 例外。没有 "the user already named all three" 例外。也没有某个长度阈值以下就跳过提问。一份很长、很详细的 brief，和五个词的 brief 一样收到三问题 prompt；用户可以用 *"go ahead"* 在两秒内放行。**Default is to ask.** 提问的成本是一条额外 message；猜错的成本是整个 rebuild。
+对于 `audit`、`study` 或 `redesign --mood` 调用，gate 保持静默；这些 verb 会从 target 而不是用户处读取上下文。
 
 **Genre — pick before themes.** 进入 theme route 前，先确定 genre。Hallmark 内置四种：**editorial**（default · canonical anti-slop voice）、**modern-minimal**（Stripe / Linear / ElevenLabs school）、**atmospheric**（Suno / Runway / dark-AI-tool school）、**playful**（post-Linear soft school）。genre 会限定可轮换 themes、适用的 slop-test gates，以及 LLM 可选的 voice fixtures。Detection 基于 signals；除非 brief 触发以下信号，否则静默默认 editorial：
 

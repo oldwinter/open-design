@@ -361,7 +361,6 @@ export const en: Dict = {
   'settings.modeApiMeta': 'BYOK',
   'settings.byokNoFileToolsNotice': 'BYOK can\'t read, write, or edit project files. Use Local CLI when you need code changes.',
   'settings.byokDraftNotice': 'This setup remains a draft until the required fields are complete. Your current execution setup stays active.',
-  'settings.byokSecureStorageUnavailable': 'Secure BYOK credential storage is unavailable for this configuration. Check the provider and local daemon, then try again.',
   'settings.codeAgent': 'Code agent',
   'settings.codeAgentHint': 'Pick the CLI that runs your prompts.',
   'settings.rescan': '↻ Rescan',
