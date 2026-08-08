@@ -1,7 +1,7 @@
 <h1 align="center">Open Design：开源 Claude Design 替代品</h1>
 
 > [!IMPORTANT]
-> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `4e47119ed`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
+> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `f58027184`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
 
 > ⚡ **Open Design Cloud——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/cloud/?utm_source=github&utm_medium=referral&utm_content=readme_try_cloud)
 >
