@@ -25,6 +25,7 @@ Daemon 不是 web app 的 shared library。不要从 `apps/web` import daemon �
 - `src/runtimes/` 拥有 agent runtime definitions、spawning、parser integration、executable discovery 和 runtime environment shaping。Agent argument definitions 属于 `src/runtimes/defs/`。
 - `src/prompts/` 拥有 daemon-side prompt construction。当同一文本暴露到 daemon 外部时，保持 `packages/contracts/src/prompts/` 中镜像的 BYOK/API wording 同步。
 - `src/plugins/`、`src/connectors/`、`src/registry/`、`src/research/`、`src/media-adapters/`、`src/live-artifacts/`、`src/storage/` 和 `src/critique/` 拥有各自命名的 domains。创建新的 top-level folder 前，优先把代码加到现有 domain folder 内。
+- Team resource storage 归 Vela 所有。`src/collab/vela-cli-*` 下的 daemon adapters 必须通过 `src/integrations/vela-command.ts` 调用 Vela，该文件共享 login/agent binary resolver 与环境。不要在 Open Design 中添加 Resource Hub tokens、直接 HTTP client 或第二套 content-addressed drive 实现。`od resource` 只是 Vela CLI 的薄兼容入口。
 - `tests/` 包含 daemon tests。有帮助时，让 test paths 大致平行于 `src/`。
 
 不要编辑 generated `dist/` output。

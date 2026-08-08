@@ -11,6 +11,7 @@ import {
 import { getFooterLegalCopy } from '../footer-legal-i18n';
 import { getCommunityEventsCopy } from '../community-events-i18n';
 import { getSolutionPageCopy, type SolutionPageKey } from '../solution-pages-i18n';
+import DownloadEngagementPrompt from './download-engagement-prompt.astro';
 
 interface Props {
   counts: HeaderProps['counts'];
@@ -82,6 +83,7 @@ const l = getFooterLegalCopy(locale);
           <li><a href={href('/html-anything/')}>{ui.footer.htmlAnything}</a></li>
           <li><a href={href('/html-video/')}>{ui.footer.htmlVideo}</a></li>
           <li><a href={href('/codex-slides/')}>Codex Slides</a></li>
+          <li><a href={href('/codex-plugin/')}>Open Design Plugin</a></li>
         </ul>
       </div>
 
@@ -270,3 +272,5 @@ const l = getFooterLegalCopy(locale);
     }
   </style>
 </footer>
+
+<DownloadEngagementPrompt locale={locale} />

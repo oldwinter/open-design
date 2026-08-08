@@ -11,19 +11,16 @@ import { describe, it } from "node:test";
 const HOMEPAGE_FOOTER = new URL("../app/page.tsx", import.meta.url);
 const SUBPAGE_FOOTER = new URL("../app/_components/site-footer.astro", import.meta.url);
 
-// site-footer.astro also carries an `allSolutions` label for a column the
-// homepage footer expresses differently; it is legitimately sub-page-only.
-const SUBPAGE_ONLY_LABELS = new Set(["allSolutions"]);
-
-// Both footers now read their labels from footer-legal-i18n.ts. Compare the
-// properties each renderer actually consumes so adding a shared dictionary
-// entry cannot hide a missing link in either footer.
-function footerLabelKeys(source: string, variable: string): string[] {
-  const pattern = new RegExp(`\\b${variable}\\.([A-Za-z][A-Za-z0-9]*)`, "g");
-  return [...source.matchAll(pattern)].flatMap((match) => {
-    const key = match[1];
-    return key ? [key] : [];
-  });
+// Both footer implementations now consume the shared `getFooterLegalCopy`
+// dictionary through the `l` binding. Compare the keys each renderer uses
+// instead of depending on the old inline `en: { company: ... }` formatting.
+function footerLegalKeys(source: string): string[] {
+  const binding = source.match(/const\s+([A-Za-z][A-Za-z0-9]*)\s*=\s*getFooterLegalCopy\(/)?.[1];
+  assert.ok(binding, "footer does not initialize localized legal copy");
+  const access = new RegExp(`\\b${binding}\\.([A-Za-z][A-Za-z0-9]*)`, 'g');
+  return [...source.matchAll(access)]
+    .map((match) => match[1])
+    .filter((key): key is string => Boolean(key));
 }
 
 describe("footer parity", () => {
@@ -33,15 +30,15 @@ describe("footer parity", () => {
       readFile(SUBPAGE_FOOTER, "utf8"),
     ]);
 
-    const homeKeys = new Set(footerLabelKeys(homepage, "footL"));
-    const subKeys = new Set(footerLabelKeys(subpage, "l"));
+    const homeKeys = new Set(footerLegalKeys(homepage));
+    const subKeys = new Set(footerLegalKeys(subpage));
 
-    // Every sub-page footer label (minus the intentionally sub-page-only ones)
-    // must also exist on the homepage footer.
-    const expected = [...subKeys].filter((key) => !SUBPAGE_ONLY_LABELS.has(key)).sort();
+    assert.ok(homeKeys.size > 0, "homepage footer does not consume localized legal labels");
+    assert.ok(subKeys.size > 0, "sub-page footer does not consume localized legal labels");
+
     assert.deepEqual(
       [...homeKeys].sort(),
-      expected,
+      [...subKeys].sort(),
       "homepage footer (page.tsx) drifted from site-footer.astro — add the missing label(s) to FOOTER_LEGAL and the Company column",
     );
 
