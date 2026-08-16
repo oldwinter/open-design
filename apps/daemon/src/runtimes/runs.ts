@@ -513,8 +513,11 @@ function durableRunState(run) {
     failureCategory: run.failureCategory ?? null,
     failureDetail: run.failureDetail ?? null,
     failureAction: run.failureAction ?? null,
+    cancelOrigin: run.cancelOrigin ?? null,
+    terminalTrigger: run.terminalTrigger ?? null,
     resumable: run.resumable ?? false,
     artifactCount: Number.isFinite(run.artifactCount) ? run.artifactCount : 0,
+    ...(Array.isArray(run.artifactPaths) ? { artifactPaths: run.artifactPaths } : {}),
     endedWithUnfinishedWork: Boolean(run.endedWithUnfinishedWork),
     ...(typeof run.userPrompt === 'string' ? { userPrompt: run.userPrompt } : {}),
     ...(typeof run.model === 'string' ? { model: run.model } : {}),
@@ -533,6 +536,9 @@ function durableRunState(run) {
       : {}),
     ...(typeof run.clientType === 'string' ? { clientType: run.clientType } : {}),
     ...(run.workspaceScope !== undefined ? { workspaceScope: run.workspaceScope } : {}),
+    ...(run.designSystemScope !== undefined
+      ? { designSystemScope: run.designSystemScope }
+      : {}),
     ...(run.analyticsTelemetry ? { analyticsTelemetry: run.analyticsTelemetry } : {}),
     ...(run.promptTelemetry ? { promptTelemetry: run.promptTelemetry } : {}),
     ...(run.promptCache ? { promptCache: run.promptCache } : {}),
@@ -731,6 +737,8 @@ export function createChatRunService({
       childPid: null,
       processGroupId: null,
       cancelRequested: false,
+      cancelOrigin: state.cancelOrigin ?? null,
+      terminalTrigger: state.terminalTrigger ?? null,
       eventsLogPath,
       statePath,
       eventsLogStream: null,
@@ -823,6 +831,8 @@ export function createChatRunService({
       error: null,
       errorCode: null,
       cancelRequested: false,
+      cancelOrigin: null,
+      terminalTrigger: null,
       runtimeFailureObservedBeforeCancellation: false,
       retryRestartTimer: null,
       // First failure that triggered a same-run retry. The next attempt creates
@@ -852,6 +862,7 @@ export function createChatRunService({
       truncatedMidTurn: false,
       endedWithUnfinishedWork: false,
       artifactCount: undefined as number | undefined,
+      artifactPaths: undefined as string[] | undefined,
       artifactOutcome: undefined,
       eventsLogPath: runsLogDir ? path.join(runsLogDir, id, 'events.jsonl') : null,
       statePath: runsLogDir ? path.join(runsLogDir, id, 'state.json') : null,
@@ -865,6 +876,9 @@ export function createChatRunService({
     };
     if (Object.prototype.hasOwnProperty.call(meta, 'workspaceScope')) {
       run.workspaceScope = meta.workspaceScope ?? null;
+    }
+    if (Object.prototype.hasOwnProperty.call(meta, 'designSystemScope')) {
+      run.designSystemScope = meta.designSystemScope ?? null;
     }
     runs.set(run.id, run);
     if (run.clientRequestId) runIdsByClientRequestId.set(run.clientRequestId, run.id);
@@ -983,6 +997,8 @@ export function createChatRunService({
     run.failureAction = null;
     run.resumable = false;
     run.cancelRequested = false;
+    run.cancelOrigin = null;
+    run.terminalTrigger = null;
     run.runtimeFailureObservedBeforeCancellation = false;
     run.retryRestartTimer = null;
     run.retryAttemptCount = 0;
@@ -991,6 +1007,7 @@ export function createChatRunService({
     run.retryOriginFailure = null;
     run.retryOriginErrorCode = null;
     run.artifactCount = undefined;
+    run.artifactPaths = undefined;
     run.artifactOutcome = undefined;
     run.deliverableValid = undefined;
     run.deliverableValidation = undefined;
@@ -1100,6 +1117,8 @@ export function createChatRunService({
     createdAt: run.createdAt,
     updatedAt: run.updatedAt,
     cancelRequested: !!run.cancelRequested,
+    cancelOrigin: run.cancelOrigin ?? null,
+    terminalTrigger: run.terminalTrigger ?? null,
     childPid: typeof run.child?.pid === 'number' ? run.child.pid : run.childPid ?? null,
     processGroupId: run.processGroupId ?? null,
     childExited: !run.child || run.child.exitCode !== null || run.child.signalCode !== null,
@@ -1114,6 +1133,7 @@ export function createChatRunService({
     resumable: run.resumable ?? false,
     endedWithUnfinishedWork: !!run.endedWithUnfinishedWork,
     ...(Number.isFinite(run.artifactCount) ? { artifactCount: run.artifactCount } : {}),
+    ...(Array.isArray(run.artifactPaths) ? { artifactPaths: run.artifactPaths } : {}),
     eventsLogPath: run.eventsLogPath ?? null,
     workspace: projectWorkspaceProvenance(run.projectMetadata),
     mediaExecution: run.mediaExecution ?? normalizeMediaExecutionPolicyForRun(null),
@@ -1185,6 +1205,7 @@ export function createChatRunService({
       resumable: run.resumable ?? false,
       endedWithUnfinishedWork: run.endedWithUnfinishedWork,
       ...(Number.isFinite(run.artifactCount) ? { artifactCount: run.artifactCount } : {}),
+      ...(Array.isArray(run.artifactPaths) ? { artifactPaths: run.artifactPaths } : {}),
       failureCategory: run.failureCategory ?? null,
       failureDetail: run.failureDetail ?? null,
     });
@@ -1408,13 +1429,14 @@ export function createChatRunService({
     }
   };
 
-  const cancel = async (run) => {
+  const cancel = async (run, origin = 'unknown') => {
     if (TERMINAL_RUN_STATUSES.has(run.status)) return statusBody(run);
     run.cancelRequested = true;
+    run.cancelOrigin = origin;
     run.updatedAt = Date.now();
     clearPendingRetryRestart(run);
-    closeRunStdin(run);
     if (!run.child) {
+      closeRunStdin(run);
       finish(run, 'canceled', null, 'SIGTERM');
       return statusBody(run);
     }
@@ -1432,6 +1454,7 @@ export function createChatRunService({
       if (await waitForCanceledChildExit(run, graceMs)) {
         return finishCanceledFromChildState(run, 'SIGTERM');
       }
+      closeRunStdin(run);
       killChild(run, 'SIGTERM');
       if (await waitForCanceledChildExit(run, graceMs)) {
         return finishCanceledFromChildState(run, 'SIGTERM');
@@ -1441,6 +1464,7 @@ export function createChatRunService({
       return finishCanceledFromChildState(run, 'SIGKILL');
     }
 
+    closeRunStdin(run);
     killChild(run, 'SIGTERM');
     if (await waitForCanceledChildExit(run, cancelGraceMs())) {
       return finishCanceledFromChildState(run, 'SIGTERM');
@@ -1454,9 +1478,9 @@ export function createChatRunService({
     const activeRuns = Array.from(runs.values()).filter((run) => !TERMINAL_RUN_STATUSES.has(run.status));
     await Promise.all(activeRuns.map(async (run) => {
       run.cancelRequested = true;
+      run.cancelOrigin = 'daemon_shutdown';
       run.updatedAt = Date.now();
       clearPendingRetryRestart(run);
-      closeRunStdin(run);
       if (run.acpSession?.abort) {
         try {
           run.acpSession.abort();
@@ -1464,6 +1488,7 @@ export function createChatRunService({
           // Process signals below are the shutdown fallback.
         }
       }
+      closeRunStdin(run);
       killChild(run, 'SIGTERM');
       finish(run, 'canceled', null, 'SIGTERM');
       if (run.child && !(await waitForChildExit(run.child, graceMs))) {

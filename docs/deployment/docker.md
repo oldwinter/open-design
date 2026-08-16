@@ -81,9 +81,9 @@ curl -i http://127.0.0.1:7456/
 ## Step 6: Open Open Design in Your Browser
 
 打开：
-- `http://localhost:7456/`
+- `http://127.0.0.1:7456/`
 
-你应该能看到 Open Design 界面。
+如果浏览器弹出登录框，用户名使用 `open-design`，密码使用 `deploy/.env` 中的 `OD_API_TOKEN`。随后应该能看到 Open Design 界面。Docker bridge peers 会保持认证，不需要覆盖 host networking。
 
 ![Open Design home (desktop)](../screenshots/deployment/docker/01-open-design-home.png)
 ![Open Design home (mobile)](../screenshots/deployment/docker/03-open-design-mobile.png)
@@ -95,4 +95,5 @@ curl -i http://127.0.0.1:7456/
 - `curl: (7) Failed to connect`：container 仍在启动；等待 10-20 秒后重试
 - 拉取 `ghcr.io/nexu-io/od` 时出现 `pull access denied` 或 `authentication required`：`docker pull`、Docker Compose 和 Dokploy 的匿名拉取要求 GHCR 软件包处于公开状态。组织维护者必须打开 GitHub -> Packages -> `od` -> Package settings，将可见性改为 Public。
 - reverse proxy + `OD_API_TOKEN`：要么在 proxy 注入 `Authorization: Bearer <OD_API_TOKEN>`，要么仅当该 proxy 已认证每个请求且 daemon 没有被直接暴露时，设置 `OPEN_DESIGN_DISABLE_API_AUTH=1`。
+- 浏览器反复弹出登录框：使用用户名 `open-design` 和 `deploy/.env` 中完全一致的 `OD_API_TOKEN`；修改 token 后重新创建 container。
 - macOS 上的 `Authorization: Bearer <OD_API_TOKEN> required`：Docker Desktop bridge networking 会让 daemon 把请求识别为 non-loopback。Host networking 解决办法见 [Docker Desktop on macOS](../../deploy/README.md#docker-desktop-on-macos)。

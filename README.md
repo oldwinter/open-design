@@ -1,11 +1,13 @@
 <h1 align="center">Open Design：开源 Claude Design 替代品</h1>
 
 > [!IMPORTANT]
-> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `f58027184`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
+> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `62483a1947b5c5e7b3fffe24b52b685d93ad9209`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
 
 > ⚡ **Open Design Cloud——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/cloud/?utm_source=github&utm_medium=referral&utm_content=readme_try_cloud)
 >
 > 🏅 **Open Design Fellow 计划正式开放。** 如果你也相信设计应该是开放的，欢迎成为 Open Design Fellow，和核心团队一起打磨产品，让更多人参与并定义设计的未来。详情 → [`MAINTAINERS.md`](MAINTAINERS.md) 与 [Discord](https://discord.gg/mHAjSMV6gz)。
+
+> 🧩 **DeepSeek Harness 已接入。** 安装官方 `dsh` CLI 后，可通过 `od agent setup deepseek-harness` 将它作为原生 runtime 接入 Open Design，支持结构化流式输出、模型发现、取消和会话恢复。
 
 <p align="center">
   <img src="https://repo-assets.open-design.ai/resources/images/hero.png" alt="Open Design hero banner" width="100%" />
@@ -32,7 +34,7 @@
 
 ## 什么是 Open Design
 
-🎨 **本地优先、开源的 Claude Design 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 功能技能 + 独立渲染模板目录** · ✨ **151 个品牌级设计系统包** · 📦 **277 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Hermes · Kimi · Antigravity 等 25 个不同的本地 CLI 可执行程序**，或通过 BYOK 接入任何 OpenAI 兼容端点。
+🎨 **本地优先、开源的 Claude Design 替代品。** &nbsp;🖥️ **macOS 与 Windows 原生桌面应用。** &nbsp;⚡ **100+ 功能技能 + 独立渲染模板目录** · ✨ **151 个品牌级设计系统包** · 📦 **277 个开箱即用的插件。** &nbsp;🖼️ 可生成 **Web · 桌面 · 移动端原型**、**实时仪表盘 / 工件**、**演示文稿**、**图片**、**视频**，以及 **HyperFrames** 动态图形。🔒 沙箱 iframe 预览 · HTML / PDF / PPTX / MP4 导出。&nbsp;🤖 **运行于 DeepSeek Harness (`dsh`) · Claude Code · OpenClaw · Codex · Cursor · OpenCode · Qwen · Copilot · Hermes · Kimi · Antigravity 等本地 CLI**，或通过 BYOK 接入任何 OpenAI 兼容端点。
 
 Open Design 是这样一种产物：Anthropic 随 Claude Design 推出的 **Agent 原生**循环——发现需求、锁定方向、流式输出工件、评审、交付——不再封闭，而是变成了一个由**功能技能、渲染设计模板、设计系统和插件组成的文件系统**，你笔记本电脑上已有的编码 Agent 就能读取、编写和混搭。你的 CLI 变成设计引擎，你的笔记本变成工作坊，团队的 `DESIGN.md` 变成品牌契约。
 
@@ -331,6 +333,8 @@ echo "OD_API_TOKEN=$(openssl rand -hex 32)" >> .env
 docker compose up -d
 # 打开 http://localhost:7456
 ```
+
+如果浏览器弹出登录框，用户名使用 `open-design`，密码使用 `deploy/.env` 中的 `OD_API_TOKEN`；Docker bridge networking 下无需改用 host networking。
 
 ### 🚀 部署到 Sealos
 

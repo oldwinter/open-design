@@ -110,7 +110,22 @@ describe('od amr login CLI', () => {
     const result = await runCli(['amr', 'help']);
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('od amr login');
-    expect(result.stdout).toContain('登录');
+    expect(result.stdout).toContain('od amr logout');
+  });
+
+  it('logs out through the daemon and emits machine-readable JSON', async () => {
+    stub.setResponder((req) => req.method === 'POST'
+      && req.url === '/api/integrations/vela/logout'
+      ? { status: 200, body: { ok: true } }
+      : { status: 404, body: { error: 'unexpected request' } });
+
+    const result = await runCli(['amr', 'logout', '--json', '--daemon-url', stub.baseUrl]);
+
+    expect(result.code).toBe(0);
+    expect(stub.requests).toEqual([
+      { method: 'POST', url: '/api/integrations/vela/logout' },
+    ]);
+    expect(JSON.parse(result.stdout)).toEqual({ ok: true });
   });
 
   it('starts browser login through the daemon and returns the activation state as JSON', async () => {
@@ -187,6 +202,6 @@ describe('od amr login CLI', () => {
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('https://amr-link.open-design.ai/activate');
     expect(result.stdout).toContain('ABCD-EFGH');
-    expect(result.stdout).toContain('无法自动打开浏览器');
+    expect(result.stdout).toContain('browser could not be opened automatically');
   });
 });

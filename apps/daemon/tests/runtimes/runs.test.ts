@@ -275,6 +275,27 @@ describe('chat run service shutdown', () => {
     await expect(wait).resolves.toMatchObject({ status: 'succeeded', artifactCount: 2 });
   });
 
+  it('publishes authoritative project-relative artifact paths in status and terminal events', async () => {
+    const runs = createRuns();
+    const run = runs.create({ projectId: 'project-1', conversationId: 'conv-1' });
+
+    run.artifactCount = 2;
+    run.artifactPaths = ['existing.png', 'renders/new.png'];
+    const wait = runs.wait(run);
+    runs.finish(run, 'succeeded', 0, null);
+
+    expect(runs.statusBody(run)).toMatchObject({
+      artifactPaths: ['existing.png', 'renders/new.png'],
+    });
+    expect(run.events.at(-1)).toMatchObject({
+      event: 'end',
+      data: { artifactPaths: ['existing.png', 'renders/new.png'] },
+    });
+    await expect(wait).resolves.toMatchObject({
+      artifactPaths: ['existing.png', 'renders/new.png'],
+    });
+  });
+
   it('retains structured error details on failed run status bodies', async () => {
     const runs = createRuns();
     const run = runs.create({ projectId: 'project-1', conversationId: 'conv-1' });
@@ -437,10 +458,11 @@ describe('chat run service shutdown', () => {
     const run = runs.create({ projectId: 'project-1', conversationId: 'conv-queued' });
 
     const wait = runs.wait(run);
-    await runs.cancel(run);
+    await runs.cancel(run, 'user_stop');
 
     expect(run.status).toBe('canceled');
     expect(run.cancelRequested).toBe(true);
+    expect(runs.statusBody(run).cancelOrigin).toBe('user_stop');
     expect(run.signal).toBe('SIGTERM');
     expect(run.events.at(-1)).toMatchObject({
       event: 'end',
@@ -509,19 +531,28 @@ describe('chat run service shutdown', () => {
         order.push(signal);
         return originalKill(signal);
       });
-      const abort = vi.fn(() => order.push('abort'));
       const run = runs.create();
       run.status = 'running';
+      run.stdinOpen = true;
       (run as any).child = child;
-      (run as any).acpSession = { abort };
+      (run as any).acpSession = {
+        abort: vi.fn(() => {
+          order.push('abort');
+          expect(child.stdin.end).not.toHaveBeenCalled();
+          expect(run.stdinOpen).toBe(true);
+        }),
+      };
 
       const cancelPromise = runs.cancel(run);
 
-      expect(abort).toHaveBeenCalledTimes(1);
+      expect((run as any).acpSession.abort).toHaveBeenCalledTimes(1);
       expect(order).toEqual(['abort']);
+      expect(child.stdin.end).not.toHaveBeenCalled();
 
       await vi.advanceTimersByTimeAsync(30);
       expect(order).toEqual(['abort', 'SIGTERM']);
+      expect(child.stdin.end).toHaveBeenCalledTimes(1);
+      expect(run.stdinOpen).toBe(false);
 
       await vi.advanceTimersByTimeAsync(30);
       expect(order).toEqual(['abort', 'SIGTERM', 'SIGKILL']);
@@ -814,6 +845,7 @@ describe('chat run service shutdown', () => {
     expect(child.signals).toEqual(['SIGTERM']);
     expect(run.status).toBe('canceled');
     expect(run.cancelRequested).toBe(true);
+    expect(runs.statusBody(run).cancelOrigin).toBe('daemon_shutdown');
     expect(run.signal).toBe('SIGTERM');
     await expect(wait).resolves.toMatchObject({ status: 'canceled', signal: 'SIGTERM' });
     expect(run.events.at(-1)).toMatchObject({
@@ -838,15 +870,21 @@ describe('chat run service shutdown', () => {
   it('uses adapter abort before process signals for ACP-style runs', async () => {
     const runs = createRuns();
     const child = new FakeChildProcess({ closeOn: 'SIGTERM' });
-    const abort = vi.fn();
     const run = runs.create();
     run.status = 'running';
+    run.stdinOpen = true;
     (run as any).child = child;
-    (run as any).acpSession = { abort };
+    (run as any).acpSession = {
+      abort: vi.fn(() => {
+        expect(child.stdin.end).not.toHaveBeenCalled();
+        expect(run.stdinOpen).toBe(true);
+      }),
+    };
 
     await runs.shutdownActive({ graceMs: 10 });
 
-    expect(abort).toHaveBeenCalledTimes(1);
+    expect((run as any).acpSession.abort).toHaveBeenCalledTimes(1);
+    expect(child.lifecycle.slice(0, 2)).toEqual(['stdin.end', 'SIGTERM']);
     expect(child.signals).toEqual(['SIGTERM']);
     expect(run.status).toBe('canceled');
   });
@@ -1086,7 +1124,23 @@ describe('run event log persistence', () => {
         schemaVersion: 1,
         projectId: 'p1',
         workspaceId: 'workspace-a',
+        workspaceMemberId: 'member-a',
         source: 'persisted_project_binding',
+      },
+      designSystemScope: {
+        schemaVersion: 1,
+        kind: 'workspace-resource',
+        projectId: 'p1',
+        designSystemId: 'user:brand-a',
+        workspaceId: 'workspace-a',
+        workspaceMemberId: 'member-a',
+        bindingResourceId: 'user:brand-a',
+        visibility: 'personal',
+        bindingResourceState: 'active',
+        bindingVersion: 1,
+        bindingCreatedAt: 50,
+        bindingUpdatedAt: 100,
+        bindingCreatedByWorkspaceMemberId: 'member-a',
       },
     });
     const statePath = path.join(tmpDir, run.id, 'state.json');
@@ -1100,7 +1154,14 @@ describe('run event log persistence', () => {
         schemaVersion: 1,
         projectId: 'p1',
         workspaceId: 'workspace-a',
+        workspaceMemberId: 'member-a',
         source: 'persisted_project_binding',
+      },
+      designSystemScope: {
+        kind: 'workspace-resource',
+        designSystemId: 'user:brand-a',
+        bindingResourceId: 'user:brand-a',
+        visibility: 'personal',
       },
     });
 
@@ -1174,6 +1235,22 @@ describe('run event log persistence', () => {
     });
   });
 
+  it('retains the cancellation cause when hydrating durable status after restart', async () => {
+    const beforeRestart = createRunsWithLog(tmpDir);
+    const canceled = beforeRestart.create({ projectId: 'p1' });
+    await beforeRestart.cancel(canceled, 'user_stop');
+
+    const afterRestart = createRunsWithLog(tmpDir);
+    const hydrated = afterRestart.get(canceled.id);
+
+    expect(hydrated).not.toBeNull();
+    expect(afterRestart.statusBody(hydrated)).toMatchObject({
+      id: canceled.id,
+      status: 'canceled',
+      cancelOrigin: 'user_stop',
+    });
+  });
+
   it('reuses an interrupted durable request instead of starting it twice after restart', () => {
     const clientRequestId = '018f6f2e-6666-7666-8666-666666666666';
     const requestFingerprint = 'same-cloud-request';
@@ -1207,6 +1284,7 @@ describe('run event log persistence', () => {
       errorCode: 'DAEMON_RESTARTED',
       error: 'Run interrupted because the daemon restarted.',
     });
+    expect(afterRestart.statusBody(reused.run).terminalTrigger).toBe('daemon_restart');
     expect(reused.run.events.slice(-2)).toMatchObject([
       { event: 'error', data: { error: { code: 'DAEMON_RESTARTED' } } },
       { event: 'end', data: { status: 'failed' } },
