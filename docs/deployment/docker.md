@@ -1,11 +1,11 @@
 # Docker and Docker Compose
 
-这是适合初学者的最简单 self-hosting 路径。
+This is the easiest self-hosting path for beginners.
 
 ## Before You Start
 
-- Docker Desktop 已安装并正在运行
-- Internet connection（首次运行会下载 image）
+- Docker Desktop installed and running
+- Internet connection (first run downloads the image)
 
 ## Step 1: Open the Deploy Folder
 
@@ -14,44 +14,44 @@ git clone https://github.com/nexu-io/open-design.git
 cd open-design/deploy
 ```
 
-这会：
-- 下载项目
-- 进入包含 `docker-compose.yml` 的文件夹
+What this does:
+- Downloads the project
+- Moves into the folder that contains `docker-compose.yml`
 
 ## Step 2: Create `.env` and choose an API auth mode
 
-从 tracked template 创建 `deploy/.env`：
+Create `deploy/.env` from the tracked template:
 
 ```bash
 cp .env.example .env
 ```
 
-如果想使用默认 protected mode，生成一个 token：
+Generate a token if you want the default protected mode:
 
 ```bash
 openssl rand -hex 32
 ```
 
-然后在首次启动前编辑 `.env`，配置其中一种：
+Then edit `.env` and configure one of these before first start:
 
-- 推荐默认值：把生成的 token 粘贴到 `OD_API_TOKEN=`
-- 仅适用于 trusted authenticated reverse proxy：让 `OD_API_TOKEN=` 保持为空，并设置 `OPEN_DESIGN_DISABLE_API_AUTH=1`
+- recommended default: paste the generated token into `OD_API_TOKEN=`
+- trusted authenticated reverse proxy only: leave `OD_API_TOKEN=` empty and set `OPEN_DESIGN_DISABLE_API_AUTH=1`
 
-如果通过 reverse proxy 暴露 Open Design，还要设置：
+If you expose OpenDesign through a reverse proxy, also set:
 
 ```bash
 OPEN_DESIGN_ALLOWED_ORIGINS=https://yourdomain.com
 ```
 
-## Step 3: Start Open Design
+## Step 3: Start OpenDesign
 
 ```bash
 docker compose up -d
 ```
 
-预期现象：
-- 首次运行 Docker 拉取 image 时可能需要 1-2 分钟
-- 应看到 container creation 和 startup messages
+What to expect:
+- First run can take 1-2 minutes while Docker pulls the image
+- You should see container creation and startup messages
 
 ## Step 4: Confirm Container Health
 
@@ -59,41 +59,43 @@ docker compose up -d
 docker compose ps
 ```
 
-成功状态类似：
-- 列出了 `open-design` container
-- `STATUS` 显示 `Up`，最终变为 `healthy`
-- Port mapping 包含 `127.0.0.1:7456->7456/tcp`
+Success looks like:
+- `open-design` container is listed
+- `STATUS` shows `Up` and eventually `healthy`
+- Port mapping includes `127.0.0.1:7456->7456/tcp`
 
 ![Docker Desktop container running](../screenshots/deployment/docker/02-docker-desktop-container-running.png)
 ![docker-compose ps healthy output (sanitized)](../screenshots/deployment/docker/04-docker-compose-ps-healthy.png)
 
-## Step 5: Verify HTTP Response
+## Step 5: Verify Container Health Over HTTP
 
 ```bash
-curl -i http://127.0.0.1:7456/
+curl -i http://127.0.0.1:7456/api/health
 ```
 
-成功状态类似：
+Success looks like:
 - HTTP status `200 OK`
 
 ![curl HTTP 200 output (sanitized)](../screenshots/deployment/docker/05-curl-http-200-proof.png)
 
-## Step 6: Open Open Design in Your Browser
+## Step 6: Open OpenDesign in Your Browser
 
-打开：
+Open:
 - `http://127.0.0.1:7456/`
 
-如果浏览器弹出登录框，用户名使用 `open-design`，密码使用 `deploy/.env` 中的 `OD_API_TOKEN`。随后应该能看到 Open Design 界面。Docker bridge peers 会保持认证，不需要覆盖 host networking。
+If the browser displays a sign-in dialog, enter `open-design` as the username
+and the `OD_API_TOKEN` value from `deploy/.env` as the password. You should then
+see the OpenDesign interface. Docker bridge peers remain authenticated; no host
+networking override is required.
 
-![Open Design home (desktop)](../screenshots/deployment/docker/01-open-design-home.png)
-![Open Design home (mobile)](../screenshots/deployment/docker/03-open-design-mobile.png)
+![OpenDesign home (desktop)](../screenshots/deployment/docker/01-open-design-home.png)
+![OpenDesign home (mobile)](../screenshots/deployment/docker/03-open-design-mobile.png)
 
 ## Common Issues
 
-- `failed to connect to the docker API`：Docker Desktop 尚未运行
-- `address already in use`：Port `7456` 被其他进程占用
-- `curl: (7) Failed to connect`：container 仍在启动；等待 10-20 秒后重试
-- 拉取 `ghcr.io/nexu-io/od` 时出现 `pull access denied` 或 `authentication required`：`docker pull`、Docker Compose 和 Dokploy 的匿名拉取要求 GHCR 软件包处于公开状态。组织维护者必须打开 GitHub -> Packages -> `od` -> Package settings，将可见性改为 Public。
-- reverse proxy + `OD_API_TOKEN`：要么在 proxy 注入 `Authorization: Bearer <OD_API_TOKEN>`，要么仅当该 proxy 已认证每个请求且 daemon 没有被直接暴露时，设置 `OPEN_DESIGN_DISABLE_API_AUTH=1`。
-- 浏览器反复弹出登录框：使用用户名 `open-design` 和 `deploy/.env` 中完全一致的 `OD_API_TOKEN`；修改 token 后重新创建 container。
-- macOS 上的 `Authorization: Bearer <OD_API_TOKEN> required`：Docker Desktop bridge networking 会让 daemon 把请求识别为 non-loopback。Host networking 解决办法见 [Docker Desktop on macOS](../../deploy/README.md#docker-desktop-on-macos)。
+- `failed to connect to the docker API`: Docker Desktop is not running yet
+- `address already in use`: Port `7456` is occupied by another process
+- `curl: (7) Failed to connect`: container is still starting; wait 10-20 seconds and retry
+- `pull access denied` or `authentication required` for `ghcr.io/nexu-io/od`: the GHCR package must be public for anonymous Docker, Compose, and Dokploy pulls. An organization maintainer must open GitHub -> Packages -> `od` -> Package settings and change visibility to Public.
+- reverse proxy + `OD_API_TOKEN`: either inject `Authorization: Bearer <OD_API_TOKEN>` at the proxy, or set `OPEN_DESIGN_DISABLE_API_AUTH=1` only when that proxy already authenticates every request and the daemon is not directly exposed.
+- browser sign-in repeats: use username `open-design` and the exact `OD_API_TOKEN` value from `deploy/.env`; recreate the container after changing the token.

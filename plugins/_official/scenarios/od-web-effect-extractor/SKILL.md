@@ -1,6 +1,6 @@
 ---
 name: od-web-effect-extractor
-description: Extract visual effects, animation systems, Canvas/WebGL/Shader behavior, and interaction details from a reference website, then rebuild them as an editable Open Design web artifact.
+description: Extract visual effects, animation systems, Canvas/WebGL/Shader behavior, and interaction details from a reference website, then rebuild them as an editable OpenDesign web artifact.
 od:
   scenario: web-effect-extraction
   mode: scenario
@@ -8,126 +8,126 @@ od:
 
 # Web Effect Extractor
 
-当用户提供网站 URL，并希望 Open Design 复刻、改造或学习其中的视觉特效时，使用这个插件。它特别适合 hero 背景、WebGL 场景、Canvas 动画、shader 效果、光标轨迹、滚动驱动动效、动态字体，以及仅靠截图很难理解的交互模式。
+Use this plugin when the user gives a website URL and asks OpenDesign to recreate, remix, or learn from its visual effects. It is especially useful for hero backgrounds, WebGL scenes, Canvas animations, shader effects, cursor trails, scroll-driven motion, animated typography, and interaction patterns that are hard to understand from screenshots alone.
 
-这个工作流受 `lixiaolin94/skills` 中 MIT 许可的 `web-shader-extractor` skill 启发，并针对 Open Design 的网站复刻和可编辑 artifact 工作流做了适配。
+This workflow is inspired by the MIT-licensed `web-shader-extractor` skill from `lixiaolin94/skills`, adapted for OpenDesign's website recreation and editable artifact workflow.
 
-## 范围
+## Scope
 
-目标是产出一个忠实且可编辑的 Open Design artifact：保留参考网站的视觉特效与交互逻辑，同时替换私有内容、商标、追踪代码和非必要的应用逻辑。
+The goal is to produce a faithful, editable OpenDesign artifact that preserves the reference site's visual effect and interaction logic while replacing private content, trademarks, tracking code, and nonessential app logic.
 
-只提取理解和复刻视觉行为所必需的信息：
+Extract only what is needed to understand and recreate the visual behavior:
 
-- 布局结构、视口行为、断点和构图节奏
-- 色彩、字体、混合模式、渐变、纹理、光照和后处理
-- 动效时序、缓动、滚动触发、指针响应和空闲动画循环
-- Canvas、WebGL、Three.js、shader、粒子和 framebuffer 管线细节
-- 为达到视觉一致性所需的公开静态资产，并记录来源
+- Layout structure, viewport behavior, breakpoints, and composition rhythm
+- Color, typography, blend modes, gradients, texture, lighting, and post-processing
+- Motion timing, easing, scroll triggers, pointer response, and idle animation loops
+- Canvas, WebGL, Three.js, shader, particle, and framebuffer pipeline details
+- Public static assets needed for visual parity, with provenance noted
 
-不要复制私有产品文案、隐藏应用状态、用户数据、analytics、认证流程或无关业务逻辑。
+Do not copy private product copy, hidden application state, user data, analytics, auth flows, or unrelated business logic.
 
-## 工作流
+## Workflow
 
-### 1. 准备捕获
+### 1. Prepare The Capture
 
-从用户提供的 URL 开始，明确要复刻的具体效果。如果用户描述模糊，先检查首屏，并推断最可能的目标效果。
+Start from the supplied URL and define the exact effect to recreate. If the user is vague, inspect the first viewport first and infer the likely target effect.
 
-在提取运行时细节前，优先使用可执行页面脚本并检查 Canvas/WebGL 状态的浏览器上下文。如果 Chrome DevTools MCP 可用，用它做运行时拦截；如果不可用，则使用当前最强的浏览器自动化能力继续，并明确说明 shader/运行时捕获可能不完整。
+Before extracting runtime details, prefer a browser context that can evaluate page scripts and inspect canvas/WebGL state. If Chrome DevTools MCP is available, use it for runtime interception. If it is not available, continue with the strongest available browser automation and clearly state that shader/runtime capture may be incomplete.
 
-记录：
+Record:
 
-- URL 和捕获时间戳
-- 要测试的视口尺寸，通常包含桌面和移动端
-- 主要效果目标和 fallback 效果目标
-- 从 HTML、网络请求、全局变量和包特征中发现的框架线索
+- URL and capture timestamp
+- Viewport sizes to test, usually desktop and mobile
+- Main effect target and fallback effect targets
+- Framework clues from HTML, network requests, globals, and package signatures
 
-### 2. 运行时检查
+### 2. Runtime Inspection
 
-先捕获运行时证据，再做任何简化。
+Capture runtime evidence before simplifying anything.
 
-检查：
+Inspect:
 
-- DOM 树、computed styles、字体、CSS variables、custom properties 和 animation names
-- Canvas 元素、WebGL contexts、renderer attributes、supported extensions 和 resolution scaling
-- 全局框架标记，例如 `THREE`、`BABYLON`、`__NEXT_DATA__`、`__NUXT__`、`vite`、GSAP、Lenis、Framer Motion 或自定义 scene globals
-- 通过网络加载的 JS bundles、图片、视频、字体、LUT、textures、HDRI 和数据文件
+- DOM tree, computed styles, fonts, CSS variables, custom properties, and animation names
+- Canvas elements, WebGL contexts, renderer attributes, supported extensions, and resolution scaling
+- Global framework markers such as `THREE`, `BABYLON`, `__NEXT_DATA__`, `__NUXT__`, `vite`, GSAP, Lenis, Framer Motion, or custom scene globals
+- Networked JS bundles, images, videos, fonts, LUTs, textures, HDRIs, and data files
 
-当页面存在 WebGL，且工具允许在页面加载前注入代码时，拦截：
+When WebGL is present and tooling allows pre-page-load injection, intercept:
 
-- `gl.shaderSource()`，获取 vertex 和 fragment source
-- `gl.uniform*()`，获取名称和观测到的值
-- `gl.bindFramebuffer()`，理解 multipass render order
-- `gl.drawArrays()` 和 `gl.drawElements()`，理解 draw-call order
-- 影响最终视觉的 texture 和 buffer setup
+- `gl.shaderSource()` for vertex and fragment source
+- `gl.uniform*()` calls for names and observed values
+- `gl.bindFramebuffer()` to understand multipass render order
+- `gl.drawArrays()` and `gl.drawElements()` to understand draw-call order
+- texture and buffer setup when it affects the final look
 
-当页面存在 2D Canvas 时，检查 render loop、绘制 primitives、图片来源、compositing operations 和 device-pixel-ratio 处理。
+When 2D Canvas is present, inspect the render loop, draw primitives, image sources, compositing operations, and device-pixel-ratio handling.
 
-### 3. 提取视觉模型
+### 3. Extract The Visual Model
 
-把原始捕获整理成紧凑的视觉模型：
+Turn the raw capture into a compact visual model:
 
-- Scene graph 或 layer stack
-- Asset list，包含 source、dimensions 和 role
-- Shader/material list，包含 uniforms 和 dependencies
-- Motion map，包含 trigger、duration、easing、repeat behavior 和 responsive differences
-- Interaction map，覆盖 pointer、keyboard、scroll、resize 和 reduced-motion handling
-- 已知不确定项，例如 minified bundle 分支或无法观测到的运行时值
+- Scene graph or layer stack
+- Asset list with source, dimensions, and role
+- Shader/material list with uniforms and dependencies
+- Motion map with trigger, duration, easing, repeat behavior, and responsive differences
+- Interaction map for pointer, keyboard, scroll, resize, and reduced-motion handling
+- Known uncertainties, such as minified bundle branches or runtime values that could not be observed
 
-优先使用证据，不要猜测。如果某个效果无法直接观测，请标记为推断。
+Prefer evidence over guesses. If an effect cannot be observed directly, mark it as an inference.
 
-### 4. 在 Open Design 中重建
+### 4. Rebuild In OpenDesign
 
-创建一个可检查、可编辑的 standalone web artifact。
+Create a standalone web artifact that can be inspected and edited.
 
-选择能保留效果的最简单实现：
+Choose the simplest implementation that preserves the effect:
 
-- 只涉及布局的参考页面使用静态 DOM/CSS
-- 简单动效使用 CSS animation 或 WAAPI
-- 序列化或滚动联动动效使用 GSAP
-- 2D 程序化效果使用 Canvas 2D
-- 紧凑的全屏 shader 效果使用原生 WebGL2
-- 当参考页面使用 3D、camera、material、texture、post-processing 或 GPGPU 模式时使用 Three.js
+- Static DOM/CSS for layout-only references
+- CSS animation or WAAPI for simple motion
+- GSAP for sequenced or scroll-linked motion
+- Canvas 2D for 2D procedural effects
+- Native WebGL2 for compact full-screen shader effects
+- Three.js when the reference uses 3D, cameras, materials, textures, post-processing, or GPGPU patterns
 
-除非依赖能实质性降低复杂度，否则保持重建结果自包含。如果使用依赖，以透明、可审查的方式加载。
+Keep the rebuild self-contained unless a dependency materially reduces complexity. If dependencies are used, load them in a transparent, reviewable way.
 
-重要重建规则：
+Important reconstruction rules:
 
-- 保留 color management 和 output color space。
-- 保留参考页面的 time base，例如 seconds、elapsed milliseconds、frame count 或 scroll progress。
-- 保留 shader 效果的 multipass ordering。
-- 不要调随机值来掩盖根因不匹配；修正模型本身。
-- 为强烈动效添加 `prefers-reduced-motion` fallback。
-- 替换受版权保护或带特定品牌的内容，除非用户明确拥有该内容或要求保留。
+- Preserve color management and output color space.
+- Preserve the reference time base, such as seconds, elapsed milliseconds, frame count, or scroll progress.
+- Preserve multipass ordering for shader effects.
+- Do not tune random values to hide a root-cause mismatch; fix the model instead.
+- Add `prefers-reduced-motion` fallbacks for intense effects.
+- Replace copyrighted or brand-specific content unless the user explicitly owns it or asks to preserve it.
 
-### 5. 验证视觉一致性
+### 5. Verify Visual Parity
 
-在相同视口尺寸下打开参考页面和重建 artifact。比较：
+Open the reference and the rebuilt artifact at the same viewport sizes. Compare:
 
-- 首屏 framing
-- 色彩、亮度、对比度和 blending
-- 动效节奏和循环连续性
-- 指针和滚动响应
-- 移动端行为和性能
-- Canvas/WebGL 是否非空渲染
+- First viewport framing
+- Color, brightness, contrast, and blending
+- Motion rhythm and loop continuity
+- Pointer and scroll response
+- Mobile behavior and performance
+- Canvas/WebGL nonblank rendering
 
-对于 WebGL 和 Canvas 工作，验证 canvas 不是空白，并确认动画会随时间推进。如果可能，在至少两个时间点比较截图或像素样本。
+For WebGL and Canvas work, verify that the canvas is not blank and that animation advances over time. If possible, compare screenshots or pixel samples across at least two timestamps.
 
-### 6. 交付
+### 6. Deliver
 
-最后提供：
+Finish with:
 
-- 重建 artifact 的路径或预览 URL
-- 简短提取摘要
-- 仍然存在的视觉差异
-- 资产来源以及被替换的资产说明
-- 用户接下来可以安全编辑的内容
+- The rebuilt artifact path or preview URL
+- A short extraction summary
+- Any visual differences that remain
+- Asset provenance and any replaced assets
+- Notes on what the user can safely edit next
 
-如果用户要求提取报告，创建 `EXTRACTION-REPORT.md`，包含 source URL、capture method、visual model、implementation choices、validation notes 和 remaining gaps。
+If the user asks for an extraction report, create `EXTRACTION-REPORT.md` with the source URL, capture method, visual model, implementation choices, validation notes, and remaining gaps.
 
-## 质量标准
+## Quality Bar
 
-- artifact 必须能脱离源网站独立运行。
-- 主要视觉效果无需解释即可被识别。
-- 实现必须足够清晰，便于设计师或工程师继续编辑。
-- 工作流必须避免复制无关应用代码。
-- 回复必须区分已捕获事实和推断性的重建选择。
+- The artifact must run independently from the source website.
+- The primary visual effect must be recognizable without explanation.
+- The implementation must be understandable enough for a designer or engineer to edit.
+- The workflow must avoid copying unrelated application code.
+- The response must distinguish captured facts from inferred reconstruction choices.

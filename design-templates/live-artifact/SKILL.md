@@ -1,16 +1,8 @@
 ---
 name: live-artifact
-en_name: "Live Artifact"
-zh_name: "实时工件"
 description: |
-  Create refreshable, auditable Open Design artifacts backed by connector or local data.
+  Create refreshable, auditable OpenDesign artifacts backed by connector or local data.
   Trigger when the user asks for live dashboards, refreshable reports, synced views, or reusable data-backed artifacts.
-en_description: |
-  Create refreshable, auditable Open Design artifacts backed by connector or local data.
-  Trigger when the user asks for live dashboards, refreshable reports, synced views, or reusable data-backed artifacts.
-zh_description: |
-  创建由连接器或本地数据支撑、可刷新且可审计的 Open Design 工件。
-  当用户需要实时仪表盘、可刷新报告、同步视图或可复用的数据支撑型工件时触发。
 triggers:
   - "live artifact"
   - "live dashboard"
@@ -41,68 +33,68 @@ od:
     - file_write
 ---
 
-# 实时工件技能
+# Live Artifact Skill
 
-创建一个 Open Design 实时工件：它是项目范围内可预览的 HTML 工件，之后可以刷新数据，而无需重新设计呈现方式。
+Create an OpenDesign live artifact: a project-scoped, previewable HTML artifact whose data can later be refreshed without redesigning the presentation.
 
-## 资源地图
+## Resource map
 
 ```
 live-artifact/
 ├── SKILL.md
 └── references/
-    ├── artifact-schema.md      ← `references/artifact-schema.md`：工件文件、DTO 结构、模板绑定规则
-    ├── connector-policy.md     ← `references/connector-policy.md`：连接器安全、脱敏、凭据边界
-    └── refresh-contract.md     ← `references/refresh-contract.md`：来源元数据、刷新执行、快照
+    ├── artifact-schema.md      ← `references/artifact-schema.md`: artifact files, DTO shape, template binding rules
+    ├── connector-policy.md     ← `references/connector-policy.md`: connector safety, redaction, credential boundaries
+    └── refresh-contract.md     ← `references/refresh-contract.md`: source metadata, refresh execution, snapshots
 ```
 
-## 当前状态
+## Current status
 
-本目录中的参考文档是实时工件文件契约的唯一事实来源。注册或更新实时工件时，优先使用 daemon 封装命令，不要直接使用原始 HTTP 请求。
+Use the references in this directory as the source of truth for the live artifact file contract. Prefer daemon wrapper commands over raw HTTP when registering or updating live artifacts.
 
-## 何时使用此技能
+## When to use this skill
 
-当用户需要一个由数据支撑、首次渲染后仍能持续使用的视图时，请使用此技能。例如实时仪表盘、可刷新报告、同步状态页、可审计的数据视图，或之后能从本地数据、项目数据或连接器刷新的工件。
+Use this skill when the user asks for a data-backed view that should remain useful after the first render, for example a live dashboard, refreshable report, synced status page, auditable data view, or artifact that can later be refreshed from local/project data or connectors.
 
-创建文件前，先判断用户真正想要的是实时工件还是普通静态工件：
+Before creating files, decide whether the user actually wants a live artifact or a normal static artifact:
 
-- 当用户提到刷新、同步、定期更新、连接器数据、来源或溯源跟踪、仪表盘、报告或可复用的数据视图时，使用实时工件。
-- 当用户只需要一次性的 HTML、模型图、图片或文件，并且不需要刷新、来源元数据或数据与溯源面板时，使用普通静态工件。
-- 如果意图不明确，只问一个简短问题：“它需要支持刷新或实时更新，还是只要一个静态工件？”
+- Use a live artifact when the user mentions refresh, sync, recurring updates, connector-backed data, source/provenance tracking, dashboards, reports, or reusable data-backed views.
+- Use a normal static artifact when the user only wants a one-off HTML/mockup/image/file and does not need refresh, source metadata, or data/provenance panels.
+- If the intent is ambiguous, ask one short question: “Should this be refreshable/live, or just a static artifact?”
 
-## 工作流程
+## Workflow
 
-1. **确定范围和数据来源，不要因已连接的连接器而阻塞**
-   - 明确预览目标、受众、数据时效要求，以及之后是否需要支持刷新。
-   - 如果用户明确点名 Notion、GitHub、Slack 或 Google Drive 等连接器或来源，在检查 daemon connector tools 前，不要先问 “where should the data come from?”。
-   - 如果可用，优先使用本地或项目来源以及 daemon 连接器工具。
-   - 如果已有 daemon 连接器或封装工具，不要直接调用服务提供商的 API。
-   - 如果需要连接器数据，先用 `"$OD_NODE_BIN" "$OD_BIN" tools connectors list --format compact` 列出连接器。如果其中存在用户点名的连接器，且其 `status` 为 `"connected"`，请从工具目录中选择合适的只读 `auto` 工具，并通过连接器封装执行。
-   - 对 Notion 而言，只要存在 connected `notion` connector，且用户 brief 点名 Notion，就足以用从 artifact/topic 请求派生出的 query 启动 `notion.notion_search`。只有当用户提供了数据库 ID，或搜索结果明确指向某个数据库时，才使用 `notion.notion_fetch_database`。
-   - 只有在没有匹配的已连接连接器、多个已连接候选项同样合适，或用户请求中没有可用于搜索的主题或查询时，才询问数据来源。如果必须询问，请具体询问页面、数据库、主题，或是否允许广泛搜索，不要问“Notion 数据源在哪里？”
+1. **Resolve scope and data source without blocking on connected connectors**
+   - Identify the preview goal, audience, data freshness expectations, and whether refresh should be possible later.
+   - If the user explicitly names a connector/source such as Notion, GitHub, Slack, or Google Drive, do not ask “where should the data come from?” before checking daemon connector tools.
+   - Prefer local/project sources or daemon connector tools when available.
+   - Do not call provider APIs directly when a daemon connector/wrapper exists.
+   - If connector data is needed, first list connectors with `"$OD_NODE_BIN" "$OD_BIN" tools connectors list --format compact`. If the named connector is present with `status: "connected"`, choose an appropriate read-only `auto` tool from its catalog and execute it through the connector wrapper.
+   - For Notion specifically, a connected `notion` connector plus a user brief that names Notion is enough to start with `notion.notion_search` using a query derived from the requested artifact/topic. Use `notion.notion_fetch_database` only when the user supplied a database id or the search result clearly identifies one.
+   - Ask the user a data-source question only when no matching connected connector exists, multiple connected candidates fit equally well, or the requested artifact has no usable topic/query to search for. If you must ask, be specific: ask for the page/database/topic or permission to search broadly, not “where is the Notion data source?”
 
-2. **编写源文件**
-   - 将 `template.html` 编写为人工设计的 HTML 模板。Daemon 会按照 `html_template_v1` 绑定契约，用 `data.json` 为模板填充数据。请严格遵守该契约，否则填充会失败，发布的原始模板中还会显示 `{{…}}` 标记：
-     - 标量：使用 `{{data.path.to.value}}`。路径以 `data` 开头，以英文句点分隔；可以使用数字数组索引（`{{data.kpis.0.value}}`）。每个绑定都必须解析为单个字符串或数字，不能是对象或数组。
-     - 列表：用 `data-od-repeat="item in data.items"` 重复一个元素，再在其中以 `{{item.label}}` 绑定循环范围内的字段；如果是标量数组，则使用 `{{item}}`。仅支持一层循环；循环内部仍可用 `data.*` 访问全局数据。
-     - 不要在 `<script>` 中手动编写循环，因为预览会移除脚本；如果没有匹配的 `data-od-repeat` 作用域，也不要引用 `{{metric.value}}` 这样的独立循环变量，否则无法解析该绑定。不支持嵌套循环、条件、过滤器、辅助函数以及原始或三花括号插值。
-   - 将 `data.json` 编写为上述绑定使用的规范预览数据，必须使用真实值，不能使用占位符。
-   - 在 `artifact.json` 中写入实时工件元数据、预览声明、文档声明和安全的来源描述信息。
-   - 在 `provenance.json` 中写入简明的来源说明、时间戳、非敏感连接器引用和转换说明。
-   - 不要把 `index.html` 当作源文件编写。Daemon 会从 `template.html` 和 `data.json` 派生 `index.html`。
+2. **Author the source files**
+   - Write `template.html` as the human-designed HTML template. The daemon hydrates it with `data.json` using the `html_template_v1` binding contract — stay inside it or hydration fails and the raw template ships with visible `{{…}}` tokens:
+     - Scalars: `{{data.path.to.value}}`. Paths start with `data`, dot-separated; numeric array indexes are allowed (`{{data.kpis.0.value}}`). Every binding must resolve to a single string/number, not an object or array.
+     - Lists: repeat one element with `data-od-repeat="item in data.items"`, then bind loop-scoped fields inside it as `{{item.label}}` (or `{{item}}` for a scalar array). One level only; `data.*` still works inside the repeat for globals.
+     - Do NOT hand-loop in a `<script>` (scripts are stripped from previews), and do NOT reference a bare loop variable like `{{metric.value}}` without a matching `data-od-repeat` scope — that binding is unresolvable. Nested repeats, conditionals, filters, helpers, and raw/triple-brace interpolation are unsupported.
+   - Write `data.json` as the canonical preview data used by those bindings — real values, not placeholders.
+   - Write `artifact.json` with the live artifact metadata, preview declaration, document declaration, and safe source descriptors.
+   - Write `provenance.json` with concise source notes, timestamps, non-sensitive connector references, and transformation notes.
+   - Do not author `index.html` as source. The daemon derives `index.html` from `template.html` and `data.json`.
 
-3. **保持数据精简并面向预览**
-   - 只存储预览所需的规范化值。
-   - 将大型列表、服务提供商响应或日志写入 `data.json` 前，先进行摘要处理。
-   - 遵守 `references/artifact-schema.md` 中对 JSON 大小和结构的限制。
+3. **Keep data compact and preview-oriented**
+   - Store only normalized values needed by the preview.
+   - Summarize large lists, provider responses, or logs before writing them into `data.json`.
+   - Stay within the bounded JSON rules in `references/artifact-schema.md`.
 
-4. **注册前应用安全规则**
-   - 绝不能在 `artifact.json`、`data.json`、`provenance.json` 或来源元数据中存储凭据、OAuth 令牌、API 密钥、Cookie、认证请求头、服务提供商原始响应、HTTP 信封、完整载荷或类似机密的字段。
-   - 持久化的 JSON 中不得出现禁用键名，例如 `raw`、`rawResponse`、`payload`、`body`、`headers`、`cookie`、`authorization`、`token`、`secret`、`credential` 和 `password`。
-   - 只能使用经过转义的 `html_template_v1` 插值，不允许使用原始或未转义的 HTML 插值。
+4. **Apply safety rules before registration**
+   - Never store credentials, OAuth tokens, API keys, cookies, auth headers, raw provider responses, HTTP envelopes, full payloads, or secret-like fields in `artifact.json`, `data.json`, `provenance.json`, or source metadata.
+   - Avoid forbidden key names such as `raw`, `rawResponse`, `payload`, `body`, `headers`, `cookie`, `authorization`, `token`, `secret`, `credential`, and `password` anywhere in persisted JSON.
+   - Use escaped `html_template_v1` interpolation only. Raw/unescaped HTML interpolation is not allowed.
 
-5. **通过 daemon 封装注册或更新**
-   - 通过 `"$OD_NODE_BIN" "$OD_BIN"` 使用 Open Design daemon 封装命令，不要直接使用 `curl`、`node` 或 `od`：
+5. **Register or update through daemon wrappers**
+   - Use the OpenDesign daemon wrapper commands via `"$OD_NODE_BIN" "$OD_BIN"` instead of raw `curl`, bare `node`, or bare `od`:
 
      ```bash
      "$OD_NODE_BIN" "$OD_BIN" tools live-artifacts create --input artifact.json
@@ -110,38 +102,38 @@ live-artifact/
      "$OD_NODE_BIN" "$OD_BIN" tools live-artifacts update --artifact-id "$ARTIFACT_ID" --input artifact.json
      ```
 
-   - Wrapper 会读取注入的 `OD_NODE_BIN`、`OD_BIN`、`OD_DAEMON_URL` 和 `OD_TOOL_TOKEN`；不要打印、持久化或覆盖令牌值。
-   - 不要包含或发明 `projectId`；daemon 会从 token 推导 project/run scope。
-   - 只有在用户明确要求开发或调试 daemon 时，才使用原始 HTTP 请求。
+   - The wrapper reads injected `OD_NODE_BIN`, `OD_BIN`, `OD_DAEMON_URL`, and `OD_TOOL_TOKEN`; do not print, persist, or override token values.
+   - Do not include or invent `projectId`; the daemon derives project/run scope from the token.
+   - Use raw HTTP only for daemon development/debugging when explicitly requested.
 
-6. **通过连接器封装获取连接器数据**
-   - 查询可用的连接器和工具：
+6. **Use connector wrappers for connector data**
+   - Discover available connectors and tools:
 
      ```bash
      "$OD_NODE_BIN" "$OD_BIN" tools connectors list --format compact
      ```
 
-   - 使用 JSON 对象输入文件执行只读连接器工具：
+   - Execute a read-only connector tool with a JSON object input file:
 
      ```bash
      "$OD_NODE_BIN" "$OD_BIN" tools connectors execute --connector "$CONNECTOR_ID" --tool "$TOOL_NAME" --input input.json
      ```
 
-   - 只持久化预览所需的精简规范化字段，以及非敏感连接器引用（`connectorId`、`toolName`、`accountLabel`）。绝不能持久化连接器凭据、传输元数据或服务提供商的原始输出。
-   - 不要询问连接器机密，也不要要求重复配置。如果 `status` 为 `connected`，直接使用列出的工具；如果尚未连接，告知用户在界面中完成连接。
-   - 有关工具查询、执行和凭据边界，请参阅 `references/connector-policy.md`；有关只读刷新来源元数据，请参阅 `references/refresh-contract.md`。
+   - Persist only the compact normalized fields needed by the preview plus non-sensitive connector references (`connectorId`, `toolName`, `accountLabel`). Never persist connector credentials, transport metadata, or raw provider output.
+   - Do not ask for connector secrets or duplicate setup. If `status` is `connected`, use the listed tools; if it is not connected, tell the user to connect it in the UI.
+   - See `references/connector-policy.md` for listing/execution and credential boundaries, and `references/refresh-contract.md` for read-only refresh source metadata.
 
-7. **简洁报告结果**
-   - 成功后，返回工件 ID 和标题，并说明 `index.html` 由 daemon 派生。
-   - 验证失败时，修复源文件并通过封装工具重试，不要绕过验证。
+7. **Report concise results**
+   - On success, return the artifact ID/title and note that `index.html` is daemon-derived.
+   - On validation failure, fix the source files and retry through the wrapper. Do not bypass validation.
 
-## 必需文件
+## Required files
 
-每个实时工件创建流程都必须在注册前生成以下源文件：
+Every live artifact creation flow must produce these source files before registration:
 
-- `template.html`：技能声明的输出，也是预览的源模板。
-- `data.json`：精简、规范的预览数据。
-- `artifact.json`：供 daemon 验证的创建或更新输入。
-- `provenance.json`：安全的来源与转换摘要。
+- `template.html` — declared skill output and source template for the preview.
+- `data.json` — compact, canonical preview data.
+- `artifact.json` — create/update input for daemon validation.
+- `provenance.json` — safe source and transformation summary.
 
-`index.html` 是 frontmatter 中声明的主要预览入口，但它是 daemon 派生的输出，而不是由智能体编写的源文件。
+`index.html` is the primary preview entry declared in frontmatter, but it is derived daemon output rather than agent-authored source.

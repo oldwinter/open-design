@@ -12,11 +12,9 @@ import Layout from '../../_components/sub-page-layout.astro';
 import '../../community.css';
 import { localeFromPath, localizedHref } from '../../i18n';
 import { getCommunityCopy, COMMUNITY_LINKS, GLYPH } from '../../community-i18n';
-import { getCommunityEventsCopy } from '../../community-events-i18n';
 
 const locale = localeFromPath(Astro.url.pathname);
 const t = getCommunityCopy(locale).hub;
-const eventsCopy = getCommunityEventsCopy(locale);
 const href = (p: string) => localizedHref(p, locale);
 
 const cardHrefs = [
@@ -27,7 +25,12 @@ const cardHrefs = [
 ];
 const hubCards = [
   ...t.cards,
-  eventsCopy.hubCard,
+  {
+    ord: 'IV',
+    title: 'Events',
+    sub: 'Local rooms where <em>OpenDesign</em> becomes practical.',
+    body: 'Browse community events: read the Osaka recap, then see upcoming hands-on sessions like the Shanghai AI workshop.',
+  },
 ];
 
 const jsonLd = {

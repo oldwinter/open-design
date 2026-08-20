@@ -8,7 +8,7 @@ description: |
   a typographic overlay. Produced as a single self-contained `index.html`.
   Use when the brief asks for a "WebGL", "shader", "3D", "generative", "GPU",
   "interactive canvas", "hero animation", or "real-time visual" experience.
-  Open Design serves this in powered-preview mode so the GPU stack actually
+  OpenDesign serves this in powered-preview mode so the GPU stack actually
   runs.
 en_description: |
   A full-screen, real-time WebGL/WebGL2 experience — animated shaders, 3D
@@ -60,7 +60,7 @@ Produce a single self-contained `index.html` that renders a real-time WebGL (or 
 
 ## Why this is a powered artifact
 
-Open Design detects `getContext('webgl2')` / `new Worker` / `SharedArrayBuffer` and renders this file in **powered preview** — a cross-origin-isolated iframe with `allow-same-origin`. That means real Web Workers, `SharedArrayBuffer`, WASM, and the full GPU pipeline are available. You do **not** need to work around the opaque sandbox. Prefer `webgl2` for modern features; fall back to `webgl` when the effect allows.
+OpenDesign detects `getContext('webgl2')` / `new Worker` / `SharedArrayBuffer` and renders this file in **powered preview** — a cross-origin-isolated iframe with `allow-same-origin`. That means real Web Workers, `SharedArrayBuffer`, WASM, and the full GPU pipeline are available. You do **not** need to work around the opaque sandbox. Prefer `webgl2` for modern features; fall back to `webgl` when the effect allows.
 
 ## Resource map
 

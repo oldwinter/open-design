@@ -1,10 +1,10 @@
 ---
 name: design-brief
 description: |
-  将以 I-Lang protocol format 编写的 structured design brief 解析为
-  具体 design spec。通过要求明确给出 palette、typography、layout、
-  mood、density 和 constraints 等 dimensions，消除 "make it professional"
-  这类模糊请求中的歧义。
+  Parse a structured design brief written in I-Lang protocol format into a
+  concrete design spec. Eliminates ambiguity from vague requests like
+  "make it professional" by requiring explicit dimensions: palette, typography,
+  layout, mood, density, and constraints.
   Trigger keywords: "design brief", "create a design brief", "ilang brief", "structured brief".
 triggers:
   - "design brief"
@@ -37,17 +37,17 @@ od:
 
 # Design Brief Skill
 
-将 structured design brief 解析为具体 DESIGN.md 和可选 visual preview。Agent，严格遵循此 workflow。
+Parse a structured design brief into a concrete DESIGN.md and optional visual preview. Agent, follow this workflow exactly.
 
 ## Background
 
-此 skill 的 8 个 dimensions 来自 Open Design 最初的 71 套 design system catalog；71 是研究样本数，不是当前捆绑的 design system 数量。`design-systems/` 中的每个 DESIGN.md 仍至少都会解析出：color palette、accent、typography、display font、layout model 和 component style。我们将它们提炼为 8 个 orthogonal dimensions，覆盖 designer 在放置任何 pixel 前需要做出的决策。Mood 和 density 被加入，是因为它们是 natural language briefs 中最常见的两类歧义来源（"make it clean" 对不同人意味着不同东西）。
+The 8 dimensions in this skill were derived from OpenDesign's original 71-system catalog; 71 is the research sample, not the current bundled-system count. Every `DESIGN.md` in `design-systems/` still resolves at minimum: color palette, accent, typography, display font, layout model, and component style. We distilled these into 8 orthogonal dimensions that cover the decisions a designer makes before any pixel is placed. Mood and density were added because they are the two most common sources of ambiguity in natural language briefs ("make it clean" means different things to different people).
 
-刻意排除在 brief level 之外的 dimensions：animation timing、responsive strategy 和 accessibility contrast。这些由各个 skills 在 template level 强制执行（例如 `saas-landing` 处理自己的 responsive logic），不过生成的 DESIGN.md 会包含合理的 breakpoint defaults 供下游消费。
+Dimensions intentionally excluded from the brief level: animation timing, responsive strategy, and accessibility contrast. These are enforced at the template level by individual skills (e.g., `saas-landing` handles its own responsive logic), though the generated DESIGN.md includes sensible breakpoint defaults for downstream consumption.
 
 ## 1. Accept input
 
-用户以两种格式之一提供 design brief：
+The user provides a design brief in one of two formats:
 
 ### Option A: I-Lang structured brief
 
@@ -66,13 +66,13 @@ od:
 
 ### Option B: Natural language
 
-> "我需要一个面向 developer tool 的 landing page。干净、极简、dark mode。Inter font。不要花哨动画。"
+> "I need a landing page for a developer tool. Clean, minimal, dark mode. Inter font. No flashy animations."
 
-如果用户提供 Option B，使用下方 mapping table 将其转换为 structured format，然后继续。识别每个明确声明的 dimension，并标记未指定的 dimensions。
+If the user provides Option B, convert it to the structured format using the mapping table below, then proceed. Identify every dimension explicitly stated and flag dimensions that were left unspecified.
 
 ### Natural language → I-Lang mapping
 
-对 natural language input 中的每句话，识别 dimension keywords，并映射到最接近的 structured value：
+For each sentence in the natural language input, identify dimension keywords and map to the closest structured value:
 
 | Natural language phrase | Dimension | I-Lang value |
 |------------------------|-----------|-------------|
@@ -97,13 +97,13 @@ od:
 | "two columns", "sidebar" | layout | `two_column` |
 | "mobile first" | responsive | `mobile_first` |
 
-当一个 phrase 映射到多个 dimensions（例如 "clean dark landing page" → mood=professional_minimal + palette=monochrome_dark + layout=single_column）时，独立解析每个 dimension。当单个 mapping 列出多个 values 时，第一个是 default；只有 surrounding context 强烈支持时，agent 才可选择替代项。
+When a phrase maps to multiple dimensions (e.g. "clean dark landing page" → mood=professional_minimal + palette=monochrome_dark + layout=single_column), resolve each dimension independently. When multiple values are listed for a single mapping, the first is the default; the agent may select the alternative only if surrounding context strongly favors it.
 
 ## 2. Validate dimensions
 
-每个 design brief 都必须解析出这 8 个 dimensions。如果输入缺失任何 dimension，使用 Section 2.2 中的规则选择 sensible defaults。
+Every design brief must resolve these 8 dimensions. If any are missing from the input, select sensible defaults using the rules in Section 2.2.
 
-下方列出的 values 构成 closed vocabulary。只有此表中的 values 在 Section 2.1 中有 concrete token mappings。如果用户提供了此处未列出的 value，agent 必须请求澄清，而不是猜测。
+The values listed below form a closed vocabulary. Only values in this table have concrete token mappings in Section 2.1. If the user provides a value not listed here, the agent must prompt for clarification rather than guessing.
 
 | # | Dimension | Key | Example values |
 |---|-----------|-----|---------------|
@@ -118,7 +118,7 @@ od:
 
 ### 2.1 Symbolic → concrete token resolution
 
-每个 symbolic value 都映射到 concrete design tokens。agent 写入 DESIGN.md 前必须先解析这些 tokens：
+Each symbolic value maps to concrete design tokens. The agent must resolve these before writing DESIGN.md:
 
 | Symbolic value | Concrete tokens |
 |---------------|----------------|
@@ -143,11 +143,11 @@ od:
 | `density=balanced` | Section spacing: 72px, Content padding: 24px/40px |
 | `density=spacious` | Section spacing: 96px, Content padding: 24px/48px |
 
-不在此表中的 symbolic values 无效。如果用户提供未识别的 value（例如 `palette=ocean_blue`），agent 必须请求澄清："I don't recognize `palette=ocean_blue`. Did you mean `navy_and_white`, `monochrome_dark`, `light_clean`, or `earth_tones`?"
+Symbolic values not in this table are not valid. If the user provides an unrecognized value (e.g., `palette=ocean_blue`), the agent must prompt for clarification: "I don't recognize `palette=ocean_blue`. Did you mean `navy_and_white`, `monochrome_dark`, `light_clean`, or `earth_tones`?"
 
 ### 2.2 Default resolution rules
 
-当某个 dimension 未指定时，根据 mood compatibility 选择 defaults：
+When a dimension is unspecified, defaults are selected based on mood compatibility:
 
 | Unspecified dimension | Default rule |
 |----------------------|-------------|
@@ -160,13 +160,20 @@ od:
 | `density` | Always → `balanced`. |
 | `exclude` | Always → none (no constraints unless specified). |
 
-如果 mood 也未指定，所有 defaults 回退到 safe neutral set：`palette=light_clean`、`accent=electric_blue`、`typography=inter`、`display=same_as_body`、`layout=single_column`、`mood=professional_minimal`、`density=balanced`、`exclude=none`。
+If mood is also unspecified, all defaults fall back to the safe neutral set: `palette=light_clean`, `accent=electric_blue`, `typography=inter`, `display=same_as_body`, `layout=single_column`, `mood=professional_minimal`, `density=balanced`, `exclude=none`.
 
 ## 3. Generate DESIGN.md
 
-此 skill 基于已解析的 brief dimensions 从零生成新的 DESIGN.md。如果 working directory 中已存在 DESIGN.md，agent 应询问用户是 overwrite 还是 skip。
+This skill generates a new DESIGN.md from scratch based on the resolved brief dimensions. If a DESIGN.md already exists in the working directory, the agent should ask the user whether to overwrite or skip.
 
-按 Open Design 的 9-section convention 产出 DESIGN.md。所有 color hex values、font stacks 和 spacing values 都必须来自 Section 2.1 中解析出的 tokens - 不要发明 resolution table 之外的 values。
+Produce a DESIGN.md using the nine-section outline below. This outline is the
+skill's portable standalone output, inherited from OpenDesign's original
+upstream baseline; it is not the current repository package schema. Current
+bundled packages also carry `manifest.json`, `tokens.css`, and optional rich
+resources, while legacy and user-installed `DESIGN.md`-only content remains
+readable. All color hex values, font stacks, and spacing values must come from
+the resolved tokens in Section 2.1 — do not invent values outside the
+resolution table.
 
 ```markdown
 # [Project Name] Design System
@@ -229,18 +236,18 @@ od:
 
 ## 4. Generate brief-preview.html
 
-创建一个 HTML 文件，以视觉方式 render 解析后的 design tokens。preview 必须按顺序包含以下 4 个 sections：
+Create a single HTML file that visually renders the resolved design tokens. The preview must contain these 4 sections in order:
 
-1. **Color palette swatches** - 一排横向 rectangles，每个显示 Color section 中的一种 color。用 role（Background、Surface、Text、Accent）和 hex code 标注。
-2. **Typography specimens** - 三个 text blocks，以声明尺寸展示 Display、Body 和 Mono fonts。每个使用 sample sentence（"The quick brown fox..."）。
-3. **Spacing ruler** - 用 visual ruler 或 stacked bars 展示 section spacing 和 content padding values，并标注 px values。
-4. **Component preview** - 使用解析后的 tokens render 2-3 个 live components（primary button、带 title/body 的 card、text input）。它们应是 functional HTML/CSS，而不是 screenshots。
+1. **Color palette swatches** — A horizontal row of rectangles, each showing one color from the Color section. Label each with its role (Background, Surface, Text, Accent) and hex code.
+2. **Typography specimens** — Three text blocks showing Display, Body, and Mono fonts at their declared sizes. Use a sample sentence ("The quick brown fox...") for each.
+3. **Spacing ruler** — A visual ruler or stacked bars showing section spacing and content padding values, labeled with their px values.
+4. **Component preview** — Render 2–3 live components (a primary button, a card with title/body, a text input) using the resolved tokens. These should be functional HTML/CSS, not screenshots.
 
-preview 自身也使用解析后的 design system tokens（background color、font、spacing）进行 styling。preview 应该看起来像 design system documentation page。
+Style the preview itself with the resolved design system tokens (background color, font, spacing). The preview should look like a design system documentation page.
 
 ## 5. Report unspecified dimensions
 
-在输出末尾，列出用户未指定的 dimensions 和已应用的 defaults，包括选择每个 default 的规则：
+At the end of output, list any dimensions the user did not specify and the defaults that were applied, including the rule that selected each default:
 
 ```
 Dimensions resolved from defaults:
@@ -249,4 +256,4 @@ Dimensions resolved from defaults:
 - exclude: set to "none" (rule: no constraints unless specified)
 ```
 
-这种透明度可以防止 silent assumptions 传播到 final design 中。
+This transparency prevents silent assumptions from propagating into the final design.

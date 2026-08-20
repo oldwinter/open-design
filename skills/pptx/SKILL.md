@@ -1,7 +1,7 @@
 ---
 name: pptx
 description: |
-  读取、生成并调整 PowerPoint slides、layouts 和 templates。适合 executive decks、training material 和 product reviews。
+  Read, generate, and adjust PowerPoint slides, layouts, and templates. Useful for executive decks, training material, and product reviews.
 triggers:
   - "pptx"
   - "powerpoint"
@@ -16,24 +16,28 @@ od:
 
 # pptx
 
-> 从 Anthropic 官方 skills repository 精选整理。
+> Curated from Anthropic's official skills repository.
 
-## 功能
+## What it does
 
-读取、生成并调整 PowerPoint slides、layouts 和 templates。适合 executive decks、training material 和 product reviews。
+Read, generate, and adjust PowerPoint slides, layouts, and templates. Useful for executive decks, training material, and product reviews.
 
-## 来源
+## Source
 
 - Upstream: https://github.com/anthropics/skills/tree/main/skills/pptx
 - Category: `slides`
 
-## 使用方式
+## How to use
 
-这个 catalogue entry 会在 Open Design 中发布该 skill，让 agent 在 planning 阶段发现它。要运行包含原始 assets、scripts 和 references 的完整 upstream workflow，请把 upstream bundle 安装到当前 active agent 的 skills directory：
+This catalogue entry advertises the skill in OpenDesign so the agent
+discovers it during planning. To run the full upstream workflow with
+its original assets, scripts, and references, install the upstream
+bundle into your active agent's skills directory:
 
 ```bash
-# 查看 upstream README 以确认精确路径
+# Inspect the upstream README for exact paths
 open https://github.com/anthropics/skills/tree/main/skills/pptx
 ```
 
-然后要求 agent 按名称（`pptx`）调用此 skill，或使用本 skill frontmatter 中列出的任一 trigger phrase。
+Then ask the agent to invoke this skill by name (`pptx`) or with
+one of the trigger phrases listed in this skill's frontmatter.

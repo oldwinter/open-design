@@ -9,7 +9,7 @@ description: |
   Rendered as a single self-contained `index.html`. Use when the brief asks
   for a "particle field", "particle galaxy", "point cloud", "instanced
   points", "starfield", "GPU particles", or a swirling generative point
-  system. Open Design serves this in powered-preview mode so the GPU stack
+  system. OpenDesign serves this in powered-preview mode so the GPU stack
   actually runs.
 en_description: |
   A real-time particle galaxy — tens of thousands of additive-blended GPU
@@ -60,7 +60,7 @@ Produce a single self-contained `index.html` that renders a real-time particle s
 
 ## Why this is a powered artifact
 
-Open Design detects `getContext('webgl2')` and renders this file in **powered preview** — a cross-origin-isolated iframe with `allow-same-origin`. The full GPU pipeline is available; you do not need to work around the opaque sandbox.
+OpenDesign detects `getContext('webgl2')` and renders this file in **powered preview** — a cross-origin-isolated iframe with `allow-same-origin`. The full GPU pipeline is available; you do not need to work around the opaque sandbox.
 
 ## Resource map
 

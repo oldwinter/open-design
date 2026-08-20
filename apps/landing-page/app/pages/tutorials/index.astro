@@ -2,7 +2,7 @@
 /*
  * Tutorials index — `/tutorials/`
  *
- * Editorial gallery of Open Design YouTube tutorials. One card per video.
+ * Editorial gallery of OpenDesign YouTube tutorials. One card per video.
  * Cards link to `/tutorials/<slug>/` where the video plays inline via a
  * privacy-enhanced `youtube-nocookie.com` iframe.
  *
@@ -19,7 +19,6 @@ import { Header, type HeaderProps } from '../../_components/header';
 import LocaleSwitcherScript from '../../_components/locale-switcher-script.astro';
 import SeoHead from '../../_components/seo-head.astro';
 import SiteFooter from '../../_components/site-footer.astro';
-import { getLocalizedTutorial } from '../../_data/tutorials-longform-i18n';
 import { getCatalogCounts } from '../../_lib/catalog';
 import { getGithubRepoMeta } from '../../_lib/github';
 import {
@@ -116,28 +115,6 @@ const tutorialThumb = (entry: (typeof tutorials)[number]) =>
   entry.data.thumbnail ?? (entry.data.youtubeId ? ytThumb(entry.data.youtubeId) : '/tutorials/open-design-ai-ppt-tutorial-cover.webp');
 const tutorialCta = (entry: (typeof tutorials)[number]) =>
   entry.data.youtubeId ? ui.tutorials.watchCta : 'Read ->';
-const pptTutorialSlug = 'open-design-ai-ppt-tutorial';
-const localizedPptTutorial =
-  locale === 'zh' ? getLocalizedTutorial(pptTutorialSlug, locale) : undefined;
-const writtenTutorialCopy =
-  localizedPptTutorial
-    ? {
-        href: href(`/tutorials/${pptTutorialSlug}/`),
-        previewLabel: 'Open Design AI PPT 教程预览',
-        label: '文字工作坊',
-        title: localizedPptTutorial.title,
-        summary: localizedPptTutorial.summary,
-        cta: '阅读教程 →',
-      }
-    : {
-        href: `/tutorials/${pptTutorialSlug}/`,
-        previewLabel: 'Open Design AI PPT tutorial preview',
-        label: 'Written workshop',
-        title: 'Create an AI-powered PPT with Open Design',
-        summary:
-          'A copy-ready text tutorial for turning raw notes into an editable deck, then refining it with assets, charts, motion, comments, and final QA.',
-        cta: 'Read tutorial ->',
-      };
 
 const featuredTutorial = videoTutorials[0];
 const cardTutorials = videoTutorials.slice(1);
@@ -175,7 +152,7 @@ const featuredCopy = featuredTutorial ? localizedTutorial(featuredTutorial) : un
 
         <section class='tut-written-entry'>
           <div class='container'>
-            <a class='tut-written-card' href={writtenTutorialCopy.href}>
+            <a class='tut-written-card' href='/tutorials/open-design-ai-ppt-tutorial/'>
               <span class='tut-written-media'>
                 <video
                   src='/tutorials/open-design-ai-ppt-motion-demo.mp4'
@@ -185,15 +162,18 @@ const featuredCopy = featuredTutorial ? localizedTutorial(featuredTutorial) : un
                   loop
                   playsinline
                   preload='metadata'
-                  aria-label={writtenTutorialCopy.previewLabel}
+                  aria-label='OpenDesign AI PPT tutorial preview'
                 />
               </span>
               <span class='tut-written-copy'>
-                <span class='tut-written-label'>{writtenTutorialCopy.label}</span>
-                <strong>{writtenTutorialCopy.title}</strong>
-                <span>{writtenTutorialCopy.summary}</span>
+                <span class='tut-written-label'>Written workshop</span>
+                <strong>Create an AI-powered PPT with OpenDesign</strong>
+                <span>
+                  A copy-ready text tutorial for turning raw notes into an editable deck, then
+                  refining it with assets, charts, motion, comments, and final QA.
+                </span>
               </span>
-              <span class='tut-written-cta'>{writtenTutorialCopy.cta}</span>
+              <span class='tut-written-cta'>Read tutorial -></span>
             </a>
           </div>
         </section>

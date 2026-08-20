@@ -1,7 +1,7 @@
 ---
 name: video-downloader
 description: |
-  从 YouTube 和其他平台下载 videos，用于离线观看、编辑或归档，并支持多种 formats 和 quality options。
+  Download videos from YouTube and other platforms for offline viewing, editing, or archival with support for various formats and quality options.
 triggers:
   - "download video"
   - "youtube download"
@@ -15,24 +15,28 @@ od:
 
 # video-downloader
 
-> Curated from ComposioHQ awesome-claude-skills。
+> Curated from ComposioHQ awesome-claude-skills.
 
-## 功能
+## What it does
 
-从 YouTube 和其他平台下载 videos，用于离线观看、编辑或归档，并支持多种 formats 和 quality options。
+Download videos from YouTube and other platforms for offline viewing, editing, or archival with support for various formats and quality options.
 
-## 来源
+## Source
 
 - Upstream: https://github.com/ComposioHQ/awesome-claude-skills/tree/master/video-downloader
 - Category: `video-generation`
 
-## 使用方法
+## How to use
 
-此 catalogue entry 会在 Open Design 中展示该 skill，让 agent 在 planning 阶段发现它。若要运行包含原始 assets、scripts 和 references 的完整 upstream workflow，请把 upstream bundle 安装到当前 active agent 的 skills directory：
+This catalogue entry advertises the skill in OpenDesign so the agent
+discovers it during planning. To run the full upstream workflow with
+its original assets, scripts, and references, install the upstream
+bundle into your active agent's skills directory:
 
 ```bash
-# 查看 upstream README 以确认准确路径
+# Inspect the upstream README for exact paths
 open https://github.com/ComposioHQ/awesome-claude-skills/tree/master/video-downloader
 ```
 
-然后让 agent 通过名称（`video-downloader`）或本 skill frontmatter 中列出的 trigger phrases 调用它。
+Then ask the agent to invoke this skill by name (`video-downloader`) or with
+one of the trigger phrases listed in this skill's frontmatter.

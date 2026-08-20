@@ -323,7 +323,7 @@ const pptSummaryParts = locale === 'zh' && isPptArticle
       </main>
         )
       }
-      <SiteFooter counts={counts} locale={locale} />
+      <SiteFooter counts={counts} locale={locale} localeCanonicalOnly={isPptArticle} />
     </div>
 
     <HeaderEnhancer />

@@ -206,7 +206,7 @@ export interface InfoPageCopy {
     localFirst: string;
     byok: string;
     apache: string;
-    macWinLinux: string;
+    macWin: string;
   };
   official: {
     title: string;
@@ -394,7 +394,7 @@ const INFO_PAGE_COPY: Partial<Record<LandingLocaleCode, InfoPageCopy>> = {
       localFirst: 'Local-first',
       byok: 'BYOK',
       apache: 'Apache-2.0',
-      macWinLinux: 'macOS · Windows · Linux',
+      macWin: 'macOS · Windows',
     },
     official: {
       title: 'Official Open Design — Source page, GitHub, releases, and aliases',
@@ -3940,6 +3940,7 @@ INFO_PAGE_COPY.zh = {
     requestAdapter: '请求适配器',
     live: '在线',
     localFirst: '本地优先',
+    macWin: 'macOS · Windows',
   },
   official: {
     ...INFO_PAGE_COPY.en!.official,
@@ -4745,7 +4746,7 @@ function compactCommon(locale: LandingLocaleCode, text: CompactInfoPageText): In
     localFirst: text.common.localFirst,
     byok: 'BYOK',
     apache: 'Apache-2.0',
-    macWinLinux: 'macOS · Windows · Linux',
+    macWin: 'macOS · Windows',
   };
 }
 
