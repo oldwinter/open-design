@@ -117,7 +117,12 @@ body {
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
-:lang(zh) body { word-break: auto-phrase; }
+html:lang(zh) body {
+  /* Prefer phrase boundaries and keep closing punctuation off the next line. */
+  word-break: auto-phrase;
+  line-break: strict;
+  overflow-wrap: break-word;
+}
 :lang(zh) :where(h1, h2, h3) { text-wrap: balance; }
 :lang(zh) :where(p, li, figcaption) { text-wrap: pretty; }
 img, video, canvas { max-width: 100%; height: auto; }
@@ -151,7 +156,7 @@ body::before {
   opacity: 0.62;
 }
 
-.shell { position: relative; z-index: 2; }
+.shell { position: relative; z-index: 2; overflow-x: clip; }
 .container {
   max-width: 1360px;
   padding: 0 64px;
@@ -6285,12 +6290,17 @@ footer .container {
   .work-card h3 { font-size: clamp(24px, 6vw, 30px); }
   .foot-mega .word { font-size: clamp(54px, 18vw, 120px); }
   /* Break .falling-text out of .method > .container's 64px side padding */
-  .falling-text { margin-inline: -64px; width: calc(100% + 128px); }
+  .falling-text { margin-inline: -64px; width: calc(100% + 128px); height: 424px; }
   /* CTA mural compact layout lives in the ≤880 block; on small phones just
      tighten the side margin and shrink the copy. */
   .cta .container { padding: 0 14px; }
   .cta-dance-inner .display { font-size: clamp(22px, 6vw, 30px); }
   .cta-dance-inner .lead { font-size: 15px; }
+}
+
+:lang(zh) .faq-head .faq-title-zh {
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 @media (min-width: 360px) and (max-width: 640px) {
   .hero-sub-highlight { white-space: nowrap; }

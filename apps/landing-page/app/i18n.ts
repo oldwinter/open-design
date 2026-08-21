@@ -2673,7 +2673,7 @@ const HOME_FAQ_COPY: Record<LandingLocaleCode, HomeFaqTemplate[]> = {
       a: '可以。daemon 在任何能跑 Node 24 的地方运行，落地页是静态 Astro 构建，可直接部署到 Cloudflare Pages、Vercel 或 Netlify。团队共享部署通常把 daemon 固定在内网一台机器上，让每个开发者的 CLI 指向它。',
     },
     {
-      q: '怎么把我的品牌迁入 OpenDesign？',
+      q: '怎么把我的品牌迁\u2060入 OpenDesign？',
       a: '把截图或 Figma 导出拖进 Web UI，让 Agent 把品牌提取成一个 DESIGN.md 文件。把它保存到仓库的 design-systems/<your-brand>/ 下，之后所有 Skill 都会按这个品牌渲染，无需重复提示。/alternatives/claude-design/ 以分步形式描述了同一流程。',
     },
     {
@@ -4163,7 +4163,7 @@ const HOME_PAGE_COPY: Partial<Record<LandingLocaleCode, HomePageCopy>> = {
       rule: '联系 / 对话',
       command: '三条命令开始交付',
       label: '开始对话',
-      titlePrefix: '让最前沿的 AI 设计能力回到每一个创作者的桌上',
+      titlePrefix: '让最前沿的 AI 设计能力回到每一个创作者的桌\u2060上',
       titleOpen: '',
       titleMiddle: '',
       titleVisual: '',
@@ -7112,6 +7112,12 @@ export function pageNameFromPath(pathname = '/'): string {
   return segments.join('_').toLowerCase().replace(/[^a-z0-9_]+/g, '_');
 }
 
+// These pages intentionally ship only at their canonical English URL. Internal
+// links must not acquire a locale prefix that points at an ungenerated route.
+const LOCALE_CANONICAL_ONLY_PATHS = new Set([
+  '/tutorials/open-design-ai-ppt-tutorial/',
+]);
+
 export function localizedHref(
   href: string,
   locale: LandingLocaleCode,
@@ -7132,7 +7138,11 @@ export function localizedHref(
   if (pathAndQuery === '') return hashSuffix || href;
   const [path, query = ''] = pathAndQuery.split('?');
   const querySuffix = query ? `?${query}` : '';
-  const localized = localePath(locale, path || '/');
+  const pathname = path || '/';
+  if (LOCALE_CANONICAL_ONLY_PATHS.has(pathname)) {
+    return `${pathname}${querySuffix}${hashSuffix}`;
+  }
+  const localized = localePath(locale, pathname);
   return `${localized}${querySuffix}${hashSuffix}`;
 }
 

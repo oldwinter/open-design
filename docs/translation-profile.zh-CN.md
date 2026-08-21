@@ -8,7 +8,7 @@
 - 中文 fork：`oldwinter/open-design`
 - Runtime：桌面应用、Web 应用、daemon、CLI、MCP server，以及应用内可发现的 skills、design systems 和 templates
 - 主要中文入口：根目录中文文档、`docs/i18n/*zh-CN*`、`apps/web/src/i18n/locales/zh-CN.ts`、landing page 中文 locale，以及已有中文 runtime skill
-- 当前同步上游 commit：`b032abed00ab4fde9bc6691b27206728c929597e`
+- 当前同步上游 commit：`57de7436076ea348611fb083a8bacaa6f0ef8b2f`
 
 ## 本地化目标
 
@@ -52,3 +52,7 @@
 ## 发布边界
 
 Open Design 是应用发行，不是单一 skill/plugin 安装目标。控制仓库和 README 可以链接中文 fork、中文文档和 release，但不能把上游英文 release 描述成已打包的中文版，也不能声称存在未经验证的一键安装 runtime。
+
+## 本次同步摘要
+
+本批同步到 0.20.2 开发基线，包含 landing page 多语言活动回顾、pricing 与订阅状态、Web 消息中心和导航 rail、export attribution、daemon session resume、packaging/CI orchestration 等上游更新。大阪、香港和上海活动页已使用上游提供的简中正文；Web 的新增飞书入口与 unlimited badge 已在 `zh-CN` / `zh-TW` locale 中补齐。实现代码、tests、schema 和 canonical prompt contract 保持上游语义。

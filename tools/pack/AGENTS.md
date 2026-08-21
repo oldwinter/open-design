@@ -25,6 +25,8 @@ Read `tools/pack/CACHE.md` before changing any build-cache node key, adding a ca
 
 ## Rules
 
+- 将跨平台 source responsibilities 放入 `cache/`、`config/`、`launcher/`、`resources/`、`updates/` 和 `versioning/` 等明确命名的目录；platform-owned behavior 放在 `mac/` 或 `win/` 下。如果一组 tests 具有相同 ownership，也应在 `tests/` 中镜像这些 responsibilities。新增的 root-level `src/*.ts` 文件会被 CI 刻意视为 unclassified，在被归入所属 source unit 前使用保守的 Windows payload fallback。
+- Tests 通过 test-only `@/*` alias 导入 source modules。需要检查 source text 的 tests 使用相同 alias 加 Vitest `?raw` suffix；不要重新引入依赖目录深度的 `../src/` imports 或 file URLs。
 - 不要手工构建 `--od-stamp-*` args；请结合 `OPEN_DESIGN_SIDECAR_CONTRACT` 使用 `createProcessStampArgs`。
 - 不要在 data/log/runtime/cache path decisions 中使用 port numbers。Namespace 决定 paths；ports 只是临时 transports。
 - Public release artifacts 必须使用 channel-specific app identity：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，prerelease 使用 `Open Design Prerelease`，preview 使用 `Open Design Preview`。本地 tools-pack installs 仍可只把 namespace-scoped install paths 当作 developer multi-instance validation convention。

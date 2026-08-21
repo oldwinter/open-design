@@ -1,14 +1,12 @@
 ---
-/*
- * This recap currently has one translated body. Generate only the Simplified
- * Chinese route so other locale prefixes never expose an English fallback as
- * if it were localized.
- */
-import OsakaMeetupPage from '../../../community/open-design-osaka-meetup/index.astro';
+import EventRecap from '../../../community/open-design-osaka-meetup/index.astro';
+import { DEFAULT_LOCALE, LANDING_LOCALES } from '../../../../i18n';
 
 export function getStaticPaths() {
-  return [{ params: { locale: 'zh' } }];
+  return LANDING_LOCALES.filter((locale) => locale.code !== DEFAULT_LOCALE).map(
+    (locale) => ({ params: { locale: locale.code } }),
+  );
 }
 ---
 
-<OsakaMeetupPage />
+<EventRecap />

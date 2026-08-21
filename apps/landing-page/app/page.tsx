@@ -1169,10 +1169,10 @@ export default function Page({
                   // Catalog-backed cards count up from 0.
                   { src: 'card-1.webp', num: github.starsLabel, to: null, suffix: '', alt: 'GitHub Stars', href: REPO, live: 'stars' as const },
                   { src: 'card-2.webp', num: String(github.contributorsCount), to: null, suffix: '', alt: tt('贡献者', 'Contributors'), href: `${REPO}/graphs/contributors`, live: 'contributors' as const },
-                  { src: 'card-3.webp', num: pluginsCardNum, to: pluginsCardTo, suffix: '+', alt: 'Plugins', href: href('/plugins/') },
-                  { src: 'card-4.webp', num: systemsCardNum, to: systemsCardTo, suffix: '+', alt: 'Design Systems', href: href('/plugins/systems/') },
+                  { src: 'card-3.webp', num: pluginsCardNum, to: pluginsCardTo, suffix: '+', alt: tt('插件', 'Plugins'), href: href('/plugins/') },
+                  { src: 'card-4.webp', num: systemsCardNum, to: systemsCardTo, suffix: '+', alt: tt('设计系统', 'Design Systems'), href: href('/plugins/systems/') },
                   { src: 'card-5.webp', num: '21', to: '21', suffix: '', alt: tt('Coding Agent 支持', 'Coding Agents'), href: href('/agents/') },
-                  { src: 'card-6.webp', num: null, to: null, suffix: '', alt: 'Star us', href: REPO, cta: true },
+                  { src: 'card-6.webp', num: null, to: null, suffix: '', alt: tt('点个 Star', 'Star us'), href: REPO, cta: true },
                 ] as ReadonlyArray<{ src: string; num: string | null; to: string | null; suffix: string; alt: string; href: string; live?: 'stars' | 'contributors'; cta?: boolean }>).map((item, index) => (
                   <a
                     className={`work-stat-card work-img-card${item.cta ? ' work-stat-card-cta' : ''}`}

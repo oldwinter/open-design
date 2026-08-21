@@ -16,6 +16,69 @@
  */
 import type { LandingLocaleCode } from '../i18n';
 
+export interface PricingPlanActionLabels {
+  current: string;
+  currentCanceling: string;
+  downgrade: string;
+  upgrade: string;
+  intervalUpgrade: string;
+  switchBackToInterval: string;
+  intervalDowngradeUnavailable: string;
+  checkoutUnavailable: string;
+  scheduled: string;
+}
+
+const EN_PLAN_ACTION_LABELS: PricingPlanActionLabels = {
+  current: 'Current plan',
+  currentCanceling: 'Current plan · Cancels at period end',
+  downgrade: 'Downgrade to {plan}',
+  upgrade: 'Upgrade to {plan}',
+  intervalUpgrade: 'Switch {plan} to {interval}',
+  switchBackToInterval: 'Switch back to {interval} before upgrading',
+  intervalDowngradeUnavailable: 'Cancel your subscription to change plans',
+  checkoutUnavailable: 'Personal checkout unavailable for this account',
+  scheduled: '{plan} · Scheduled',
+};
+
+const PLAN_ACTION_LABELS: Partial<Record<LandingLocaleCode, Partial<PricingPlanActionLabels>>> = {
+  en: EN_PLAN_ACTION_LABELS,
+  zh: {
+    current: '当前套餐', currentCanceling: '当前套餐 · 将在周期结束时取消', downgrade: '降级至 {plan}', upgrade: '升级至 {plan}', intervalUpgrade: '将 {plan} 改为{interval}', switchBackToInterval: '请先切回{interval}再升级', intervalDowngradeUnavailable: '取消订阅后可变更套餐', checkoutUnavailable: '此账户暂不能购买个人套餐', scheduled: '{plan} · 已安排',
+  },
+  'zh-tw': {
+    current: '目前方案', currentCanceling: '目前方案 · 將於週期結束時取消', downgrade: '降級至 {plan}', upgrade: '升級至 {plan}', intervalUpgrade: '將 {plan} 改為{interval}', switchBackToInterval: '請先切回{interval}再升級', intervalDowngradeUnavailable: '取消訂閱後可變更方案', checkoutUnavailable: '此帳戶暫不能購買個人方案', scheduled: '{plan} · 已排程',
+  },
+  ja: {
+    current: '現在のプラン', currentCanceling: '現在のプラン · 期間終了時に解約', downgrade: '{plan} にダウングレード', upgrade: '{plan} にアップグレード', intervalUpgrade: '{plan} を{interval}に変更', switchBackToInterval: 'アップグレードする前に{interval}へ戻してください', intervalDowngradeUnavailable: 'プランを変更するにはサブスクリプションを解約してください', checkoutUnavailable: 'このアカウントでは個人プランを購入できません', scheduled: '{plan} · 予約済み',
+  },
+  ko: {
+    current: '현재 요금제', currentCanceling: '현재 요금제 · 기간 종료 시 해지', downgrade: '{plan}(으)로 다운그레이드', upgrade: '{plan}(으)로 업그레이드', intervalUpgrade: '{plan}을(를) {interval}(으)로 변경', switchBackToInterval: '업그레이드 전에 {interval}(으)로 돌아가세요', intervalDowngradeUnavailable: '요금제를 변경하려면 구독을 취소하세요', checkoutUnavailable: '이 계정에서는 개인 요금제를 구매할 수 없습니다', scheduled: '{plan} · 예약됨',
+  },
+  de: {
+    current: 'Aktueller Tarif', currentCanceling: 'Aktueller Tarif · Endet zum Periodenende', downgrade: 'Auf {plan} downgraden', upgrade: 'Auf {plan} upgraden', intervalUpgrade: '{plan} auf {interval} umstellen', switchBackToInterval: 'Vor dem Upgrade zu {interval} zurückwechseln', intervalDowngradeUnavailable: 'Kündige dein Abonnement, um den Tarif zu wechseln', checkoutUnavailable: 'Persönliche Tarife sind für dieses Konto nicht verfügbar', scheduled: '{plan} · Geplant',
+  },
+  fr: {
+    current: 'Offre actuelle', currentCanceling: 'Offre actuelle · Résiliation en fin de période', downgrade: 'Rétrograder vers {plan}', upgrade: 'Passer à {plan}', intervalUpgrade: 'Passer {plan} en {interval}', switchBackToInterval: 'Revenez à {interval} avant la mise à niveau', intervalDowngradeUnavailable: 'Résiliez votre abonnement pour changer d’offre', checkoutUnavailable: 'Les offres personnelles sont indisponibles pour ce compte', scheduled: '{plan} · Planifié',
+  },
+  ru: {
+    current: 'Текущий тариф', currentCanceling: 'Текущий тариф · Отмена в конце периода', downgrade: 'Понизить до {plan}', upgrade: 'Повысить до {plan}', intervalUpgrade: 'Перевести {plan} на {interval}', switchBackToInterval: 'Перед повышением вернитесь на {interval}', intervalDowngradeUnavailable: 'Отмените подписку, чтобы изменить тариф', checkoutUnavailable: 'Личные тарифы недоступны для этого аккаунта', scheduled: '{plan} · Запланировано',
+  },
+  es: {
+    current: 'Plan actual', currentCanceling: 'Plan actual · Se cancela al final del periodo', downgrade: 'Bajar a {plan}', upgrade: 'Subir a {plan}', intervalUpgrade: 'Cambiar {plan} a {interval}', switchBackToInterval: 'Vuelve a {interval} antes de subir de plan', intervalDowngradeUnavailable: 'Cancela tu suscripción para cambiar de plan', checkoutUnavailable: 'Los planes personales no están disponibles para esta cuenta', scheduled: '{plan} · Programado',
+  },
+  'pt-br': {
+    current: 'Plano atual', currentCanceling: 'Plano atual · Cancela ao fim do período', downgrade: 'Fazer downgrade para {plan}', upgrade: 'Fazer upgrade para {plan}', intervalUpgrade: 'Mudar {plan} para {interval}', switchBackToInterval: 'Volte para {interval} antes de fazer upgrade', intervalDowngradeUnavailable: 'Cancele a assinatura para mudar de plano', checkoutUnavailable: 'Planos pessoais não estão disponíveis para esta conta', scheduled: '{plan} · Agendado',
+  },
+};
+
+export function getCurrentPlanLabel(locale: LandingLocaleCode): string {
+  return getPricingPlanActionLabels(locale).current;
+}
+
+export function getPricingPlanActionLabels(locale: LandingLocaleCode): PricingPlanActionLabels {
+  return { ...EN_PLAN_ACTION_LABELS, ...(PLAN_ACTION_LABELS[locale] ?? {}) };
+}
+
 export type PlanTierId = 'plus' | 'pro' | 'max';
 
 export interface PlanCopy {
@@ -90,6 +153,8 @@ export interface PricingLabels {
   footnote: string;
   /** Linked text inside the footnote, pointing at the cloud console. */
   consoleLabel: string;
+  /** Visible failure when an explicit Cloud Console handoff is invalid. */
+  checkoutDestinationUnavailable: string;
 }
 
 /** Copy owned by the live Personal comparison component. */
@@ -688,6 +753,7 @@ const EN: PricingContent = {
     heroTitle: 'Pay only for AI tasks that deliver results',
     footnote: 'Prices shown in USD. Checkout, billing, and auto top-up are handled in the {console}. Adjust or cancel your plan anytime.',
     consoleLabel: 'OpenDesign Cloud console',
+    checkoutDestinationUnavailable: 'Checkout destination unavailable. Return to your Cloud Console and open Pricing again.',
     monthly: 'Monthly',
     yearly: 'Yearly',
     yearlySave: 'Save up to 51%',
@@ -773,6 +839,7 @@ const ZH_CN: PricingContent = {
     heroTitle: '只为实际完成的 AI 任务付费',
     footnote: '价格以美元计。结账、账单与自动充值均在 {console} 完成。可随时调整或取消套餐。',
     consoleLabel: 'OpenDesign Cloud 控制台',
+    checkoutDestinationUnavailable: '结账环境不可用。请返回 Cloud 控制台后重新打开价格页。',
     monthly: '月付',
     yearly: '年付',
     yearlySave: '省最多 51%',
@@ -792,8 +859,8 @@ const ZH_CN: PricingContent = {
     videoGeneration: '视频生成',
     freeForever: '永久免费',
     freeTrialCreditLabel: '有限的模型体验额度（7 天内有效）',
-    firstMonthTag: '首月 {pct}% Off',
-    yearlyDiscountTag: '{pct}% Off',
+    firstMonthTag: '首月立减 {pct}%',
+    yearlyDiscountTag: '立减 {pct}%',
     yearlySubline: '按年计费 · {totalUsd}/年（省 {savingsUsd}）',
     monthlyRenewal: '次月起 {amountUsd}/月',
     yearlySaveCta: '年付立省 {savingsUsd}',
@@ -805,14 +872,14 @@ const ZH_CN: PricingContent = {
     features: ['BYOK 自带密钥，支持本地 Coding Agent', '社区支持'],
   },
   go: {
-    tagline: '轻量需求，轻松交付 · 零配置即用',
+    tagline: '轻量需求，轻松交付',
     ctaLabel: '订阅 Go',
     allowance: '8 个热门模型 · 充裕额度',
     features: ['完整设计与 Coding 能力', '无需配置供应商 API Key', '额度自动恢复'],
   },
   plans: {
     plus: {
-      tagline: '独立项目、零散需求，单人交付 · 零配置即用',
+      tagline: '独立项目、零散需求，单人交付',
       ctaLabel: '升级 Plus',
       concurrency: '2 个任务并发',
       features: [
@@ -823,7 +890,7 @@ const ZH_CN: PricingContent = {
       ],
     },
     pro: {
-      tagline: '一个人产出整个设计团队的活 · 零配置即用',
+      tagline: '一个人产出整个设计团队的活',
       ctaLabel: '升级 Pro',
       concurrency: '5 个任务并发',
       features: [
@@ -834,7 +901,7 @@ const ZH_CN: PricingContent = {
       ],
     },
     max: {
-      tagline: '把外包设计费砸到零头 · 零配置即用',
+      tagline: '把外包设计费砸到零头',
       ctaLabel: '升级 Max',
       concurrency: '10 个任务并发',
       features: [
@@ -854,6 +921,7 @@ const ZH_TW: PricingContent = {
     heroTitle: '只為實際完成的 AI 任務付費',
     footnote: '價格以美元計。結帳、帳單與自動加值皆於 {console} 完成。可隨時調整或取消方案。',
     consoleLabel: 'OpenDesign Cloud 主控台',
+    checkoutDestinationUnavailable: '結帳環境無法使用。請返回 Cloud 主控台後重新開啟價格頁。',
     monthly: '月付',
     yearly: '年付',
     yearlySave: '最多省 51%',
@@ -873,8 +941,8 @@ const ZH_TW: PricingContent = {
     videoGeneration: '影片生成',
     freeForever: '永久免費',
     freeTrialCreditLabel: '有限的模型體驗額度（7 天內有效）',
-    firstMonthTag: '首月 {pct}% Off',
-    yearlyDiscountTag: '{pct}% Off',
+    firstMonthTag: '首月立減 {pct}%',
+    yearlyDiscountTag: '立減 {pct}%',
     yearlySubline: '按年計費 · {totalUsd} / 年（省 {savingsUsd}）',
     monthlyRenewal: '次月起 {amountUsd} / 月',
     yearlySaveCta: '年付立省 {savingsUsd}',
@@ -886,14 +954,14 @@ const ZH_TW: PricingContent = {
     features: ['BYOK 自帶密鑰，支援本機 Coding Agent', '社群支援'],
   },
   go: {
-    tagline: '輕量需求，輕鬆交付 · 零配置即用',
+    tagline: '輕量需求，輕鬆交付',
     ctaLabel: '訂閱 Go',
     allowance: '8 個熱門模型 · 充裕額度',
     features: ['完整設計與 Coding 能力', '無需配置供應商 API Key', '額度自動恢復'],
   },
   plans: {
     plus: {
-      tagline: '獨立專案、零散需求，單人交付 · 零配置即用',
+      tagline: '獨立專案、零散需求，單人交付',
       ctaLabel: '升級 Plus',
       concurrency: '2 個任務並行',
       features: [
@@ -904,7 +972,7 @@ const ZH_TW: PricingContent = {
       ],
     },
     pro: {
-      tagline: '一個人產出整個設計團隊的活 · 零配置即用',
+      tagline: '一個人產出整個設計團隊的活',
       ctaLabel: '升級 Pro',
       concurrency: '5 個任務並行',
       features: [
@@ -915,7 +983,7 @@ const ZH_TW: PricingContent = {
       ],
     },
     max: {
-      tagline: '把外包設計費砍到零頭 · 零配置即用',
+      tagline: '把外包設計費砍到零頭',
       ctaLabel: '升級 Max',
       concurrency: '10 個任務並行',
       features: [
@@ -935,6 +1003,7 @@ const ES: PricingContent = {
     heroTitle: 'Paga solo por tareas de IA completadas',
     footnote: 'Precios en USD. El pago, la facturación y la recarga automática se gestionan en la {console}. Cambia o cancela tu plan cuando quieras.',
     consoleLabel: 'consola de OpenDesign Cloud',
+    checkoutDestinationUnavailable: 'El destino de pago no está disponible. Vuelve a la consola Cloud y abre Precios de nuevo.',
     monthly: 'Mensual',
     yearly: 'Anual',
     yearlySave: 'Ahorra hasta 51%',
@@ -1016,6 +1085,7 @@ const PT_BR: PricingContent = {
     heroTitle: 'Pague apenas por tarefas de IA concluídas',
     footnote: 'Preços em USD. Pagamento, faturamento e recarga automática são feitos no {console}. Ajuste ou cancele seu plano quando quiser.',
     consoleLabel: 'console do OpenDesign Cloud',
+    checkoutDestinationUnavailable: 'O destino de pagamento não está disponível. Volte ao console Cloud e abra Preços novamente.',
     monthly: 'Mensal',
     yearly: 'Anual',
     yearlySave: 'Economize até 51%',
@@ -1097,6 +1167,7 @@ const RU: PricingContent = {
     heroTitle: 'Платите только за выполненные задачи ИИ',
     footnote: 'Цены указаны в USD. Оплата, выставление счетов и автопополнение выполняются в {console}. Изменение или отмена тарифа в любое время.',
     consoleLabel: 'консоли OpenDesign Cloud',
+    checkoutDestinationUnavailable: 'Среда оплаты недоступна. Вернитесь в консоль Cloud и снова откройте страницу тарифов.',
     monthly: 'Месяц',
     yearly: 'Год',
     yearlySave: 'Экономия до 51%',
@@ -1178,6 +1249,7 @@ const FR: PricingContent = {
     heroTitle: 'Payez uniquement pour les tâches IA terminées',
     footnote: 'Prix indiqués en USD. Le paiement, la facturation et la recharge automatique se gèrent dans la {console}. Ajustez ou résiliez votre forfait à tout moment.',
     consoleLabel: 'console OpenDesign Cloud',
+    checkoutDestinationUnavailable: 'La destination de paiement est indisponible. Revenez à la console Cloud et rouvrez la page Tarifs.',
     monthly: 'Mensuel',
     yearly: 'Annuel',
     yearlySave: 'Économisez jusqu’à 51%',
@@ -1259,6 +1331,7 @@ const KO: PricingContent = {
     heroTitle: '완료된 AI 작업에만 비용을 지불하세요',
     footnote: '가격은 USD 기준입니다. 결제, 청구, 자동 충전은 {console}에서 처리됩니다. 플랜 변경 또는 취소는 언제든 가능합니다.',
     consoleLabel: 'OpenDesign Cloud 콘솔',
+    checkoutDestinationUnavailable: '결제 환경을 사용할 수 없습니다. Cloud 콘솔로 돌아가 요금 페이지를 다시 여세요.',
     monthly: '월간',
     yearly: '연간',
     yearlySave: '최대 51% 절약',
@@ -1340,6 +1413,7 @@ const DE: PricingContent = {
     heroTitle: 'Zahle nur für abgeschlossene KI-Aufgaben',
     footnote: 'Preise in USD. Checkout, Abrechnung und automatisches Aufladen erfolgen in der {console}. Plan jederzeit anpassen oder kündigen.',
     consoleLabel: 'OpenDesign Cloud Konsole',
+    checkoutDestinationUnavailable: 'Das Zahlungsziel ist nicht verfügbar. Kehre zur Cloud-Konsole zurück und öffne die Preisseite erneut.',
     monthly: 'Monatlich',
     yearly: 'Jährlich',
     yearlySave: 'Bis zu 51% sparen',
@@ -1421,6 +1495,7 @@ const JA: PricingContent = {
     heroTitle: '完了した AI タスクにだけ支払う',
     footnote: '価格は米ドル表示です。決済・請求・自動チャージは {console} で行います。プランの変更・解約はいつでも可能です。',
     consoleLabel: 'OpenDesign Cloud コンソール',
+    checkoutDestinationUnavailable: '決済先を利用できません。Cloud コンソールに戻り、料金ページを開き直してください。',
     monthly: '月額',
     yearly: '年額',
     yearlySave: '最大 51% オフ',

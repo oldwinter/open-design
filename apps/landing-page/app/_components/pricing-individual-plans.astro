@@ -2,7 +2,6 @@
 import {
   GO_PLAN,
   PRICING_SNAPSHOT,
-  cloudSubscribeUrl,
   formatUsd,
   type PlanTierConfig,
 } from '../_lib/pricing';
@@ -74,36 +73,33 @@ const imageModels: ModelItem[] = [
 const unlimitedByTier: Record<TierId, Set<string>> = {
   go: new Set(['DeepSeek V4 Flash', 'DeepSeek V4 Pro', 'GLM-5.2']),
   plus: new Set(['DeepSeek V4 Flash', 'DeepSeek V4 Pro', 'GLM-5.2', 'Kimi K2.7 Code']),
+  // Pro's fifth slot is GLM-5.2, not MiniMax M2.7: every tier from Go up
+  // carries GLM-5.2, and MiniMax M2.7 stays metered until Max. The two were
+  // swapped here, so the page promised Pro subscribers unlimited MiniMax while
+  // marking the GLM-5.2 they do get as metered.
   pro: new Set([
     'DeepSeek V4 Flash',
     'DeepSeek V4 Pro',
+    'GLM-5.2',
     'Kimi K2.7 Code',
-    'MiniMax M2.7',
     'MiMo V2.5 Pro',
   ]),
   max: new Set(popularModels.map((model) => model.name)),
 };
 
-const popularOrderForTier = (tier: TierId) => {
-  const unlimited = unlimitedByTier[tier];
-  if (tier === 'go' || tier === 'plus') {
-    const lead = ['DeepSeek V4 Flash', 'DeepSeek V4 Pro'];
-    return [
-      ...lead.map((name) => popularModels.find((model) => model.name === name)!),
-      ...popularModels.filter((model) => !lead.includes(model.name)),
-    ];
-  }
-  if (tier === 'pro') {
-    const lead = ['DeepSeek V4 Flash', 'MiMo V2.5 Pro', 'Kimi K2.7 Code'];
-    return [
-      ...lead.map((name) => popularModels.find((model) => model.name === name)!),
-      ...popularModels.filter((model) => !lead.includes(model.name)),
-    ];
-  }
-  return [...popularModels].sort(
-    (a, b) => Number(unlimited.has(b.name)) - Number(unlimited.has(a.name)),
-  );
-};
+const popularModelDisplayOrder = [
+  'DeepSeek V4 Flash',
+  'DeepSeek V4 Pro',
+  'GLM-5.2',
+  'Kimi K2.7 Code',
+  'MiMo V2.5 Pro',
+  'MiniMax M2.7',
+  'Kimi K2.6',
+  'GLM-5.1',
+];
+
+const orderedPopularModels = () =>
+  popularModelDisplayOrder.map((name) => popularModels.find((model) => model.name === name)!);
 
 const renderCatalogLabel = (label: string) => fillTemplate(label, {
   skillsCount,
@@ -156,9 +152,7 @@ const tierBenefits: Record<TierId, string[]> = {
 };
 
 const compactSavings = (amountUsd: number, interval: 'monthly' | 'yearly') => {
-  const amount = locale === 'en'
-    ? formatUsd(amountUsd).replace('$', '')
-    : formatUsd(amountUsd);
+  const amount = formatUsd(amountUsd);
   return locale === 'en' && interval === 'monthly' ? `${amount}/mo` : amount;
 };
 const compactBillingTotal = (amountUsd: number) =>
@@ -234,11 +228,13 @@ const cardData = [
     tier: 'go' as const,
     logo: null,
     view: goView,
+    regularMonthlyPrice: GO_PLAN.monthly.priceUsd,
   },
   ...tiers.map((tier) => ({
     tier: tier.tier as PlanTierId,
     logo: `/pricing/plan-${tier.tier}.svg`,
     view: individualView(tier),
+    regularMonthlyPrice: tier.monthly.priceUsd,
   })),
 ];
 
@@ -254,16 +250,7 @@ const usageRows = [
   { ...popularModel('GLM-5.1'), value: 670 },
 ];
 
-const comparisonPopular = [
-  'DeepSeek V4 Flash',
-  'DeepSeek V4 Pro',
-  'GLM-5.2',
-  'Kimi K2.7 Code',
-  'MiniMax M2.7',
-  'MiMo V2.5 Pro',
-  'Kimi K2.6',
-  'GLM-5.1',
-].map((name) => popularModels.find((model) => model.name === name)!);
+const comparisonPopular = orderedPopularModels();
 
 const comparisonFlagship = [
   'Kimi-K3',
@@ -336,8 +323,8 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
 >
   <div class="benefits-summary-stage">
     <div class="four-tier-grid decision-grid">
-      {cardData.map(({ tier, logo, view }) => {
-        const popular = popularOrderForTier(tier);
+      {cardData.map(({ tier, logo, view, regularMonthlyPrice }) => {
+        const popular = orderedPopularModels();
         const flagship = tier === 'plus' ? plusFlagshipModels : flagshipModels;
         const imageResolution = tier === 'plus' ? '1K' : tier === 'pro' ? '2K' : '4K';
         const bonusPct = tier === 'go' ? null : CREDIT_BONUS_PCT[tier];
@@ -360,7 +347,7 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
                   )}
                 </div>
                 <div class="plan-badges">
-                  <span class="discount-corner-badge" data-when="monthly">{fillTemplate(L.firstMonthTag, { pct: String(view.monthly.discount) })}</span>
+                  <span class="discount-corner-badge" data-when="monthly" data-intro-only>{fillTemplate(L.firstMonthTag, { pct: String(view.monthly.discount) })}</span>
                   <span class="discount-corner-badge" data-when="yearly">{fillTemplate(L.yearlyDiscountTag, { pct: String(view.yearly.discount) })}</span>
                 </div>
               </div>
@@ -368,9 +355,14 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
             </header>
 
             <div class="price" data-when="monthly">
-              <span>$</span><strong class="rolling-price-number">{view.monthly.amount}</strong><small>{L.perMonth}</small><del>{view.monthly.strike}</del>
+              <span>$</span><strong
+                class="rolling-price-number"
+                data-monthly-price
+                data-intro-price={view.monthly.amount}
+                data-regular-price={formatUsd(regularMonthlyPrice).replace('$', '')}
+              >{view.monthly.amount}</strong><small>{L.perMonth}</small><del data-intro-only>{view.monthly.strike}</del>
             </div>
-            <div class="compact-price-detail" data-when="monthly">
+            <div class="compact-price-detail" data-when="monthly" data-intro-only>
               <span class="price-savings-note">{fillTemplate(P.saveAmount, { amount: view.monthly.saving })}</span>
               <small>{view.monthly.billed}</small>
             </div>
@@ -382,7 +374,13 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
               <small>{view.yearly.billed}</small>
             </div>
 
-            <a class="pricing-card-cta" href={cloudSubscribeUrl(tier, 'yearly')} data-pricing-cta data-tier={tier}>
+            <a
+              class="pricing-card-cta"
+              data-pricing-cta
+              data-tier={tier}
+              data-plan-name={tier.charAt(0).toUpperCase() + tier.slice(1)}
+              data-default-label={tierCopy[tier].ctaLabel}
+            >
               <span>{tierCopy[tier].ctaLabel}</span>
             </a>
 
@@ -542,7 +540,8 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
                   <td class="model-name-cell"><span class:list={['model-logo', model.iconClass]}><img src={model.icon} alt="" loading="lazy" /></span><span>{model.name}</span></td>
                   {(['go', 'plus', 'pro', 'max'] as TierId[]).map((tier) => {
                     const status = accessStatus(category, model.name, tier);
-                    return status.kind === 'more-ample' ? (
+                    const checkOnly = status.kind === 'more-ample' || status.kind === 'ample' || status.kind === 'included';
+                    return checkOnly ? (
                       <td><span class={`model-access-status ${status.kind}`} aria-label={status.text}><i class="status-icon check"></i></span></td>
                     ) : (
                       <td><span class={`model-access-status ${status.kind}`}><i class:list={['status-icon', { infinity: status.kind === 'unlimited' }]}>{status.kind === 'unlimited' ? '∞' : ''}</i>{status.text}</span></td>
@@ -830,7 +829,7 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
     line-height: 1;
     text-decoration: none;
     background: #11120f;
-    border: 1px solid #11120f;
+    border: 0;
     border-radius: 8px;
     transition: transform 0.2s, background-color 0.18s;
     overflow: hidden;
@@ -847,13 +846,22 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
   .plan-max .pricing-card-cta {
     color: #10140d;
     background: var(--pricing-accent);
-    border-color: var(--pricing-accent);
   }
 
   .plan-pro .pricing-card-cta:hover,
   .plan-max .pricing-card-cta:hover {
     color: #10140d;
     background: #8cf76c;
+  }
+
+  .pricing-card .pricing-card-cta[aria-disabled='true'],
+  .pricing-card .pricing-card-cta[aria-disabled='true']:hover,
+  .pricing-card .pricing-card-cta[aria-disabled='true']:focus-visible {
+    color: #595d54;
+    background: #d8dad4;
+    border: 0;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .plan-feature-details {
@@ -1392,6 +1400,7 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
   }
 
   .model-compare-shell {
+    position: relative;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.86);
     border: 1px solid rgba(70, 78, 66, 0.08);
@@ -1552,18 +1561,26 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
   .model-name-cell > .model-logo { margin-right: 9px; }
 
   .model-access-status {
-    display: inline-flex;
+    display: inline-grid;
+    grid-template-columns: 23px max-content;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
+    gap: 8px;
+    width: 104px;
+    margin: 0 auto;
     color: #1f7e16;
     font-size: 12px;
     font-weight: 650;
     white-space: nowrap;
   }
 
-  .model-access-status.unlimited { gap: 8px; }
-  .model-access-status.more-ample {
-    width: 23px;
+  .model-access-status.more-ample,
+  .model-access-status.ample,
+  .model-access-status.included {
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    width: 104px;
     height: 23px;
   }
   .model-access-status.resolution { font-weight: 500; }
@@ -1596,27 +1613,9 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
     transform: translateY(-1px) rotate(45deg);
   }
 
-  .model-access-status.ample,
-  .model-access-status.included {
-    width: 23px;
-    height: 23px;
-    overflow: hidden;
-    font-size: 0;
-  }
-
-  .model-access-status.ample::after,
-  .model-access-status.included::after {
-    width: 5px;
-    height: 9px;
-    content: '';
-    border: 2px solid;
-    border-width: 0 2px 2px 0;
-    transform: translateY(-1px) rotate(45deg);
-  }
-
   .model-access-status.unavailable {
     position: relative;
-    width: 23px;
+    width: 104px;
     height: 23px;
     overflow: hidden;
     color: #a5aaa1;
@@ -1675,6 +1674,26 @@ const otherModels = 'Gemini-3.1-Pro, Grok-4.5, GPT-5.4, GPT-5.6-Terra, Qwen3.7-M
   }
 
   @media (max-width: 1080px) {
+    .model-compare-shell::after {
+      position: absolute;
+      top: 18px;
+      right: 14px;
+      z-index: 2;
+      display: grid;
+      width: 32px;
+      height: 32px;
+      color: #343832;
+      font-size: 18px;
+      line-height: 1;
+      content: '\2192';
+      pointer-events: none;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(70, 78, 66, 0.12);
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(28, 35, 24, 0.08);
+    }
+
     .four-tier-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       row-gap: 56px;
