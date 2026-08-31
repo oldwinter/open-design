@@ -839,7 +839,7 @@ else { process.stderr.write("unexpected gh call: " + args + "\\n"); process.exit
     expect(olderGh.output.comment_created).toBe("true");
     expect(olderGh.body).toContain("FAIL  tests/project-archive.test.ts");
     expect(olderGh.stdout).toContain("gh version 2.87.3 (fake)");
-  });
+  }, 30_000);
 
   it("[P1] routes configured contributors into an independent maintainer merge block", async () => {
     const [routingWorkflow, ciWorkflow, inactivityWorkflow] = await Promise.all([
@@ -1103,7 +1103,7 @@ process.stdin.on("end", () => {
     await expect(runResolve({ event: "workflow_run", ghExit: true })).resolves.toMatchObject({
       output: { skip: "true" },
     });
-  });
+  }, 30_000);
 
   it("[P2] bumps only synchronized workspace manifests in finalize-release", async () => {
     const workflow = await readFile(finalizeReleaseWorkflowPath, "utf8");

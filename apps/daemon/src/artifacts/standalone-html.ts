@@ -549,13 +549,13 @@ class StandaloneBundler {
     try {
       ast = parse(source, {
         sourceType: mode === 'classic' ? 'unambiguous' : 'module',
-        plugins: ['dynamicImport', 'importAttributes', 'importMeta', 'topLevelAwait'],
+        plugins: ['importMeta'],
       });
     } catch (runtimeError) {
       try {
         parse(source, {
           sourceType: mode === 'classic' ? 'unambiguous' : 'module',
-          plugins: ['dynamicImport', 'importAttributes', 'importMeta', 'jsx', 'topLevelAwait', 'typescript'],
+          plugins: ['importMeta', 'jsx', 'typescript'],
         });
       } catch {
         throw new StandaloneHtmlExportError(

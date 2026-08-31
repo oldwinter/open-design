@@ -2120,7 +2120,7 @@ describe('ProjectView conversation run isolation', () => {
       );
     });
     expect(screen.getByTestId('chat-error').textContent).toMatch(
-      /没有生成可交付的项目文件/,
+      /without producing a deliverable project file/i,
     );
     expect(reattachDaemonRun).not.toHaveBeenCalled();
   });

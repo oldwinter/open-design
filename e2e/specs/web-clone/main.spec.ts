@@ -249,7 +249,6 @@ async function expectFile(path: string): Promise<void> {
 async function resolveBrowserExecutable(): Promise<string> {
   const candidates = [
     process.env.OD_BROWSER_EXECUTABLE_PATH,
-    playwrightChromium.executablePath(),
     ...(process.platform === 'darwin'
       ? [
           '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -257,6 +256,7 @@ async function resolveBrowserExecutable(): Promise<string> {
           '/Applications/Chromium.app/Contents/MacOS/Chromium',
         ]
       : []),
+    playwrightChromium.executablePath(),
   ].filter((candidate): candidate is string => Boolean(candidate));
   for (const candidate of candidates) {
     try {

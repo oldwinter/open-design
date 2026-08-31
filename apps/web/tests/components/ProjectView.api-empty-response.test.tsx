@@ -556,7 +556,7 @@ describe('ProjectView API empty response handling', () => {
       ).toBe(true);
     });
     expect(
-      screen.getAllByText(/没有生成可交付的项目文件/).length,
+      screen.getAllByText(/without producing a deliverable project file/i).length,
     ).toBeGreaterThan(0);
   });
 

@@ -122,3 +122,4 @@ export function EditorIcon({ editorId, size = 16 }: Props) {
     </span>
   );
 }
+import type { JSX } from 'react';

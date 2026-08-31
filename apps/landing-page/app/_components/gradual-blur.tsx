@@ -18,7 +18,7 @@
  * progressive blur at the bottom edge while the headline stays crisp.
  */
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, JSX } from 'react';
 
 type Position = 'top' | 'bottom' | 'left' | 'right';
 type Curve = 'linear' | 'bezier' | 'ease-in' | 'ease-out' | 'ease-in-out';
