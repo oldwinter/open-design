@@ -22,7 +22,7 @@ export const McpServerSpecSchema = z.object({
   name:    z.string().min(1),
   command: z.string().optional(),
   args:    z.array(z.string()).optional(),
-  env:     z.record(z.string()).optional(),
+  env:     z.record(z.string(), z.string()).optional(),
   url:     z.string().optional(),
 }).passthrough();
 
@@ -40,7 +40,7 @@ export const InputFieldSchema = z.object({
 
 export type InputField = z.infer<typeof InputFieldSchema>;
 
-export const LocalizedTextSchema = z.record(z.string()).refine(
+export const LocalizedTextSchema = z.record(z.string(), z.string()).refine(
   (value) => Object.keys(value).length > 0,
   { message: 'Localized text must include at least one locale.' },
 );
@@ -94,7 +94,7 @@ export const GenUISurfaceSpecSchema = z.object({
     stageId: z.string().optional(),
     atom:    z.string().optional(),
   }).passthrough().optional(),
-  schema:               z.record(z.unknown()).optional(),
+  schema:               z.record(z.string(), z.unknown()).optional(),
   prompt:               z.string().optional(),
   capabilitiesRequired: z.array(z.string()).optional(),
   timeout:              z.number().int().positive().optional(),

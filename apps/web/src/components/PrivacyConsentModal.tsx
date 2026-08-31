@@ -94,3 +94,4 @@ export function PrivacyConsentModal({ onShare, onDecline }: Props): JSX.Element 
     </div>
   );
 }
+import type { JSX } from 'react';

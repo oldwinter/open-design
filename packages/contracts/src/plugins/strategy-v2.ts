@@ -236,7 +236,7 @@ export const ResolvedTaskProfileV2Schema = z.object({
   designSpec: z.object({
     source: z.enum(['existing-artifact', 'brand', 'resolved-baseline']),
     version: z.string().min(1),
-    decisions: z.record(z.unknown()),
+    decisions: z.record(z.string(), z.unknown()),
   }).strict(),
   buildRequirements: z.array(z.object({
     id: z.string().min(1),
@@ -244,7 +244,7 @@ export const ResolvedTaskProfileV2Schema = z.object({
   }).strict()),
   assumptions: z.array(z.string()),
   risks: z.array(z.string()),
-  taskSpecific: z.record(z.unknown()),
+  taskSpecific: z.record(z.string(), z.unknown()),
 }).strict().superRefine((value, context) => {
   rejectForbiddenStrategySemantics(value, context);
 

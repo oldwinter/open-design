@@ -82,7 +82,25 @@ async function buildLandingPage(): Promise<void> {
   });
 }
 
+async function stopPreviewServer(): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    const stop = spawn('pnpm', ['exec', 'astro', 'preview', 'stop'], {
+      cwd: landingRoot,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let output = '';
+    stop.stdout?.on('data', (chunk) => { output += String(chunk); });
+    stop.stderr?.on('data', (chunk) => { output += String(chunk); });
+    stop.once('error', reject);
+    stop.once('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Failed to stop Astro preview (${code ?? 'signal'}):\n${output}`));
+    });
+  });
+}
+
 before(async () => {
+  await stopPreviewServer();
   const port = await freePort();
   baseUrl = `http://127.0.0.1:${port}`;
   await buildLandingPage();
@@ -109,6 +127,7 @@ before(async () => {
 after(async () => {
   await browser?.close();
   if (server && !server.killed) server.kill('SIGTERM');
+  await stopPreviewServer();
 });
 
 async function openPricing(input: {

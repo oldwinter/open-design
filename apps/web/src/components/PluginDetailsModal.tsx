@@ -117,3 +117,4 @@ export function PluginDetailsModal({
   if (typeof document === 'undefined') return detail;
   return createPortal(detail, document.body);
 }
+import type { JSX } from 'react';

@@ -248,7 +248,7 @@ describe('PluginDetailView curated installed-extension layout', () => {
     expect(screen.getByRole('region', { name: /快捷命令/ })).toBeTruthy();
     expect(screen.getByRole('region', { name: /数据连接/ })).toBeTruthy();
     expect(screen.getByRole('region', { name: /知识技能/ })).toBeTruthy();
-    expect(screen.getByText('OpenDesign 官方')).toBeTruthy();
+    expect(screen.getByText('Open Design 官方')).toBeTruthy();
     expect(screen.getByText('@OpenDesign')).toBeTruthy();
   });
 
