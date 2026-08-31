@@ -8,7 +8,7 @@
 - 中文 fork：`oldwinter/open-design`
 - Runtime：桌面应用、Web 应用、daemon、CLI、MCP server，以及应用内可发现的 skills、design systems 和 templates
 - 主要中文入口：根目录中文文档、`docs/i18n/*zh-CN*`、`apps/web/src/i18n/locales/zh-CN.ts`、landing page 中文 locale，以及已有中文 runtime skill
-- 当前同步上游 commit：`91c0f701efddb34c1b074e998dd2ac0ec3094391`
+- 当前同步上游 commit：`5a62b0edadca3e9bd08691b0ca6ac8de8e2dd5ed`
 
 ## 本地化目标
 
@@ -55,4 +55,4 @@ Open Design 是应用发行，不是单一 skill/plugin 安装目标。控制仓
 
 ## 本次同步摘要
 
-本批同步到 0.20.3 开发基线，包含 DeepSeek Vision 模型权益与 pricing 提示、Claude Desktop MCP 接入说明、路线图和许可证更新、手动编辑协议扩展，以及 daemon raw workspace authority 测试。新增简中与繁中文案由上游完整提供；实现代码、tests、schema 和 canonical prompt contract 保持上游语义。
+本批同步到 0.21.1 上游开发基线，包含 OD Next 设计策略与插件/运行时协议、standalone/terminal/closure 分发能力、运行观测与恢复链路、Labs 设置、定向 Go 订阅公告、pricing 与多语言 landing 更新，以及 preview、ACP、打包和发布流程修复。新增简中与繁中文案由上游提供并保留；实现代码、tests、schema 和 canonical prompt contract 保持上游语义。

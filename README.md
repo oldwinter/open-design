@@ -1,7 +1,7 @@
 <h1 align="center">Open Design：开源 Claude Design 替代品</h1>
 
 > [!IMPORTANT]
-> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `57de7436076ea348611fb083a8bacaa6f0ef8b2f`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
+> 本仓库是 `nexu-io/open-design` 的社区维护中文 fork，当前同步到上游 `5a62b0edadca3e9bd08691b0ca6ac8de8e2dd5ed`。中文文档与源码可从本仓库获取；页面中的下载按钮和 release 徽章仍指向上游官方构建，不代表本 fork 已提供预打包的中文版应用。
 
 > ⚡ **Open Design Cloud——官方模型服务。** 一次充值，即可在 Open Design 里直接使用 GPT、Claude、Gemini 与 DeepSeek：20+ 旗舰模型、零配置、按真实 token 用量计费。[立即体验](https://open-design.ai/cloud/?utm_source=github&utm_medium=referral&utm_content=readme_try_cloud)
 >
@@ -713,11 +713,11 @@ gh pr create --fill
 
 如果这为你节省了三十分钟，请给一个 ★。Star 不能当饭吃——但它告诉下一位设计师、Agent 和贡献者，这个实验值得他们关注。一次点击，三秒钟，真实的信号。
 
-<a href="https://star-history.com/#nexu-io/open-design&Date">
+<a href="https://star-history.dera.page/#nexu-io/open-design&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&theme=dark&cache_bust=2026-08-04" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-08-04" />
-    <img alt="Open Design Star 历史" src="https://api.star-history.com/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-08-04" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=nexu-io/open-design&type=Date&theme=dark&cache_bust=2026-08-04" />
+    <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-08-04" />
+    <img alt="Open Design Star 历史" src="https://star-history.dera.page/svg?repos=nexu-io/open-design&type=Date&cache_bust=2026-08-04" />
   </picture>
 </a>
 
