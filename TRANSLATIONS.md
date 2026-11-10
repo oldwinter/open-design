@@ -262,7 +262,8 @@ Open Design 目前在不同内容入口中支持 **19 种语言**：
   Open Design è un'alternativa open-source (codice aperto) a Claude Design.
   ```
 - 对于区域变体（zh-CN 与 zh-TW、pt-BR 与 pt-PT），请为您的目标受众选择最广泛理解的变体
-- 有关特定术语表，请参阅[区域术语](#regional-terminology) 部分
+- See [Regional terminology](#-regional-terminology) section for specific glossaries
+- 有关特定术语表，请参阅[区域术语](#-regional-terminology) 部分
 
 ### 徽章翻译
 

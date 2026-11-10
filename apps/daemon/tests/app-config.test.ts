@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
 import express from 'express';
@@ -13,7 +13,9 @@ import {
   it,
 } from 'vitest';
 
-import { agentCliEnvForAgent, readAppConfig, writeAppConfig } from '../src/app-config.js';
+import { agentCliEnvForAgent, readAppConfig, readMetricsConsent, writeAppConfig } from '../src/app-config.js';
+import { spawnEnvForAgent } from '../src/runtimes/env.js';
+import { readOdNextRolloutPolicy } from '../src/strategies/od-next/rollout.js';
 import { isLocalSameOrigin } from '../src/origin-validation.js';
 
 // Default telemetry preference applied when an existing config has no
@@ -36,6 +38,27 @@ describe('app-config', () => {
 
   afterEach(async () => {
     await rm(dataDir, { recursive: true, force: true });
+  });
+
+  describe('strict metrics consent', () => {
+    it('distinguishes a missing first-install config from damaged and unreadable preferences', async () => {
+      expect(await readMetricsConsent(dataDir)).toEqual({ status: 'missing', metrics: true });
+      const file = path.join(dataDir, 'app-config.json');
+      await writeAppConfig(dataDir, { telemetry: { metrics: false, content: false } });
+      expect(await readMetricsConsent(dataDir)).toEqual({ status: 'available', metrics: false });
+      for (const damaged of ['{"telemetry":{"metrics":false}', 'null', '[]', '42', '{"telemetry":null}', '{"telemetry":{"metrics":"true"}}']) {
+        await writeFile(file, damaged);
+        expect(await readMetricsConsent(dataDir)).toEqual({ status: 'unavailable', metrics: false });
+      }
+      await rm(file);
+      await mkdir(file);
+      expect(await readMetricsConsent(dataDir)).toEqual({ status: 'unavailable', metrics: false });
+    });
+
+    it('preserves defaults on valid older configs without telemetry', async () => {
+      await writeFile(path.join(dataDir, 'app-config.json'), '{"onboardingCompleted":true}');
+      expect(await readMetricsConsent(dataDir)).toEqual({ status: 'available', metrics: true });
+    });
   });
 
   describe('readAppConfig', () => {
@@ -71,6 +94,60 @@ describe('app-config', () => {
       await writeFile(path.join(dataDir, 'app-config.json'), '"hello"');
       const cfg = await readAppConfig(dataDir);
       expect(cfg).toEqual({ telemetry: DEFAULT_TELEMETRY });
+    });
+
+    // A file that cannot be parsed at all resets every preference, including
+    // this one, and that stays true. Singling out `odNextStrategyMode` to
+    // survive a broken file would opt installations out of a rollout they never
+    // declined — a broken file is evidence of a broken file, not of an opt-out.
+    // What does survive is a mode we can see and cannot read; see below.
+    describe('OD Next opt-out when the mode itself cannot be read', () => {
+      const cases: Array<[string, unknown]> = [
+        ['a mode this build does not recognise', 'Off'],
+        ['a mode with a typo', 'acive'],
+        ['a non-string mode', 1],
+        ['an object where a mode belongs', { mode: 'off' }],
+      ];
+      for (const [label, value] of cases) {
+        it(`reads off, not the default, for ${label}`, async () => {
+          await writeFile(
+            path.join(dataDir, 'app-config.json'),
+            JSON.stringify({ odNextStrategyMode: value }),
+          );
+          expect((await readAppConfig(dataDir)).odNextStrategyMode).toBe('off');
+        });
+      }
+
+      it('still reads as unconfigured when there is genuinely no config', async () => {
+        // The negative control that matters most for this rollout. Failing
+        // closed is only correct for a value we can see and cannot read; a
+        // fresh install has made no choice, and turning that into an opt-out
+        // would cancel the rollout instead of protecting it.
+        expect((await readAppConfig(dataDir)).odNextStrategyMode).toBeUndefined();
+      });
+
+      it('still reads as unconfigured when the whole file is unparseable', async () => {
+        await writeFile(path.join(dataDir, 'app-config.json'), '{not valid');
+        expect((await readAppConfig(dataDir)).odNextStrategyMode).toBeUndefined();
+      });
+
+      it('leaves an explicit null as the deliberate way back to the default', async () => {
+        await writeFile(
+          path.join(dataDir, 'app-config.json'),
+          JSON.stringify({ odNextStrategyMode: null }),
+        );
+        expect((await readAppConfig(dataDir)).odNextStrategyMode).toBeUndefined();
+      });
+
+      it('keeps every readable mode exactly as saved', async () => {
+        for (const mode of ['off', 'observe', 'active'] as const) {
+          await writeFile(
+            path.join(dataDir, 'app-config.json'),
+            JSON.stringify({ odNextStrategyMode: mode }),
+          );
+          expect((await readAppConfig(dataDir)).odNextStrategyMode).toBe(mode);
+        }
+      });
     });
 
     it('filters out unknown keys from stored file', async () => {
@@ -445,12 +522,21 @@ describe('app-config', () => {
           },
           opencode: {
             OPENCODE_BIN: '  ~/bin/opencode  ',
+            TMPDIR: '  /custom/tmpdir  ',
+            TMP: '  /custom/tmp  ',
+            TEMP: '  /custom/temp  ',
+            HOME: 'should-not-persist',
           },
           'byok-opencode': {
             OPENCODE_BIN: '  ~/bin/byok-opencode  ',
           },
           'trae-cli': {
             TRAE_CLI_BIN: '  ~/bin/traecli-public  ',
+          },
+          pi: {
+            PI_BIN: '  ~/bin/pi  ',
+            PI_CODING_AGENT_DIR: '  ~/.pi-isolated/agent  ',
+            PI_CODING_AGENT_SESSION_DIR: 'not part of the contract yet',
           },
           __proto__: {
             CLAUDE_CONFIG_DIR: 'bad',
@@ -469,11 +555,17 @@ describe('app-config', () => {
           OPEN_DESIGN_AMR_PROFILE: 'local',
           OPENCODE_TEST_HOME: '~/.open-design-amr-opencode',
         },
-        opencode: { OPENCODE_BIN: '~/bin/opencode' },
+        opencode: { OPENCODE_BIN: '~/bin/opencode', TMPDIR: '/custom/tmpdir', TMP: '/custom/tmp', TEMP: '/custom/temp' },
         'trae-cli': { TRAE_CLI_BIN: '~/bin/traecli-public' },
+        // pi's config-directory override survives the save (#8093); the
+        // neighbouring session-dir key is not in the contract and still does not.
+        pi: { PI_BIN: '~/bin/pi', PI_CODING_AGENT_DIR: '~/.pi-isolated/agent' },
       });
       expect(agentCliEnvForAgent(cfg.agentCliEnv, 'byok-opencode')).toEqual({
         OPENCODE_BIN: '~/bin/opencode',
+        TMPDIR: '/custom/tmpdir',
+        TMP: '/custom/tmp',
+        TEMP: '/custom/temp',
       });
     });
 
@@ -557,6 +649,30 @@ describe('app-config', () => {
 
       expect(cfg.agentCliEnv).toBeUndefined();
       expect(cfg.agentCliEnvIntent).toBeUndefined();
+    });
+
+    it('carries a saved PI_CODING_AGENT_DIR through a save cycle and into the pi launch env', async () => {
+      // #8093 end to end. Persistence alone is not the fix: the whole point of
+      // the key is that pi reads its config from the isolated directory, so
+      // the assertion follows the value from app-config.json to the env
+      // spawnEnvForAgent hands the process.
+      await writeAppConfig(dataDir, {
+        agentId: 'pi',
+        agentCliEnv: {
+          pi: {
+            PI_BIN: '/Users/test/bin/pi',
+            PI_CODING_AGENT_DIR: '/Users/test/.pi-isolated/agent',
+          },
+        },
+      });
+
+      const cfg = await readAppConfig(dataDir);
+      const configured = agentCliEnvForAgent(cfg.agentCliEnv, 'pi');
+      expect(configured.PI_CODING_AGENT_DIR).toBe('/Users/test/.pi-isolated/agent');
+
+      const env = spawnEnvForAgent('pi', { PATH: '/usr/bin' }, configured);
+      expect(env.PI_CODING_AGENT_DIR).toBe('/Users/test/.pi-isolated/agent');
+      expect(env.PI_BIN).toBe('/Users/test/bin/pi');
     });
 
     it('drops orphan CLI env intent entries when the agent env is empty', async () => {
@@ -1251,20 +1367,35 @@ describe('app-config odNextStrategyMode', () => {
     await expect(readAppConfig(dataDir)).rejects.toThrow();
   });
 
-  it('reads a corrupted stored value as unconfigured rather than throwing', async () => {
-    // The read path stays fail-soft: a hand-edited or truncated file must not
-    // take the daemon down, and unconfigured is the safe answer (`off`).
+  it('reads a corrupted stored value as off rather than throwing', async () => {
+    // The read path stays fail-soft — a hand-edited or truncated file must not
+    // take the daemon down, and the rest of the config still comes through.
+    //
+    // Preserve legacy config normalization; rollout no longer uses this field.
     await writeFile(
       path.join(dataDir, 'app-config.json'),
       JSON.stringify({ agentId: 'codex', odNextStrategyMode: 'acive' }),
       'utf8',
     );
     const cfg = await readAppConfig(dataDir);
-    expect(cfg.odNextStrategyMode).toBeUndefined();
+    expect(cfg.odNextStrategyMode).toBe('off');
     expect(cfg.agentId).toBe('codex');
   });
 
-  it('opts back out when the key is cleared', async () => {
+  it('ignores retired saved modes across the config-to-rollout boundary', async () => {
+    for (const mode of ['off', 'observe', 'active', 'OFF']) {
+      await writeFile(path.join(dataDir, 'app-config.json'),
+        JSON.stringify({ odNextStrategyMode: mode, agentId: 'codex' }), 'utf8');
+      const config = await readAppConfig(dataDir);
+      expect(config.agentId).toBe('codex');
+      expect(readOdNextRolloutPolicy({}, config))
+        .toMatchObject({ requestedMode: 'active', requestedModeSource: 'default' });
+      expect(readOdNextRolloutPolicy({ OD_NEXT_STRATEGY_ROLLOUT: 'off' }, config))
+        .toMatchObject({ requestedMode: 'off', requestedModeSource: 'env' });
+    }
+  });
+
+  it('clears the retired key without changing the rollout default', async () => {
     await writeAppConfig(dataDir, { odNextStrategyMode: 'active' });
     await writeAppConfig(dataDir, { odNextStrategyMode: null });
     expect((await readAppConfig(dataDir)).odNextStrategyMode).toBeUndefined();

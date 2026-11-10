@@ -5,11 +5,15 @@
 | English | 中文写法 | 说明 |
 |---|---|---|
 | Open Design | Open Design | 产品名，保留原文。 |
+| OpenDesign | OpenDesign | 上游当前产品名；旧文档中的 “Open Design” 指同一产品。 |
 | Claude Design | Claude Design | 产品名，保留原文。 |
 | Codex / Claude Code / Cursor / OpenCode | Codex / Claude Code / Cursor / OpenCode | Agent / CLI / 产品名保持原文。 |
 | agent | Agent | 泛指 AI agent 时保留英文首字母大写。 |
 | skill | skill / 技能 | 文件夹、协议、`SKILL.md` 语境保留 `skill`；泛读者说明可写“技能”。 |
 | plugin | plugin / 插件 | 文件、协议、manifest 语境保留 `plugin`；读者说明可写“插件”。 |
+| expert suite | 专家套件 | plugin 市场中按角色或行业组织的工具包。 |
+| connector | connector / 连接器 | 配置、协议和 API 语境保留 `connector`；解释性文本可写“连接器”。 |
+| marketplace | 市集 | plugin 来源与发现界面。 |
 | design system | design system / 设计系统 | 产品 surface 或 `DESIGN.md` 语境保留英文；自然说明可写“设计系统”。 |
 | prompt | prompt / 提示词 | 命令、字段和示例中保持 `prompt`；解释性文本可写“提示词”。 |
 | artifact | artifact / 工件 | 路径、schema、标签语境保留 `artifact`；解释性文本可写“工件”。 |

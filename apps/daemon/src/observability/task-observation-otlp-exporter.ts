@@ -11,7 +11,7 @@ import {
   postLangfuseBatch,
   type LangfuseConfig,
   type LangfuseDeliveryState,
-  type TelemetrySinkConfig,
+  type RunTelemetrySinkConfig,
 } from '../langfuse-trace.js';
 import {
   buildLegacyTaskObservationPayload,
@@ -25,6 +25,8 @@ import {
   safeTaskObservationToolName,
   safeTaskObservationUsageValueSources,
   safeTaskObservationUsageValues,
+  deliverableSyntaxFlatMetadata,
+  taskDeliverableSyntaxTelemetry,
   safeTaskObservationRuntimeVersions,
   safeTaskObservationQualityProjection,
   strategyTaskRootObservationId,
@@ -46,7 +48,7 @@ export interface TaskObservationExportOptions {
   config: TaskObservationExporterConfig | null;
   fetchImpl?: typeof fetch;
   deliveryIdempotencyKey?: string;
-  onDeliveryAttempt?: () => void;
+  onDeliveryAttempt?: (trace?: { traceId: string; protocol: 'legacy-v1' | 'otlp-v4' }) => void;
   context?: TaskObservationExportContextV1;
   /** Test-only retry delay override. Production callers should omit it. */
   retryDelayMs?: number;
@@ -114,7 +116,7 @@ function parseMode(value: string | undefined): TaskObservationExporterMode {
 }
 
 export function readTaskObservationExporterConfig(
-  sink: TelemetrySinkConfig | null,
+  sink: RunTelemetrySinkConfig | null,
   env: NodeJS.ProcessEnv = process.env,
 ): TaskObservationExporterConfig | null {
   // Consume the already-selected Task sink. Do not resolve again here: doing
@@ -194,8 +196,15 @@ function taskTraceAttributes(
   context?: TaskObservationExportContextV1,
 ): OtlpAttribute[] {
   const limitations = safeTaskObservationLimitationCodes(aggregate.limitations);
+  const deliverableSyntax = deliverableSyntaxFlatMetadata(
+    taskDeliverableSyntaxTelemetry(aggregate),
+  );
   return attributes([
     ['langfuse.trace.name', 'open-design-strategy-task'],
+    ['langfuse.trace.input', jsonString(aggregate.traceProjection?.input)],
+    ['langfuse.trace.output', jsonString(aggregate.traceProjection?.output)],
+    ...Object.entries(aggregate.traceProjection?.metadata ?? {}).map(([key, value]) =>
+      [`langfuse.trace.metadata.${key}`, typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ? value : jsonString(value)] as const),
     ['langfuse.session.id', aggregate.root.conversationId],
     ['user.id', context?.installationId ?? undefined],
     ['langfuse.version', context?.appVersion ?? aggregate.root.strategyVersion],
@@ -212,6 +221,9 @@ function taskTraceAttributes(
     ['langfuse.trace.metadata.execution_mode', aggregate.root.executionMode],
     ['langfuse.trace.metadata.task_type', aggregate.root.taskType],
     ['langfuse.trace.metadata.outcome', aggregate.root.status],
+    ['langfuse.trace.metadata.round_settlements', jsonString(aggregate.root.roundSettlements)],
+    ['langfuse.trace.metadata.eval_context_v2', aggregate.evaluation ? jsonString(aggregate.evaluation.context) : undefined],
+    ['langfuse.trace.metadata.eval_context_v2_runs', aggregate.evaluation ? jsonString(aggregate.evaluation.runs) : undefined],
     ['langfuse.trace.metadata.strategy_id', aggregate.root.strategyId],
     ['langfuse.trace.metadata.strategy_package_hash', aggregate.root.strategyPackageHash],
     ['langfuse.trace.metadata.snapshot_id', aggregate.root.snapshotId],
@@ -241,6 +253,9 @@ function taskTraceAttributes(
     ['langfuse.trace.metadata.coverage', jsonString(aggregate.coverage)],
     ['langfuse.trace.metadata.stage_totals', jsonString(aggregate.stageTotals)],
     ['langfuse.trace.metadata.limitations', jsonString(limitations)],
+    ...Object.entries(deliverableSyntax).map(([key, value]) => (
+      [`langfuse.trace.metadata.${key}`, value] as const
+    )),
   ]);
 }
 
@@ -657,6 +672,7 @@ export function legacyAndOtlpTaskMappingsMatch(
       executionMode: aggregate.root.executionMode,
       taskType: aggregate.root.taskType,
       outcome: aggregate.root.status,
+      roundSettlements: aggregate.root.roundSettlements,
       strategyId: aggregate.root.strategyId,
       strategyVersion: aggregate.root.strategyVersion,
       strategyPackageHash: aggregate.root.strategyPackageHash,
@@ -950,7 +966,7 @@ async function postOtlpTaskPayload(
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       attemptCount += 1;
-      opts.onDeliveryAttempt?.();
+      opts.onDeliveryAttempt?.({ traceId: payload.resourceSpans[0]!.scopeSpans[0]!.spans[0]!.traceId, protocol: 'otlp-v4' });
       const response = await fetchImpl(`${config.baseUrl}${LANGFUSE_OTLP_TRACES_PATH}`, {
         method: 'POST',
         headers: {
@@ -1081,7 +1097,8 @@ export async function exportTaskObservationAggregate(
       opts.fetchImpl ?? globalThis.fetch,
       () => {
         attemptCount += 1;
-        opts.onDeliveryAttempt?.();
+        const trace = (legacyBatch as Array<{ type: string; body: { id: string } }>).find(event => event.type === 'trace-create');
+        opts.onDeliveryAttempt?.({ traceId: String(trace!.body.id), protocol: 'legacy-v1' });
       },
     );
     return withDiagnostics({

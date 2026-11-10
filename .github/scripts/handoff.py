@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -10,10 +11,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from lib.github import GitHubError, append_outputs, event_payload, unique_run_artifact
+from lib.github import GitHubError, append_outputs, event_payload, latest_run_artifact
 
 SCHEMA_VERSION = 1
-KINDS = {"comment", "autofix", "report", "convergence"}
+KINDS = {"comment", "autofix", "report", "convergence", "pack-cache"}
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,79}$")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
@@ -59,6 +60,8 @@ def payload_path(root: Path, kind: str, handoff_id: str) -> Path:
         if kind == "autofix"
         else "candidate.json"
         if kind == "convergence"
+        else "cache.tar.gz"
+        if kind == "pack-cache"
         else "request.json"
     )
     return handoff_dir(root, kind, handoff_id) / filename
@@ -210,7 +213,7 @@ def validate_convergence(entry_dir: Path) -> dict[str, Any]:
     if entry_dir.name not in {handoff_id, artifact_name("convergence", handoff_id)}:
         fail(f"Metadata id {handoff_id!r} does not match directory {entry_dir.name!r}")
     event = require_text(metadata.get("event"), "event")
-    if event not in {"pull_request", "merge_group"}:
+    if event not in {"pull_request", "merge_group", "workflow_dispatch"}:
         fail(f"Unsupported convergence event: {event!r}")
     candidate_path = entry_dir / "candidate.json"
     if not candidate_path.is_file():
@@ -267,7 +270,53 @@ def validate_entry(kind: str, entry_dir: Path) -> dict[str, Any]:
         return validate_autofix(entry_dir)
     if kind == "convergence":
         return validate_convergence(entry_dir)
+    if kind == "pack-cache":
+        return validate_pack_cache(entry_dir)
     return validate_report(entry_dir)
+
+
+def pack_cache_digest(entry_dir: Path) -> str:
+    digest = hashlib.sha256()
+    with (entry_dir / "cache.tar.gz").open("rb") as archive:
+        for chunk in iter(lambda: archive.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def validate_pack_cache(entry_dir: Path) -> dict[str, Any]:
+    data = load_metadata(entry_dir / "metadata.json")
+    if data.get("schema_version") != SCHEMA_VERSION or data.get("kind") != "pack-cache":
+        fail("Invalid packaging cache handoff schema")
+    if data.get("id") != "windows":
+        fail("Unsupported packaging cache handoff")
+    prefix = require_text(data.get("prefix"), "prefix")
+    if not re.fullmatch(r"tools-pack-win-v2-slim-(beta|prerelease|stable)-Windows-", prefix):
+        fail("Invalid packaging cache prefix")
+    key = require_text(data.get("key"), "key")
+    if not re.fullmatch(re.escape(prefix) + r"[a-f0-9]{64}", key):
+        fail("Invalid packaging cache key")
+    require_int(data.get("run_id"), "run_id")
+    require_int(data.get("run_attempt"), "run_attempt")
+    require_sha(data.get("head_sha"), "head_sha")
+    require_text(data.get("repository"), "repository")
+    require_text(data.get("ref"), "ref")
+    if data.get("sha256") != pack_cache_digest(entry_dir):
+        fail("Packaging cache archive checksum mismatch")
+    return data
+
+
+def write_pack_cache(root: Path) -> Path:
+    entry = handoff_dir(root, "pack-cache", "windows")
+    data = {
+        "schema_version": SCHEMA_VERSION, "kind": "pack-cache", "id": "windows",
+        "key": os.environ["PACK_CACHE_KEY"], "prefix": os.environ["PACK_CACHE_PREFIX"],
+        "repository": os.environ["GITHUB_REPOSITORY"], "ref": os.environ["GITHUB_REF"],
+        "head_sha": os.environ["GITHUB_SHA"], "run_id": int(os.environ["GITHUB_RUN_ID"]),
+        "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]), "sha256": pack_cache_digest(entry),
+    }
+    (entry / "metadata.json").write_text(json.dumps(data) + "\n", encoding="utf-8")
+    validate_pack_cache(entry)
+    return entry
 
 
 def write_convergence(root: Path, handoff_id: str, candidate: dict[str, Any]) -> Path:
@@ -305,8 +354,12 @@ def write_convergence(root: Path, handoff_id: str, candidate: dict[str, Any]) ->
 
 def resolve_run_artifact(kind: str, handoff_id: str, run_id: int, repository: str) -> None:
     name = artifact_name(kind, handoff_id)
-    artifact = unique_run_artifact(repository, run_id, name)
-    append_outputs({"found": str(artifact is not None).lower(), "name": name if artifact else ""})
+    artifact = latest_run_artifact(repository, run_id, name)
+    append_outputs({
+        "found": str(artifact is not None).lower(),
+        "id": str(artifact["id"]) if artifact else "",
+        "name": name if artifact else "",
+    })
 
 
 
@@ -363,21 +416,24 @@ def self_check() -> None:
             ),
             encoding="utf-8",
         )
-        autofix = handoff_dir(root, "autofix", "nix-pnpm-deps")
+        autofix = handoff_dir(root, "autofix", "example-generated-fix")
         autofix.mkdir(parents=True)
-        (autofix / "patch.diff").write_text("diff --git a/nix/pnpm-deps.nix b/nix/pnpm-deps.nix\n", encoding="utf-8")
+        (autofix / "patch.diff").write_text(
+            "diff --git a/generated/example.txt b/generated/example.txt\n",
+            encoding="utf-8",
+        )
         (autofix / "metadata.json").write_text(
             json.dumps(
                 {
                     "schema_version": SCHEMA_VERSION,
                     "kind": "autofix",
-                    "id": "nix-pnpm-deps",
+                    "id": "example-generated-fix",
                     "pr_number": 12,
                     "head_sha": "a" * 40,
                     "base_sha": "b" * 40,
                     "run_id": 34,
-                    "allowed_paths": ["nix/pnpm-deps.nix"],
-                    "commit_message": "chore(nix): refresh pnpm deps hash",
+                    "allowed_paths": ["generated/example.txt"],
+                    "commit_message": "chore: apply generated autofix",
                 }
             ),
             encoding="utf-8",
@@ -422,7 +478,7 @@ def self_check() -> None:
         assert artifact_name("report", "visual-pr") == "handoff-report-visual-pr"
         assert artifact_name("convergence", "ci-results") == "handoff-convergence-ci-results"
         assert validate_entry("comment", comment)["marker"] == marker
-        assert validate_entry("autofix", autofix)["allowed_paths"] == ["nix/pnpm-deps.nix"]
+        assert validate_entry("autofix", autofix)["allowed_paths"] == ["generated/example.txt"]
         assert validate_entry("report", report)["artifact_pattern"] == "visual-pr-capture-12-34-*"
         assert validate_entry("convergence", convergence)["policy"] == "ci-v1"
         assert len(candidate_entry_dirs(root, "comment")) == 1
@@ -460,9 +516,13 @@ def main() -> None:
     resolve.add_argument("--repository")
 
     subparsers.add_parser("self-check")
+    pack_cache = subparsers.add_parser("write-pack-cache")
+    pack_cache.add_argument("--root", required=True)
 
     args = parser.parse_args()
-    if args.command == "artifact-name":
+    if args.command == "write-pack-cache":
+        print(write_pack_cache(Path(args.root)))
+    elif args.command == "artifact-name":
         print(artifact_name(args.kind, args.id))
     elif args.command == "artifact-pattern":
         print(artifact_pattern(args.kind))

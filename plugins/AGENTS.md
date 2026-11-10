@@ -19,6 +19,25 @@
 - Project-owned scripts 优先使用 TypeScript。除非是 generated、vendored，或被 `scripts/guard.ts` 明确 allowlist，否则避免新增 `.js`、`.mjs` 或 `.cjs` 文件。
 - 保持 example plugins 简洁且 agent-readable。把长 reference material 移到 `references/`，并告诉 agent 何时加载它。
 
+### HTML-backed preview contract
+
+- When a bundled example's `template.json` declares `format: "html"` or carries
+  `referenceHtml`, commit the real rendered sample as `example.html`. Do not use
+  a screenshot or placeholder image as the canonical preview for an HTML
+  artifact.
+- Point `od.preview` at that source with `type: "html"` and
+  `entry: "./example.html"`. Use `motion: "scroll"` for documents,
+  `motion: "deck"` for slide navigation, and `motion: "static"` only for a
+  fixed, non-scrolling surface.
+- Keep `od.useCase.exampleOutputs` and `od.context.assets` aligned with
+  `./example.html`. A poster such as `example.webp` may remain as a secondary or
+  derived asset, but it must not replace the HTML preview source.
+- When `referenceHtml` is present, materialize `example.html` from it (or from
+  the same deterministic generator) and keep their rendered source in sync.
+- Before submitting, verify `/api/plugins/<id>/preview` returns `200` with an
+  HTML content type. In preview-baker output, the plugin must render as
+  `+ <id>`, not `skip (status 404)`.
+
 ## Validation
 
 Plugin content changes 后运行：

@@ -1,3 +1,7 @@
+import type { ClientDisplayRefreshProps } from './result-events.js';
+import type { ClientMetricEventPayload } from '../client-metrics.js';
+import type { UpdateLifecycleObservedProps } from '../update-lifecycle.js';
+import type { MediaStockRequestResultProps, MediaStockSlotResultProps } from '../media-stock.js';
 /**
  * @module analytics/events/event-payload
  * Discriminated union of all analytics event payloads.
@@ -8,7 +12,8 @@ import type { DesignSystemApplyResultProps, DesignSystemCreateResultProps, Desig
 import type { OnboardingCompletedProps, OnboardingCompleteResultProps, OnboardingFirstGenerationCompletedProps, OnboardingFirstPromptSentProps, OnboardingPromptPrefilledProps, OnboardingRuntimeScanResultProps } from './onboarding.js';
 import type { PageViewProps } from './page-view.js';
 import type {
-  AgentDetectDiagnosticProps, ArtifactDeployResultProps, ArtifactEditResultProps, ArtifactExportResultProps, ArtifactPublishResultProps, AssistantFeedbackClickProps, AssistantFeedbackReasonClickProps, AssistantFeedbackReasonSubmitProps, AssistantFeedbackReasonViewProps, ByokPreflightBlockedProps, ContextLinkResultProps, ConversationForkResultProps, FeedbackSubmitResultProps, FileUploadResultProps, FileVersionRestoreResultProps, LabsItemToggledProps, LangfuseReportResultProps, MediaGenerationResultProps, PackagedRuntimeFailedProps, PluginImportResultProps, PluginReplacementResultProps, ProjectCreateResultProps, RunCreatedProps, RunFinishedProps, RunRetryAttemptedProps, RunRetryFinishedProps, SettingsByokModelsFetchResultProps, SettingsByokTestResultProps, SettingsCliTestResultProps, SettingsConnectorAuthResultProps, SettingsViewProps, SketchExportResultProps, SketchSaveResultProps, SpeakerNotesSaveResultProps, UpdateApplyObservedProps, UpdateCheckResultProps, UpdateInstallResultProps } from './result-events.js';
+  AgentDetectDiagnosticProps, ArtifactDeployResultProps, ChatArtifactCaptureResultProps, ArtifactEditResultProps, ArtifactExportResultProps, ArtifactPublishResultProps, AssistantFeedbackClickProps, AssistantFeedbackReasonClickProps, AssistantFeedbackReasonSubmitProps, AssistantFeedbackReasonViewProps, ByokPreflightBlockedProps, ContextLinkResultProps, ConversationForkResultProps, FeedbackSubmitResultProps, FileUploadResultProps, FileVersionRestoreResultProps, LabsItemToggledProps, LangfuseReportResultProps, MediaGenerationResultProps, MotionReplicateResultProps, PackagedRuntimeFailedProps, PluginImportResultProps, PluginReplacementResultProps, ProjectCreateResultProps, RunCreatedProps, RunFinishedProps, RunRetryAttemptedProps, RunRetryFinishedProps, SettingsByokModelsFetchResultProps, SettingsByokTestResultProps, SettingsCliTestResultProps, SettingsConnectorAuthResultProps, SettingsViewProps, SketchExportResultProps, SketchSaveResultProps, SpeakerNotesSaveResultProps, UpdateApplyObservedProps, UpdateCheckResultProps, UpdateInstallResultProps } from './result-events.js';
+import type { ProjectCommentSendResultProps } from './result-events.js';
 import type { SurfaceViewProps } from './surface-view.js';
 import type { AmrAuthResultProps, UiClickProps } from './ui-click.js';
 import type {
@@ -16,10 +21,12 @@ import type {
   McpToolFinishedProps,
   McpToolStartedProps,
 } from './mcp.js';
-import type { ProjectCommentCreateResultProps, WorkspaceInviteResultProps, WorkspaceProjectActionResultProps, WorkspaceResourceActionResultProps, WorkspaceSharedProjectOpenResultProps, WorkspaceSwitchResultProps } from './workspace.js';
+import type { ProjectCommentCreateResultProps, WorkspaceFundingRecoveryResultProps, WorkspaceInviteResultProps, WorkspaceProjectActionResultProps, WorkspaceResourceActionResultProps, WorkspaceSharedProjectOpenResultProps, WorkspaceSwitchResultProps } from './workspace.js';
 // ---- Discriminated union of all event payloads ---------------------------
 
 export type AnalyticsEventPayload =
+  | ClientMetricEventPayload
+  | { event: 'client_display_refresh'; props: ClientDisplayRefreshProps }
   | { event: 'packaged_runtime_failed'; props: PackagedRuntimeFailedProps }
   | { event: 'page_view'; props: PageViewProps }
   | { event: 'ui_click'; props: UiClickProps }
@@ -36,9 +43,14 @@ export type AnalyticsEventPayload =
   | { event: 'mcp_tool_started'; props: McpToolStartedProps }
   | { event: 'mcp_tool_finished'; props: McpToolFinishedProps }
   | { event: 'media_generation_result'; props: MediaGenerationResultProps }
+  | { event: 'motion_replicate_result'; props: MotionReplicateResultProps }
+  | { event: 'media_stock_request_result'; props: MediaStockRequestResultProps }
+  | { event: 'media_stock_slot_result'; props: MediaStockSlotResultProps }
+  | { event: 'chat_artifact_capture_result'; props: ChatArtifactCaptureResultProps }
   | { event: 'update_install_result'; props: UpdateInstallResultProps }
   | { event: 'update_check_result'; props: UpdateCheckResultProps }
   | { event: 'update_apply_observed'; props: UpdateApplyObservedProps }
+  | { event: 'update_lifecycle_observed'; props: UpdateLifecycleObservedProps }
   | { event: 'file_upload_result'; props: FileUploadResultProps }
   | { event: 'context_link_result'; props: ContextLinkResultProps }
   | { event: 'speaker_notes_save_result'; props: SpeakerNotesSaveResultProps }
@@ -53,8 +65,10 @@ export type AnalyticsEventPayload =
   | { event: 'workspace_invite_result'; props: WorkspaceInviteResultProps }
   | { event: 'workspace_project_action_result'; props: WorkspaceProjectActionResultProps }
   | { event: 'workspace_shared_project_open_result'; props: WorkspaceSharedProjectOpenResultProps }
+  | { event: 'workspace_funding_recovery_result'; props: WorkspaceFundingRecoveryResultProps }
   | { event: 'workspace_resource_action_result'; props: WorkspaceResourceActionResultProps }
   | { event: 'project_comment_create_result'; props: ProjectCommentCreateResultProps }
+  | { event: 'project_comment_send_result'; props: ProjectCommentSendResultProps }
   | { event: 'conversation_fork_result'; props: ConversationForkResultProps }
   | { event: 'feedback_submit_result'; props: FeedbackSubmitResultProps }
   | { event: 'assistant_feedback_click'; props: AssistantFeedbackClickProps }

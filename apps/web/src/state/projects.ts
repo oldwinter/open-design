@@ -1,3 +1,4 @@
+import type { QueuedSubmissionRequest, UserSubmissionReceipt } from "@open-design/contracts";
 // Project / conversation / message / tab persistence — backed by the
 // daemon's SQLite store. All writes round-trip through HTTP so projects
 // stay coherent across multiple browser tabs and across restarts.
@@ -10,7 +11,13 @@ import { coalescedGet, evictCoalescedGet } from '../lib/coalesced-get';
 import { isDaemonProxyConnectionFailure } from '../runtime/daemon-proxy-failure';
 import { BackoffController, type BackoffOptions } from '../lib/backoff';
 import { markProjectCreatedByViewer } from '../collab/useProjectCollab';
-import { API_ERROR_CODES, type ApiErrorCode } from '@open-design/contracts';
+import {
+  API_ERROR_CODES,
+  MESSAGES_STREAM_CONTENT_TYPE,
+  isSameWorkspacePrincipal,
+  type ApiErrorCode,
+  type ProjectDeleteShareResidual,
+} from '@open-design/contracts';
 import type {
   AppliedPluginSnapshot,
   ApplyResult,
@@ -39,6 +46,7 @@ import type {
   WorkspaceProjectsResponse,
 } from '@open-design/contracts';
 import { randomUUID } from '../utils/uuid';
+import { readMessageStream } from './read-message-stream';
 import { markProjectDisplaySnapshotsDirty } from './project-display-cache';
 import {
   workspaceIdentityCacheKey,
@@ -47,6 +55,7 @@ import {
 } from '../collab/workspace-identity';
 import {
   currentWorkspaceAccountGeneration,
+  resolveBoundProjectWorkspaceContext,
   currentWorkspaceContextRequestToken,
 } from '../collab/useWorkspaceContext';
 import type { WorkspaceResourceReadIdentity } from '../collab/workspace-identity';
@@ -434,7 +443,14 @@ export async function bootstrapProjectRoute(
         if (
           !context
           || body.scope.workspaceId !== suppliedContext.workspaceId
-          || workspaceIdentityCacheKey(context) !== suppliedIdentity
+          // Re-confirmation asks WHO, so it compares principals, not cache keys.
+          // The witness comes from the shell and carries the member's real role;
+          // the daemon's scope route answers with its placeholder `member` on
+          // its single branch. Demanding those agree meant a workspace owner's
+          // own project was never re-confirmed — `forbidden` here becomes
+          // `failure: 'missing'` in App with no fallback, so opening a team
+          // project from its directory card reported "项目不存在".
+          || !isSameWorkspacePrincipal(context, suppliedContext)
         ) {
           // A caller-supplied witness is exact authority, never a hint. If the
           // daemon cannot re-confirm it, do not retry this project headerless or
@@ -442,6 +458,12 @@ export async function bootstrapProjectRoute(
           return { kind: 'forbidden' };
         }
       } else if (context) {
+        // Local scope describes the persisted creator, not the signed-in
+        // account's current membership. Resolve the exact caller before any
+        // project content read; a removed workspace must never fall back to
+        // its cached creator or to the ambient workspace.
+        const caller = await resolveBoundProjectWorkspaceContext(context.workspaceId);
+        if (!caller) return { kind: 'forbidden' };
         // Headerless scope is discovery only. Once it names the exact persisted
         // Workspace/member pair, prove that claim through the ordinary
         // fail-closed authorization lane before trusting it as ProjectView's
@@ -451,7 +473,7 @@ export async function bootstrapProjectRoute(
           `/api/projects/${encodeURIComponent(projectId)}/workspace-scope`,
           {
             cache: 'no-store',
-            headers: workspaceProjectHeaders(context),
+            headers: workspaceProjectHeaders(caller),
           },
         );
         if (!exactScopeResponse.ok) {
@@ -465,8 +487,8 @@ export async function bootstrapProjectRoute(
           !exactBody.scope
           || exactBody.scope.projectId !== projectId
           || !exactContext
-          || exactBody.scope.workspaceId !== context.workspaceId
-          || workspaceIdentityCacheKey(exactContext) !== workspaceIdentityCacheKey(context)
+          || exactBody.scope.workspaceId !== caller.workspaceId
+          || !isSameWorkspacePrincipal(exactContext, caller)
         ) {
           return { kind: 'forbidden' };
         }
@@ -545,8 +567,7 @@ export async function bootstrapFirstOpenTeamProjectRoute(
 ): Promise<FirstOpenTeamProjectBootstrapResult> {
   const { exactContext } = options;
   if (
-    exactContext.workspaceType !== 'team'
-    || exactContext.memberStatus !== 'active'
+    exactContext.memberStatus !== 'active'
     || exactContext.lifecycleState !== 'active'
   ) {
     return { kind: 'not-found' };
@@ -586,10 +607,16 @@ export async function bootstrapFirstOpenTeamProjectRoute(
   if (bootstrap.kind === 'forbidden') return { kind: 'unavailable' };
   if (bootstrap.kind !== 'found') return bootstrap;
   if (
-    bootstrap.scope.kind !== 'team'
-    || bootstrap.scope.context?.workspaceType !== 'team'
-    || workspaceIdentityCacheKey(bootstrap.scope.context)
-      !== workspaceIdentityCacheKey(exactContext)
+    bootstrap.scope.kind === 'unbound'
+    || bootstrap.scope.visibility !== 'team'
+    || bootstrap.scope.context?.workspaceType !== exactContext.workspaceType
+    // Same question, same answer as the re-confirmation above: does this local
+    // binding belong to the exact principal that authorized the bootstrap? The
+    // daemon's scope placeholder role is not evidence about that, and letting it
+    // decide killed this progressive first-open lane outright for every
+    // owner/admin — every first open silently fell back to the slow
+    // full-materialization path.
+    || !isSameWorkspacePrincipal(bootstrap.scope.context, exactContext)
   ) {
     // A shared placeholder must never be rendered through an unbound/local or
     // mismatched principal, including when the web is paired with an older
@@ -733,6 +760,8 @@ export async function createProject(
     pendingPrompt?: string;
     metadata?: ProjectMetadata;
     conversationMode?: ChatSessionMode;
+    /** Optional caller-minted id for the seeded conversation (same handoff). */
+    conversationId?: string;
     // Plan §3.A1 / spec §11.5 — POST /api/projects accepts a pluginId
     // (or pre-applied snapshot id) to resolve and pin a plugin to the new
     // project. Used by the PluginLoopHome flow on Home.
@@ -788,6 +817,15 @@ export async function createProject(
         // read-only window; another Workspace with the same project id must not
         // inherit the signal.
         markProjectCreatedByViewer(created.project.id, input.workspaceContext ?? null);
+        // Returning Home immediately must not replay the pre-create list from
+        // the GET coalescer's one-second window (including in-flight reads).
+        if (input.workspaceContext) {
+          invalidateWorkspaceProjectLists(
+            input.workspaceContext,
+            currentWorkspaceAccountGeneration(),
+          );
+        }
+        evictCoalescedGet('local-projects');
         return created;
       }
       if (await isDaemonProxyConnectionFailure(resp)) {
@@ -1074,6 +1112,22 @@ type ProjectPatch = Omit<Partial<Project>, 'pendingPrompt' | 'customInstructions
   customInstructions?: string | null;
 };
 
+/** Idempotent registration; a failed response leaves the saved queue item retryable. */
+export async function registerQueuedSubmission(
+  projectId: string, submission: QueuedSubmissionRequest, workspaceContext?: WorkspaceCollabContext | null,
+): Promise<UserSubmissionReceipt | null> {
+  try {
+    const resp = await fetch(`/api/projects/${encodeURIComponent(projectId)}/submissions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json',
+        ...(workspaceContext ? workspaceProjectHeaders(workspaceContext) : {}) },
+      body: JSON.stringify(submission),
+    });
+    if (!resp.ok) return null;
+    const result = await resp.json() as { userSubmission: UserSubmissionReceipt };
+    return result.userSubmission;
+  } catch { return null; }
+}
+
 export async function patchProject(
   id: string,
   patch: ProjectPatch,
@@ -1125,6 +1179,7 @@ export async function patchProject(
 export async function deleteProject(
   id: string,
   workspaceContext?: WorkspaceCollabContext | null,
+  onShareResiduals?: (rows: ReadonlyArray<ProjectDeleteShareResidual>) => void,
 ): Promise<true> {
   try {
     const resp = await fetch(`/api/projects/${encodeURIComponent(id)}`, {
@@ -1166,6 +1221,15 @@ export async function deleteProject(
         return true;
       }
       throw new ProjectDeleteError(message, resp.status, code);
+    }
+    // This response is the only delivery of orphaned share information. Hand it
+    // to the app-level queue before cache cleanup/navigation can remove its origin.
+    const payload: unknown = await resp.json().catch(() => null);
+    if (payload && typeof payload === 'object' && 'shareResiduals' in payload && Array.isArray(payload.shareResiduals)) {
+      const rows = payload.shareResiduals.filter((row): row is ProjectDeleteShareResidual =>
+        row && typeof row === 'object' && typeof row.filePath === 'string'
+        && typeof row.slug === 'string' && typeof row.retrying === 'boolean');
+      if (rows.length) onShareResiduals?.(rows.map(row => Object.freeze({ ...row })));
     }
     // Drop per-project browser caches once the project is gone server-side so
     // they do not accumulate in localStorage for the lifetime of the profile.
@@ -1401,15 +1465,21 @@ async function readProjectMessageListError(resp: Response): Promise<{
 }> {
   let message = `Could not load messages for this conversation (${resp.status}).`;
   let code: string | null = null;
-  let retryable = false;
+  // Legacy errors and proxy failures may omit a retryability hint. This is a
+  // read, so transient HTTP statuses can use the caller's bounded retry policy.
+  let retryable = resp.status === 408
+    || resp.status === 429
+    || (resp.status >= 500 && resp.status <= 599);
   try {
     const payload = await resp.json() as {
+      retryable?: unknown;
       error?: string | {
         code?: unknown;
         message?: unknown;
         retryable?: unknown;
       };
     };
+    if (typeof payload.retryable === 'boolean') retryable = payload.retryable;
     if (payload.error && typeof payload.error === 'object') {
       const rawCode = payload.error.code;
       code = typeof rawCode === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/u.test(rawCode)
@@ -1418,7 +1488,9 @@ async function readProjectMessageListError(resp: Response): Promise<{
       if (typeof payload.error.message === 'string' && payload.error.message.trim()) {
         message = payload.error.message;
       }
-      retryable = payload.error.retryable === true;
+      if (typeof payload.error.retryable === 'boolean') {
+        retryable = payload.error.retryable;
+      }
     } else if (typeof payload.error === 'string' && payload.error.trim()) {
       message = payload.error;
     }
@@ -1432,13 +1504,19 @@ export async function listMessages(
   projectId: string,
   conversationId: string,
   workspaceContext?: WorkspaceCollabContext | null,
+  signal?: AbortSignal,
+  onProgress?: () => void,
 ): Promise<ChatMessage[]> {
   try {
     const resp = await fetch(
       `/api/projects/${encodeURIComponent(projectId)}/conversations/${encodeURIComponent(conversationId)}/messages`,
-      workspaceContext
-        ? { headers: workspaceProjectHeaders(workspaceContext) }
-        : undefined,
+      {
+        headers: {
+          Accept: MESSAGES_STREAM_CONTENT_TYPE,
+          ...(workspaceContext ? workspaceProjectHeaders(workspaceContext) : {}),
+        },
+        ...(signal ? { signal } : {}),
+      },
     );
     if (!resp.ok) {
       const failure = await readProjectMessageListError(resp);
@@ -1448,6 +1526,9 @@ export async function listMessages(
         failure.code,
         failure.retryable,
       );
+    }
+    if (resp.headers.get('content-type')?.split(';')[0]?.trim() === MESSAGES_STREAM_CONTENT_TYPE) {
+      return await readMessageStream(resp, signal, onProgress);
     }
     const json = (await resp.json()) as { messages: ChatMessage[] };
     return json.messages ?? [];
@@ -1679,9 +1760,13 @@ function readCachedTabs(
 ): OpenTabsState | null {
   if (typeof window === 'undefined') return null;
   try {
-    return normalizeTabsState(JSON.parse(
+    const cached = normalizeTabsState(JSON.parse(
       window.localStorage.getItem(tabsCacheKey(projectId, workspaceContext)) ?? 'null',
     ));
+    // An existing cache is a saved user choice, even for older entries without
+    // this marker or an intentionally empty selection. Defaults must not win
+    // while the debounced daemon save is still pending.
+    return cached ? { ...cached, hasSavedState: true } : null;
   } catch {
     return null;
   }
@@ -1706,6 +1791,7 @@ function writeCachedTabs(
 ): OpenTabsState {
   const next: OpenTabsState = {
     ...state,
+    hasSavedState: true,
     updatedAt: Date.now(),
   };
   if (typeof window !== 'undefined') {
@@ -1916,6 +2002,16 @@ export async function listPlugins(
   const cacheKey = pluginCatalogCacheKey(options);
   const requestGeneration = (pluginCatalogCacheGenerations.get(cacheKey) ?? 0) + 1;
   pluginCatalogCacheGenerations.set(cacheKey, requestGeneration);
+  // NOT single-flighted, deliberately. `FileWorkspace`'s load effect fires this
+  // twice ~4ms apart on a cold conversation open, and a ttl-0 join would remove
+  // the second request — but it would also remove the ordinary same-key request
+  // race that `pluginCatalogCacheGenerations` above exists to arbitrate, and
+  // that `tests/state/projects.test.ts` pins ("keeps the latest-started
+  // same-scope plugin read cached when responses finish in reverse order").
+  // Collapsing identical concurrent reads makes that race unreachable rather
+  // than merely handled, which is a change to this module's stated concurrency
+  // contract, not a request-count change. Left for the owner of that contract
+  // to decide.
   try {
     const resp = await fetch(
       '/api/plugins',

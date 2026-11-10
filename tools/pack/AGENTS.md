@@ -1,93 +1,93 @@
 # tools/pack
 
-先遵循根目录 `AGENTS.md` 和 `tools/AGENTS.md`。此工具拥有 repo-external packaged build/start/stop/logs command surface。
+Follow the root `AGENTS.md` and `tools/AGENTS.md` first. This tool owns the repo-external packaged build/start/stop/logs command surface.
 
 Read `tools/pack/CACHE.md` before changing any build-cache node key, adding a cache node, or changing what a cached node reads or writes. It is the source of truth for the build-graph cache under `--cache-dir`: determinant rules, materialization-time parameters, the signing boundary, and confidence grading.
 
 ## Owns
 
-- Packaged Open Design artifacts 的本地 packaging orchestration。
-- mac build/install/start/stop/logs/uninstall/cleanup smoke commands。
-- Windows NSIS build/install/start/stop/logs/uninstall/cleanup/list/reset smoke commands。
-- Windows registry observation/cleanup 必须通过 `reg.exe`，且范围只限匹配 namespace install/uninstaller paths 的 entries。
-- Windows lifecycle logs 除 app runtime logs 外，还必须暴露 NSIS automation logs/markers/timings。
-- Linux AppImage build/install/start/stop/logs/uninstall/cleanup smoke commands。
-- Linux headless（no-Electron）install/start/stop，通过 `install`、`start` 和 `stop` 上的 `--headless` flag。
-- 通过 `electronuserland/builder` Docker image 执行 Linux containerized builds，以获得 distro-agnostic glibc compat。
-- 消费来自 `@open-design/sidecar-proto`、`@open-design/sidecar` 和 `@open-design/platform` 的 sidecar/process/path primitives。
+- Local packaging orchestration for packaged Open Design artifacts.
+- mac build/install/start/stop/logs/uninstall/cleanup smoke commands.
+- Windows NSIS build/install/start/stop/logs/uninstall/cleanup/list/reset smoke commands.
+- Windows registry observation/cleanup must go through `reg.exe` and stay scoped to entries matching the namespace install/uninstaller paths.
+- Windows lifecycle logs must expose NSIS automation logs/markers/timings in addition to app runtime logs.
+- Linux AppImage build/install/start/stop/logs/uninstall/cleanup smoke commands.
+- Linux headless (no-Electron) install/start/stop via `--headless` flag on `install`, `start`, and `stop`.
+- Linux containerized builds via `electronuserland/builder` Docker image for distro-agnostic glibc compat.
+- Consuming sidecar/process/path primitives from `@open-design/sidecar-proto`, `@open-design/sidecar`, and `@open-design/platform`.
 
 ## Does not own
 
-- Product business logic。
-- Sidecar protocol definitions。
-- 第二套 process identity model。
-- Product/business update runtime integration。
+- Product business logic.
+- Sidecar protocol definitions.
+- A second process identity model.
+- Product/business update runtime integration.
 
 ## Rules
 
-- 将跨平台 source responsibilities 放入 `cache/`、`config/`、`launcher/`、`resources/`、`updates/` 和 `versioning/` 等明确命名的目录；platform-owned behavior 放在 `mac/` 或 `win/` 下。如果一组 tests 具有相同 ownership，也应在 `tests/` 中镜像这些 responsibilities。新增的 root-level `src/*.ts` 文件会被 CI 刻意视为 unclassified，在被归入所属 source unit 前使用保守的 Windows payload fallback。
-- Tests 通过 test-only `@/*` alias 导入 source modules。需要检查 source text 的 tests 使用相同 alias 加 Vitest `?raw` suffix；不要重新引入依赖目录深度的 `../src/` imports 或 file URLs。
-- 不要手工构建 `--od-stamp-*` args；请结合 `OPEN_DESIGN_SIDECAR_CONTRACT` 使用 `createProcessStampArgs`。
-- 不要在 data/log/runtime/cache path decisions 中使用 port numbers。Namespace 决定 paths；ports 只是临时 transports。
-- Public release artifacts 必须使用 channel-specific app identity：stable 使用 `Open Design`，beta 使用 `Open Design Beta`，prerelease 使用 `Open Design Prerelease`，preview 使用 `Open Design Preview`。本地 tools-pack installs 仍可只把 namespace-scoped install paths 当作 developer multi-instance validation convention。
-- 不要让按 namespace 命名的 `.app` installs 改变 data/log/runtime/cache path conventions。
-- `--dir` 只控制 tools-pack output/runtime/install validation roots。不得把它当作 cache root。默认 workspace tools-pack cache 是 hot path。`--cache-dir` 是 cache isolation 或 cold-cache validation 的特殊 escape hatch，不是常规 QA/build 参数。
-- Public/release artifacts 使用 `--portable`，避免 packaged config 烘入构建机器上的本地 tools-pack runtime roots。
-- Electron-builder 使用的 pack resource files 属于 `tools/pack/resources/`；不要让 pack logic 指向 Downloads、web public assets、docs assets 或其他 app-owned resource paths。
-- 对普通 Windows NSIS smoke tests，使用 `rg`、`smoke` 或 `nsis-a` 这类短 namespaces。NSIS 会在 namespace-scoped install directory 下解压深层嵌套的 Next.js standalone files；长 namespaces 即使在 builder `win-unpacked` output 正确时，也可能让 installed paths 超过传统 Windows 260-character limit。Merge regression 期间，namespace `regression-merge-nsis` 产生了 264 characters 的 installed path length，并在 installed directory 中缺失 `next/dist/server/route-matcher-providers/helpers/cached-route-matcher-provider.js`，而同一个 NSIS smoke 使用 namespace `rg` 时通过。只有在有意测试 installer path-length behavior 时才使用长 namespaces。
+- Keep cross-platform source responsibilities in named directories such as `cache/`, `config/`, `launcher/`, `resources/`, `updates/`, and `versioning/`; keep platform-owned behavior below `mac/` or `win/`. Mirror those responsibilities in `tests/` when a test set has the same ownership. A new root-level `src/*.ts` file is intentionally treated as unclassified by CI and pays the conservative Windows payload fallback until it is placed in an owned source unit.
+- Tests import source modules through the test-only `@/*` alias. Tests that intentionally inspect source text use the same alias with Vitest's `?raw` suffix; do not reintroduce directory-depth-dependent `../src/` imports or file URLs.
+- Do not hand-build stamp argv, IPC paths, or process matching; use `@open-design/sidecar` launch/discovery/invoke/stop atomics.
+- Do not use port numbers in data/log/runtime/cache path decisions. Namespace decides paths; ports are only transient transports.
+- Public release artifacts must use channel-specific app identity: stable uses `Open Design`, beta uses `Open Design Beta`, prerelease uses `Open Design Prerelease`, and preview uses `Open Design Preview`. Local tools-pack installs may still use namespace-scoped install paths only as a developer multi-instance validation convention.
+- Do not let namespace-named `.app` installs change data/log/runtime/cache path conventions.
+- `--dir` controls tools-pack output/runtime/install validation roots only. It must not be treated as the cache root. The default workspace tools-pack cache is the hot path. `--cache-dir` is a special-case escape hatch for cache isolation or cold-cache validation, not a routine QA/build parameter.
+- Use `--portable` for public/release artifacts so packaged config does not bake local tools-pack runtime roots from the build machine.
+- Pack resource files used by electron-builder belong under `tools/pack/resources/`; do not point pack logic at Downloads, web public assets, docs assets, or other app-owned resource paths.
+- For ordinary Windows NSIS smoke tests, use short namespaces such as `rg`, `smoke`, or `nsis-a`. NSIS extracts deeply nested Next.js standalone files under the namespace-scoped install directory; long namespaces can push installed paths past the traditional Windows 260-character limit even when builder `win-unpacked` output is correct. During merge regression, namespace `regression-merge-nsis` produced an installed path length of 264 characters and missed `next/dist/server/route-matcher-providers/helpers/cached-route-matcher-provider.js` in the installed directory, while the same NSIS smoke passed with namespace `rg`. Use long namespaces only when intentionally testing installer path-length behavior.
 
 ## Packaged auto-update architecture and harness
 
-修改 packaged auto-update behavior 前请先阅读本节。Updater 跨越 package、desktop、web UI、release-feed 和 installer surfaces，因此 bugs 常藏在 otherwise-green package tests 之间。
+Read this section before changing packaged auto-update behavior. The updater crosses package, desktop, web UI, release-feed, and installer surfaces, so bugs often hide between otherwise-green package tests.
 
 ### Architecture map
 
-- `apps/desktop/src/main/updater.ts` 拥有 updater state、release metadata parsing、artifact selection、checksum verification、download-store ownership、progress events，以及打开下载好的 installer。它是纯 main-process logic，并在 `apps/desktop/tests/main/updater.test.ts` 下测试。
-- `apps/desktop/src/main/runtime.ts` 通过 `od:update:status|check|download|install|quit` 向 renderer 暴露 updater IPC，并发出 `od:update:status-changed`。保持 installer launch 与 process shutdown 分离；quit 是 explicit post-installer action。
-- `apps/desktop/src/main/index.ts` 连接 scheduler 和 packaged macOS app-menu update item。Native item 镜像 updater state，并打开 renderer-owned update dialog；它不得创建第二套 updater 或 native result dialog。Windows 和 Linux menus 不暴露 update actions。
-- `apps/web/src/lib/updater.ts` 将 host updater snapshots 归一化为 UI-ready state。
-- `apps/web/src/components/UpdaterPopup.tsx` 仍是左侧 rail 中 ready-update surface。`apps/web/src/components/UpdateDialog.tsx` 拥有显式 macOS app-menu check flow。所有 visible copy 和 native menu labels 必须经过 `apps/web/src/i18n`。
-- `packages/launcher-proto` 拥有 launcher pointer、attempt、desktop-handoff journal shapes 和 payload selection。`runtime.json` 与 `attempt.json` 共同构成唯一的 payload-version state machine。
-- `apps/packaged/src/index.ts` 会在初始化 outer Electron runtime 前委派给 selected payload desktop；只有 outer 自身必须运行时，才把 packaged `appVersion` 和 namespace-scoped `updateRoot` 传入 desktop main。
-- `apps/daemon/src/sidecar/payload-desktop-handoff.ts` 是 historical outer 无法委派时使用的 isolated compatibility bridge。它会使用真实 previous pointer 重新 arm selected payload，在旧 outer 退出后启动该 payload desktop，并持久化一份小型 desktop-binding journal，供后续 shortcut cold starts 使用。该 journal 不是第二个 version selector。
-- `install.json` 继续标识用于 recovery 的 physically installed outer executable。Payload activation 或 handoff 不得把它改写为 versioned payload executable。
-- `tools/serve` 只拥有 deterministic local updater fixtures。它不得包含 product updater runtime logic。
-- `tools/pack` 拥有 packaged build/install/start/inspect/logs/uninstall/cleanup 和 platform installer harness，包括 Windows NSIS registry observation 与 cleanup。
+- `apps/desktop/src/main/updater.ts` owns updater state, release metadata parsing, artifact selection, checksum verification, download-store ownership, progress events, and opening the downloaded installer. It is pure main-process logic and is tested under `apps/desktop/tests/main/updater.test.ts`.
+- `apps/desktop/src/main/runtime.ts` exposes updater IPC to the renderer through `od:update:status|check|download|install|quit` and emits `od:update:status-changed`. Keep installer launch separate from process shutdown; quit is an explicit post-installer action.
+- `apps/desktop/src/main/index.ts` wires the scheduler and the packaged macOS app-menu update item. The native item mirrors updater state and opens the renderer-owned update dialog; it must not create a second updater or a native result dialog. Windows and Linux menus do not expose update actions.
+- `apps/web/src/lib/updater.ts` normalizes host updater snapshots into UI-ready state.
+- `apps/web/src/components/UpdaterPopup.tsx` remains the ready-update surface in the left rail. `apps/web/src/components/UpdateDialog.tsx` owns the explicit macOS app-menu check flow. All visible copy and native menu labels must go through `apps/web/src/i18n`.
+- `packages/launcher-proto` owns launcher pointer, attempt, and desktop-handoff journal shapes plus payload selection. `runtime.json` together with `attempt.json` is the only payload-version state machine.
+- Hosted assembly: `tools-pack` writes the shared artifact contract; `packages/launcher` owns selection, confirmation, activation, rollback and platform relaunch in the installed Electron process. `apps/packaged` reports business readiness and handles window/deep-link intents. Historical assembly still delegates to a selected payload desktop before initializing the outer runtime; Windows retains that path.
+- `apps/daemon/src/sidecar/payload-desktop-handoff.ts` owns the historical-outer bridge. It uses the daemon's `SidecarFactory` client to confirm and shut down the exact outer desktop, then `spawnSidecar` to launch the payload generation while preserving the true previous launcher pointer across the `prepared` → `armed` → `confirmed` journal lifecycle.
+- `install.json` continues to identify the physically installed outer executable for recovery. Payload activation or handoff must not rewrite it to a versioned payload executable.
+- `tools/serve` owns deterministic local updater fixtures only. It must not contain product updater runtime logic.
+- `tools/pack` owns packaged build/install/start/inspect/logs/uninstall/cleanup and the platform installer harness, including Windows NSIS registry observation and cleanup.
 
-### 发布元数据结构
+### Release metadata shape
 
-Runtime updater 默认读取 `https://releases.open-design.ai/<channel>/latest/metadata.json`，除非 `OD_UPDATE_METADATA_URL` 覆盖它。对于 package-launcher updates：
+The runtime updater reads `https://releases.open-design.ai/<channel>/latest/metadata.json` unless `OD_UPDATE_METADATA_URL` overrides it. For package-launcher updates:
 
-- 有效 packaged-launcher context 优先选择 `platforms.<platform>.artifacts.payload`；platform installer（macOS 的 `dmg` 或 Windows 的 `installer`）仍是 recovery/fallback path。
-- Artifact 必须有 checksum，最好是 `sha256Url`；updater 会先验证 bytes，再暴露 install action。
-- `OD_UPDATE_CURRENT_VERSION` 可以为 tests 覆盖 packaged version，但 user-flow package validation 应优先用目标 `--app-version` 构建 package。
-- 发布元数据可以包含 `releaseNote.content`，其中带有 `defaultLocale`，以及包含 `url`、`mediaType`、`sha256` 和 `size` 的各语言描述符。更新器目前不会读取该区块；`tools-release` 独立于更新器界面行为，负责其发布和验证。
-- 发布元数据可以包含 `control.launcher.version.{min, url}`，用作 installer-reinstall floor。Updater 会把 `min` 与**物理安装的 outer package 版本**比较；该版本在检查时通过 launcher launch path 从 outer bundle 的 `open-design-config.json` 读取，tests 可用 `OD_UPDATE_INSTALLED_VERSION` 覆盖。这里不能使用正在运行的 payload 版本，因为 payload 更新不会修改 outer bundle；即使 payload 已是最新，损坏的 outer generation 仍必须能进入 installer path。当 floor 触发，或设置了 `min` 但无法读取 outer 版本时，updater 会保守地选择 installer artifact；如果没有更高版本，则提供同版本 installer 重装。Snapshot 的 `reinstall` 字段包含 `{reason, installedVersion, minVersion, url}`，Web UI 会把可选的 operator `url` 显示为跳转链接，并用默认 i18n 文案兜底。每个 channel 用一对 repo vars 管理策略：`RELEASE_LAUNCHER_VERSION_MIN_<CHANNEL>` 和 `RELEASE_LAUNCHER_VERSION_MIN_URL_<CHANNEL>`；workflows 原样传递，不使用 YAML fallback expressions，由 `tools/release/src/storage/launcher-version-floor.ts` 的共享 resolver 统一解析。未设置自身策略的非 stable channel 会整对回退到 STABLE；格式、HTTPS 和 floor 校验也只在该处执行。若 `min` 高于 release version，`publish-metadata` 必须失败，否则同版本重装提示会永久出现；`verify-metadata` 会重新解析同一 channel policy 并核对已发布区块，`summary-metadata` 则把 floor 写入 step summary。
-- Updater 提供手动灾难恢复操作 `clear-cache`（IPC 为 `od:update:clear-cache`，sidecar action 为 `clear-cache`，Settings -> About 中显示带两阶段内联确认的“清除更新缓存”）。它会把一次性 update state（已下载 release、install freeze）重置为 `idle`，清理 `releases/`、`staging/`、`downloads/` 和 `.back/`，删除过期的 launcher `attempt.json`、所有非 `confirmed` 的 desktop-handoff journal，以及未保留的 launcher payload versions。Runtime 的 `active`/`lastSuccessful` 版本、显式 `retained` cleanup entries、`install.json` 和 `confirmed` handoff journal 永不删除；被锁定的文件通过现有 `cleanup.json` 重试机制延后处理。此前 install action 已启动的 installer helper 不会被取消。
-- 发布说明源文件位于 `docs/CHANGELOG/v<full-releaseVersion>/<locale>.md`。所有发布通道使用同一套发布流程；稳定版还要求在各平台开始构建前同时具备 `en` 和 `zh-CN`。
-- 更新后的“What's New”亮点**不**放在 release `metadata.json` 中。Daemon 的 `/api/whats-new` 会从专用 R2 bucket 获取一份人工维护的文档（`https://whatsnew.open-design.ai/whats-new.json`，可用 `OD_WHATS_NEW_URL` 覆盖）；Web 首页会根据该文档的 `id` 显示一次性卡片，而不是根据正在运行的版本判断。运营人员在 release 后编辑这一个文件；没有按版本发布的工具链。
+- A valid packaged-launcher context prefers `platforms.<platform>.artifacts.payload`; the platform installer (`dmg` on macOS or `installer` on Windows) remains the recovery/fallback path.
+- The artifact must have a checksum, preferably `sha256Url`; the updater verifies bytes before exposing an install action.
+- `OD_UPDATE_CURRENT_VERSION` may override the packaged version for tests, but user-flow package validation should prefer building the package with the intended `--app-version`.
+- Release metadata may include `releaseNote.content`, with a `defaultLocale` and locale descriptors containing `url`, `mediaType`, `sha256`, and `size`. The updater does not currently consume this block; `tools-release` owns its publication and verification independently from updater UI behavior.
+- Release metadata may include `control.launcher.version.{min, url}` — the installer-reinstall floor. The updater compares `min` against the **physically installed outer package version** (read at check time from the outer bundle's `open-design-config.json` via the launcher launch path; `OD_UPDATE_INSTALLED_VERSION` overrides it for tests), NOT the running payload version — payload updates never touch the outer bundle, so a broken outer generation must reach the installer path even when its payload is current. When the floor trips (or `min` is set but the outer version is unreadable — conservative), the updater selects the installer artifact and, when no newer release exists, offers a same-version installer reinstall; snapshot field `reinstall` carries `{reason, installedVersion, minVersion, url}` and the web UI presents the optional operator `url` as a jump link with default i18n copy as fallback. Publication: channel policy is managed as one repo-vars pair per channel — `RELEASE_LAUNCHER_VERSION_MIN_<CHANNEL>` + `RELEASE_LAUNCHER_VERSION_MIN_URL_<CHANNEL>` — passed through workflows verbatim (no YAML fallback expressions) and resolved by the shared resolver in `tools/release/src/storage/launcher-version-floor.ts`: a non-stable channel whose own pair is unset falls back to the STABLE pair as a unit, and format/https/floor validation is applied at that single point. `publish-metadata` hard-fails when `min` exceeds the release version — a floor this release cannot satisfy would make the same-version reinstall offer nag forever. `verify-metadata` re-resolves the same channel policy and checks the published block against it; `summary-metadata` surfaces the floor in the step summary.
+- The updater exposes a manual disaster-recovery `clear-cache` action (`od:update:clear-cache` IPC, sidecar action `clear-cache`, Settings → About "Clear update cache" row with a two-stage inline confirm). It resets one-shot update state (downloaded release, install freeze) back to `idle`, purges `releases/`, `staging/`, `downloads/`, and `.back/`, removes a stale launcher `attempt.json` plus any non-`confirmed` desktop-handoff journal, and deletes non-retained launcher payload versions. Runtime `active`/`lastSuccessful` versions, explicit `retained` cleanup entries, `install.json`, and a `confirmed` handoff journal are never touched; locked files defer through the existing cleanup.json retry machinery. An installer helper already spawned by a prior install action is not cancelled.
+- Release-note source lives at `docs/CHANGELOG/v<full-releaseVersion>/<locale>.md`. All channels use the same publication pipeline, while stable additionally requires `en` and `zh-CN` before platform builds proceed.
+- Post-update "what's new" highlights are NOT carried in release `metadata.json`. The daemon's `/api/whats-new` fetches a single hand-curated document on a dedicated R2 bucket (`https://whatsnew.open-design.ai/whats-new.json`, overridable with `OD_WHATS_NEW_URL`); the web home surface shows a one-time card driven by that document's `id`, not the running version. The document is maintained in this repository at `docs/whats-new.json` and published by `.github/workflows/whats-new-publish.yml`; operators edit that one file after a release — there is no per-version publish tooling. See `docs/whats-new.md`.
 
 ### Channel identity rules
 
-Channel identity 必须在 install、update install、shortcuts、registry entries 和 app data 中保持稳定：
+Channel identity must be stable across install, update install, shortcuts, registry entries, and app data:
 
-- Stable: `Open Design`，namespace `default` 或 stable release namespace。
-- Beta Windows: `Open Design Beta`，namespace `release-beta-win`，uninstall key `Open Design-release-beta-win`。
-- Prerelease Windows: `Open Design Prerelease`，namespace `release-prerelease-win`，uninstall key `Open Design-release-prerelease-win`。
-- Preview Windows: `Open Design Preview`，namespace `release-preview-win`，uninstall key `Open Design-release-preview-win`。
-- `beta-local-flow` 这类 beta-like ad hoc namespaces 是 test namespaces，不是 beta channel。它们不得用于 user-flow beta validation，因为它们会创建不同 registry key，却共享令人困惑的 display name/path。
+- Stable: `Open Design`, namespace `default` or stable release namespace.
+- Beta Windows: `Open Design Beta`, namespace `release-beta-win`, uninstall key `Open Design-release-beta-win`.
+- Prerelease Windows: `Open Design Prerelease`, namespace `release-prerelease-win`, uninstall key `Open Design-release-prerelease-win`.
+- Preview Windows: `Open Design Preview`, namespace `release-preview-win`, uninstall key `Open Design-release-preview-win`.
+- Beta-like ad hoc namespaces such as `beta-local-flow` are test namespaces, not the beta channel. They must not be used for user-flow beta validation because they create a different registry key while sharing a confusing display name/path.
 
-如果本地 release-channel package 预期由真实 feed 更新，请使用匹配的 release namespace 和较旧的匹配 `--app-version`，例如 `--namespace release-beta-win --app-version 0.10.0-beta.1` 或 `--namespace release-prerelease-win --app-version 0.10.0-prerelease.1`。否则已安装 package 和下载的 package 可能显示为独立 registry entries，即使它们目标是同一个 display name。
+If a local release-channel package is meant to be updated by a real feed, build it with the matching release namespace and an older matching `--app-version` such as `--namespace release-beta-win --app-version 0.10.0-beta.1` or `--namespace release-prerelease-win --app-version 0.10.0-prerelease.1`. Otherwise the installed package and the downloaded package can appear as separate registry entries even though they target the same display name.
 
 ### Deterministic fixture harness
 
-当 network release state 不是被测对象时，用 `tools-serve start updater` 做快速、deterministic tests 和 e2e automation。Fixture flow：
+Use `tools-serve start updater` for fast, deterministic tests and e2e automation where network release state is not the thing under test. Fixture flow:
 
 ```bash
 pnpm tools-serve start updater --json --channel beta --version 99.0.0-beta.1 --platform win
 ```
 
-然后用以下环境启动 packaged desktop：
+Then launch packaged desktop with:
 
 ```bash
 OD_UPDATE_ENABLED=1
@@ -97,50 +97,50 @@ OD_UPDATE_OPEN_DRY_RUN=1
 OD_UPDATE_AUTO_CHECK=1
 ```
 
-该 harness 适合断言 IPC、popup rendering、progress、checksum/download-store behavior 和 dry-run installer opening。它不是完整 user-view validation，因为它替换了 public release feed，并使用 synthetic artifact bytes。
+This harness is appropriate for asserting IPC, popup rendering, progress, checksum/download-store behavior, and dry-run installer opening. It is not a full user-view validation because it replaces the public release feed and uses synthetic artifact bytes.
 
 ### High-confidence local user-flow acceptance
 
-在把 Windows beta build 交给人类 tester 前，用它验证 release-channel behavior。该路径有意避开 mock services，并演练选定的真实 beta feed。对 self-hosted `release-beta-s` lane，真实 feed 是 `release_public_origin` 配置的 Nexu S3 origin，目前为 `https://s3.nexu.space/od-releases`。
+Use this when validating release-channel behavior before handing a Windows beta build to a human tester. This path intentionally avoids mock services and exercises the selected real beta feed. For the self-hosted `release-beta-s` lane, the real feed is the Nexu S3 origin configured by `release_public_origin`, currently `https://s3.nexu.space/od-releases`.
 
-1. 先确认最新 beta metadata：
+1. Confirm the latest beta metadata first:
 
 ```bash
 curl.exe --ssl-no-revoke -fsSL https://releases.open-design.ai/beta/latest/metadata.json
 ```
 
-对 `release-beta-s`，改查内部 feed：
+For `release-beta-s`, check the internal feed instead:
 
 ```bash
 curl.exe --ssl-no-revoke -fsSL https://s3.nexu.space/od-releases/betas/latest/metadata.json
 ```
 
-2. 使用真实 beta namespace 和低于 latest 的 version 构建 non-portable Windows beta package：
+2. Build a non-portable Windows beta package with the real beta namespace and a version lower than latest:
 
 ```bash
 pnpm tools-pack win build --dir C:\odtp-beta-release-fixed --namespace release-beta-win --to nsis --app-version 0.8.0-beta.5 --json
 ```
 
-3. 将生成的 installer 给 tester：
+3. Give the tester the generated installer:
 
 ```text
 C:\odtp-beta-release-fixed\out\win\namespaces\release-beta-win\builder\Open Design-release-beta-win-setup.exe
 ```
 
-4. 预期 user flow：
+4. Expected user flow:
 
-- User 通过 NSIS UI 安装 `0.8.0-beta.5`。
-- User 启动 `Open Design Beta`。
-- App 自动检查真实 beta feed，并在 package-launcher context 有效时选择最新 Windows launcher payload。当 payload artifact 或 launcher context 不可用时，installer 是 fallback path。
-- Payload path 下，app 下载 `platforms.win.artifacts.payload`，验证 sha256，将 payload 准备到 `%APPDATA%\Open Design\launcher\channels\beta\namespaces\release-beta-win\versions\<version>\payload`，并显示 web updater popup。
-- Native Windows File menu 不得暴露 update actions。macOS app menu 会暴露 state-aware update item，并打开 renderer update dialog，但不得让 background checks 变得 intrusive。
-- Updater popup 使用 i18n strings，download progress 不得在真实 bytes 到达前闪到 100%。
-- 应用 payload update 应退出，并重新启动 prepared version 的 `payload` directory 下的精确 executable，随后把 launcher `active` 和 `lastSuccessful` 标记到该 version，并清除 `attempt.json`。
-- Historical outer 最初可能产生 mixed generation。其 daemon-sidecar compatibility handoff 必须用精确 payload desktop executable 替换 historical desktop，保留真实 previous pointer 以便 recovery，并让 handoff journal 最终不存在或处于 `confirmed`，绝不能停留在 `prepared` 或 `armed`。
-- 完整 stop 后，再次启动 installed shortcut/outer 时仍必须 converge 到同一个 active payload desktop，并保留 daemon/API behavior，包括真实 PPTX export。
-- 如果 updater fallback 到 installer path，点击 `Open installer` 会打开真实下载的 beta installer。安装它应覆盖同一个 `Open Design-release-beta-win` registry key，而不是创建第二个 beta key。
+- User installs `0.8.0-beta.5` through the NSIS UI.
+- User launches `Open Design Beta`.
+- App auto-checks the real beta feed and selects the latest Windows launcher payload when the package-launcher context is valid. The installer is the fallback path when the payload artifact or launcher context is unavailable.
+- For the payload path, the app downloads `platforms.win.artifacts.payload`, verifies sha256, prepares the payload under `%APPDATA%\Open Design\launcher\channels\beta\namespaces\release-beta-win\versions\<version>\payload`, and shows the web updater popup.
+- The native Windows File menu must not expose update actions. On macOS, the app menu exposes the state-aware update item and opens the renderer update dialog without making background checks intrusive.
+- The updater popup uses i18n strings and download progress must not flash to 100% before real bytes arrive.
+- Applying the payload update should quit and relaunch the exact executable under the prepared version's `payload` directory, then mark launcher `active` and `lastSuccessful` to that version and clear `attempt.json`.
+- For a historical outer, the handoff must retain the true previous launcher pointer for fail-closed recovery and terminate with `desktop-handoff.json` absent or `confirmed`; `prepared` and `armed` are not successful terminal states.
+- After a full stop, launching the installed shortcut/outer again must still converge on the same active payload desktop and preserve daemon/API behavior, including a real PPTX export.
+- If the updater falls back to the installer path, clicking `Open installer` opens the real downloaded beta installer. Installing it should overwrite the same `Open Design-release-beta-win` registry key, not create a second beta key.
 
-5. beta.6 更新后的 registry 和 launcher sanity check：
+5. Registry and launcher sanity check after beta.6 update:
 
 ```powershell
 Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -ErrorAction SilentlyContinue |
@@ -150,12 +150,14 @@ Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' -
 Get-Content "$env:APPDATA\Open Design\launcher\channels\beta\namespaces\release-beta-win\runtime.json"
 ```
 
-干净的 beta channel 结果应只有一个 beta entry，`PSChildName` 为 `Open Design-release-beta-win`，且 `DisplayVersion` 为 latest。
-Payload path 下，还应看到 launcher `active.version` 和 `lastSuccessful.version` 与 latest beta version 一致、`attempt.json` 不存在，且 running desktop executable 位于该 version 的 `payload` directory 下。Current outer 可以没有 `desktop-handoff.json`；historical outer 的该文件可以是 `confirmed`，但 `prepared` 和 `armed` 都不是成功终态。
-Windows Settings > Apps 可能在当前 view 内缓存 uninstall metadata。如果 registry query 正确后 Settings 仍显示之前的 beta version，请切换离开 Apps view 再回来，或重开 Settings，再把它视为 installer failure。上面的 registry query 是该 harness 的 source of truth。
+For a clean beta channel result, expect one beta entry with `PSChildName` `Open Design-release-beta-win` and the latest `DisplayVersion`.
+For the payload path, also expect launcher `active.version` and `lastSuccessful.version` to match the latest beta version, `attempt.json` to be absent, and the running desktop executable to resolve below that version's `payload` directory. `desktop-handoff.json` may be absent for a current outer or `confirmed` for a historical outer; `prepared` and `armed` are not successful terminal states.
+Windows Settings > Apps may cache uninstall metadata within the current view. If Settings still shows the previous beta version after the registry query is correct, switch away from the Apps view and back, or reopen Settings, before treating it as an installer failure. The registry query above is the source of truth for this harness.
 
-6. 避免留下 validation residue。先停止正在运行的 app processes，然后对 tool-managed namespaces 使用 tools-pack uninstall/cleanup。只有在验证 resolved path 确实是预期目录后，才删除 explicit temp roots。
-`--dir` 是 output/runtime root，不是 default cache root。常规 validation 不要添加 `--cache-dir`；它只是 cache isolation 或 cold-cache validation 的 escape hatch。
+6. Avoid leaving validation residue. Stop running app processes first, then use tools-pack uninstall/cleanup for tool-managed namespaces. Only delete explicit temp roots after verifying the resolved path is exactly the intended directory.
+`--dir` is an output/runtime root, not the default cache root. Do not add
+`--cache-dir` to routine validation; it is an escape hatch for cache isolation
+or cold-cache validation only.
 
 ```bash
 pnpm tools-pack win stop --dir C:\odtp-beta-release-fixed --namespace release-beta-win --json
@@ -165,7 +167,7 @@ pnpm tools-pack win cleanup --dir C:\odtp-beta-release-fixed --namespace release
 
 ### Validation matrix for updater changes
 
-`docs/testing/updater-lifecycle.md` 是完整的 lifecycle-to-test coverage map，也标明了刻意只做人工验证的节点。先用它找到所触及节点对应的 tests，再运行窄 tests 和 repo checks：
+`docs/testing/updater-lifecycle.md` is the full lifecycle-to-test coverage map (including deliberate manual-only nodes); consult it to find the owning tests for the node you touched, then run the narrow tests plus the repo checks:
 
 ```bash
 pnpm --filter @open-design/desktop test -- tests/main/updater.test.ts tests/main/updater-host-boundary.test.ts tests/main/preload-host-boundary.test.ts
@@ -181,5 +183,5 @@ pnpm guard
 pnpm typecheck
 ```
 
-当变更触及真实 release feed selection、channel identity、Windows registry/install behavior、installer opening 或 visible updater UI behavior 时，请运行 high-confidence local user-flow acceptance。
-Launcher payload 或 handoff changes 还必须运行 platform full spec。Full profile 必须验证精确 desktop executable identity、真实 PPTX response、完整 stop 后的 installed-outer cold start，并在 restart 后再次运行相同检查。Windows beta full validation 必须使用 `release-beta-win`；beta-like local namespace 不能作为等价 delivery evidence。
+Run the high-confidence local user-flow acceptance whenever a change touches real release feed selection, channel identity, Windows registry/install behavior, installer opening, or visible updater UI behavior.
+For launcher payload or handoff changes, also run the platform full spec. The full profile must validate exact desktop executable identity, a real PPTX response, a complete stop followed by an installed-outer cold start, and the same checks again after restart. Windows beta full validation must use `release-beta-win`; a beta-like local namespace is not equivalent delivery evidence.

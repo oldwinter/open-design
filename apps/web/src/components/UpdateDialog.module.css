@@ -4,16 +4,16 @@
   z-index: 2200;
   display: grid;
   place-items: center;
-  box-sizing: border-box;
-  padding: 24px 16px;
-  background: color-mix(in srgb, #111 28%, transparent);
-  backdrop-filter: blur(2px);
+  padding: 24px;
+  background: var(--scrim-tint);
+  -webkit-backdrop-filter: var(--scrim-backdrop);
+  backdrop-filter: var(--scrim-backdrop);
   animation: updateBackdropIn 160ms ease-out;
 }
 
 .dialog {
   position: relative;
-  width: min(420px, 100%);
+  width: min(420px, calc(100vw - 32px));
   box-sizing: border-box;
   padding: 26px 28px 20px;
   border: 1px solid var(--border);
@@ -86,7 +86,7 @@
   margin: 0;
   color: var(--text-strong);
   font-size: 18px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -0.015em;
 }
 
@@ -162,7 +162,7 @@
   border-radius: 9px;
   font: inherit;
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
   cursor: pointer;
 }
 

@@ -7,8 +7,8 @@
 - 上游项目：`nexu-io/open-design`
 - 中文 fork：`oldwinter/open-design`
 - Runtime：桌面应用、Web 应用、daemon、CLI、MCP server，以及应用内可发现的 skills、design systems 和 templates
-- 主要中文入口：根目录中文文档、`docs/i18n/*zh-CN*`、`apps/web/src/i18n/locales/zh-CN.ts`、landing page 中文 locale，以及已有中文 runtime skill
-- 当前同步上游 commit：`5a62b0edadca3e9bd08691b0ca6ac8de8e2dd5ed`
+- 主要中文入口：根目录中文文档、`docs/i18n/*zh-CN*`、`apps/web/src/i18n/locales/zh-CN.ts`、`apps/web/src/i18n/locales/zh-TW.ts`，以及已有中文 runtime skill
+- 当前同步上游 commit：`07a86b1041531bfa0bec1006d9c0993985fee560`
 
 ## 本地化目标
 
@@ -17,7 +17,7 @@
 ## 翻译范围
 
 - 根目录已中文化的文档继续以简体中文维护；上游新增段落应同步补译。
-- `zh-CN` / `zh-TW` locale 必须与英文 locale 的 key、插值参数和 HTML 结构保持一致，不能用英文占位代替新增文案。
+- `zh-CN` / `zh-TW` locale 必须与英文 locale 的 key、插值参数和 HTML 结构保持一致，不能用英文占位代替新增文案。上游新增的 `zh-TW` 文案若仍是简体或英文，应在本 fork 中补齐繁体/中文表达。
 - 已经中文化的 `skills/**/SKILL.md` 是中文 runtime，后续上游变更需要同步翻译。
 - Template 和官方 example 若正文是 canonical executable prompt，默认保留英文正文，并通过 `en_name`、`zh_name`、`en_description`、`zh_description` 和中文 trigger 提供双语发现信息。
 - 新增的 design system 可以翻译人类可读规则，但必须保留 section schema、tokens、代码、色值、字体名和精确约束。
@@ -55,4 +55,4 @@ Open Design 是应用发行，不是单一 skill/plugin 安装目标。控制仓
 
 ## 本次同步摘要
 
-本批同步到 0.21.1 上游开发基线，包含 OD Next 设计策略与插件/运行时协议、standalone/terminal/closure 分发能力、运行观测与恢复链路、Labs 设置、定向 Go 订阅公告、pricing 与多语言 landing 更新，以及 preview、ACP、打包和发布流程修复。新增简中与繁中文案由上游提供并保留；实现代码、tests、schema 和 canonical prompt contract 保持上游语义。
+本批同步到 0.27.0 上游开发基线（368 个 commit），包含推荐增长与客户端登录交接、工作空间席位与共享计费、OD Next 已注册 agent 与 CLI BYOK、Motion 模板及参考视频复刻、Home 单项目工作流、分享/评论修复、运行状态与稳定性遥测、TypeScript 7 迁移，以及打包、发布和 CI 修复。上游继续维护完整的 `zh-CN` / `zh-TW` UI locale 与 `docs/i18n` 中文文档，本 fork 直接采用这些文案；根目录中文 README、贡献指南、快速上手、隐私说明和部署文档按上游新结构重建并保留中文。上游已移除独立的 `apps/landing-page` 站点，因此该目录的中文落地页文案不再维护。实现代码、tests、schema 和 canonical prompt contract 保持上游语义。

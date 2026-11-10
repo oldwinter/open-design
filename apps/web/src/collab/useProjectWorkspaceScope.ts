@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { isSameWorkspacePrincipal } from '@open-design/contracts';
 import type {
+  ProjectVisibility,
   ProjectWorkspaceScope,
   ProjectWorkspaceScopeResponse,
   WorkspaceCollabContext,
@@ -88,6 +90,20 @@ export function projectWorkspaceScopeReady(
   scope: ProjectWorkspaceScope | null | undefined,
 ): boolean {
   return scope?.kind === 'unbound' || scope?.kind === 'personal' || scope?.kind === 'team';
+}
+
+/**
+ * The daemon's own visibility verdict for a resolved project scope.
+ *
+ * Deliberately independent of `kind`: a private draft can live in a team
+ * workspace and still be `personal`. Null when the scope has not resolved, or
+ * for a legacy unbound project that has no `workspace_projects` row to be
+ * visible in — neither case is evidence of anything.
+ */
+export function projectWorkspaceVisibility(
+  scope: ProjectWorkspaceScope | null | undefined,
+): ProjectVisibility | null {
+  return scope && scope.kind !== 'unbound' ? scope.visibility : null;
 }
 
 function activePersonalAdoptionWitness(
@@ -373,6 +389,13 @@ export function useProjectWorkspaceScope(
   callerWorkspaceContext: WorkspaceCollabContext | null = null,
   persistedProjectWorkspaceId?: string | null,
   initialScope?: ProjectWorkspaceScope | null,
+  /**
+   * False while the project row does not exist on the daemon yet (a Home send
+   * whose create has not answered, OPEND-3334): no read is made and the scope
+   * stays loading, so nothing downstream treats the project as readable.
+   * Flipping it true starts the first read.
+   */
+  enabled = true,
 ): ProjectWorkspaceScopeState {
   const epochRef = useRef(0);
   const pinnedAuthorityRef = useRef<{
@@ -425,7 +448,16 @@ export function useProjectWorkspaceScope(
       !boundWorkspaceId
         ? initialScope.kind === 'unbound'
         : initialScope.workspaceId === boundWorkspaceId
-          && workspaceIdentityCacheKey(initialScopeContext) === callerIdentityKey
+          // Does this pre-fetched scope belong to the caller we are asserting?
+          // That is a WHO question, so it compares principals. `callerIdentityKey`
+          // above stays a cache key because every one of its other uses compares
+          // one caller identity against another caller identity; this is the one
+          // place that crosses sources, and the daemon's scope route always
+          // answers with its placeholder `role: 'member'`. Comparing keys here
+          // discarded the route bootstrap's exact answer on every project open by
+          // an owner or admin, costing a second scope round trip and a
+          // fail-closed FileViewer skeleton on first paint.
+          && isSameWorkspacePrincipal(initialScopeContext, callerWorkspaceContext)
     ),
   );
   const [state, setState] = useState<ProjectWorkspaceScopeState & {
@@ -563,6 +595,7 @@ export function useProjectWorkspaceScope(
     };
     const refreshRevision = refreshRequest.revision;
 
+    if (!enabled) return () => controller.abort();
     if (refreshRevision === 0 && initialScopeCanSeed && seededFromInitialScopeRef.current) {
       return () => controller.abort();
     }
@@ -717,6 +750,7 @@ export function useProjectWorkspaceScope(
     };
   }, [
     boundWorkspaceId,
+    enabled,
     projectId,
     refreshRequest,
     requestAuthorityKey,

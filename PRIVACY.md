@@ -21,7 +21,7 @@ Usage telemetry 默认**开启**。首次运行时，应用会显示隐私披露
 
 启用可选分享时，应用可能向 Open Design 团队发送以下内容。Settings 中对应的两个控制项是 **Anonymous metrics** 与 **Conversation and tool content**。
 
-- **匿名指标**：run 次数、token 用量、错误率和耗时。这个通道还包括产品交互事件、页面跳转、Web 性能和经过隐私遮罩的 session replay。Replay 会遮罩每个文本节点和输入值，并阻止嵌入式 iframe，因此 prompt、key、project 文本和生成预览不会被录制为可读的屏幕内容。
+- **匿名指标**：run 次数、token 用量、错误率和耗时。这个通道还包括产品交互事件、页面跳转、Web 性能和经过隐私遮罩的 session replay。Replay 会遮罩每个文本节点和输入值，并阻止嵌入式 iframe，因此 prompt、key、project 文本和生成预览不会被录制为可读的屏幕内容。分享与评论指标可能包含不透明的 project、share link 和已保存评论标识、已发布版本及交互结果；这些指标不包含评论正文、作者姓名、完整分享 URL 或凭据。
 - **对话与工具内容**：你的 prompt、assistant response、tool input、tool output、prompt stack context，以及质量检查所需的 attachment / artifact manifest metadata。内容会先截断并脱敏；已知可能携带 artifact 内容的 tool payload 会替换为 redaction marker。只有指标与内容两个控制项都启用时，才会发送这个通道。
 
 无论上述控制项如何设置，**安全性与可靠性 telemetry**都可能发送经过脱敏且有大小限制的诊断信息，用于浏览器/daemon 异常、白屏、长任务、资源或 SSE 失败、run 卡住、生命周期失败，以及打包应用在 daemon 启动前 crash 等情况。典型字段包括产品版本/channel、OS/runtime 信息、失败阶段、错误类型/消息/stack 和耗时。Home directory 路径、URL query string、输入文本及其他已知敏感字段会在发送前脱敏。安全报告采用 best-effort，绝不会阻塞核心工作流或延迟失败进程退出。

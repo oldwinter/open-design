@@ -1,4 +1,4 @@
-# Maintainers
+# 维护者
 
 <p align="center"><a href="https://github.com/nexu-io/open-design/blob/main/MAINTAINERS.md">English</a> · <a href="docs/i18n/MAINTAINERS.pt-BR.md">Português (Brasil)</a> · <a href="docs/i18n/MAINTAINERS.de.md">Deutsch</a> · <a href="docs/i18n/MAINTAINERS.fr.md">Français</a> · <b>简体中文</b> · <a href="docs/i18n/MAINTAINERS.ja-JP.md">日本語</a> · <a href="docs/i18n/MAINTAINERS.ko.md">한국어</a> · <a href="docs/i18n/MAINTAINERS.th.md">ภาษาไทย</a></p>
 

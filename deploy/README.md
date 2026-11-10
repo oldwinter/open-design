@@ -87,20 +87,49 @@ docker compose -f docker-compose.yml -f docker-compose.linux.yml up -d --no-buil
 
 常见安装路径：
 
-| CLI | 默认路径 |
-|-----|-------------|
+| CLI | 安装 / 默认路径 |
+|-----|------------------|
 | Claude Code | `~/.local/bin/claude`（symlink）+ `~/.local/share/claude`（binaries） |
 | opencode | `~/.opencode/bin/opencode` |
 | Codex | `~/.local/bin/codex` |
+| Vela / AMR | npm package `@powerformer/vela-cli`; [Open Design AMR](https://open-design.ai/amr) is the browser account/wallet page |
 
-daemon 会在启动时自动检测 `PATH` 中可见的 CLI，不需要额外配置。如果某个 CLI 安装在非标准路径，请在 `docker-compose.linux.yml` 中添加 volume，并把它的目录放到 `PATH` 最前面，然后重启：
+Vela 以 `@powerformer/vela-cli` npm 包发布。上面的 Open Design AMR URL 不是
+shell installer。在 Linux Docker 中，请把 Vela 安装到独立 prefix，以便同时
+挂载它的 launcher 和 platform package：
+
+```bash
+VELA_PREFIX="$HOME/.local/share/vela"
+npm install --global --prefix "$VELA_PREFIX" @powerformer/vela-cli
+export PATH="$VELA_PREFIX/bin:$PATH"
+which vela
+vela --version
+```
+
+把完整的 prefix 挂载进 container，再通过 `PATH` 暴露它的 `bin` 目录（或把
+`VELA_BIN` 指向 container 内可见的 launcher）：
 
 ```yaml
 environment:
-  PATH: /mnt/host-mycli:/mnt/host-local-bin:/mnt/host-opencode:/usr/local/bin:/usr/bin:/bin
+  PATH: /mnt/host-vela/bin:/mnt/host-local-bin:/mnt/host-opencode:/usr/local/bin:/usr/bin:/bin
+  VELA_BIN: /mnt/host-vela/bin/vela
 volumes:
-  - /opt/mycli/bin:/mnt/host-mycli:ro
+  - ${HOME}/.local/share/vela:/mnt/host-vela:ro
 ```
+
+container 启动后，检查 `PATH` 自动发现结果和显式 Vela override：
+
+```bash
+docker compose exec open-design sh -lc 'which vela; echo "$VELA_BIN"'
+```
+
+可以二选一：使用能在 `PATH` 中找到的 `vela` launcher，或使用 container 内
+真实存在的 `VELA_BIN` 路径。`vela` 能在 `PATH` 中找到时，`VELA_BIN` 可以省略。
+
+daemon 会在启动时自动检测 `PATH` 中可见的 CLI，不需要额外配置。如果某个 CLI
+安装在非标准路径，请以只读方式挂载它完整的安装 prefix，并把其 binary 目录放到
+`docker-compose.linux.yml` 中 `PATH` 的最前面，然后重启。launcher 是 symlink 时，
+只挂载 symlink 所在目录可能会遗漏它的目标。
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.linux.yml up -d --no-build
@@ -122,68 +151,63 @@ ANTHROPIC_API_KEY=sk-ant-…
 OPENAI_API_KEY=sk-…
 ```
 
-If you install Codex inside an unprivileged Linux container and it fails while
-creating its `workspace-write` sandbox, opt into Codex's full-access mode for
-all Codex runs in that deployment:
+如果你在非特权 Linux container 中安装 Codex，而它在创建 `workspace-write`
+sandbox 时失败，可以为该部署中的所有 Codex run 启用 Codex 的 full-access 模式：
 
 ```bash
 OD_CODEX_SANDBOX=danger-full-access docker compose up -d --no-build
 ```
 
-Only the exact value `danger-full-access` is supported; unknown values are
-ignored. Use this only for trusted, single-user deployments. It lets Codex run
-without the workspace-write sandbox, which is useful when the container host
-blocks unprivileged user namespaces, but it gives the Codex process broader
-filesystem access inside the container.
+只支持精确值 `danger-full-access`，其他值会被忽略。仅用于可信的单用户部署。
+它让 Codex 在没有 workspace-write sandbox 的情况下运行，适用于 container host
+阻止非特权 user namespace 的场景，但同时会让 Codex 进程在 container 内获得更广的
+filesystem 访问权限。
 
-## Manual image publish override
+## 手动发布 image
 
 ```bash
 deploy/scripts/publish-images.sh --image_tag latest
 ```
 
-Useful overrides:
+常用 override：
 
 ```bash
 IMAGE_NAMESPACE=your-ghcr-org deploy/scripts/publish-images.sh --arch arm64
 deploy/scripts/publish-images.sh --image ghcr.io/your-org/od:0.1.0
 ```
 
-The script defaults to:
+脚本默认使用：
 
 - `ghcr.io/nexu-io/od:<tag>`
 - `linux/amd64,linux/arm64`
 - `skopeo` push strategy with registry credentials read from `~/.docker/config.json`
-- preloading base images through `skopeo` to reduce Docker Hub pull flakiness
+- 通过 `skopeo` 预加载 base image，减少 Docker Hub 拉取不稳定
 
-If `127.0.0.1:7890` is available and no proxy is already set, the script uses it
-for registry access and passes `host.docker.internal:7890` into Docker builds. The
-host-gateway alias is only added for builds that need this local proxy mapping.
+如果 `127.0.0.1:7890` 可用且尚未设置 proxy，脚本会用它访问 registry，并把
+`host.docker.internal:7890` 传给 Docker build。只有需要这个本地 proxy 映射的
+build 才会添加 host-gateway alias。
 
-### Colima swap helper for Apple Silicon
+### Apple Silicon 的 Colima swap helper
 
-`deploy/scripts/prepare-colima-build-swap.sh` is for manual Docker image
-publishing from an Apple Silicon macOS host that uses Colima as the Docker VM.
-The helper is intentionally Apple Silicon-only because the failure mode it covers
-is local arm64 Colima builds exhausting a small Linux VM while preparing
-multi-arch images. It exits before touching Colima on non-macOS or
-non-Apple-Silicon hosts.
+`deploy/scripts/prepare-colima-build-swap.sh` 用于从以 Colima 作为 Docker VM 的
+Apple Silicon macOS 主机手动发布 Docker image。该 helper 有意只支持 Apple
+Silicon，因为它覆盖的故障场景是本地 arm64 Colima build 在准备 multi-arch image
+时耗尽小型 Linux VM。在非 macOS 或非 Apple Silicon 主机上，它会在操作 Colima
+之前退出。
 
-Low-memory Colima VMs can run out of RAM during multi-arch image builds. The
-helper checks the VM memory and swap status, then creates and enables a temporary
-swap file only when the VM has no swap and less than 4 GiB of RAM. The 4 GiB
-threshold is a conservative default for short-lived manual publishes on small
-Colima profiles; raise `COLIMA_BUILD_SWAP_MEMORY_THRESHOLD_KIB` if larger builds
-still OOM, or lower it if you only want swap for very small VMs.
+低内存 Colima VM 在 multi-arch image build 期间可能耗尽 RAM。helper 会检查 VM
+内存与 swap 状态，仅在 VM 没有 swap 且 RAM 小于 4 GiB 时创建并启用临时 swap
+文件。4 GiB 阈值是小型 Colima profile 上短时手动发布的保守默认值；更大的 build
+仍然 OOM 时，提高 `COLIMA_BUILD_SWAP_MEMORY_THRESHOLD_KIB`；如果只想为非常小的
+VM 启用 swap，则调低它。
 
-Prefer increasing the Colima VM memory (`colima start --memory <GiB>` or the
-profile config) when you want a persistent build machine. Use this helper when
-you need a temporary, reversible boost for one manual publish without resizing
-or recreating the VM.
+如果希望长期用作 build machine，优先增加 Colima VM 内存（`colima start
+--memory <GiB>` 或 profile config）。只有在需要为一次手动发布临时、可回退地
+增加资源，又不想调整或重建 VM 时，才使用这个 helper。
 
-Run it before a manual publish if Docker builds fail with out-of-memory errors,
-or if `status` shows a small Colima VM with no swap. The swap remains active
-until cleanup or VM restart, so use a shell trap for one-off sessions:
+如果 Docker build 因 out-of-memory 失败，或 `status` 显示一个小型 Colima VM
+且没有 swap，请在手动发布前运行它。swap 会一直生效，直到 cleanup 或 VM 重启，
+因此一次性会话建议使用 shell trap：
 
 ```bash
 deploy/scripts/prepare-colima-build-swap.sh status
@@ -192,7 +216,7 @@ trap 'deploy/scripts/prepare-colima-build-swap.sh cleanup' EXIT
 deploy/scripts/publish-images.sh --image_tag latest
 ```
 
-Useful overrides:
+常用 override：
 
 ```bash
 COLIMA_BUILD_SWAP_SIZE=6G deploy/scripts/prepare-colima-build-swap.sh
@@ -201,9 +225,9 @@ COLIMA_BIN=/opt/homebrew/bin/colima deploy/scripts/prepare-colima-build-swap.sh 
 COLIMA_BUILD_SWAP_CLEANUP_FORCE=1 COLIMA_BUILD_SWAPFILE=/custom-swapfile deploy/scripts/prepare-colima-build-swap.sh cleanup
 ```
 
-`cleanup` removes the default helper path and the old helper path. If you set a
-custom `COLIMA_BUILD_SWAPFILE`, cleanup refuses to remove it unless
-`COLIMA_BUILD_SWAP_CLEANUP_FORCE=1` is also set.
+`cleanup` 会删除默认 helper path 和旧 helper path。如果你设置了自定义
+`COLIMA_BUILD_SWAPFILE`，除非同时设置 `COLIMA_BUILD_SWAP_CLEANUP_FORCE=1`，
+否则 cleanup 会拒绝删除它。
 
 ### Docker Desktop on macOS
 
@@ -225,14 +249,14 @@ custom `COLIMA_BUILD_SWAPFILE`, cleanup refuses to remove it unless
        ports: []
    ```
 
-3. Recreate the container:
+3. 重建 container：
 
    ```bash
    docker compose down
    docker compose up -d --force-recreate
    ```
 
-4. Verify:
+4. 验证：
 
    ```bash
    docker inspect open-design --format '{{.HostConfig.NetworkMode}}'

@@ -13,13 +13,18 @@
 // Nothing here may throw into the caller: analytics is an observer of the Run,
 // never a participant in it.
 
+import { scheduler } from 'node:timers/promises';
 import {
   buildRunCreatedV4Aliases,
   buildRunFinishedV4Aliases,
   deriveConfigureGlobals,
   harnessAnalyticsFromRolloutDecision,
+  odNextBlockedAnalyticsFromStrategyTask,
   modelIdForTracking,
+  projectIntentFromMetadataToTracking,
   sessionModeToTracking,
+  savedCommentIds,
+  type RunCreatedProps,
   type RunTaskLineageProps,
   type TrackingDesignSystemEditSurface,
   type TrackingDesignSystemKind,
@@ -27,8 +32,9 @@ import {
   type TrackingRunRecoveryActionType,
 } from '@open-design/contracts/analytics';
 import { spawnEnvForAgent } from '../agents.js';
-import { newInsertId } from '../analytics.js';
-import type { AnalyticsContext } from '../analytics.js';
+import { newInsertId, normalizeAnalyticsCaptureResult } from '../analytics.js';
+import type { AnalyticsCaptureResult, AnalyticsContext } from '../analytics.js';
+import type { WorkspaceContextProvider } from '../collab/workspace-context.js';
 import { agentCliEnvForAgent, readAppConfig } from '../app-config.js';
 import {
   codexSessionIdFromRunEvents,
@@ -48,10 +54,13 @@ import {
   agentProviderIdForRunAnalytics,
   amrUserIdForRunAnalytics,
   hasExplicitRequestedModelForAnalytics,
+  perRequestUsageForRun,
   runtimeTypeForRunAnalytics,
+  scanRunEventsForPerRequestUsageAnalytics,
   scanRunEventsForUsageAnalytics,
   summarizeRunTimingAnalytics,
   summarizeToolAnalytics,
+  type PerRequestUsageLedger,
 } from '../run-analytics-observability.js';
 import {
   diffRunArtifacts,
@@ -63,8 +72,14 @@ import {
 import { summarizeRunDiagnosticsForAnalytics } from '../run-diagnostics.js';
 import { classifyRunFailure } from '../run-failure-classification.js';
 import { deriveRunErrorCode, runResultFromStatus } from '../run-result.js';
-import { runMessageEventPersistenceAnalytics } from '../runtimes/chat-run-messages.js';
+import { terminalLifecycleForPosthogLocalQueue } from '../observability/run-terminal-lifecycle.js';
+import {
+  runEventStorageShapeAnalytics,
+  runMessageEventPersistenceAnalytics,
+} from '../runtimes/chat-run-messages.js';
+import { readRunStorageAnalytics } from '../storage/run-storage-analytics.js';
 import { getDetectedRuntimeVersions } from '../runtimes/detection.js';
+import { pinRunWorkspaceScopeForProject } from '../runtimes/project-amr-trace-env.js';
 import {
   deriveActivationMilestones,
   runAskedUserQuestion,
@@ -73,7 +88,9 @@ import {
   runArtifactCountForRun,
   runDesignSystemCreatedForRun,
   runFilesWrittenForRun,
+  runAdmissionEvidenceForRun,
   runPreviewModuleCountForRun,
+  type RunSideEffectLedger,
 } from '../runtimes/run-lifecycle-analytics.js';
 import { odNextRolloutAnalyticsProperties } from '../strategies/od-next/rollout-analytics.js';
 import type { AppliedPluginSnapshot } from '@open-design/contracts';
@@ -207,12 +224,15 @@ export interface RunAnalyticsLifecycleDeps {
   design: {
     runs: {
       wait(run: ChatRun): Promise<TerminalRunStatus>;
+      persistState?(run: ChatRun): unknown;
       setAnalyticsRecovery?(run: ChatRun, recovery: {
         context: AnalyticsContext;
         properties: Record<string, unknown>;
         insertId: string;
       }): void;
       markAnalyticsCompleted?(run: ChatRun): void;
+      beginAnalyticsDelivery?(run: ChatRun): void;
+      finalizeAnalyticsDelivery?(run: ChatRun, result: AnalyticsCaptureResult): void;
       setDeliverableValidation?(run: ChatRun, result: unknown): void;
     };
     analytics: {
@@ -222,7 +242,7 @@ export interface RunAnalyticsLifecycleDeps {
         appVersion: string;
         properties: Record<string, unknown>;
         insertId: string;
-      }): void | Promise<void>;
+      }): unknown | Promise<unknown>;
     };
     getAppVersion(): string;
   };
@@ -233,6 +253,8 @@ export interface RunAnalyticsLifecycleDeps {
     ) => Promise<Array<{ id: string; available: boolean }>>;
   };
   telemetry: RunAnalyticsTelemetryDeps;
+  /** Exact server authority only; never read a page selection or lastKnown context. */
+  workspaceContext?: Pick<WorkspaceContextProvider, 'resolveExact'>;
 }
 
 export interface RunAnalyticsTelemetryDeps {
@@ -283,12 +305,115 @@ export interface RunAnalyticsFacts {
 /** The facts plus the Run they describe. */
 export type RunAnalyticsInstallInput = RunAnalyticsFacts & { run: ChatRun };
 
+async function waitForTerminalClaimSettlementBoundary(): Promise<void> {
+  // A physical runtime can report the same terminal outcome through adjacent
+  // error/close callbacks. Give callbacks already queued by the first terminal
+  // transition one check phase to update the lifecycle before freezing the
+  // sole run_finished envelope.
+  await scheduler.yield();
+}
+
 export interface RunAnalyticsLifecycle {
   /**
    * Arm both events for one physical Run. Safe to call before the Run starts;
    * the terminal half attaches to `runs.wait` and settles on its own.
    */
   install(input: RunAnalyticsInstallInput): void;
+}
+
+function runFinishedStorageProperties(
+  db: Parameters<typeof readRunStorageAnalytics>[0],
+  run: Parameters<typeof runEventStorageShapeAnalytics>[0] & { id: string },
+): Record<string, unknown> | null {
+  try {
+    const properties = {
+      ...readRunStorageAnalytics(db, { runId: run.id, assistantMessageId: run.assistantMessageId }),
+      ...runEventStorageShapeAnalytics(run),
+    };
+    return Object.keys(properties).length > 0 ? properties : null;
+  } catch {
+    return null;
+  }
+}
+
+type RunWorkspaceAnalytics = Pick<RunCreatedProps, 'workspace_id' | 'workspace_member_id' | 'member_count'>;
+
+function validMemberCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+}
+
+/**
+ * A recovery snapshot is the historical task attribution, including an absent
+ * count. Resuming must not replace it with whichever workspace the UI now shows.
+ * New runs resolve only their pinned address through server authorization; the
+ * project creator witness is not the actual caller's workspace member identity.
+ */
+async function workspaceAnalyticsForRun(
+  run: ChatRun,
+  deps: RunAnalyticsLifecycleDeps,
+): Promise<RunWorkspaceAnalytics> {
+  const recovery = toJsonRecord(run.analyticsRecovery);
+  if (Object.hasOwn(recovery, 'properties')) {
+    const properties = toJsonRecord(recovery.properties);
+    if (typeof properties.workspace_id !== 'string' || !properties.workspace_id.trim()) return {};
+    return {
+      workspace_id: properties.workspace_id,
+      ...(typeof properties.workspace_member_id === 'string' && properties.workspace_member_id.trim()
+        ? { workspace_member_id: properties.workspace_member_id }
+        : {}),
+      ...(validMemberCount(properties.member_count)
+        ? { member_count: properties.member_count }
+        : {}),
+    };
+  }
+  // Internal creators reach the lifecycle before startChatRun pins the same
+  // address. Use the existing primitive synchronously, before any async setup,
+  // so a later project rebind cannot move analytics to another wallet.
+  if (!Object.hasOwn(run, 'workspaceScope')) {
+    run.workspaceScope = run.projectId
+      ? pinRunWorkspaceScopeForProject(deps.db, run.projectId)
+      : null;
+    deps.design.runs.persistState?.(run);
+  }
+  const scope = run.workspaceScope;
+  if (scope?.source !== 'persisted_project_binding'
+    || scope.schemaVersion !== 1
+    || scope.projectId !== run.projectId
+    || !scope.workspaceId.trim()
+    || !deps.workspaceContext?.resolveExact) return {};
+  const workspaceId = scope.workspaceId.trim();
+  const context = await deps.workspaceContext.resolveExact({ workspaceId });
+  if (!context
+    || context.workspaceId !== workspaceId
+    || !context.workspaceMemberId.trim()
+    || context.memberStatus !== 'active'
+    || context.lifecycleState === 'deleted') return {};
+  return {
+    workspace_id: workspaceId,
+    workspace_member_id: context.workspaceMemberId,
+    ...(validMemberCount(context.memberCount)
+      ? { member_count: context.memberCount }
+      : {}),
+  };
+}
+
+/** Freeze the ledgers too: resumed requests continue folding into them. */
+function terminalRunForAnalytics(run: ChatRun, status: TerminalRunStatus): ChatRun {
+  const ledgerRun = run as ChatRun & {
+    perRequestUsageLedger?: PerRequestUsageLedger;
+    sideEffectLedger?: RunSideEffectLedger;
+  };
+  return {
+    ...run,
+    ...status,
+    events: [...run.events],
+    ...(ledgerRun.perRequestUsageLedger
+      ? { perRequestUsageLedger: structuredClone(ledgerRun.perRequestUsageLedger) }
+      : {}),
+    ...(ledgerRun.sideEffectLedger
+      ? { sideEffectLedger: structuredClone(ledgerRun.sideEffectLedger) }
+      : {}),
+  } as ChatRun;
 }
 
 export function createRunAnalyticsLifecycle(
@@ -304,8 +429,33 @@ export function createRunAnalyticsLifecycle(
     runRetryEventsForAnalytics,
   } = deps.telemetry;
 
+  const installedAttempts = new WeakMap<ChatRun, number>();
+  const workspaceSnapshots = new WeakMap<ChatRun, Promise<RunWorkspaceAnalytics>>();
   const install = (input: RunAnalyticsInstallInput): void => {
     const run = input.run;
+    const attempt = run.manualResumeAttemptCount ?? 0;
+    if (installedAttempts.get(run) === attempt) return;
+    installedAttempts.set(run, attempt);
+    const rechargeWaitDurationMs = run.rechargeWaitDurationMs ?? 0;
+    const isCurrentAttempt = () => (input.run.manualResumeAttemptCount ?? 0) === attempt;
+    // Subscribe before context/configuration I/O: a finished attempt can be
+    // resumed while those reads are pending. Its observer must keep its own
+    // terminal status and must never checkpoint the newer attempt.
+    let waiting: Promise<TerminalRunStatus>;
+    try {
+      waiting = design.runs.wait(run);
+    } catch {
+      return;
+    }
+    const terminal = waiting.then((status) => ({
+      status,
+      run: {
+        ...terminalRunForAnalytics(run, status),
+        manualResumeAttemptCount: attempt,
+        rechargeWaitDurationMs,
+      } as ChatRun,
+    }));
+
     const strategyRolloutDecision =
       input.rolloutDecision !== undefined
         ? input.rolloutDecision
@@ -322,7 +472,7 @@ export function createRunAnalyticsLifecycle(
       const hintDsEnrichment = analyticsHints.dsEnrichment === true;
       const requestProjectId = typeof reqBody.projectId === 'string' ? reqBody.projectId : null;
       if (hintDsEnrichment && requestProjectId) {
-        design.runs.wait(run).then((status: TerminalRunStatus) => {
+        terminal.then(({ status }) => {
           if (runResultFromStatus(status.status) !== 'success') return;
           try {
             const enrichedProject = toProjectRecord(getProject(db, requestProjectId));
@@ -359,7 +509,7 @@ export function createRunAnalyticsLifecycle(
       if (!run.analyticsContext && analyticsContext) {
         run.analyticsContext = analyticsContext;
       }
-      design.runs.wait(run).then((status: { status: string }) => {
+      terminal.then(({ status, run }) => {
         reportRunCompletionTelemetryFallback({
           analyticsContext: analyticsContext ?? null,
           run,
@@ -367,6 +517,12 @@ export function createRunAnalyticsLifecycle(
         });
       }).catch(() => {});
       if (analyticsContext) {
+        let workspaceSnapshot = workspaceSnapshots.get(run);
+        if (!workspaceSnapshot) {
+          workspaceSnapshot = workspaceAnalyticsForRun(run, deps).catch(() => ({}));
+          workspaceSnapshots.set(run, workspaceSnapshot);
+        }
+        const workspaceProperties = await workspaceSnapshot;
         const runInsertId = newInsertId();
         const appCfgForAnalytics = await readAppConfig(RUNTIME_DATA_DIR).catch(
           () => ({} as Record<string, unknown>),
@@ -561,7 +717,18 @@ export function createRunAnalyticsLifecycle(
                 ? 'mark'
                 : 'chat'
             : undefined;
+        // A same-Run recovery snapshot is authoritative, including an explicit
+        // empty list. Source-run lineage must never supply comment identities.
+        // ChatRun exposes only recovery context; the durable record also holds
+        // the plain event properties written by this lifecycle.
+        const recoveredCommentIds = (run.analyticsRecovery as
+          | { properties?: Record<string, unknown> }
+          | undefined)?.properties?.comment_ids;
+        const commentIds = Array.isArray(recoveredCommentIds)
+          ? [...recoveredCommentIds]
+          : savedCommentIds(reqBody.commentAttachments);
         const baseProps: Record<string, unknown> = {
+          ...(commentIds !== undefined ? { comment_ids: commentIds } : {}),
           page_name: isDesignSystemRun ? 'design_system_project' : 'chat_panel',
           area: isDesignSystemRun ? 'design_system_generation' : 'chat_composer',
           ...configureGlobals,
@@ -575,7 +742,9 @@ export function createRunAnalyticsLifecycle(
           conversation_id:
             typeof reqBody.conversationId === 'string' ? reqBody.conversationId : null,
           run_id: run.id,
+          ...workspaceProperties,
           project_kind: runProjectKind,
+          project_intent: projectIntentFromMetadataToTracking(runProjectForAnalytics?.metadata),
           ...(hintEntryFrom ? { entry_from: hintEntryFrom } : {}),
           ...sessionDimensionProps,
           design_system_id: dsSelectedId ?? undefined,
@@ -663,9 +832,9 @@ export function createRunAnalyticsLifecycle(
                   run.externalPluginAnalytics.generationSloWindowMs,
                 deduplicated: input.creationKind === 'reused',
                 resume: input.resumed === true,
-                attempt_count: (run.manualResumeAttemptCount ?? 0) + 1,
+                attempt_count: attempt + 1,
                 recharge_wait_duration_ms:
-                  run.rechargeWaitDurationMs ?? 0,
+                  rechargeWaitDurationMs,
                 ...(input.attributionMismatch
                   ? { source_metadata_mismatch: true }
                   : {}),
@@ -677,7 +846,7 @@ export function createRunAnalyticsLifecycle(
         // it here is the only place this dimension has to be added.
         Object.assign(baseProps, harnessAnalyticsFromRolloutDecision(run.strategyRolloutDecision));
         Object.assign(baseProps, buildRunCreatedV4Aliases(baseProps, taskLineage));
-        design.runs.setAnalyticsRecovery?.(run, {
+        if (isCurrentAttempt()) design.runs.setAnalyticsRecovery?.(input.run, {
           context: analyticsContext,
           properties: baseProps,
           insertId: runInsertId,
@@ -689,7 +858,7 @@ export function createRunAnalyticsLifecycle(
           properties: baseProps,
           insertId: runInsertId,
         });
-        design.runs.wait(run).then(async (status: TerminalRunStatus) => {
+        terminal.then(async ({ status, run }) => {
           const appCfgAtFinish = await readAppConfig(RUNTIME_DATA_DIR).catch(
             () => ({} as Record<string, unknown>),
           );
@@ -727,12 +896,14 @@ export function createRunAnalyticsLifecycle(
             cancelOrigin: run.cancelOrigin ?? null,
             terminalTrigger: run.terminalTrigger ?? null,
             events: run.events,
+            admissionEvidence: runAdmissionEvidenceForRun(run),
           });
           const usageAnalytics = scanRunEventsForUsageAnalytics(
             run.events,
             reqBody.model,
             userQueryTokens,
           );
+          const perRequestUsage = perRequestUsageForRun(run);
           // Whether this run is a non-first turn in its conversation — i.e. a
           // prior completed assistant turn exists (excluding this run's own
           // placeholder). The session-reuse cache win only applies to follow-up
@@ -896,7 +1067,7 @@ export function createRunAnalyticsLifecycle(
               })
             : null;
           if (deliverable) {
-            design.runs.setDeliverableValidation?.(run, deliverable);
+            if (isCurrentAttempt()) design.runs.setDeliverableValidation?.(input.run, deliverable);
           }
           const activationMilestones = deriveActivationMilestones({
             result,
@@ -907,6 +1078,7 @@ export function createRunAnalyticsLifecycle(
           });
           const diagnosticsAnalytics = summarizeRunDiagnosticsForAnalytics({
             events: run.events,
+            promptBudgetDiagnostics: run.promptBudgetDiagnostics,
             exitCode: status.exitCode ?? null,
             signal: status.signal ?? null,
             cancelRequested: !!run.cancelRequested,
@@ -946,8 +1118,24 @@ export function createRunAnalyticsLifecycle(
           const supportingAssetFilesChanged = artifactDiff
             ? supportingAssetFilesChangedForRun(artifactDiff, runProjectKind)
             : undefined;
+          if (isCurrentAttempt()) design.runs.beginAnalyticsDelivery?.(input.run);
+          await waitForTerminalClaimSettlementBoundary();
+          const lifecycleRun = isCurrentAttempt() ? input.run : run;
+          const terminalLifecycle = lifecycleRun.terminalLifecycle
+            ? terminalLifecycleForPosthogLocalQueue(lifecycleRun.terminalLifecycle)
+            : undefined;
           const finishedProperties: Record<string, unknown> = {
               ...baseProps,
+              ...(run.diagnosticIncidentIds?.length ? { diagnostic_incident_ids: run.diagnosticIncidentIds } : {}),
+              // The gate that refused an OD Next turn. `result` above comes
+              // from the physical run status, and a refused turn normally exits
+              // 0 — so without this the whole class counted as `success` while
+              // the user was looking at a failure card. Read off the run's own
+              // terminal projection, the same object the SSE `end` payload and
+              // the failure card were built from, so the three cannot drift.
+              ...odNextBlockedAnalyticsFromStrategyTask(run.strategyTask),
+              ...(run.strategyTask?.settlementReason ? { od_next_settlement_reason: run.strategyTask.settlementReason } : {}),
+              ...(run.strategyTask?.settlementFacts ? { od_next_settlement_facts: run.strategyTask.settlementFacts } : {}),
               design_system_id: run.designSystemId ?? undefined,
               design_system_digest: run.designSystemDigest ?? undefined,
               design_system_selection_source: run.designSystemSelectionSource ?? 'none',
@@ -961,6 +1149,30 @@ export function createRunAnalyticsLifecycle(
               stable_prompt_changed_sections: run.promptCache?.changedSections ?? undefined,
               area: isDesignSystemRun ? 'design_system_generation' : 'chat_panel',
               result,
+              terminal_integrity: terminalLifecycle?.terminalIntegrity ?? 'canonical',
+              ...(terminalLifecycle
+                ? {
+                    run_attempt: terminalLifecycle.runAttempt,
+                    ...(terminalLifecycle.runtimeGenerationId
+                      ? { runtime_generation_id: terminalLifecycle.runtimeGenerationId }
+                      : {}),
+                    termination_origin: terminalLifecycle.terminationOrigin,
+                    terminal_persistence_status:
+                      terminalLifecycle.terminalPersistence.status,
+                    terminal_persistence_error_type:
+                      terminalLifecycle.terminalPersistence.errorType,
+                    posthog_delivery_status: terminalLifecycle.posthogDelivery.status,
+                    posthog_acknowledgement:
+                      terminalLifecycle.posthogDelivery.acknowledgement,
+                    posthog_delivery_attempt_count:
+                      terminalLifecycle.posthogDelivery.attemptCount,
+                    posthog_error_type: terminalLifecycle.posthogDelivery.errorType,
+                    mature_unfinished_state: terminalLifecycle.unfinishedState,
+                    duplicate_terminal_count:
+                      terminalLifecycle.duplicateTerminalCount,
+                    late_terminal_count: terminalLifecycle.lateTerminalCount,
+                  }
+                : {}),
               ...(activationMilestones ? { $set_once: activationMilestones } : {}),
               model_id: finishedModelId,
               artifact_count: artifactCount,
@@ -988,9 +1200,9 @@ export function createRunAnalyticsLifecycle(
                       ? { artifact_version_id: run.artifactVersionId }
                       : {}),
                     resume: (run.manualResumeAttemptCount ?? 0) > 0,
-                    attempt_count: (run.manualResumeAttemptCount ?? 0) + 1,
+                    attempt_count: attempt + 1,
                     recharge_wait_duration_ms:
-                      run.rechargeWaitDurationMs ?? 0,
+                      rechargeWaitDurationMs,
                   }
                 : {}),
               ...(artifactsCreated !== undefined ? { artifacts_created: artifactsCreated } : {}),
@@ -1091,6 +1303,21 @@ export function createRunAnalyticsLifecycle(
               cache_token_source: usageAnalytics.cache_token_source,
               // Prefer provider scan over run_created baseProps (`estimated`).
               token_count_source: usageAnalytics.token_count_source,
+              // Per-request token coverage (#4610): how many model requests in
+              // this run carry a per-request usage record (request_id + tokens),
+              // and whether their token sum reconciles with the run-level
+              // aggregate above. Lifts request-level cost/percentile analysis off
+              // the ~0.9% floor for claude_code.
+              request_usage_count: perRequestUsage.request_count,
+              ...(perRequestUsage.input_tokens_sum !== undefined
+                ? { request_usage_input_tokens_sum: perRequestUsage.input_tokens_sum }
+                : {}),
+              ...(perRequestUsage.output_tokens_sum !== undefined
+                ? { request_usage_output_tokens_sum: perRequestUsage.output_tokens_sum }
+                : {}),
+              ...(perRequestUsage.reconciles_aggregate !== null
+                ? { request_usage_reconciles_aggregate: perRequestUsage.reconciles_aggregate }
+                : {}),
               tool_error_count: toolAnalytics.tool_error_count,
               tool_name_count: toolAnalytics.tool_name_count,
               tool_names: toolAnalytics.tool_names_csv,
@@ -1150,19 +1377,39 @@ export function createRunAnalyticsLifecycle(
           // Keep the base insertId here: reconcileDurableRunTerminals appends
           // `-finish` when replaying. Storing `${runInsertId}-finish` would
           // produce `…-finish-finish` and can duplicate PostHog events.
-          design.runs.setAnalyticsRecovery?.(run, {
+          if (isCurrentAttempt()) design.runs.setAnalyticsRecovery?.(input.run, {
             context: analyticsContext,
             properties: finishedProperties,
             insertId: runInsertId,
           });
-          await Promise.resolve(design.analytics.capture({
-            eventName: 'run_finished',
-            context: analyticsContext,
-            appVersion: design.getAppVersion(),
-            properties: finishedProperties,
-            insertId: `${runInsertId}-finish`,
-          }));
-          design.runs.markAnalyticsCompleted?.(run);
+          // Storage observability rides only on the emitted copy: the recovery
+          // snapshot above and `finishedProperties` itself stay unchanged, and
+          // a startup replay re-measures from SQLite instead.
+          const storageProperties = runFinishedStorageProperties(db, run);
+          let captureResult: AnalyticsCaptureResult;
+          try {
+            captureResult = normalizeAnalyticsCaptureResult(
+              await Promise.resolve(design.analytics.capture({
+                eventName: 'run_finished',
+                context: analyticsContext,
+                appVersion: design.getAppVersion(),
+                properties: storageProperties
+                  ? { ...finishedProperties, ...storageProperties }
+                  : finishedProperties,
+                insertId: `${runInsertId}-finish`,
+              })),
+            );
+          } catch {
+            captureResult = {
+              status: 'failed',
+              acknowledgement: 'none',
+              errorType: 'enqueue_failed',
+            };
+          }
+          if (isCurrentAttempt()) design.runs.finalizeAnalyticsDelivery?.(input.run, captureResult);
+          if (isCurrentAttempt() && captureResult.status !== 'failed') {
+            design.runs.markAnalyticsCompleted?.(input.run);
+          }
         }).catch(() => {});
       }
     })().catch(() => {
